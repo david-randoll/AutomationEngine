@@ -25,7 +25,7 @@ public class AutomationTest {
 
     @PostConstruct
     public void init() {
-        List<ITrigger> triggers = List.of(new TimeBasedTrigger(LocalTime.of(14, 43), LocalTime.of(14, 59)));
+        List<ITrigger> triggers = List.of(new TimeBasedTrigger(LocalTime.of(14, 43), LocalTime.of(15, 59)));
         List<ICondition> conditions = List.of();
         List<IAction> actions = List.of(new LoggerAction("Hello, world!"));
         var automation = new Automation("Time based automation", triggers, conditions, actions);
