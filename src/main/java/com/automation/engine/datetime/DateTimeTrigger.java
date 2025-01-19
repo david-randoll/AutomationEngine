@@ -1,7 +1,7 @@
-package com.automation.engine.triggers;
+package com.automation.engine.datetime;
 
-import com.automation.engine.events.DateTimeEvent;
-import com.automation.engine.events.Event;
+import com.automation.engine.core.events.Event;
+import com.automation.engine.core.triggers.ITrigger;
 import org.springframework.lang.Nullable;
 
 import java.time.LocalDateTime;

@@ -1,10 +1,10 @@
-package com.automation.engine.engine;
+package com.automation.engine.core.engine;
 
-import com.automation.engine.actions.IAction;
-import com.automation.engine.conditions.ICondition;
-import com.automation.engine.events.Event;
-import com.automation.engine.events.EventContext;
-import com.automation.engine.triggers.ITrigger;
+import com.automation.engine.core.actions.IAction;
+import com.automation.engine.core.conditions.ICondition;
+import com.automation.engine.core.events.Event;
+import com.automation.engine.core.events.EventContext;
+import com.automation.engine.core.triggers.ITrigger;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;

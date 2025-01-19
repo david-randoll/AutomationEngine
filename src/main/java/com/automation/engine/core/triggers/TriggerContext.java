@@ -1,4 +1,4 @@
-package com.automation.engine.events;
+package com.automation.engine.core.triggers;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,6 +7,6 @@ import java.util.Map;
 
 @Data
 @AllArgsConstructor
-public class EventContext {
+public class TriggerContext {
     private Map<String, Object> data;
 }

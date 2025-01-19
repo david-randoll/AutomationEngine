@@ -1,13 +1,13 @@
 package com.automation.engine;
 
-import com.automation.engine.actions.ActionContext;
-import com.automation.engine.actions.IAction;
-import com.automation.engine.conditions.ICondition;
-import com.automation.engine.engine.Automation;
-import com.automation.engine.engine.AutomationEngine;
-import com.automation.engine.events.TimeEvent;
-import com.automation.engine.triggers.ITrigger;
-import com.automation.engine.triggers.TimeBasedTrigger;
+import com.automation.engine.core.actions.ActionContext;
+import com.automation.engine.core.actions.IAction;
+import com.automation.engine.core.conditions.ICondition;
+import com.automation.engine.core.engine.Automation;
+import com.automation.engine.core.engine.AutomationEngine;
+import com.automation.engine.core.triggers.ITrigger;
+import com.automation.engine.core.triggers.TriggerContext;
+import com.automation.engine.time_based.TimeBasedEvent;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,23 +24,33 @@ import java.util.Map;
 public class AutomationTest {
     private final AutomationEngine engine;
     private final Map<String, IAction> actions;
+    private final Map<String, ICondition> conditions;
+    private final Map<String, ITrigger> triggers;
 
     @PostConstruct
     public void init() {
+        // Trigger
+        ITrigger timeBasedTrigger = triggers.get("timeBasedTrigger");
+        ITrigger timeBasedTriggerWithContext = event -> timeBasedTrigger.isTriggered(event, new TriggerContext(Map.of(
+                "beforeTime", LocalTime.of(0, 0),
+                "afterTime", LocalTime.of(23, 59)
+        )));
+
+        // Action
         IAction loggerAction = actions.get("loggerAction");
-        IAction loggerActionWithMessage = context -> loggerAction.execute(context, new ActionContext(Map.of(
+        IAction loggerActionWithContext = context -> loggerAction.execute(context, new ActionContext(Map.of(
                 "message", "Time based automation triggered"
         )));
 
-        List<ITrigger> triggers = List.of(new TimeBasedTrigger(LocalTime.of(14, 43), LocalTime.of(23, 59)));
+        List<ITrigger> triggers = List.of(timeBasedTriggerWithContext);
         List<ICondition> conditions = List.of();
-        List<IAction> actions = List.of(loggerActionWithMessage);
+        List<IAction> actions = List.of(loggerActionWithContext);
         var automation = new Automation("Time based automation", triggers, conditions, actions);
         engine.addAutomation(automation);
     }
 
     @Scheduled(fixedRate = 1000)
     public void run() {
-        engine.processEvent(new TimeEvent(LocalTime.now()));
+        engine.processEvent(new TimeBasedEvent(LocalTime.now()));
     }
 }
