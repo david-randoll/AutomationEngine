@@ -1,6 +1,7 @@
 package com.automation.engine.core.engine;
 
 import com.automation.engine.core.events.Event;
+import com.automation.engine.core.events.EventContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
@@ -26,7 +27,7 @@ public class AutomationEngine {
     public void processEvent(@NonNull Event event) {
         for (Automation automation : automations) {
             log.debug("Processing automation: {}", automation.getAlias());
-            var context = event.getContext();
+            EventContext context = event.getContext();
             if (automation.isTriggered(event) && automation.areConditionsMet(context)) {
                 log.debug("Automation triggered and conditions met. Executing actions.");
                 automation.executeActions(context);
