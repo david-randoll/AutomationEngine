@@ -1,4 +1,4 @@
-package com.automation.engine.core.triggers;
+package com.automation.engine.engine.triggers;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

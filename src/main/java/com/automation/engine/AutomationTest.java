@@ -1,13 +1,13 @@
 package com.automation.engine;
 
-import com.automation.engine.core.actions.ActionContext;
-import com.automation.engine.core.actions.IAction;
-import com.automation.engine.core.conditions.ICondition;
-import com.automation.engine.core.engine.Automation;
-import com.automation.engine.core.engine.AutomationEngine;
-import com.automation.engine.core.triggers.ITrigger;
-import com.automation.engine.core.triggers.TriggerContext;
-import com.automation.engine.time_based.TimeBasedEvent;
+import com.automation.engine.engine.actions.ActionContext;
+import com.automation.engine.engine.actions.IAction;
+import com.automation.engine.engine.conditions.ICondition;
+import com.automation.engine.engine.Automation;
+import com.automation.engine.engine.AutomationEngine;
+import com.automation.engine.engine.triggers.ITrigger;
+import com.automation.engine.engine.triggers.TriggerContext;
+import com.automation.engine.modules.time_based.TimeBasedEvent;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

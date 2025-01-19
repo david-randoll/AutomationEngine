@@ -1,6 +1,6 @@
-package com.automation.engine.core.actions;
+package com.automation.engine.engine.actions;
 
-import com.automation.engine.core.events.EventContext;
+import com.automation.engine.engine.events.EventContext;
 
 @FunctionalInterface
 public interface IAction {

@@ -1,6 +1,6 @@
-package com.automation.engine.core.triggers;
+package com.automation.engine.engine.triggers;
 
-import com.automation.engine.core.events.Event;
+import com.automation.engine.engine.events.Event;
 
 @FunctionalInterface
 public interface ITrigger {

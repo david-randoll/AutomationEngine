@@ -1,6 +1,6 @@
-package com.automation.engine.time_based;
+package com.automation.engine.modules.time_based;
 
-import com.automation.engine.core.triggers.TriggerContext;
+import com.automation.engine.engine.triggers.TriggerContext;
 import lombok.Data;
 
 import java.time.LocalTime;

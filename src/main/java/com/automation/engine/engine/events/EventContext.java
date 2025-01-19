@@ -1,4 +1,4 @@
-package com.automation.engine.core.conditions;
+package com.automation.engine.engine.events;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,6 +7,6 @@ import java.util.Map;
 
 @Data
 @AllArgsConstructor
-public class ConditionContext {
+public class EventContext {
     private Map<String, Object> data;
 }

@@ -1,6 +1,6 @@
-package com.automation.engine.time_based;
+package com.automation.engine.modules.time_based;
 
-import com.automation.engine.core.events.Event;
+import com.automation.engine.engine.events.Event;
 import org.springframework.lang.NonNull;
 
 import java.time.LocalTime;

@@ -1,7 +1,7 @@
-package com.automation.engine.core.engine;
+package com.automation.engine.engine;
 
-import com.automation.engine.core.events.Event;
-import com.automation.engine.core.events.EventContext;
+import com.automation.engine.engine.events.Event;
+import com.automation.engine.engine.events.EventContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;

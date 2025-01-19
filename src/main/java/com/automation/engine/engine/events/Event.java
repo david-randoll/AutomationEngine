@@ -1,4 +1,4 @@
-package com.automation.engine.core.events;
+package com.automation.engine.engine.events;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
