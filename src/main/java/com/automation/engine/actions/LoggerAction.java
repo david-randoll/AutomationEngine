@@ -3,14 +3,21 @@ package com.automation.engine.actions;
 import com.automation.engine.events.EventContext;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
 @Slf4j
 @Data
+@Component("loggerAction")
 public class LoggerAction implements IAction {
-    private final String message;
 
     @Override
     public void execute(EventContext context) {
+        log.info("Executing LoggerAction");
+    }
+
+    @Override
+    public void execute(EventContext context, ActionContext actionContext) {
+        var message = actionContext.getData() == null ? "No message" : actionContext.getData().get("message");
         log.info("Executing LoggerAction with message: {}", message);
     }
 }
