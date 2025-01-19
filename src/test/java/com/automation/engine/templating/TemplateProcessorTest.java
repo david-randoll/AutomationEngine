@@ -147,8 +147,17 @@ class TemplateProcessorTest {
                                 new User("Bob", 30, 0.0)
                         )),
                         "Alice - Balance: 150.75 Bob - No Balance "
-                )
+                ),
 
+                //for loop within for
+                Arguments.of(
+                        "Items: {% for order in orders %}Order ID: {{ order.id }} - {% for item in order.items %}{{ item.name }}: {{ (item.price * item.quantity) | number_format(2) }} {% endfor %}{% endfor %}",
+                        Map.of("orders", List.of(
+                                new Order(1, List.of(new Item("Apple", 2.5, 4), new Item("Banana", 1.2, 3))),
+                                new Order(2, List.of(new Item("Orange", 3.0, 2), new Item("Grape", 1.5, 5)))
+                        )),
+                        "Items: Order ID: 1 - Apple: 10.00 Banana: 3.60 Order ID: 2 - Orange: 6.00 Grape: 7.50 "
+                )
         );
     }
 
@@ -166,5 +175,12 @@ class TemplateProcessorTest {
         private String name;
         private double price;
         private int quantity;
+    }
+
+    @Data
+    @AllArgsConstructor
+    static class Order {
+        private int id;
+        private List<Item> items;
     }
 }
