@@ -1,7 +1,7 @@
 package com.automation.engine.engine.actions.interceptors;
 
-import com.automation.engine.engine.actions.AbstractAction;
 import com.automation.engine.engine.actions.ActionContext;
+import com.automation.engine.engine.actions.ActionExecutor;
 import com.automation.engine.engine.actions.IAction;
 import com.automation.engine.engine.events.EventContext;
 import org.springframework.core.OrderComparator;
@@ -9,7 +9,7 @@ import org.springframework.util.ObjectUtils;
 
 import java.util.List;
 
-public class InterceptingAction extends AbstractAction {
+public class InterceptingAction implements ActionExecutor {
     private final IAction delegate;
     private final List<IActionInterceptor> interceptors;
 
@@ -28,7 +28,7 @@ public class InterceptingAction extends AbstractAction {
     private void executeInterceptors(int index, EventContext context, ActionContext actionContext) {
         if (index < interceptors.size()) {
             IActionInterceptor interceptor = interceptors.get(index);
-            IAction action = ec -> this.executeInterceptors(index + 1, context, actionContext);
+            ActionExecutor action = (ec, ac) -> this.executeInterceptors(index + 1, ec, ac);
             interceptor.intercept(context, actionContext, action);
         } else {
             // All interceptors have been processed, execute the delegate
