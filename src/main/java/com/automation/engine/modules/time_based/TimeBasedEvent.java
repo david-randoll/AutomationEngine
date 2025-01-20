@@ -10,8 +10,8 @@ public class TimeBasedEvent extends Event {
     public static final String EVENT_NAME = "TimeEvent";
     private static final String FIELD_NAME = "time";
 
-    public TimeBasedEvent(@NonNull LocalTime dateTime) {
-        super(EVENT_NAME, Map.of(FIELD_NAME, dateTime));
+    public TimeBasedEvent(@NonNull LocalTime time) {
+        super(EVENT_NAME, Map.of(FIELD_NAME, time));
     }
 
     @NonNull
