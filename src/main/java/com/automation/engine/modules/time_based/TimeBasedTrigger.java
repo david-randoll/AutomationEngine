@@ -1,18 +1,14 @@
 package com.automation.engine.modules.time_based;
 
 import com.automation.engine.engine.events.Event;
-import com.automation.engine.engine.triggers.ITrigger;
+import com.automation.engine.engine.triggers.AbstractTrigger;
 import com.automation.engine.engine.triggers.TriggerContext;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalTime;
 
 @Component("timeBasedTrigger")
-public class TimeBasedTrigger implements ITrigger {
-    @Override
-    public boolean isTriggered(Event event) {
-        return false;
-    }
+public class TimeBasedTrigger extends AbstractTrigger {
 
     @Override
     public boolean isTriggered(Event event, TriggerContext triggerContext) {

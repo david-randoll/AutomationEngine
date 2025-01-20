@@ -1,12 +1,13 @@
 package com.automation.engine.modules.datetime;
 
 import com.automation.engine.engine.events.Event;
-import com.automation.engine.engine.triggers.ITrigger;
+import com.automation.engine.engine.triggers.AbstractTrigger;
+import com.automation.engine.engine.triggers.TriggerContext;
 import org.springframework.lang.Nullable;
 
 import java.time.LocalDateTime;
 
-public class DateTimeTrigger implements ITrigger {
+public class DateTimeTrigger extends AbstractTrigger {
     private final LocalDateTime beforeTime;
     private final LocalDateTime afterTime;
 
@@ -16,7 +17,7 @@ public class DateTimeTrigger implements ITrigger {
     }
 
     @Override
-    public boolean isTriggered(Event event) {
+    public boolean isTriggered(Event event, TriggerContext triggerContext) {
         if (event instanceof DateTimeEvent dateTimeEvent) {
             LocalDateTime eventTime = dateTimeEvent.getDateTime();
             if (eventTime == null) return false;

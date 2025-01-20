@@ -1,21 +1,14 @@
 package com.automation.engine.modules.logger;
 
+import com.automation.engine.engine.actions.AbstractAction;
 import com.automation.engine.engine.actions.ActionContext;
-import com.automation.engine.engine.actions.IAction;
 import com.automation.engine.engine.events.EventContext;
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 @Slf4j
-@Data
 @Component("loggerAction")
-public class LoggerAction implements IAction {
-
-    @Override
-    public void execute(EventContext context) {
-        log.info("Executing LoggerAction");
-    }
+public class LoggerAction extends AbstractAction {
 
     @Override
     public void execute(EventContext context, ActionContext actionContext) {

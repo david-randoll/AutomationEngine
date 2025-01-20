@@ -1,12 +1,13 @@
 package com.automation.engine.modules.time_based;
 
 import com.automation.engine.engine.events.Event;
-import com.automation.engine.engine.triggers.ITrigger;
+import com.automation.engine.engine.triggers.AbstractTrigger;
+import com.automation.engine.engine.triggers.TriggerContext;
 import org.springframework.lang.Nullable;
 
 import java.time.LocalTime;
 
-public class TimeBasedPOJOTrigger implements ITrigger {
+public class TimeBasedPOJOTrigger extends AbstractTrigger {
     private final LocalTime beforeTime;
     private final LocalTime afterTime;
 
@@ -16,7 +17,7 @@ public class TimeBasedPOJOTrigger implements ITrigger {
     }
 
     @Override
-    public boolean isTriggered(Event event) {
+    public boolean isTriggered(Event event, TriggerContext triggerContext) {
         var result = false;
         if (event instanceof TimeBasedEvent timeBasedEvent) {
             LocalTime eventTime = timeBasedEvent.getTime();
