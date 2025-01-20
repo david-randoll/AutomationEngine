@@ -13,6 +13,6 @@ public class LoggerAction implements IAction {
     @Override
     public void execute(EventContext context, ActionContext actionContext) {
         var message = actionContext.getData() == null ? "No message" : actionContext.getData().get("message");
-        log.info("Executing LoggerAction with message: {}", message);
+        log.info("{}", message);
     }
 }

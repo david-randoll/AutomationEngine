@@ -57,7 +57,7 @@ public class AutomationTest {
         var interceptingAction = new InterceptingAction(loggerAction, actionInterceptors);
 
         return context -> interceptingAction.execute(context, new ActionContext(Map.of(
-                "message", "Time based automation triggered"
+                "message", "Time based automation triggered at {{ time | time_format(pattern='hh:mm a') }}"
         )));
     }
 
