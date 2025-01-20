@@ -6,8 +6,8 @@ import com.automation.engine.engine.actions.ActionContext;
 import com.automation.engine.engine.actions.IBaseAction;
 import com.automation.engine.engine.actions.interceptors.IActionInterceptor;
 import com.automation.engine.engine.actions.interceptors.InterceptingAction;
-import com.automation.engine.engine.conditions.ICondition;
-import com.automation.engine.engine.triggers.ITrigger;
+import com.automation.engine.engine.conditions.IBaseCondition;
+import com.automation.engine.engine.triggers.IBaseTrigger;
 import com.automation.engine.engine.triggers.TriggerContext;
 import com.automation.engine.modules.time_based.TimeBasedEvent;
 import jakarta.annotation.PostConstruct;
@@ -26,16 +26,16 @@ import java.util.Map;
 public class AutomationTest {
     private final AutomationEngine engine;
     private final Map<String, IBaseAction> actions;
-    private final Map<String, ICondition> conditions;
-    private final Map<String, ITrigger> triggers;
+    private final Map<String, IBaseCondition> conditions;
+    private final Map<String, IBaseTrigger> triggers;
 
     private List<IActionInterceptor> actionInterceptors;
 
     @PostConstruct
     public void init() {
         // Trigger
-        ITrigger timeBasedTrigger = triggers.get("timeBasedTrigger");
-        ITrigger timeBasedTriggerWithContext = event -> timeBasedTrigger.isTriggered(event, new TriggerContext(Map.of(
+        IBaseTrigger timeBasedTrigger = triggers.get("timeBasedTrigger");
+        IBaseTrigger timeBasedTriggerWithContext = event -> timeBasedTrigger.isTriggered(event, new TriggerContext(Map.of(
                 "beforeTime", LocalTime.of(0, 0),
                 "afterTime", LocalTime.of(23, 59)
         )));
@@ -43,8 +43,8 @@ public class AutomationTest {
         // Action
         var interceptingAction = getInterceptingAction();
 
-        List<ITrigger> triggers = List.of(timeBasedTriggerWithContext);
-        List<ICondition> conditions = List.of();
+        List<IBaseTrigger> triggers = List.of(timeBasedTriggerWithContext);
+        List<IBaseCondition> conditions = List.of();
         List<IBaseAction> actions = List.of(interceptingAction);
         var automation = new Automation("Time based automation", triggers, conditions, actions);
         engine.addAutomation(automation);

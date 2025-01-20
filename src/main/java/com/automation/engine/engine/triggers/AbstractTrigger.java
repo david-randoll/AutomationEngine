@@ -2,7 +2,7 @@ package com.automation.engine.engine.triggers;
 
 import com.automation.engine.engine.events.Event;
 
-public abstract class AbstractTrigger implements ITrigger {
+public abstract class AbstractTrigger implements IBaseTrigger {
     @Override
     public boolean isTriggered(Event event) {
         return false;

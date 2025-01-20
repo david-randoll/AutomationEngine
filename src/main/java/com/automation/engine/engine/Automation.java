@@ -1,10 +1,10 @@
 package com.automation.engine.engine;
 
 import com.automation.engine.engine.actions.IBaseAction;
-import com.automation.engine.engine.conditions.ICondition;
+import com.automation.engine.engine.conditions.IBaseCondition;
 import com.automation.engine.engine.events.Event;
 import com.automation.engine.engine.events.EventContext;
-import com.automation.engine.engine.triggers.ITrigger;
+import com.automation.engine.engine.triggers.IBaseTrigger;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -17,8 +17,8 @@ import java.util.List;
 @AllArgsConstructor
 public class Automation {
     private final String alias;
-    private final List<ITrigger> triggers;
-    private final List<ICondition> conditions;
+    private final List<IBaseTrigger> triggers;
+    private final List<IBaseCondition> conditions;
     private final List<IBaseAction> actions;
 
     /**
