@@ -1,10 +1,15 @@
 package com.automation.engine.templating;
 
+import com.automation.engine.AutomationEngineApplication;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.List;
 import java.util.Map;
@@ -12,9 +17,11 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK, classes = AutomationEngineApplication.class)
+@ExtendWith(SpringExtension.class)
 class TemplateProcessorTest {
-
-    private final TemplateProcessor templateProcessor = new TemplateProcessor();
+    @Autowired
+    private TemplateProcessor templateProcessor;
 
     @ParameterizedTest
     @MethodSource("provideTemplatesAndData")

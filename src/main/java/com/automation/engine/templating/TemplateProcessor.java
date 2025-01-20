@@ -2,26 +2,17 @@ package com.automation.engine.templating;
 
 
 import io.pebbletemplates.pebble.PebbleEngine;
-import io.pebbletemplates.pebble.error.PebbleException;
-import io.pebbletemplates.pebble.extension.AbstractExtension;
-import io.pebbletemplates.pebble.extension.Filter;
-import io.pebbletemplates.pebble.template.EvaluationContext;
 import io.pebbletemplates.pebble.template.PebbleTemplate;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 import java.io.StringWriter;
-import java.text.DecimalFormat;
-import java.util.List;
 import java.util.Map;
 
+@Service
+@RequiredArgsConstructor
 public class TemplateProcessor {
-
     private final PebbleEngine pebbleEngine;
-
-    public TemplateProcessor() {
-        this.pebbleEngine = new PebbleEngine.Builder()
-                .extension(new CustomExtension())
-                .build();
-    }
 
     /**
      * Processes a template string with the provided variables.
@@ -40,4 +31,3 @@ public class TemplateProcessor {
         }
     }
 }
-
