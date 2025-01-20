@@ -3,7 +3,7 @@ package com.automation.engine;
 import com.automation.engine.engine.Automation;
 import com.automation.engine.engine.AutomationEngine;
 import com.automation.engine.engine.actions.ActionContext;
-import com.automation.engine.engine.actions.IAction;
+import com.automation.engine.engine.actions.IBaseAction;
 import com.automation.engine.engine.actions.interceptors.IActionInterceptor;
 import com.automation.engine.engine.actions.interceptors.InterceptingAction;
 import com.automation.engine.engine.conditions.ICondition;
@@ -25,7 +25,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class AutomationTest {
     private final AutomationEngine engine;
-    private final Map<String, IAction> actions;
+    private final Map<String, IBaseAction> actions;
     private final Map<String, ICondition> conditions;
     private final Map<String, ITrigger> triggers;
 
@@ -45,13 +45,13 @@ public class AutomationTest {
 
         List<ITrigger> triggers = List.of(timeBasedTriggerWithContext);
         List<ICondition> conditions = List.of();
-        List<IAction> actions = List.of(interceptingAction);
+        List<IBaseAction> actions = List.of(interceptingAction);
         var automation = new Automation("Time based automation", triggers, conditions, actions);
         engine.addAutomation(automation);
     }
 
-    private IAction getInterceptingAction() {
-        IAction loggerAction = actions.get("loggerAction");
+    private IBaseAction getInterceptingAction() {
+        IBaseAction loggerAction = actions.get("loggerAction");
         var interceptingAction = new InterceptingAction(loggerAction, actionInterceptors);
 
         return context -> interceptingAction.execute(context, new ActionContext(Map.of(

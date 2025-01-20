@@ -1,6 +1,6 @@
 package com.automation.engine.engine;
 
-import com.automation.engine.engine.actions.IAction;
+import com.automation.engine.engine.actions.IBaseAction;
 import com.automation.engine.engine.conditions.ICondition;
 import com.automation.engine.engine.events.Event;
 import com.automation.engine.engine.events.EventContext;
@@ -19,7 +19,7 @@ public class Automation {
     private final String alias;
     private final List<ITrigger> triggers;
     private final List<ICondition> conditions;
-    private final List<IAction> actions;
+    private final List<IBaseAction> actions;
 
     /**
      * Check if any of the triggers are triggered
