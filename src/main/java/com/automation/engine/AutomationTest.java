@@ -4,6 +4,8 @@ import com.automation.engine.engine.Automation;
 import com.automation.engine.engine.AutomationEngine;
 import com.automation.engine.engine.actions.ActionContext;
 import com.automation.engine.engine.actions.IAction;
+import com.automation.engine.engine.actions.interceptors.IActionInterceptor;
+import com.automation.engine.engine.actions.interceptors.InterceptingAction;
 import com.automation.engine.engine.conditions.ICondition;
 import com.automation.engine.engine.triggers.ITrigger;
 import com.automation.engine.engine.triggers.TriggerContext;
@@ -27,6 +29,8 @@ public class AutomationTest {
     private final Map<String, ICondition> conditions;
     private final Map<String, ITrigger> triggers;
 
+    private List<IActionInterceptor> actionInterceptors;
+
     @PostConstruct
     public void init() {
         // Trigger
@@ -37,16 +41,22 @@ public class AutomationTest {
         )));
 
         // Action
-        IAction loggerAction = actions.get("loggerAction");
-        IAction loggerActionWithContext = context -> loggerAction.execute(context, new ActionContext(Map.of(
-                "message", "Time based automation triggered"
-        )));
+        var interceptingAction = getInterceptingAction();
 
         List<ITrigger> triggers = List.of(timeBasedTriggerWithContext);
         List<ICondition> conditions = List.of();
-        List<IAction> actions = List.of(loggerActionWithContext);
+        List<IAction> actions = List.of(interceptingAction);
         var automation = new Automation("Time based automation", triggers, conditions, actions);
         engine.addAutomation(automation);
+    }
+
+    private IAction getInterceptingAction() {
+        IAction loggerAction = actions.get("loggerAction");
+        var interceptingAction = new InterceptingAction(loggerAction, actionInterceptors);
+
+        return context -> interceptingAction.execute(context, new ActionContext(Map.of(
+                "message", "Time based automation triggered"
+        )));
     }
 
     @Scheduled(fixedRate = 1000)
