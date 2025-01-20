@@ -1,13 +1,13 @@
 package com.automation.engine.modules.datetime;
 
 import com.automation.engine.engine.events.Event;
-import com.automation.engine.engine.triggers.AbstractTrigger;
+import com.automation.engine.engine.triggers.ITrigger;
 import com.automation.engine.engine.triggers.TriggerContext;
 import org.springframework.lang.Nullable;
 
 import java.time.LocalDateTime;
 
-public class DateTimeTrigger extends AbstractTrigger {
+public class DateTimeTrigger implements ITrigger {
     private final LocalDateTime beforeTime;
     private final LocalDateTime afterTime;
 

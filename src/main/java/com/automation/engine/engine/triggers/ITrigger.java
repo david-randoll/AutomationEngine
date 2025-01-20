@@ -3,10 +3,11 @@ package com.automation.engine.engine.triggers;
 import com.automation.engine.engine.events.Event;
 
 @FunctionalInterface
-public interface ITrigger {
-    boolean isTriggered(Event event);
-
-    default boolean isTriggered(Event event, TriggerContext triggerContext) {
-        return isTriggered(event);
+public interface ITrigger extends IBaseTrigger {
+    @Override
+    default boolean isTriggered(Event event) {
+        return false;
     }
+
+    boolean isTriggered(Event event, TriggerContext triggerContext);
 }

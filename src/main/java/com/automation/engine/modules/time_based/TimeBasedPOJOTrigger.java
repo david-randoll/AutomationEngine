@@ -1,13 +1,13 @@
 package com.automation.engine.modules.time_based;
 
 import com.automation.engine.engine.events.Event;
-import com.automation.engine.engine.triggers.AbstractTrigger;
+import com.automation.engine.engine.triggers.ITrigger;
 import com.automation.engine.engine.triggers.TriggerContext;
 import org.springframework.lang.Nullable;
 
 import java.time.LocalTime;
 
-public class TimeBasedPOJOTrigger extends AbstractTrigger {
+public class TimeBasedPOJOTrigger implements ITrigger {
     private final LocalTime beforeTime;
     private final LocalTime afterTime;
 
