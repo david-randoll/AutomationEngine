@@ -9,6 +9,8 @@ import com.automation.engine.engine.actions.interceptors.InterceptingAction;
 import com.automation.engine.engine.conditions.IBaseCondition;
 import com.automation.engine.engine.triggers.IBaseTrigger;
 import com.automation.engine.engine.triggers.TriggerContext;
+import com.automation.engine.engine.triggers.interceptors.ITriggerInterceptor;
+import com.automation.engine.engine.triggers.interceptors.InterceptingTrigger;
 import com.automation.engine.modules.time_based.TimeBasedEvent;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -30,27 +32,27 @@ public class AutomationTest {
     private final Map<String, IBaseTrigger> triggers;
 
     private List<IActionInterceptor> actionInterceptors;
+    private List<ITriggerInterceptor> triggerInterceptors;
 
     @PostConstruct
     public void init() {
-        // Trigger
-        IBaseTrigger timeBasedTrigger = triggers.get("timeBasedTrigger");
-        IBaseTrigger timeBasedTriggerWithContext = event -> timeBasedTrigger.isTriggered(event, new TriggerContext(Map.of(
-                "beforeTime", LocalTime.of(0, 0),
-                "afterTime", LocalTime.of(23, 59)
-        )));
-
-        // Action
-        var interceptingAction = getInterceptingAction();
-
-        List<IBaseTrigger> triggers = List.of(timeBasedTriggerWithContext);
+        List<IBaseTrigger> triggers = List.of(getTrigger());
         List<IBaseCondition> conditions = List.of();
-        List<IBaseAction> actions = List.of(interceptingAction);
+        List<IBaseAction> actions = List.of(getAction());
         var automation = new Automation("Time based automation", triggers, conditions, actions);
         engine.addAutomation(automation);
     }
 
-    private IBaseAction getInterceptingAction() {
+    private IBaseTrigger getTrigger() {
+        IBaseTrigger timeBasedTrigger = triggers.get("timeBasedTrigger");
+        var interceptingTrigger = new InterceptingTrigger(timeBasedTrigger, triggerInterceptors);
+        return event -> interceptingTrigger.isTriggered(event, new TriggerContext(Map.of(
+                "beforeTime", LocalTime.of(0, 0),
+                "afterTime", LocalTime.of(23, 59)
+        )));
+    }
+
+    private IBaseAction getAction() {
         IBaseAction loggerAction = actions.get("loggerAction");
         var interceptingAction = new InterceptingAction(loggerAction, actionInterceptors);
 
