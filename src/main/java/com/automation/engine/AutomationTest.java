@@ -31,8 +31,8 @@ public class AutomationTest {
     private final Map<String, IBaseCondition> conditions;
     private final Map<String, IBaseTrigger> triggers;
 
-    private List<IActionInterceptor> actionInterceptors;
-    private List<ITriggerInterceptor> triggerInterceptors;
+    private final List<IActionInterceptor> actionInterceptors;
+    private final List<ITriggerInterceptor> triggerInterceptors;
 
     @PostConstruct
     public void init() {
