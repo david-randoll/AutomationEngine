@@ -11,5 +11,4 @@ public class AutomationEngineApplication {
     public static void main(String[] args) {
         SpringApplication.run(AutomationEngineApplication.class, args);
     }
-
 }

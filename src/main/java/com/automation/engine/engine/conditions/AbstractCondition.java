@@ -1,11 +1,11 @@
-package com.automation.engine.engine.actions;
+package com.automation.engine.engine.conditions;
 
 import com.automation.engine.engine.events.EventContext;
 import com.automation.engine.engine.utils.GenericTypeResolver;
 import com.automation.engine.engine.utils.TypeConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public abstract class AbstractAction<T> implements IAction {
+public abstract class AbstractCondition<T> implements ICondition {
     @Autowired
     private TypeConverter typeConverter;
 
@@ -14,14 +14,14 @@ public abstract class AbstractAction<T> implements IAction {
     }
 
     @Override
-    public void execute(EventContext eventContext, ActionContext actionContext) {
+    public boolean isMet(EventContext eventContext, ConditionContext conditionContext) {
         try {
-            T data = typeConverter.convert(actionContext.getData(), getContextType());
-            execute(eventContext, data);
+            T data = typeConverter.convert(eventContext.getData(), getContextType());
+            return isMet(eventContext, data);
         } catch (Exception e) {
-            throw new RuntimeException("Failed to execute action", e);
+            throw new RuntimeException("Failed to execute condition", e);
         }
     }
 
-    public abstract void execute(EventContext eventContext, T actionContext);
+    public abstract boolean isMet(EventContext context, T conditionContext);
 }
