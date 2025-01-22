@@ -13,10 +13,6 @@ public class TypeConverter {
         this.objectMapper = objectMapper;
     }
 
-    public TypeConverter() {
-        this.objectMapper = new ObjectMapper();
-    }
-
     @SneakyThrows
     public <T> T convert(Object object, Class<?> clazz) {
         var dataStr = objectMapper.writeValueAsString(object);
