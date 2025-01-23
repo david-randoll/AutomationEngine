@@ -4,11 +4,14 @@ import com.automation.engine.engine.events.Event;
 import com.automation.engine.engine.utils.GenericTypeResolver;
 import com.automation.engine.engine.utils.TypeConverter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
 
 public abstract class AbstractTrigger<T> implements ITrigger {
     @Autowired
     private TypeConverter typeConverter;
 
+    @Override
+    @NonNull
     public Class<?> getContextType() {
         return GenericTypeResolver.getGenericParameterClass(getClass());
     }
