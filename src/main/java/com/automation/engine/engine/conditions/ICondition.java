@@ -9,5 +9,6 @@ public interface ICondition extends IBaseCondition {
         return false;
     }
 
+    @Override
     boolean isMet(EventContext context, ConditionContext conditionContext);
 }

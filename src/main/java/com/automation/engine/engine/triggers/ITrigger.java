@@ -9,5 +9,6 @@ public interface ITrigger extends IBaseTrigger {
         return false;
     }
 
+    @Override
     boolean isTriggered(Event event, TriggerContext triggerContext);
 }
