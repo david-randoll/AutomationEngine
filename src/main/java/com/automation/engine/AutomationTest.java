@@ -1,16 +1,16 @@
 package com.automation.engine;
 
-import com.automation.engine.engine.Automation;
-import com.automation.engine.engine.AutomationEngine;
-import com.automation.engine.engine.actions.ActionContext;
-import com.automation.engine.engine.actions.IBaseAction;
-import com.automation.engine.engine.actions.interceptors.IActionInterceptor;
-import com.automation.engine.engine.actions.interceptors.InterceptingAction;
-import com.automation.engine.engine.conditions.IBaseCondition;
-import com.automation.engine.engine.triggers.IBaseTrigger;
-import com.automation.engine.engine.triggers.TriggerContext;
-import com.automation.engine.engine.triggers.interceptors.ITriggerInterceptor;
-import com.automation.engine.engine.triggers.interceptors.InterceptingTrigger;
+import com.automation.engine.engine.core.Automation;
+import com.automation.engine.engine.core.AutomationEngine;
+import com.automation.engine.engine.core.actions.ActionContext;
+import com.automation.engine.engine.core.actions.IBaseAction;
+import com.automation.engine.engine.core.actions.interceptors.IActionInterceptor;
+import com.automation.engine.engine.core.actions.interceptors.InterceptingAction;
+import com.automation.engine.engine.core.conditions.IBaseCondition;
+import com.automation.engine.engine.core.triggers.IBaseTrigger;
+import com.automation.engine.engine.core.triggers.TriggerContext;
+import com.automation.engine.engine.core.triggers.interceptors.ITriggerInterceptor;
+import com.automation.engine.engine.core.triggers.interceptors.InterceptingTrigger;
 import com.automation.engine.modules.time_based.TimeBasedEvent;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;

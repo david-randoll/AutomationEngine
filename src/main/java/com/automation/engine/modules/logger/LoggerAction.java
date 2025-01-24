@@ -1,7 +1,7 @@
 package com.automation.engine.modules.logger;
 
-import com.automation.engine.engine.actions.AbstractAction;
-import com.automation.engine.engine.events.EventContext;
+import com.automation.engine.engine.core.actions.AbstractAction;
+import com.automation.engine.engine.core.events.EventContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
