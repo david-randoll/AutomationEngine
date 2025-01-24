@@ -2,6 +2,7 @@ package com.automation.engine.engine.factory.resolver;
 
 import com.automation.engine.engine.core.Automation;
 import com.automation.engine.engine.factory.CreateAutomation;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,10 +15,14 @@ import org.springframework.stereotype.Service;
 public class YamlAutomationResolver {
     private final ManualAutomationResolver manualAutomationResolver;
 
-    public Automation createAutomation(Object yaml) {
+    public Automation createAutomation(String yaml) {
         var mapper = getYamlObjectMapper();
-        CreateAutomation createAutomation = mapper.convertValue(yaml, CreateAutomation.class);
-        return manualAutomationResolver.createAutomation(createAutomation);
+        try {
+            CreateAutomation createAutomation = mapper.readValue(yaml, CreateAutomation.class);
+            return manualAutomationResolver.createAutomation(createAutomation);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public ObjectMapper getYamlObjectMapper() {

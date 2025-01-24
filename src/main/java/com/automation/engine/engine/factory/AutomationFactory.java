@@ -20,11 +20,11 @@ public class AutomationFactory {
         return manualAutomationResolver.createAutomation(createAutomation);
     }
 
-    public Automation createAutomationFromYaml(Object yaml) {
+    public Automation createAutomationFromYaml(String yaml) {
         return yamlAutomationResolver.createAutomation(yaml);
     }
 
-    public Automation createAutomationFromJson(Object json) {
+    public Automation createAutomationFromJson(String json) {
         return jsonAutomationResolver.createAutomation(json);
     }
 }
