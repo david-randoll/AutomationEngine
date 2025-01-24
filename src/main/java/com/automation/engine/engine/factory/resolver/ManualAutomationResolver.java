@@ -23,6 +23,7 @@ import com.automation.engine.engine.factory.exceptions.TriggerNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,6 +56,8 @@ public class ManualAutomationResolver {
     private List<IBaseTrigger> createTriggers(List<CreateAutomation.Trigger> triggers) {
         var result = new ArrayList<IBaseTrigger>();
 
+        if (ObjectUtils.isEmpty(triggers)) return result;
+
         for (var trigger : triggers) {
             ITrigger triggerInstance = Optional.ofNullable(triggersMap.get(trigger.getTrigger()))
                     .orElseThrow(() -> new TriggerNotFoundException(trigger.getTrigger()));
@@ -73,6 +76,8 @@ public class ManualAutomationResolver {
     private List<IBaseCondition> createConditions(List<CreateAutomation.Condition> conditions) {
         var result = new ArrayList<IBaseCondition>();
 
+        if (ObjectUtils.isEmpty(conditions)) return result;
+
         for (var condition : conditions) {
             ICondition conditionInstance = Optional.ofNullable(conditionsMap.get(condition.getCondition()))
                     .orElseThrow(() -> new ConditionNotFoundException(condition.getCondition()));
@@ -90,6 +95,8 @@ public class ManualAutomationResolver {
 
     private List<IBaseAction> createActions(List<CreateAutomation.Action> actions) {
         var result = new ArrayList<IBaseAction>();
+
+        if (ObjectUtils.isEmpty(actions)) return result;
 
         for (var action : actions) {
             IAction actionInstance = Optional.ofNullable(actionsMap.get(action.getAction()))
