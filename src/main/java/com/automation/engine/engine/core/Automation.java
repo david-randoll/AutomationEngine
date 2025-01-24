@@ -40,7 +40,7 @@ public class Automation {
     public boolean areConditionsMet(EventContext context) {
         if (ObjectUtils.isEmpty(conditions)) return true;
         return conditions.stream()
-                .allMatch(condition -> condition.isMet(context));
+                .allMatch(condition -> condition.isSatisfied(context));
     }
 
     /**

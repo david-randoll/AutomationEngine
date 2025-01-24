@@ -4,9 +4,9 @@ import com.automation.engine.engine.core.events.EventContext;
 
 @FunctionalInterface
 public interface IBaseCondition {
-    boolean isMet(EventContext context);
+    boolean isSatisfied(EventContext context);
 
-    default boolean isMet(EventContext context, ConditionContext conditionContext) {
-        return isMet(context);
+    default boolean isSatisfied(EventContext context, ConditionContext conditionContext) {
+        return isSatisfied(context);
     }
 }

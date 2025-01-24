@@ -17,7 +17,7 @@ public abstract class AbstractCondition<T> implements ICondition {
     }
 
     @Override
-    public boolean isMet(EventContext eventContext, ConditionContext conditionContext) {
+    public boolean isSatisfied(EventContext eventContext, ConditionContext conditionContext) {
         try {
             T data = typeConverter.convert(eventContext.getData(), getContextType());
             return isMet(eventContext, data);

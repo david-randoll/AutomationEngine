@@ -6,7 +6,7 @@ import org.springframework.lang.Nullable;
 @FunctionalInterface
 public interface ICondition extends IBaseCondition {
     @Override
-    default boolean isMet(EventContext context) {
+    default boolean isSatisfied(EventContext context) {
         return false;
     }
 
@@ -16,5 +16,5 @@ public interface ICondition extends IBaseCondition {
     }
 
     @Override
-    boolean isMet(EventContext context, ConditionContext conditionContext);
+    boolean isSatisfied(EventContext context, ConditionContext conditionContext);
 }

@@ -21,7 +21,7 @@ public class InterceptingCondition implements ICondition {
     }
 
     @Override
-    public boolean isMet(EventContext context, ConditionContext conditionContext) {
+    public boolean isSatisfied(EventContext context, ConditionContext conditionContext) {
         return executeInterceptors(0, context, conditionContext);
     }
 
@@ -33,7 +33,7 @@ public class InterceptingCondition implements ICondition {
             return true; // doesn't matter what the interceptor returns, the delegate will return the final result
         } else {
             // All interceptors have been processed, execute the delegate
-            return delegate.isMet(context, conditionContext);
+            return delegate.isSatisfied(context, conditionContext);
         }
     }
 }
