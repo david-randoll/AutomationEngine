@@ -1,4 +1,4 @@
-package com.automation.engine;
+package com.automation.engine.example;
 
 import com.automation.engine.core.Automation;
 import com.automation.engine.core.AutomationEngine;

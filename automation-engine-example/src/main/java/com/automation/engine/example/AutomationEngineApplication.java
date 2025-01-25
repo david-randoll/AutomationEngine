@@ -1,4 +1,4 @@
-package com.automation.engine;
+package com.automation.engine.example;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

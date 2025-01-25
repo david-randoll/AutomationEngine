@@ -1,6 +1,5 @@
 package com.automation.engine.templating;
 
-import com.automation.engine.AutomationEngineApplication;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.junit.jupiter.api.extension.ExtendWith;
