@@ -1,7 +1,7 @@
 package com.automation.engine;
 
-import com.automation.engine.engine.core.AutomationEngine;
-import com.automation.engine.engine.factory.AutomationFactory;
+import com.automation.engine.core.AutomationEngine;
+import com.automation.engine.factory.AutomationFactory;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

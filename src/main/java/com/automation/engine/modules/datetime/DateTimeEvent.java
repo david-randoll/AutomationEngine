@@ -1,6 +1,6 @@
 package com.automation.engine.modules.datetime;
 
-import com.automation.engine.engine.core.events.Event;
+import com.automation.engine.core.events.Event;
 
 import java.time.LocalDateTime;
 import java.util.Map;

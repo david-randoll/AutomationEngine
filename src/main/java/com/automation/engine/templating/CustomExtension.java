@@ -7,6 +7,7 @@ import io.pebbletemplates.pebble.extension.Filter;
 
 import java.util.Map;
 
+
 public class CustomExtension extends AbstractExtension {
     @Override
     public Map<String, Filter> getFilters() {

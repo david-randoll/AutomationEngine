@@ -1,7 +1,7 @@
 package com.automation.engine.modules.time_based;
 
-import com.automation.engine.engine.core.events.Event;
-import com.automation.engine.engine.core.triggers.AbstractTrigger;
+import com.automation.engine.core.events.Event;
+import com.automation.engine.core.triggers.AbstractTrigger;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalTime;
