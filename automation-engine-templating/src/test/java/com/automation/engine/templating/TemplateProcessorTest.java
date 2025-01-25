@@ -2,6 +2,7 @@ package com.automation.engine.templating;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -14,8 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK, classes = AutomationEngineApplication.class)
 @ExtendWith(SpringExtension.class)
 class TemplateProcessorTest {
@@ -26,7 +25,7 @@ class TemplateProcessorTest {
     @MethodSource("provideTemplatesAndData")
     void testProcessTemplate(String template, Map<String, Object> data, String expectedOutput) throws Exception {
         String result = templateProcessor.process(template, data);
-        assertEquals(expectedOutput, result);
+        Assertions.assertEquals(expectedOutput, result);
     }
 
     static Stream<Arguments> provideTemplatesAndData() {

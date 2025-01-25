@@ -1,9 +1,9 @@
-package com.automation.engine.core.actions.interceptors;
+package com.automation.engine.templating;
 
 import com.automation.engine.core.actions.ActionContext;
 import com.automation.engine.core.actions.IAction;
+import com.automation.engine.core.actions.interceptors.IActionInterceptor;
 import com.automation.engine.core.events.EventContext;
-import com.automation.engine.templating.TemplateProcessor;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -36,12 +36,14 @@ public class ActionTemplatingInterceptor implements IActionInterceptor {
     @Override
     public void intercept(EventContext context, ActionContext actionContext, IAction action) {
         try {
+            log.debug("ActionTemplatingInterceptor: Processing action data: {}", actionContext.getData());
             var actionDataAsJson = objectMapper.writeValueAsString(actionContext.getData());
             var processedTemplate = templateProcessor.process(actionDataAsJson, context.getData());
             // convert the result back to a map
             Map<String, Object> processedDataMap = objectMapper.readValue(processedTemplate, new TypeReference<>() {
             });
             actionContext.setData(processedDataMap);
+            log.debug("ActionTemplatingInterceptor done.");
         } catch (Exception e) {
             throw new RuntimeException(e);
         } finally {

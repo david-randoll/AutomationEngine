@@ -25,8 +25,8 @@ public class NumberFormatFilter implements Filter {
             int decimalPlaces = 2; // default value
             if (args.containsKey("decimalPlaces")) {
                 Object decimalArg = args.get("decimalPlaces");
-                if (decimalArg instanceof Number) {
-                    decimalPlaces = ((Number) decimalArg).intValue();
+                if (decimalArg instanceof Number num) {
+                    decimalPlaces = num.intValue();
                 }
             }
 

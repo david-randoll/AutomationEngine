@@ -7,12 +7,10 @@ import com.automation.engine.core.events.EventContext;
 import com.automation.engine.core.triggers.IBaseTrigger;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.ObjectUtils;
 
 import java.util.List;
 
-@Slf4j
 @Data
 @AllArgsConstructor
 public class Automation {
