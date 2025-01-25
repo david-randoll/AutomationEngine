@@ -4,11 +4,13 @@ import io.pebbletemplates.pebble.error.PebbleException;
 import io.pebbletemplates.pebble.extension.Filter;
 import io.pebbletemplates.pebble.template.EvaluationContext;
 import io.pebbletemplates.pebble.template.PebbleTemplate;
+import org.springframework.stereotype.Component;
 
 import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Map;
 
+@Component("number_format")
 public class NumberFormatFilter implements Filter {
 
     @Override

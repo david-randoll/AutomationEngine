@@ -1,19 +1,19 @@
 package com.automation.engine.templating;
 
-import com.automation.engine.templating.filters.NumberFormatFilter;
-import com.automation.engine.templating.filters.TimeFormatFilter;
 import io.pebbletemplates.pebble.extension.AbstractExtension;
 import io.pebbletemplates.pebble.extension.Filter;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
-
+@Component
+@RequiredArgsConstructor
 public class CustomExtension extends AbstractExtension {
+    private final Map<String, Filter> filters;
+
     @Override
     public Map<String, Filter> getFilters() {
-        return Map.of(
-                "number_format", new NumberFormatFilter(),
-                "time_format", new TimeFormatFilter()
-        );
+        return filters;
     }
 }
