@@ -5,7 +5,7 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.context.annotation.ComponentScan;
 
 @AutoConfiguration
-@ComponentScan(basePackages = {"com.automation.engine"})
-@ConfigurationPropertiesScan(basePackages = {"com.automation.engine"})
+@ComponentScan
+@ConfigurationPropertiesScan
 public class AutomationEngineAutoConfiguration {
 }
