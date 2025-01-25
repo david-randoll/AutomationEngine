@@ -31,9 +31,9 @@ import java.util.Map;
 import java.util.Optional;
 
 @Slf4j
-@Service
+@Service("manualAutomationResolver")
 @RequiredArgsConstructor
-public class ManualAutomationResolver {
+public class ManualAutomationResolver implements IAutomationResolver<CreateAutomation> {
     private final Map<String, ITrigger> triggersMap;
     private final Map<String, ICondition> conditionsMap;
     private final Map<String, IAction> actionsMap;
@@ -42,7 +42,8 @@ public class ManualAutomationResolver {
     private final List<IConditionInterceptor> conditionInterceptors;
     private final List<IActionInterceptor> actionInterceptors;
 
-    public Automation createAutomation(CreateAutomation createAutomation) {
+    @Override
+    public Automation create(CreateAutomation createAutomation) {
         log.info("Start creating automation: {}", createAutomation.getAlias());
         var alias = createAutomation.getAlias();
         List<IBaseTrigger> triggers = createTriggers(createAutomation.getTriggers());

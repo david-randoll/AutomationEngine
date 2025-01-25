@@ -1,13 +1,14 @@
 package com.automation.engine.engine.core.utils;
 
 import lombok.experimental.UtilityClass;
+import org.springframework.lang.NonNull;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
 @UtilityClass
 public class GenericTypeResolver {
-    public static Class<?> getGenericParameterClass(Class<?> clazz) {
+    public static Class<?> getGenericParameterClass(@NonNull Class<?> clazz) {
         try {
             Type superClass = clazz.getGenericSuperclass();
             if (superClass instanceof ParameterizedType parameterizedType) {

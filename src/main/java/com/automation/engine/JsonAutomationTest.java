@@ -35,7 +35,7 @@ public class JsonAutomationTest {
                 }
                 """;
 
-        var automation = factory.createAutomationFromYaml(json);
+        var automation = factory.createAutomation("json", json);
         engine.addAutomation(automation);
     }
 }

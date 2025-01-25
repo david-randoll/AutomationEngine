@@ -9,16 +9,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Slf4j
-@Service
+@Service("jsonAutomationResolver")
 @RequiredArgsConstructor
-public class JsonAutomationResolver {
+public class JsonAutomationResolver implements IAutomationResolver<String> {
     private final ManualAutomationResolver manualAutomationResolver;
     private final ObjectMapper mapper;
 
-    public Automation createAutomation(String json) {
+    @Override
+    public Automation create(String json) {
         try {
             CreateAutomation createAutomation = mapper.readValue(json, CreateAutomation.class);
-            return manualAutomationResolver.createAutomation(createAutomation);
+            return manualAutomationResolver.create(createAutomation);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }

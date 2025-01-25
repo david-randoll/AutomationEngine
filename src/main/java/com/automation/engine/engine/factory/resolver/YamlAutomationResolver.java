@@ -10,16 +10,17 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Service;
 
 @Slf4j
-@Service
+@Service("yamlAutomationResolver")
 @RequiredArgsConstructor
-public class YamlAutomationResolver {
+public class YamlAutomationResolver implements IAutomationResolver<String> {
     private final ManualAutomationResolver manualAutomationResolver;
 
-    public Automation createAutomation(String yaml) {
+    @Override
+    public Automation create(String yaml) {
         var mapper = getYamlObjectMapper();
         try {
             CreateAutomation createAutomation = mapper.readValue(yaml, CreateAutomation.class);
-            return manualAutomationResolver.createAutomation(createAutomation);
+            return manualAutomationResolver.create(createAutomation);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }

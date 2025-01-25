@@ -27,7 +27,7 @@ public class YamlAutomationTest {
                     message: Yaml automation triggered at {{ time | time_format(pattern='hh:mm a') }}
                 """;
 
-        var automation = factory.createAutomationFromYaml(yaml);
+        var automation = factory.createAutomation("yaml", yaml);
         engine.addAutomation(automation);
     }
 }
