@@ -17,8 +17,8 @@ public class AutomationFactory {
     private final ManualAutomationResolver manualAutomationResolver;
     private final Map<String, IAutomationResolver<?>> resolverMap;
 
-    public Automation createAutomation(CreateAutomation createAutomation) {
-        return manualAutomationResolver.create(createAutomation);
+    public Automation createAutomation(CreateRequest createRequest) {
+        return manualAutomationResolver.create(createRequest);
     }
 
     public Automation createAutomation(String format, Object input) {

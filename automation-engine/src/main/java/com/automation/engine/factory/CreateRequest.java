@@ -19,7 +19,7 @@ import java.util.Map;
 @NoArgsConstructor
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class CreateAutomation {
+public class CreateRequest {
     private String alias;
     private List<Trigger> triggers = new ArrayList<>();
     private List<Condition> conditions = new ArrayList<>();

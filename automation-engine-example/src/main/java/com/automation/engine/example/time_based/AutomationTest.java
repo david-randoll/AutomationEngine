@@ -1,4 +1,4 @@
-package com.automation.engine.example;
+package com.automation.engine.example.time_based;
 
 import com.automation.engine.core.Automation;
 import com.automation.engine.core.AutomationEngine;
@@ -11,11 +11,9 @@ import com.automation.engine.core.triggers.IBaseTrigger;
 import com.automation.engine.core.triggers.TriggerContext;
 import com.automation.engine.core.triggers.interceptors.ITriggerInterceptor;
 import com.automation.engine.core.triggers.interceptors.InterceptingTrigger;
-import com.automation.engine.modules.time_based.TimeBasedEvent;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalTime;
@@ -59,10 +57,5 @@ public class AutomationTest {
         return context -> interceptingAction.execute(context, new ActionContext(Map.of(
                 "message", "Time based automation triggered at {{ time | time_format(pattern='hh:mm a') }}"
         )));
-    }
-
-    @Scheduled(fixedRate = 10000)
-    public void run() {
-        engine.processEvent(new TimeBasedEvent(LocalTime.now()));
     }
 }

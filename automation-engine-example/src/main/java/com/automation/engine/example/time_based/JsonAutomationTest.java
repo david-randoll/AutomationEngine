@@ -1,4 +1,4 @@
-package com.automation.engine.example;
+package com.automation.engine.example.time_based;
 
 import com.automation.engine.core.AutomationEngine;
 import com.automation.engine.factory.AutomationFactory;

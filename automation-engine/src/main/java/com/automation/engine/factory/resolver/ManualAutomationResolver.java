@@ -16,7 +16,7 @@ import com.automation.engine.core.triggers.ITrigger;
 import com.automation.engine.core.triggers.TriggerContext;
 import com.automation.engine.core.triggers.interceptors.ITriggerInterceptor;
 import com.automation.engine.core.triggers.interceptors.InterceptingTrigger;
-import com.automation.engine.factory.CreateAutomation;
+import com.automation.engine.factory.CreateRequest;
 import com.automation.engine.factory.exceptions.ActionNotFoundException;
 import com.automation.engine.factory.exceptions.ConditionNotFoundException;
 import com.automation.engine.factory.exceptions.TriggerNotFoundException;
@@ -33,7 +33,7 @@ import java.util.Optional;
 @Slf4j
 @Service("manualAutomationResolver")
 @RequiredArgsConstructor
-public class ManualAutomationResolver implements IAutomationResolver<CreateAutomation> {
+public class ManualAutomationResolver implements IAutomationResolver<CreateRequest> {
     private final Map<String, ITrigger> triggersMap;
     private final Map<String, ICondition> conditionsMap;
     private final Map<String, IAction> actionsMap;
@@ -43,18 +43,18 @@ public class ManualAutomationResolver implements IAutomationResolver<CreateAutom
     private final List<IActionInterceptor> actionInterceptors;
 
     @Override
-    public Automation create(CreateAutomation createAutomation) {
-        log.info("Start creating automation: {}", createAutomation.getAlias());
-        var alias = createAutomation.getAlias();
-        List<IBaseTrigger> triggers = createTriggers(createAutomation.getTriggers());
-        List<IBaseCondition> conditions = createConditions(createAutomation.getConditions());
-        List<IBaseAction> actions = createActions(createAutomation.getActions());
+    public Automation create(CreateRequest createRequest) {
+        log.info("Start creating automation: {}", createRequest.getAlias());
+        var alias = createRequest.getAlias();
+        List<IBaseTrigger> triggers = createTriggers(createRequest.getTriggers());
+        List<IBaseCondition> conditions = createConditions(createRequest.getConditions());
+        List<IBaseAction> actions = createActions(createRequest.getActions());
         var automation = new Automation(alias, triggers, conditions, actions);
         log.info("Automation {} created successfully", alias);
         return automation;
     }
 
-    private List<IBaseTrigger> createTriggers(List<CreateAutomation.Trigger> triggers) {
+    private List<IBaseTrigger> createTriggers(List<CreateRequest.Trigger> triggers) {
         var result = new ArrayList<IBaseTrigger>();
 
         if (ObjectUtils.isEmpty(triggers)) return result;
@@ -74,7 +74,7 @@ public class ManualAutomationResolver implements IAutomationResolver<CreateAutom
         return result;
     }
 
-    private List<IBaseCondition> createConditions(List<CreateAutomation.Condition> conditions) {
+    private List<IBaseCondition> createConditions(List<CreateRequest.Condition> conditions) {
         var result = new ArrayList<IBaseCondition>();
 
         if (ObjectUtils.isEmpty(conditions)) return result;
@@ -94,7 +94,7 @@ public class ManualAutomationResolver implements IAutomationResolver<CreateAutom
         return result;
     }
 
-    private List<IBaseAction> createActions(List<CreateAutomation.Action> actions) {
+    private List<IBaseAction> createActions(List<CreateRequest.Action> actions) {
         var result = new ArrayList<IBaseAction>();
 
         if (ObjectUtils.isEmpty(actions)) return result;
