@@ -1,4 +1,4 @@
-package com.automation.engine.templating.filters;
+package com.automation.engine.templating.extensions.filters;
 
 import io.pebbletemplates.pebble.error.PebbleException;
 import io.pebbletemplates.pebble.extension.Filter;

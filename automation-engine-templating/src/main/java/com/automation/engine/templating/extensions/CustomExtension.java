@@ -1,4 +1,4 @@
-package com.automation.engine.templating;
+package com.automation.engine.templating.extensions;
 
 import io.pebbletemplates.pebble.extension.AbstractExtension;
 import io.pebbletemplates.pebble.extension.Filter;
