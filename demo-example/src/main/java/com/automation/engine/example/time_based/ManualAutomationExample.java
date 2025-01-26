@@ -15,7 +15,7 @@ import java.util.Map;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class ManualAutomationTest {
+public class ManualAutomationExample {
     private final AutomationEngine engine;
     private final AutomationFactory factory;
 

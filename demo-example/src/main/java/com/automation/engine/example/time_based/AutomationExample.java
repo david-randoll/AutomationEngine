@@ -23,7 +23,7 @@ import java.util.Map;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class AutomationTest {
+public class AutomationExample {
     private final AutomationEngine engine;
     private final Map<String, IBaseAction> actions;
     private final Map<String, IBaseCondition> conditions;

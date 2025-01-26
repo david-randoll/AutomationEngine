@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class JsonAutomationTest {
+public class JsonAutomationExample {
     private final AutomationEngine engine;
     private final AutomationFactory factory;
 

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class YamlAutomationTest {
+public class YamlAutomationExample {
     private final AutomationEngine engine;
     private final AutomationFactory factory;
 
