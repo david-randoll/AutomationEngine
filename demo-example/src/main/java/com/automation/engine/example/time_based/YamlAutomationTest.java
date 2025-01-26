@@ -20,8 +20,7 @@ public class YamlAutomationTest {
                 alias: Yaml Automation Test
                 triggers:
                   - trigger: timeBasedTrigger
-                    beforeTime: 00:00
-                    afterTime: 23:59
+                    at: 00:03
                 actions:
                   - action: loggerAction
                     message: Yaml automation triggered at {{ time | time_format(pattern='hh:mm a') }}

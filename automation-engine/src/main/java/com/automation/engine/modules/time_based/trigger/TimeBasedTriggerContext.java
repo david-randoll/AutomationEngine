@@ -10,6 +10,5 @@ import java.time.LocalTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TimeBasedTriggerContext {
-    private LocalTime beforeTime;
-    private LocalTime afterTime;
+    private LocalTime at;
 }

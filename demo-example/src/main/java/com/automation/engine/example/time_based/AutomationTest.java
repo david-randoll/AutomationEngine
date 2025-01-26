@@ -45,8 +45,7 @@ public class AutomationTest {
         IBaseTrigger timeBasedTrigger = triggers.get("timeBasedTrigger");
         var interceptingTrigger = new InterceptingTrigger(timeBasedTrigger, triggerInterceptors);
         return event -> interceptingTrigger.isTriggered(event, new TriggerContext(Map.of(
-                "beforeTime", LocalTime.of(0, 0),
-                "afterTime", LocalTime.of(23, 59)
+                "at", LocalTime.of(0, 0)
         )));
     }
 

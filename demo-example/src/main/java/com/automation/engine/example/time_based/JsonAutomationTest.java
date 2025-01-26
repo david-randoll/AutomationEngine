@@ -22,8 +22,7 @@ public class JsonAutomationTest {
                   "triggers": [
                     {
                       "trigger": "timeBasedTrigger",
-                      "beforeTime": "00:00",
-                      "afterTime": "23:59"
+                      "at": "00:00"
                     }
                   ],
                   "actions": [

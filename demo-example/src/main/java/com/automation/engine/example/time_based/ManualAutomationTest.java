@@ -24,8 +24,7 @@ public class ManualAutomationTest {
         var trigger = CreateRequest.Trigger.builder()
                 .trigger("timeBasedTrigger")
                 .params(Map.of(
-                        "beforeTime", LocalTime.of(0, 0),
-                        "afterTime", LocalTime.of(23, 59)
+                        "at", LocalTime.of(0, 0)
                 ))
                 .build();
         var action = CreateRequest.Action.builder()

@@ -1,4 +1,4 @@
-package com.automation.engine.example.time_based;
+package com.automation.engine.modules.time_based;
 
 import com.automation.engine.core.AutomationEngine;
 import com.automation.engine.modules.time_based.event.TimeBasedEvent;
@@ -15,7 +15,8 @@ import java.time.LocalTime;
 public class TimeBasedEventPublisher {
     private final AutomationEngine engine;
 
-    @Scheduled(fixedRate = 10000)
+    // publish a TimeBasedEvent every minute (60 seconds)
+    @Scheduled(fixedRate = 60_000)
     public void run() {
         engine.processEvent(new TimeBasedEvent(LocalTime.now()));
     }

@@ -15,8 +15,8 @@ public class TimeBasedCondition extends AbstractCondition<TimeBasedConditionCont
         if (!(event instanceof TimeBasedEvent timeBasedEvent)) return false;
 
         LocalTime eventTime = timeBasedEvent.getTime();
-        LocalTime beforeTime = context.getBeforeTime();
-        LocalTime afterTime = context.getAfterTime();
+        LocalTime beforeTime = context.getBefore();
+        LocalTime afterTime = context.getAfter();
 
         if (beforeTime == null && afterTime == null) return false;
         return (beforeTime == null || eventTime.isAfter(beforeTime)) && (afterTime == null || eventTime.isBefore(afterTime));

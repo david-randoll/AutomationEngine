@@ -10,6 +10,6 @@ import java.time.LocalTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TimeBasedConditionContext {
-    private LocalTime beforeTime;
-    private LocalTime afterTime;
+    private LocalTime before;
+    private LocalTime after;
 }

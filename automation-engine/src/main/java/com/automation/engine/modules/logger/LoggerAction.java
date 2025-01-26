@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 public class LoggerAction extends AbstractAction<LoggerActionContext> {
 
     @Override
-    public void execute(Event context, LoggerActionContext actionContext) {
-        log.info("{}", actionContext.getMessage());
+    public void execute(Event event, LoggerActionContext context) {
+        log.info("{}", context.getMessage());
     }
 }

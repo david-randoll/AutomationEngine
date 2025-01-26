@@ -15,10 +15,14 @@ public class TimeBasedTrigger extends AbstractTrigger<TimeBasedTriggerContext> {
         if (!(event instanceof TimeBasedEvent timeBasedEvent)) return false;
 
         LocalTime eventTime = timeBasedEvent.getTime();
-        LocalTime beforeTime = context.getBeforeTime();
-        LocalTime afterTime = context.getAfterTime();
+        LocalTime atTime = context.getAt();
 
-        if (beforeTime == null && afterTime == null) return false;
-        return (beforeTime == null || eventTime.isAfter(beforeTime)) && (afterTime == null || eventTime.isBefore(afterTime));
+        if (atTime == null) return false;
+
+        return getNormalizedTime(eventTime).equals(getNormalizedTime(atTime));
+    }
+
+    private LocalTime getNormalizedTime(LocalTime time) {
+        return time.withNano(0).withSecond(0);
     }
 }
