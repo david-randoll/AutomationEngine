@@ -1,12 +1,12 @@
 package com.automation.engine.core.actions;
 
-import com.automation.engine.core.events.EventContext;
+import com.automation.engine.core.events.Event;
 
 @FunctionalInterface
 public interface IBaseAction {
-    void execute(EventContext context);
+    void execute(Event context);
 
-    default void execute(EventContext context, ActionContext actionContext) {
+    default void execute(Event context, ActionContext actionContext) {
         execute(context);
     }
 }

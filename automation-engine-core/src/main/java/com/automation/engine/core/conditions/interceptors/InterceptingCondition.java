@@ -3,7 +3,7 @@ package com.automation.engine.core.conditions.interceptors;
 import com.automation.engine.core.conditions.ConditionContext;
 import com.automation.engine.core.conditions.IBaseCondition;
 import com.automation.engine.core.conditions.ICondition;
-import com.automation.engine.core.events.EventContext;
+import com.automation.engine.core.events.Event;
 import org.springframework.core.OrderComparator;
 import org.springframework.util.ObjectUtils;
 
@@ -21,19 +21,19 @@ public class InterceptingCondition implements ICondition {
     }
 
     @Override
-    public boolean isSatisfied(EventContext context, ConditionContext conditionContext) {
-        return executeInterceptors(0, context, conditionContext);
+    public boolean isSatisfied(Event event, ConditionContext context) {
+        return executeInterceptors(0, event, context);
     }
 
-    private boolean executeInterceptors(int index, EventContext context, ConditionContext conditionContext) {
+    private boolean executeInterceptors(int index, Event event, ConditionContext conditionContext) {
         if (index < interceptors.size()) {
             IConditionInterceptor interceptor = interceptors.get(index);
             ICondition action = (ec, cc) -> this.executeInterceptors(index + 1, ec, cc);
-            interceptor.intercept(context, conditionContext, action);
+            interceptor.intercept(event, conditionContext, action);
             return true; // doesn't matter what the interceptor returns, the delegate will return the final result
         } else {
             // All interceptors have been processed, execute the delegate
-            return delegate.isSatisfied(context, conditionContext);
+            return delegate.isSatisfied(event, conditionContext);
         }
     }
 }

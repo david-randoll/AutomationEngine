@@ -10,8 +10,4 @@ import java.util.Map;
 public class Event {
     private String name;
     private Map<String, Object> data;
-
-    public EventContext getContext() {
-        return new EventContext(data);
-    }
 }

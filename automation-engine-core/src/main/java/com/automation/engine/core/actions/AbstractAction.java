@@ -1,6 +1,6 @@
 package com.automation.engine.core.actions;
 
-import com.automation.engine.core.events.EventContext;
+import com.automation.engine.core.events.Event;
 import com.automation.engine.core.utils.GenericTypeResolver;
 import com.automation.engine.core.utils.TypeConverter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +17,7 @@ public abstract class AbstractAction<T> implements IAction {
     }
 
     @Override
-    public void execute(EventContext eventContext, ActionContext actionContext) {
+    public void execute(Event eventContext, ActionContext actionContext) {
         try {
             T data = typeConverter.convert(actionContext.getData(), getContextType());
             execute(eventContext, data);
@@ -26,5 +26,5 @@ public abstract class AbstractAction<T> implements IAction {
         }
     }
 
-    public abstract void execute(EventContext eventContext, T actionContext);
+    public abstract void execute(Event eventContext, T actionContext);
 }

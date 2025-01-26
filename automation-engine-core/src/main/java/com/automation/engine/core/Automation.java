@@ -3,7 +3,6 @@ package com.automation.engine.core;
 import com.automation.engine.core.actions.IBaseAction;
 import com.automation.engine.core.conditions.IBaseCondition;
 import com.automation.engine.core.events.Event;
-import com.automation.engine.core.events.EventContext;
 import com.automation.engine.core.triggers.IBaseTrigger;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -24,7 +23,7 @@ public class Automation {
      *
      * @return true if any of the triggers are triggered
      */
-    public boolean isTriggered(Event event) {
+    public boolean anyTriggerActivated(Event event) {
         if (ObjectUtils.isEmpty(triggers)) return false;
         return triggers.stream()
                 .anyMatch(trigger -> trigger.isTriggered(event));
@@ -35,16 +34,16 @@ public class Automation {
      *
      * @return true if all conditions are met
      */
-    public boolean areConditionsMet(EventContext context) {
+    public boolean allConditionsMet(Event context) {
         if (ObjectUtils.isEmpty(conditions)) return true;
         return conditions.stream()
                 .allMatch(condition -> condition.isSatisfied(context));
     }
 
     /**
-     * Execute all actions
+     * Perform all actions
      */
-    public void executeActions(EventContext context) {
+    public void performActions(Event context) {
         if (ObjectUtils.isEmpty(actions)) return;
         actions.forEach(action -> action.execute(context));
     }

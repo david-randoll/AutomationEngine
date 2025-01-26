@@ -1,6 +1,6 @@
 package com.automation.engine.core.conditions;
 
-import com.automation.engine.core.events.EventContext;
+import com.automation.engine.core.events.Event;
 import com.automation.engine.core.utils.GenericTypeResolver;
 import com.automation.engine.core.utils.TypeConverter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,14 +17,14 @@ public abstract class AbstractCondition<T> implements ICondition {
     }
 
     @Override
-    public boolean isSatisfied(EventContext eventContext, ConditionContext conditionContext) {
+    public boolean isSatisfied(Event eventContext, ConditionContext conditionContext) {
         try {
-            T data = typeConverter.convert(eventContext.getData(), getContextType());
-            return isMet(eventContext, data);
+            T data = typeConverter.convert(conditionContext.getData(), getContextType());
+            return isSatisfied(eventContext, data);
         } catch (Exception e) {
             throw new RuntimeException("Failed to execute condition", e);
         }
     }
 
-    public abstract boolean isMet(EventContext context, T conditionContext);
+    public abstract boolean isSatisfied(Event context, T conditionContext);
 }

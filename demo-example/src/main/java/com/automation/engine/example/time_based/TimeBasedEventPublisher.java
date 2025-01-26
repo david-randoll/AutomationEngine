@@ -1,7 +1,7 @@
 package com.automation.engine.example.time_based;
 
 import com.automation.engine.core.AutomationEngine;
-import com.automation.engine.modules.time_based.TimeBasedEvent;
+import com.automation.engine.modules.time_based.event.TimeBasedEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;

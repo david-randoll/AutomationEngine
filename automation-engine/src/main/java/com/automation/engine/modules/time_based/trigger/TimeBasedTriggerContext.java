@@ -1,4 +1,4 @@
-package com.automation.engine.modules.time_based;
+package com.automation.engine.modules.time_based.trigger;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

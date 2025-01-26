@@ -3,7 +3,7 @@ package com.automation.engine.templating;
 import com.automation.engine.core.actions.ActionContext;
 import com.automation.engine.core.actions.IAction;
 import com.automation.engine.core.actions.interceptors.IActionInterceptor;
-import com.automation.engine.core.events.EventContext;
+import com.automation.engine.core.events.Event;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +34,7 @@ public class ActionTemplatingInterceptor implements IActionInterceptor {
      */
 
     @Override
-    public void intercept(EventContext context, ActionContext actionContext, IAction action) {
+    public void intercept(Event context, ActionContext actionContext, IAction action) {
         try {
             log.debug("ActionTemplatingInterceptor: Processing action data: {}", actionContext.getData());
             var actionDataAsJson = objectMapper.writeValueAsString(actionContext.getData());
