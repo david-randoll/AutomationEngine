@@ -1,6 +1,6 @@
 package com.automation.engine.modules.condition_building_block.not;
 
-import com.automation.engine.core.conditions.ICondition;
+import com.automation.engine.factory.request.Condition;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,5 +13,5 @@ import java.util.List;
 @NoArgsConstructor
 @JsonIgnoreProperties
 public class NotConditionContext {
-    private List<ICondition> conditions;
+    private List<Condition> conditions;
 }

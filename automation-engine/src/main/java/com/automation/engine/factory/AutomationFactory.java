@@ -1,8 +1,9 @@
 package com.automation.engine.factory;
 
 import com.automation.engine.core.Automation;
+import com.automation.engine.factory.request.CreateRequest;
 import com.automation.engine.factory.resolver.IAutomationResolver;
-import com.automation.engine.factory.resolver.ManualAutomationResolver;
+import com.automation.engine.factory.resolver.DefaultAutomationResolver;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -14,11 +15,11 @@ import java.util.Map;
 @RequiredArgsConstructor
 @SuppressWarnings("unchecked")
 public class AutomationFactory {
-    private final ManualAutomationResolver manualAutomationResolver;
+    private final DefaultAutomationResolver defaultAutomationResolver;
     private final Map<String, IAutomationResolver<?>> resolverMap;
 
     public Automation createAutomation(CreateRequest createRequest) {
-        return manualAutomationResolver.create(createRequest);
+        return defaultAutomationResolver.create(createRequest);
     }
 
     public Automation createAutomation(String format, Object input) {

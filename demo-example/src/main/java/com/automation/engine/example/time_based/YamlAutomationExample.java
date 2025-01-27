@@ -1,5 +1,6 @@
 package com.automation.engine.example.time_based;
 
+import com.automation.engine.core.Automation;
 import com.automation.engine.core.AutomationEngine;
 import com.automation.engine.factory.AutomationFactory;
 import jakarta.annotation.PostConstruct;
@@ -20,13 +21,13 @@ public class YamlAutomationExample {
                 alias: Yaml Automation Test
                 triggers:
                   - trigger: timeBasedTrigger
-                    at: 00:03
+                    at: 22:37
                 actions:
                   - action: loggerAction
                     message: Yaml automation triggered at {{ time | time_format(pattern='hh:mm a') }}
                 """;
 
-        var automation = factory.createAutomation("yaml", yaml);
+        Automation automation = factory.createAutomation("yaml", yaml);
         engine.addAutomation(automation);
     }
 }

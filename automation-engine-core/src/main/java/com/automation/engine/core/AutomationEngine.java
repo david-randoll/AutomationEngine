@@ -25,11 +25,16 @@ public class AutomationEngine {
 
     public void processEvent(@NonNull Event event) {
         for (Automation automation : automations) {
-            log.debug("Processing automation: {}", automation.getAlias());
-            if (automation.anyTriggerActivated(event) && automation.allConditionsMet(event)) {
-                log.debug("Automation triggered and conditions met. Executing actions.");
-                automation.performActions(event);
-            }
+            runAutomation(automation, event);
         }
+    }
+
+    public void runAutomation(Automation automation, Event event) {
+        log.debug("Processing automation: {}", automation.getAlias());
+        if (automation.anyTriggerActivated(event) && automation.allConditionsMet(event)) {
+            log.debug("Automation triggered and conditions met. Executing actions.");
+            automation.performActions(event);
+        }
+        log.debug("Done processing automation: {}", automation.getAlias());
     }
 }

@@ -16,12 +16,17 @@ import com.automation.engine.core.triggers.ITrigger;
 import com.automation.engine.core.triggers.TriggerContext;
 import com.automation.engine.core.triggers.interceptors.ITriggerInterceptor;
 import com.automation.engine.core.triggers.interceptors.InterceptingTrigger;
-import com.automation.engine.factory.CreateRequest;
 import com.automation.engine.factory.exceptions.ActionNotFoundException;
 import com.automation.engine.factory.exceptions.ConditionNotFoundException;
 import com.automation.engine.factory.exceptions.TriggerNotFoundException;
+import com.automation.engine.factory.request.Action;
+import com.automation.engine.factory.request.Condition;
+import com.automation.engine.factory.request.CreateRequest;
+import com.automation.engine.factory.request.Trigger;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationContext;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
@@ -33,32 +38,33 @@ import java.util.Optional;
 @Slf4j
 @Service("manualAutomationResolver")
 @RequiredArgsConstructor
-public class ManualAutomationResolver implements IAutomationResolver<CreateRequest> {
-    private final Map<String, ITrigger> triggersMap;
-    private final Map<String, ICondition> conditionsMap;
-    private final Map<String, IAction> actionsMap;
+public class DefaultAutomationResolver implements IAutomationResolver<CreateRequest> {
+    private final ApplicationContext applicationContext;
 
     private final List<ITriggerInterceptor> triggerInterceptors;
     private final List<IConditionInterceptor> conditionInterceptors;
     private final List<IActionInterceptor> actionInterceptors;
 
     @Override
+    @NonNull
     public Automation create(CreateRequest createRequest) {
         log.info("Start creating automation: {}", createRequest.getAlias());
         var alias = createRequest.getAlias();
-        List<IBaseTrigger> triggers = createTriggers(createRequest.getTriggers());
-        List<IBaseCondition> conditions = createConditions(createRequest.getConditions());
-        List<IBaseAction> actions = createActions(createRequest.getActions());
+        List<IBaseTrigger> triggers = buildTriggersList(createRequest.getTriggers());
+        List<IBaseCondition> conditions = buildConditionsList(createRequest.getConditions());
+        List<IBaseAction> actions = buildActionsList(createRequest.getActions());
         var automation = new Automation(alias, triggers, conditions, actions);
         log.info("Automation {} created successfully", alias);
         return automation;
     }
 
-    private List<IBaseTrigger> createTriggers(List<CreateRequest.Trigger> triggers) {
+    @NonNull
+    public List<IBaseTrigger> buildTriggersList(List<Trigger> triggers) {
         var result = new ArrayList<IBaseTrigger>();
 
         if (ObjectUtils.isEmpty(triggers)) return result;
 
+        var triggersMap = getMap(ITrigger.class);
         for (var trigger : triggers) {
             ITrigger triggerInstance = Optional.ofNullable(triggersMap.get(trigger.getTrigger()))
                     .orElseThrow(() -> new TriggerNotFoundException(trigger.getTrigger()));
@@ -74,11 +80,13 @@ public class ManualAutomationResolver implements IAutomationResolver<CreateReque
         return result;
     }
 
-    private List<IBaseCondition> createConditions(List<CreateRequest.Condition> conditions) {
+    @NonNull
+    public List<IBaseCondition> buildConditionsList(List<Condition> conditions) {
         var result = new ArrayList<IBaseCondition>();
 
         if (ObjectUtils.isEmpty(conditions)) return result;
 
+        var conditionsMap = getMap(ICondition.class);
         for (var condition : conditions) {
             ICondition conditionInstance = Optional.ofNullable(conditionsMap.get(condition.getCondition()))
                     .orElseThrow(() -> new ConditionNotFoundException(condition.getCondition()));
@@ -94,11 +102,12 @@ public class ManualAutomationResolver implements IAutomationResolver<CreateReque
         return result;
     }
 
-    private List<IBaseAction> createActions(List<CreateRequest.Action> actions) {
+    public List<IBaseAction> buildActionsList(List<Action> actions) {
         var result = new ArrayList<IBaseAction>();
 
         if (ObjectUtils.isEmpty(actions)) return result;
 
+        var actionsMap = getMap(IAction.class);
         for (var action : actions) {
             IAction actionInstance = Optional.ofNullable(actionsMap.get(action.getAction()))
                     .orElseThrow(() -> new ActionNotFoundException(action.getAction()));
@@ -112,5 +121,10 @@ public class ManualAutomationResolver implements IAutomationResolver<CreateReque
         }
 
         return result;
+    }
+
+    @NonNull
+    private <T> Map<String, T> getMap(Class<T> clazz) {
+        return applicationContext.getBeansOfType(clazz);
     }
 }

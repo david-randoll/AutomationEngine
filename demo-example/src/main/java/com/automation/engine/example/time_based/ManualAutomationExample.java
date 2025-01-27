@@ -2,7 +2,9 @@ package com.automation.engine.example.time_based;
 
 import com.automation.engine.core.AutomationEngine;
 import com.automation.engine.factory.AutomationFactory;
-import com.automation.engine.factory.CreateRequest;
+import com.automation.engine.factory.request.Action;
+import com.automation.engine.factory.request.CreateRequest;
+import com.automation.engine.factory.request.Trigger;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,13 +23,13 @@ public class ManualAutomationExample {
 
     @PostConstruct
     public void init() {
-        var trigger = CreateRequest.Trigger.builder()
+        var trigger = Trigger.builder()
                 .trigger("timeBasedTrigger")
                 .params(Map.of(
                         "at", LocalTime.of(0, 0)
                 ))
                 .build();
-        var action = CreateRequest.Action.builder()
+        var action = Action.builder()
                 .action("loggerAction")
                 .params(Map.of(
                         "message", "Manual automation triggered at {{ time | time_format(pattern='hh:mm a') }}"
