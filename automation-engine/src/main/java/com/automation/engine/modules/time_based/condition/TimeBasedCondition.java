@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalTime;
 
-@Component("timeBasedCondition")
+@Component("timeCondition")
 public class TimeBasedCondition extends AbstractCondition<TimeBasedConditionContext> {
 
     @Override
@@ -19,6 +19,6 @@ public class TimeBasedCondition extends AbstractCondition<TimeBasedConditionCont
         LocalTime afterTime = context.getAfter();
 
         if (beforeTime == null && afterTime == null) return false;
-        return (beforeTime == null || eventTime.isAfter(beforeTime)) && (afterTime == null || eventTime.isBefore(afterTime));
+        return (beforeTime == null || eventTime.isBefore(beforeTime)) && (afterTime == null || eventTime.isAfter(afterTime));
     }
 }

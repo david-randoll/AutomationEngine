@@ -20,10 +20,10 @@ public class YamlAutomationExample {
         var yaml = """
                 alias: Yaml Automation Test
                 triggers:
-                  - trigger: timeBasedTrigger
-                    at: 22:37
+                  - trigger: time
+                    at: 23:50
                 actions:
-                  - action: loggerAction
+                  - action: logger
                     message: Yaml automation triggered at {{ time | time_format(pattern='hh:mm a') }}
                 """;
 

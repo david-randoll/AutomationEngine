@@ -23,6 +23,10 @@ public class AutomationEngine {
         automations.remove(automation);
     }
 
+    public void clearAutomations() {
+        automations.clear();
+    }
+
     public void processEvent(@NonNull Event event) {
         for (Automation automation : automations) {
             runAutomation(automation, event);

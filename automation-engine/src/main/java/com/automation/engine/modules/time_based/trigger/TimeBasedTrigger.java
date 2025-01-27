@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalTime;
 
-@Component("timeBasedTrigger")
+@Component("timeTrigger")
 public class TimeBasedTrigger extends AbstractTrigger<TimeBasedTriggerContext> {
 
     @Override

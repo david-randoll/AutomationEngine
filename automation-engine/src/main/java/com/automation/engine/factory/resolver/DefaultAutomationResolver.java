@@ -66,7 +66,8 @@ public class DefaultAutomationResolver implements IAutomationResolver<CreateRequ
 
         var triggersMap = getMap(ITrigger.class);
         for (var trigger : triggers) {
-            ITrigger triggerInstance = Optional.ofNullable(triggersMap.get(trigger.getTrigger()))
+            var triggerName = "%sTrigger".formatted(trigger.getTrigger());
+            ITrigger triggerInstance = Optional.ofNullable(triggersMap.get(triggerName))
                     .orElseThrow(() -> new TriggerNotFoundException(trigger.getTrigger()));
 
             var interceptingTrigger = new InterceptingTrigger(triggerInstance, triggerInterceptors);
@@ -88,7 +89,8 @@ public class DefaultAutomationResolver implements IAutomationResolver<CreateRequ
 
         var conditionsMap = getMap(ICondition.class);
         for (var condition : conditions) {
-            ICondition conditionInstance = Optional.ofNullable(conditionsMap.get(condition.getCondition()))
+            var conditionName = "%sCondition".formatted(condition.getCondition());
+            ICondition conditionInstance = Optional.ofNullable(conditionsMap.get(conditionName))
                     .orElseThrow(() -> new ConditionNotFoundException(condition.getCondition()));
 
             var interceptingCondition = new InterceptingCondition(conditionInstance, conditionInterceptors);
@@ -109,7 +111,8 @@ public class DefaultAutomationResolver implements IAutomationResolver<CreateRequ
 
         var actionsMap = getMap(IAction.class);
         for (var action : actions) {
-            IAction actionInstance = Optional.ofNullable(actionsMap.get(action.getAction()))
+            var actionName = "%sAction".formatted(action.getAction());
+            IAction actionInstance = Optional.ofNullable(actionsMap.get(actionName))
                     .orElseThrow(() -> new ActionNotFoundException(action.getAction()));
 
             var interceptingAction = new InterceptingAction(actionInstance, actionInterceptors);

@@ -42,10 +42,10 @@ public class AutomationExample {
     }
 
     private IBaseTrigger getTrigger() {
-        IBaseTrigger timeBasedTrigger = triggers.get("timeBasedTrigger");
+        IBaseTrigger timeBasedTrigger = triggers.get("timeTrigger");
         var interceptingTrigger = new InterceptingTrigger(timeBasedTrigger, triggerInterceptors);
         return event -> interceptingTrigger.isTriggered(event, new TriggerContext(Map.of(
-                "at", LocalTime.of(0, 0)
+                "at", LocalTime.of(23, 50)
         )));
     }
 

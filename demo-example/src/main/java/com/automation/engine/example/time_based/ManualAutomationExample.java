@@ -24,13 +24,13 @@ public class ManualAutomationExample {
     @PostConstruct
     public void init() {
         var trigger = Trigger.builder()
-                .trigger("timeBasedTrigger")
+                .trigger("time")
                 .params(Map.of(
-                        "at", LocalTime.of(0, 0)
+                        "at", LocalTime.of(23, 50)
                 ))
                 .build();
         var action = Action.builder()
-                .action("loggerAction")
+                .action("logger")
                 .params(Map.of(
                         "message", "Manual automation triggered at {{ time | time_format(pattern='hh:mm a') }}"
                 ))

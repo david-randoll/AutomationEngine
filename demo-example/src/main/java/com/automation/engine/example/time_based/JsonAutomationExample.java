@@ -21,13 +21,13 @@ public class JsonAutomationExample {
                   "alias": "Json Automation Test",
                   "triggers": [
                     {
-                      "trigger": "timeBasedTrigger",
-                      "at": "00:00"
+                      "trigger": "time",
+                      "at": "23:50"
                     }
                   ],
                   "actions": [
                     {
-                      "action": "loggerAction",
+                      "action": "logger",
                       "message": "Json automation triggered at {{ time | time_format(pattern='hh:mm a') }}"
                     }
                   ]
