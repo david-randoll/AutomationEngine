@@ -36,18 +36,16 @@ public class ActionTemplatingInterceptor implements IActionInterceptor {
     @Override
     public void intercept(Event context, ActionContext actionContext, IAction action) {
         try {
-            log.debug("ActionTemplatingInterceptor: Processing action data: {}", actionContext.getData());
+            log.debug("ActionTemplatingInterceptor: Processing action data...");
             var actionDataAsJson = objectMapper.writeValueAsString(actionContext.getData());
             var processedTemplate = templateProcessor.process(actionDataAsJson, context.getData());
             // convert the result back to a map
             Map<String, Object> processedDataMap = objectMapper.readValue(processedTemplate, new TypeReference<>() {
             });
-            actionContext.setData(processedDataMap);
+            action.execute(context, new ActionContext(processedDataMap));
             log.debug("ActionTemplatingInterceptor done.");
         } catch (Exception e) {
             throw new RuntimeException(e);
-        } finally {
-            action.execute(context, actionContext);
         }
     }
 }

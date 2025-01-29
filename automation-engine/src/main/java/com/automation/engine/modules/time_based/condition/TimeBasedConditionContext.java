@@ -14,4 +14,5 @@ import java.time.LocalTime;
 public class TimeBasedConditionContext {
     private LocalTime before;
     private LocalTime after;
+    private boolean inclusive = false;
 }

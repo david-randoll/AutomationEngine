@@ -19,6 +19,16 @@ public class TimeBasedCondition extends AbstractCondition<TimeBasedConditionCont
         LocalTime afterTime = context.getAfter();
 
         if (beforeTime == null && afterTime == null) return false;
-        return (beforeTime == null || eventTime.isBefore(beforeTime)) && (afterTime == null || eventTime.isAfter(afterTime));
+        boolean isBeforeConditionMet;
+        boolean isAfterConditionMet;
+        if (context.isInclusive()) {
+            isBeforeConditionMet = (beforeTime == null || !eventTime.isAfter(beforeTime));
+            isAfterConditionMet = (afterTime == null || !eventTime.isBefore(afterTime));
+        } else {
+            isBeforeConditionMet = (beforeTime == null || eventTime.isBefore(beforeTime));
+            isAfterConditionMet = (afterTime == null || eventTime.isAfter(afterTime));
+        }
+
+        return isBeforeConditionMet && isAfterConditionMet;
     }
 }
