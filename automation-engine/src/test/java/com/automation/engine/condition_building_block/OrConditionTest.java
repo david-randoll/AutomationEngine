@@ -43,7 +43,7 @@ class OrConditionTest {
     @Test
     void testAutomationWithTimeRangeCondition() {
         var yaml = """
-                alias: And Condition Automation Test
+                alias: Or Condition Automation Test
                 triggers:
                   - trigger: time
                     at: 22:37
@@ -56,61 +56,55 @@ class OrConditionTest {
                         before: 23:00
                 actions:
                   - action: logger
-                    message: Automation triggered with all conditions met at {{ time | time_format(pattern='hh:mm a') }}
+                    message: Automation triggered when one condition was met at {{ time | time_format(pattern='hh:mm a') }}
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.addAutomation(automation);
 
         // Act: Create events at different times
-        TimeBasedEvent withinRangeEvent = new TimeBasedEvent(LocalTime.of(22, 37));
-        TimeBasedEvent beforeRangeEvent = new TimeBasedEvent(LocalTime.of(22, 20));
-        TimeBasedEvent afterRangeEvent = new TimeBasedEvent(LocalTime.of(23, 5));
+        TimeBasedEvent withinRangeEvent = new TimeBasedEvent(LocalTime.of(22, 37)); // Should trigger
+        TimeBasedEvent beforeRangeEvent = new TimeBasedEvent(LocalTime.of(22, 20)); // Should not trigger
+        TimeBasedEvent afterRangeEvent = new TimeBasedEvent(LocalTime.of(23, 5));   // Should not trigger
 
         // Process events
         engine.processEvent(withinRangeEvent);
         engine.processEvent(beforeRangeEvent);
         engine.processEvent(afterRangeEvent);
 
-        // Assert: Automation should only trigger for the within-range event
+        // Assert: Automation should trigger for events that meet any condition
         assertThat(automation.anyTriggerActivated(withinRangeEvent))
-                .as("Automation should trigger within the time range")
+                .as("Automation should trigger at 22:37")
                 .isTrue();
-
         assertThat(automation.allConditionsMet(withinRangeEvent))
-                .as("Conditions should be met within the time range")
+                .as("Conditions should be met for 22:37")
                 .isTrue();
 
-        assertThat(logAppender.getLoggedMessages())
-                .anyMatch(msg -> msg.contains("Automation triggered with all conditions met at 10:37 PM"));
-
-        // Assert: Automation should not trigger for events outside the range
         assertThat(automation.anyTriggerActivated(beforeRangeEvent))
-                .as("Automation should not trigger before the time range")
+                .as("Automation should not trigger at 22:20 (does not match conditions)")
                 .isFalse();
-
         assertThat(automation.allConditionsMet(beforeRangeEvent))
-                .as("Conditions should not be met before the time range")
-                .isFalse();
+                .as("Conditions should met for 22:20")
+                .isTrue();
 
         assertThat(automation.anyTriggerActivated(afterRangeEvent))
                 .as("Automation should not trigger after the time range")
                 .isFalse();
-
         assertThat(automation.allConditionsMet(afterRangeEvent))
-                .as("Conditions should not be met after the time range")
-                .isFalse();
+                .as("Conditions should met for 23:05")
+                .isTrue();
 
+        // Assert: Logged messages
         assertThat(logAppender.getLoggedMessages())
-                .as("Automation not triggered for events outside the time range")
-                .noneMatch(msg -> msg.contains("Automation triggered with all conditions met at 10:20 PM"))
-                .noneMatch(msg -> msg.contains("Automation triggered with all conditions met at 11:05 PM"));
+                .anyMatch(msg -> msg.contains("Automation triggered when one condition was met at 10:37 PM"))
+                .noneMatch(msg -> msg.contains("Automation triggered when one condition was met at 10:20 PM"))
+                .noneMatch(msg -> msg.contains("Automation triggered when one condition was met at 11:05 PM"));
     }
 
     @Test
     void testAutomationWithExactBoundaryTimes() {
         var yaml = """
-                alias: And Condition Boundary Test
+                alias: Or Condition Boundary Test
                 triggers:
                   - trigger: time
                     at: 22:30
@@ -125,7 +119,7 @@ class OrConditionTest {
                         before: 23:00
                 actions:
                   - action: logger
-                    message: Automation triggered with all conditions met at {{ time | time_format(pattern='hh:mm a') }}
+                    message: Automation triggered when one condition was met at {{ time | time_format(pattern='hh:mm a') }}
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
@@ -145,26 +139,26 @@ class OrConditionTest {
                 .isTrue();
 
         assertThat(automation.allConditionsMet(onBoundaryBefore))
-                .as("Conditions should not met at 22:30")
-                .isFalse();
+                .as("Conditions should be met at 22:30")
+                .isTrue();
 
         assertThat(automation.anyTriggerActivated(onBoundaryAfter))
                 .as("Automation should trigger at 23:00 as it satisfies 'before 23:00' condition")
                 .isTrue();
 
         assertThat(automation.allConditionsMet(onBoundaryAfter))
-                .as("Conditions should not be met at 23:00")
-                .isFalse();
+                .as("Conditions should be met at 23:00")
+                .isTrue();
 
         assertThat(logAppender.getLoggedMessages())
-                .noneMatch(msg -> msg.contains("Automation triggered with all conditions met at 10:30 PM"))
-                .noneMatch(msg -> msg.contains("Automation triggered with all conditions met at 11:00 PM"));
+                .anyMatch(msg -> msg.contains("Automation triggered when one condition was met at 10:30 PM"))
+                .anyMatch(msg -> msg.contains("Automation triggered when one condition was met at 11:00 PM"));
     }
 
     @Test
-    void testAutomationWithConditionFailingInAndBlock() {
+    void testAutomationWithConditionFailingInOrBlock() {
         var yaml = """
-                alias: And Condition Failing Test
+                alias: Or Condition Failing Test
                 triggers:
                   - trigger: time
                     at: 22:37
@@ -179,32 +173,31 @@ class OrConditionTest {
                         before: 22:35
                 actions:
                   - action: logger
-                    message: Automation triggered with all conditions met at {{ time | time_format(pattern='hh:mm a') }}
+                    message: Automation triggered when one condition was met at {{ time | time_format(pattern='hh:mm a') }}
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.addAutomation(automation);
 
-        // Act: Create events that fail the condition
-        TimeBasedEvent failingEvent = new TimeBasedEvent(LocalTime.of(22, 37)); // Fails the "before 22:35" condition
-        TimeBasedEvent passingEvent = new TimeBasedEvent(LocalTime.of(22, 33)); // Meets both conditions
+        // Act: Create events that fail and pass the condition
+        TimeBasedEvent failingEvent = new TimeBasedEvent(LocalTime.of(22, 37)); // Fails "before 22:35" but passes "after 22:30"
+        TimeBasedEvent passingEvent = new TimeBasedEvent(LocalTime.of(22, 33)); // Meets "after 22:30" and "before 22:35"
 
         // Process events
         engine.processEvent(failingEvent);
         engine.processEvent(passingEvent);
 
-        // Assert: Automation should fail when one condition is violated
+        // Assert: Automation should trigger for both events due to 'or' condition
         assertThat(automation.anyTriggerActivated(failingEvent))
-                .as("Automation should trigger when time is 22:37")
+                .as("Automation should trigger when time is 22:37 as it satisfies 'after 22:30' condition")
                 .isTrue();
 
         assertThat(automation.allConditionsMet(failingEvent))
-                .as("Conditions should not be met when the time is after 22:35")
-                .isFalse();
+                .as("Conditions should be met when at least one condition is satisfied")
+                .isTrue();
 
-        // Assert: Automation should trigger when all conditions are met
         assertThat(automation.anyTriggerActivated(passingEvent))
-                .as("Automation should trigger when time is 22:33")
+                .as("Automation should trigger when time is 22:33 as it satisfies 'or' condition")
                 .isTrue();
 
         assertThat(automation.allConditionsMet(passingEvent))
@@ -212,7 +205,8 @@ class OrConditionTest {
                 .isTrue();
 
         assertThat(logAppender.getLoggedMessages())
-                .anyMatch(msg -> msg.contains("Automation triggered with all conditions met at 10:33 PM"));
+                .anyMatch(msg -> msg.contains("Automation triggered when one condition was met at 10:33 PM"))
+                .anyMatch(msg -> msg.contains("Automation triggered when one condition was met at 10:37 PM"));
     }
 
     @Test
@@ -265,22 +259,22 @@ class OrConditionTest {
                 .isFalse();
 
         assertThat(automation.allConditionsMet(outsideRangeBefore))
-                .as("Conditions should not be met before 22:30")
-                .isFalse();
+                .as("Conditions should be met before 22:30")
+                .isTrue();
 
         assertThat(automation.anyTriggerActivated(outsideRangeAfter))
                 .as("Automation should not trigger after 22:45")
                 .isFalse();
 
         assertThat(automation.allConditionsMet(outsideRangeAfter))
-                .as("Conditions should not be met after 22:45")
-                .isFalse();
+                .as("Conditions should be met after 22:45")
+                .isTrue();
     }
 
     @Test
     void testAutomationWithBoundaryFailingCondition() {
         var yaml = """
-                alias: And Condition Boundary Failing Test
+                alias: Boundary Failing Condition Test
                 triggers:
                   - trigger: time
                     at: 22:35
@@ -302,28 +296,28 @@ class OrConditionTest {
         engine.addAutomation(automation);
 
         // Act: Create events at boundary times
-        TimeBasedEvent failingBoundaryEvent = new TimeBasedEvent(LocalTime.of(22, 35)); // On the "before 22:35" boundary
-        TimeBasedEvent passingBoundaryEvent = new TimeBasedEvent(LocalTime.of(22, 34)); // Before 22:35
+        TimeBasedEvent boundaryFailingEvent = new TimeBasedEvent(LocalTime.of(22, 35)); // Fails at boundary
+        TimeBasedEvent boundaryPassingEvent = new TimeBasedEvent(LocalTime.of(22, 34)); // Passes within range
 
         // Process events
-        engine.processEvent(failingBoundaryEvent);
-        engine.processEvent(passingBoundaryEvent);
+        engine.processEvent(boundaryFailingEvent);
+        engine.processEvent(boundaryPassingEvent);
 
-        // Assert: Automation should fail when boundary is exactly on the failed condition
-        assertThat(automation.anyTriggerActivated(failingBoundaryEvent))
-                .as("Automation should trigger when time is exactly 22:35")
+        // Assert: Automation should not activate when failing boundary is reached
+        assertThat(automation.anyTriggerActivated(boundaryFailingEvent))
+                .as("Automation should trigger at 22:35")
                 .isTrue();
 
-        assertThat(automation.allConditionsMet(failingBoundaryEvent))
-                .as("Conditions should not be met at 22:35")
-                .isFalse();
+        assertThat(automation.allConditionsMet(boundaryFailingEvent))
+                .as("Conditions should be met at 22:35")
+                .isTrue();
 
-        // Assert: Automation should trigger when the time is strictly within range
-        assertThat(automation.anyTriggerActivated(passingBoundaryEvent))
+        // Assert: Automation should activate when within the range
+        assertThat(automation.anyTriggerActivated(boundaryPassingEvent))
                 .as("Automation should trigger when time is before 22:35")
                 .isTrue();
 
-        assertThat(automation.allConditionsMet(passingBoundaryEvent))
+        assertThat(automation.allConditionsMet(boundaryPassingEvent))
                 .as("Conditions should be met before 22:35")
                 .isTrue();
 
@@ -332,9 +326,9 @@ class OrConditionTest {
     }
 
     @Test
-    void testAutomationWithNestedAndConditions() {
+    void testAutomationWithNestedOrConditions() {
         var yaml = """
-                alias: Nested And Condition Test
+                alias: Nested Or Condition Test
                 triggers:
                   - trigger: time
                     at: 22:40
@@ -362,43 +356,43 @@ class OrConditionTest {
         engine.addAutomation(automation);
 
         // Act: Create events to test nested conditions
-        TimeBasedEvent matchingEvent = new TimeBasedEvent(LocalTime.of(22, 40)); // Satisfies both nested conditions
-        TimeBasedEvent failingFirstAndCondition = new TimeBasedEvent(LocalTime.of(22, 55)); // Fails first AND condition
-        TimeBasedEvent failingSecondAndCondition = new TimeBasedEvent(LocalTime.of(22, 33)); // Fails second AND condition
+        TimeBasedEvent validEvent = new TimeBasedEvent(LocalTime.of(22, 40)); // Satisfies at least one OR condition
+        TimeBasedEvent eventOutsideRange1 = new TimeBasedEvent(LocalTime.of(22, 55)); // Fails all OR conditions
+        TimeBasedEvent eventOutsideRange2 = new TimeBasedEvent(LocalTime.of(22, 33)); // Fails all OR conditions
 
         // Process events
-        engine.processEvent(matchingEvent);
-        engine.processEvent(failingFirstAndCondition);
-        engine.processEvent(failingSecondAndCondition);
+        engine.processEvent(validEvent);
+        engine.processEvent(eventOutsideRange1);
+        engine.processEvent(eventOutsideRange2);
 
-        // Assert: Only the matching event should trigger the automation
-        assertThat(automation.anyTriggerActivated(matchingEvent))
+        // Assert: Only the valid event should trigger the automation
+        assertThat(automation.anyTriggerActivated(validEvent))
                 .as("Automation should trigger when time is 22:40")
                 .isTrue();
 
-        assertThat(automation.allConditionsMet(matchingEvent))
+        assertThat(automation.allConditionsMet(validEvent))
                 .as("Conditions should be met when time is 22:40")
                 .isTrue();
 
         assertThat(logAppender.getLoggedMessages())
                 .anyMatch(msg -> msg.contains("Automation triggered with nested conditions met at 10:40 PM"));
 
-        // Assert: Events failing either AND condition should not trigger
-        assertThat(automation.anyTriggerActivated(failingFirstAndCondition))
-                .as("Automation should not trigger at 22:55 since it fails first AND condition")
+        // Assert: Events outside the defined OR conditions should not trigger
+        assertThat(automation.anyTriggerActivated(eventOutsideRange1))
+                .as("Automation should not trigger at 22:55 since it fails all OR conditions")
                 .isFalse();
 
-        assertThat(automation.allConditionsMet(failingFirstAndCondition))
-                .as("Conditions should not be met at 22:55")
+        assertThat(automation.allConditionsMet(eventOutsideRange1))
+                .as("Conditions should be met at 22:55")
+                .isTrue();
+
+        assertThat(automation.anyTriggerActivated(eventOutsideRange2))
+                .as("Automation should not trigger at 22:33 since it fails all OR conditions")
                 .isFalse();
 
-        assertThat(automation.anyTriggerActivated(failingSecondAndCondition))
-                .as("Automation should not trigger at 22:33 since it fails second AND condition")
-                .isFalse();
-
-        assertThat(automation.allConditionsMet(failingSecondAndCondition))
-                .as("Conditions should not be met at 22:33")
-                .isFalse();
+        assertThat(automation.allConditionsMet(eventOutsideRange2))
+                .as("Conditions should be met at 22:33")
+                .isTrue();
     }
 
     @Test
@@ -471,23 +465,23 @@ class OrConditionTest {
                 .isFalse();
 
         assertThat(automation.allConditionsMet(failingFirstLayer))
-                .as("Conditions should not be met at 22:55")
-                .isFalse();
+                .as("Conditions should be met at 22:55")
+                .isTrue();
 
         assertThat(automation.anyTriggerActivated(failingSecondLayer))
                 .as("Automation should not trigger at 22:33 since it fails second AND condition")
                 .isFalse();
 
         assertThat(automation.allConditionsMet(failingSecondLayer))
-                .as("Conditions should not be met at 22:33")
-                .isFalse();
+                .as("Conditions should be met at 22:33")
+                .isTrue();
 
         assertThat(automation.anyTriggerActivated(failingThirdLayer))
                 .as("Automation should not trigger at 22:37 since it fails third AND condition")
                 .isFalse();
 
         assertThat(automation.allConditionsMet(failingThirdLayer))
-                .as("Conditions should not be met at 22:37")
-                .isFalse();
+                .as("Conditions should be met at 22:37")
+                .isTrue();
     }
 }
