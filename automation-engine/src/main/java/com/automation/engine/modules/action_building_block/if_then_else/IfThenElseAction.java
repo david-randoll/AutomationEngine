@@ -18,16 +18,16 @@ public class IfThenElseAction extends AbstractAction<IfThenElseActionContext> {
 
     @Override
     public void execute(Event eventContext, IfThenElseActionContext actionContext) {
-        if (ObjectUtils.isEmpty(actionContext.getIfBlock().getConditions())) return;
-        List<IBaseCondition> conditions = resolver.buildConditionsList(actionContext.getIfBlock().getConditions());
+        if (ObjectUtils.isEmpty(actionContext.getIfConditions())) return;
+        List<IBaseCondition> conditions = resolver.buildConditionsList(actionContext.getIfConditions());
         boolean isSatisfied = conditions.stream().allMatch(condition -> condition.isSatisfied(eventContext));
         if (isSatisfied) {
-            if (ObjectUtils.isEmpty(actionContext.getThenBlock().getActions())) return;
-            List<IBaseAction> actions = resolver.buildActionsList(actionContext.getThenBlock().getActions());
+            if (ObjectUtils.isEmpty(actionContext.getThenActions())) return;
+            List<IBaseAction> actions = resolver.buildActionsList(actionContext.getThenActions());
             actions.forEach(action -> action.execute(eventContext));
         } else {
-            if (ObjectUtils.isEmpty(actionContext.getElseBlock().getActions())) return;
-            List<IBaseAction> actions = resolver.buildActionsList(actionContext.getElseBlock().getActions());
+            if (ObjectUtils.isEmpty(actionContext.getElseActions())) return;
+            List<IBaseAction> actions = resolver.buildActionsList(actionContext.getElseActions());
             actions.forEach(action -> action.execute(eventContext));
         }
     }
