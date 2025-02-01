@@ -1,4 +1,4 @@
-package com.automation.engine.modules.action_building_block.stop_on_condition;
+package com.automation.engine.modules.action_building_block.stop_action_sequence;
 
 import com.automation.engine.core.actions.AbstractAction;
 import com.automation.engine.core.actions.exceptions.StopActionSequenceException;
