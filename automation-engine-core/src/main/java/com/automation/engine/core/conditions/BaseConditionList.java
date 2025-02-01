@@ -4,7 +4,7 @@ import com.automation.engine.core.events.Event;
 
 import java.util.ArrayList;
 
-public class ConditionList extends ArrayList<IBaseCondition> {
+public class BaseConditionList extends ArrayList<IBaseCondition> {
     public boolean allSatisfied(Event context) {
         return this.stream()
                 .allMatch(condition -> condition.isSatisfied(context));

@@ -1,9 +1,9 @@
 package com.automation.engine.core;
 
-import com.automation.engine.core.actions.ActionList;
-import com.automation.engine.core.conditions.ConditionList;
+import com.automation.engine.core.actions.BaseActionList;
+import com.automation.engine.core.conditions.BaseConditionList;
 import com.automation.engine.core.events.Event;
-import com.automation.engine.core.triggers.TriggerList;
+import com.automation.engine.core.triggers.BaseTriggerList;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.util.ObjectUtils;
@@ -12,9 +12,9 @@ import org.springframework.util.ObjectUtils;
 @AllArgsConstructor
 public class Automation {
     private final String alias;
-    private final TriggerList triggers;
-    private final ConditionList conditions;
-    private final ActionList actions;
+    private final BaseTriggerList triggers;
+    private final BaseConditionList conditions;
+    private final BaseActionList actions;
 
     /**
      * Check if any of the triggers are triggered

@@ -5,7 +5,7 @@ import com.automation.engine.core.events.Event;
 
 import java.util.ArrayList;
 
-public class ActionList extends ArrayList<IBaseAction> {
+public class BaseActionList extends ArrayList<IBaseAction> {
     public void executeAll(Event event) {
         try {
             for (IBaseAction action : this) {

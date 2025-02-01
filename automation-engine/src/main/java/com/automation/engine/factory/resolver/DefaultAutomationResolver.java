@@ -2,13 +2,13 @@ package com.automation.engine.factory.resolver;
 
 import com.automation.engine.core.Automation;
 import com.automation.engine.core.actions.ActionContext;
-import com.automation.engine.core.actions.ActionList;
+import com.automation.engine.core.actions.BaseActionList;
 import com.automation.engine.core.actions.IAction;
 import com.automation.engine.core.actions.IBaseAction;
 import com.automation.engine.core.actions.interceptors.IActionInterceptor;
 import com.automation.engine.core.actions.interceptors.InterceptingAction;
 import com.automation.engine.core.conditions.ConditionContext;
-import com.automation.engine.core.conditions.ConditionList;
+import com.automation.engine.core.conditions.BaseConditionList;
 import com.automation.engine.core.conditions.IBaseCondition;
 import com.automation.engine.core.conditions.ICondition;
 import com.automation.engine.core.conditions.interceptors.IConditionInterceptor;
@@ -17,7 +17,7 @@ import com.automation.engine.core.events.Event;
 import com.automation.engine.core.triggers.IBaseTrigger;
 import com.automation.engine.core.triggers.ITrigger;
 import com.automation.engine.core.triggers.TriggerContext;
-import com.automation.engine.core.triggers.TriggerList;
+import com.automation.engine.core.triggers.BaseTriggerList;
 import com.automation.engine.core.triggers.interceptors.ITriggerInterceptor;
 import com.automation.engine.core.triggers.interceptors.InterceptingTrigger;
 import com.automation.engine.factory.exceptions.ActionNotFoundException;
@@ -54,17 +54,17 @@ public class DefaultAutomationResolver implements IAutomationResolver<CreateRequ
     public Automation create(CreateRequest createRequest) {
         log.info("Start creating automation: {}", createRequest.getAlias());
         var alias = createRequest.getAlias();
-        TriggerList triggers = buildTriggersList(createRequest.getTriggers());
-        ConditionList conditions = buildConditionsList(createRequest.getConditions());
-        ActionList actions = buildActionsList(createRequest.getActions());
+        BaseTriggerList triggers = buildTriggersList(createRequest.getTriggers());
+        BaseConditionList conditions = buildConditionsList(createRequest.getConditions());
+        BaseActionList actions = buildActionsList(createRequest.getActions());
         var automation = new Automation(alias, triggers, conditions, actions);
         log.info("Automation {} created successfully", alias);
         return automation;
     }
 
     @NonNull
-    public TriggerList buildTriggersList(List<Trigger> triggers) {
-        var result = new TriggerList();
+    public BaseTriggerList buildTriggersList(List<Trigger> triggers) {
+        var result = new BaseTriggerList();
 
         if (ObjectUtils.isEmpty(triggers)) return result;
 
@@ -86,8 +86,8 @@ public class DefaultAutomationResolver implements IAutomationResolver<CreateRequ
     }
 
     @NonNull
-    public ConditionList buildConditionsList(List<Condition> conditions) {
-        var result = new ConditionList();
+    public BaseConditionList buildConditionsList(List<Condition> conditions) {
+        var result = new BaseConditionList();
 
         if (ObjectUtils.isEmpty(conditions)) return result;
 
@@ -108,8 +108,8 @@ public class DefaultAutomationResolver implements IAutomationResolver<CreateRequ
         return result;
     }
 
-    public ActionList buildActionsList(List<Action> actions) {
-        var result = new ActionList();
+    public BaseActionList buildActionsList(List<Action> actions) {
+        var result = new BaseActionList();
 
         if (ObjectUtils.isEmpty(actions)) return result;
 
@@ -131,23 +131,23 @@ public class DefaultAutomationResolver implements IAutomationResolver<CreateRequ
     }
 
     public boolean allConditionsSatisfied(Event eventContext, @Nullable List<Condition> conditions) {
-        ConditionList resolvedConditions = buildConditionsList(conditions);
+        BaseConditionList resolvedConditions = buildConditionsList(conditions);
         return resolvedConditions.allSatisfied(eventContext);
     }
 
     public boolean anyConditionSatisfied(Event eventContext, @Nullable List<Condition> conditions) {
-        ConditionList resolvedConditions = buildConditionsList(conditions);
+        BaseConditionList resolvedConditions = buildConditionsList(conditions);
         return resolvedConditions.anySatisfied(eventContext);
     }
 
     public boolean noneConditionSatisfied(Event eventContext, @Nullable List<Condition> conditions) {
-        ConditionList resolvedConditions = buildConditionsList(conditions);
+        BaseConditionList resolvedConditions = buildConditionsList(conditions);
         return resolvedConditions.noneSatisfied(eventContext);
     }
 
     public void executeActions(Event eventContext, @Nullable List<Action> actions) {
         if (ObjectUtils.isEmpty(actions)) return;
-        ActionList resolvedActions = buildActionsList(actions);
+        BaseActionList resolvedActions = buildActionsList(actions);
         resolvedActions.executeAll(eventContext);
     }
 

@@ -4,7 +4,7 @@ import com.automation.engine.core.events.Event;
 
 import java.util.ArrayList;
 
-public class TriggerList extends ArrayList<IBaseTrigger> {
+public class BaseTriggerList extends ArrayList<IBaseTrigger> {
     public boolean allTriggered(Event event) {
         return this.stream()
                 .allMatch(trigger -> trigger.isTriggered(event));
