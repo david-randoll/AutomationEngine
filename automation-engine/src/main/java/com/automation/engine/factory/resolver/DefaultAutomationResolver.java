@@ -11,6 +11,7 @@ import com.automation.engine.core.conditions.IBaseCondition;
 import com.automation.engine.core.conditions.ICondition;
 import com.automation.engine.core.conditions.interceptors.IConditionInterceptor;
 import com.automation.engine.core.conditions.interceptors.InterceptingCondition;
+import com.automation.engine.core.events.Event;
 import com.automation.engine.core.triggers.IBaseTrigger;
 import com.automation.engine.core.triggers.ITrigger;
 import com.automation.engine.core.triggers.TriggerContext;
@@ -27,6 +28,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
@@ -124,6 +126,27 @@ public class DefaultAutomationResolver implements IAutomationResolver<CreateRequ
         }
 
         return result;
+    }
+
+    public boolean allConditionsSatisfied(Event eventContext, @Nullable List<Condition> conditions) {
+        List<IBaseCondition> resolvedConditions = buildConditionsList(conditions);
+        return resolvedConditions.stream().allMatch(condition -> condition.isSatisfied(eventContext));
+    }
+
+    public boolean anyConditionSatisfied(Event eventContext, @Nullable List<Condition> conditions) {
+        List<IBaseCondition> resolvedConditions = buildConditionsList(conditions);
+        return resolvedConditions.stream().anyMatch(condition -> condition.isSatisfied(eventContext));
+    }
+
+    public boolean noneConditionSatisfied(Event eventContext, @Nullable List<Condition> conditions) {
+        List<IBaseCondition> resolvedConditions = buildConditionsList(conditions);
+        return resolvedConditions.stream().noneMatch(condition -> condition.isSatisfied(eventContext));
+    }
+
+    public void executeActions(Event eventContext, @Nullable List<Action> actions) {
+        if (ObjectUtils.isEmpty(actions)) return;
+        List<IBaseAction> resolvedActions = buildActionsList(actions);
+        resolvedActions.forEach(action -> action.execute(eventContext));
     }
 
     @NonNull

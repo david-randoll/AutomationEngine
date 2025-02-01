@@ -22,6 +22,23 @@ public class IfThenElseActionContext {
     @JsonProperty("then")
     private List<Action> thenActions = new ArrayList<>();
 
+    @JsonProperty("ifs")
+    private List<IfThenBlock> ifThenBlocks = new ArrayList<>();
+
     @JsonProperty("else")
     private List<Action> elseActions = new ArrayList<>();
+
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class IfThenBlock {
+        private String alias;
+
+        @JsonProperty("if")
+        private List<Condition> ifConditions = new ArrayList<>();
+
+        @JsonProperty("then")
+        private List<Action> thenActions = new ArrayList<>();
+    }
 }
