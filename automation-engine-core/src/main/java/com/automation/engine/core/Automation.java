@@ -1,22 +1,20 @@
 package com.automation.engine.core;
 
-import com.automation.engine.core.actions.IBaseAction;
-import com.automation.engine.core.conditions.IBaseCondition;
+import com.automation.engine.core.actions.ActionList;
+import com.automation.engine.core.conditions.ConditionList;
 import com.automation.engine.core.events.Event;
-import com.automation.engine.core.triggers.IBaseTrigger;
+import com.automation.engine.core.triggers.TriggerList;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.util.ObjectUtils;
-
-import java.util.List;
 
 @Data
 @AllArgsConstructor
 public class Automation {
     private final String alias;
-    private final List<IBaseTrigger> triggers;
-    private final List<IBaseCondition> conditions;
-    private final List<IBaseAction> actions;
+    private final TriggerList triggers;
+    private final ConditionList conditions;
+    private final ActionList actions;
 
     /**
      * Check if any of the triggers are triggered
@@ -25,8 +23,7 @@ public class Automation {
      */
     public boolean anyTriggerActivated(Event event) {
         if (ObjectUtils.isEmpty(triggers)) return false;
-        return triggers.stream()
-                .anyMatch(trigger -> trigger.isTriggered(event));
+        return triggers.anyTriggered(event);
     }
 
     /**
@@ -36,8 +33,7 @@ public class Automation {
      */
     public boolean allConditionsMet(Event context) {
         if (ObjectUtils.isEmpty(conditions)) return true;
-        return conditions.stream()
-                .allMatch(condition -> condition.isSatisfied(context));
+        return conditions.allSatisfied(context);
     }
 
     /**
@@ -45,6 +41,6 @@ public class Automation {
      */
     public void performActions(Event context) {
         if (ObjectUtils.isEmpty(actions)) return;
-        actions.forEach(action -> action.execute(context));
+        actions.executeAll(context);
     }
 }

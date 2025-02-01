@@ -2,11 +2,13 @@ package com.automation.engine.factory.resolver;
 
 import com.automation.engine.core.Automation;
 import com.automation.engine.core.actions.ActionContext;
+import com.automation.engine.core.actions.ActionList;
 import com.automation.engine.core.actions.IAction;
 import com.automation.engine.core.actions.IBaseAction;
 import com.automation.engine.core.actions.interceptors.IActionInterceptor;
 import com.automation.engine.core.actions.interceptors.InterceptingAction;
 import com.automation.engine.core.conditions.ConditionContext;
+import com.automation.engine.core.conditions.ConditionList;
 import com.automation.engine.core.conditions.IBaseCondition;
 import com.automation.engine.core.conditions.ICondition;
 import com.automation.engine.core.conditions.interceptors.IConditionInterceptor;
@@ -15,6 +17,7 @@ import com.automation.engine.core.events.Event;
 import com.automation.engine.core.triggers.IBaseTrigger;
 import com.automation.engine.core.triggers.ITrigger;
 import com.automation.engine.core.triggers.TriggerContext;
+import com.automation.engine.core.triggers.TriggerList;
 import com.automation.engine.core.triggers.interceptors.ITriggerInterceptor;
 import com.automation.engine.core.triggers.interceptors.InterceptingTrigger;
 import com.automation.engine.factory.exceptions.ActionNotFoundException;
@@ -32,7 +35,6 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -52,17 +54,17 @@ public class DefaultAutomationResolver implements IAutomationResolver<CreateRequ
     public Automation create(CreateRequest createRequest) {
         log.info("Start creating automation: {}", createRequest.getAlias());
         var alias = createRequest.getAlias();
-        List<IBaseTrigger> triggers = buildTriggersList(createRequest.getTriggers());
-        List<IBaseCondition> conditions = buildConditionsList(createRequest.getConditions());
-        List<IBaseAction> actions = buildActionsList(createRequest.getActions());
+        TriggerList triggers = buildTriggersList(createRequest.getTriggers());
+        ConditionList conditions = buildConditionsList(createRequest.getConditions());
+        ActionList actions = buildActionsList(createRequest.getActions());
         var automation = new Automation(alias, triggers, conditions, actions);
         log.info("Automation {} created successfully", alias);
         return automation;
     }
 
     @NonNull
-    public List<IBaseTrigger> buildTriggersList(List<Trigger> triggers) {
-        var result = new ArrayList<IBaseTrigger>();
+    public TriggerList buildTriggersList(List<Trigger> triggers) {
+        var result = new TriggerList();
 
         if (ObjectUtils.isEmpty(triggers)) return result;
 
@@ -84,8 +86,8 @@ public class DefaultAutomationResolver implements IAutomationResolver<CreateRequ
     }
 
     @NonNull
-    public List<IBaseCondition> buildConditionsList(List<Condition> conditions) {
-        var result = new ArrayList<IBaseCondition>();
+    public ConditionList buildConditionsList(List<Condition> conditions) {
+        var result = new ConditionList();
 
         if (ObjectUtils.isEmpty(conditions)) return result;
 
@@ -106,8 +108,8 @@ public class DefaultAutomationResolver implements IAutomationResolver<CreateRequ
         return result;
     }
 
-    public List<IBaseAction> buildActionsList(List<Action> actions) {
-        var result = new ArrayList<IBaseAction>();
+    public ActionList buildActionsList(List<Action> actions) {
+        var result = new ActionList();
 
         if (ObjectUtils.isEmpty(actions)) return result;
 
@@ -129,24 +131,24 @@ public class DefaultAutomationResolver implements IAutomationResolver<CreateRequ
     }
 
     public boolean allConditionsSatisfied(Event eventContext, @Nullable List<Condition> conditions) {
-        List<IBaseCondition> resolvedConditions = buildConditionsList(conditions);
-        return resolvedConditions.stream().allMatch(condition -> condition.isSatisfied(eventContext));
+        ConditionList resolvedConditions = buildConditionsList(conditions);
+        return resolvedConditions.allSatisfied(eventContext);
     }
 
     public boolean anyConditionSatisfied(Event eventContext, @Nullable List<Condition> conditions) {
-        List<IBaseCondition> resolvedConditions = buildConditionsList(conditions);
-        return resolvedConditions.stream().anyMatch(condition -> condition.isSatisfied(eventContext));
+        ConditionList resolvedConditions = buildConditionsList(conditions);
+        return resolvedConditions.anySatisfied(eventContext);
     }
 
     public boolean noneConditionSatisfied(Event eventContext, @Nullable List<Condition> conditions) {
-        List<IBaseCondition> resolvedConditions = buildConditionsList(conditions);
-        return resolvedConditions.stream().noneMatch(condition -> condition.isSatisfied(eventContext));
+        ConditionList resolvedConditions = buildConditionsList(conditions);
+        return resolvedConditions.noneSatisfied(eventContext);
     }
 
     public void executeActions(Event eventContext, @Nullable List<Action> actions) {
         if (ObjectUtils.isEmpty(actions)) return;
-        List<IBaseAction> resolvedActions = buildActionsList(actions);
-        resolvedActions.forEach(action -> action.execute(eventContext));
+        ActionList resolvedActions = buildActionsList(actions);
+        resolvedActions.executeAll(eventContext);
     }
 
     @NonNull
