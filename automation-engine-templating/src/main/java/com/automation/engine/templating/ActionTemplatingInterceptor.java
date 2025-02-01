@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.util.Map;
 
 @Slf4j
@@ -35,17 +36,19 @@ public class ActionTemplatingInterceptor implements IActionInterceptor {
 
     @Override
     public void intercept(Event context, ActionContext actionContext, IAction action) {
+        log.debug("ActionTemplatingInterceptor: Processing action data...");
+        String actionDataAsJson = null;
+        Map<String, Object> processedDataMap = null;
         try {
-            log.debug("ActionTemplatingInterceptor: Processing action data...");
-            var actionDataAsJson = objectMapper.writeValueAsString(actionContext.getData());
+            actionDataAsJson = objectMapper.writeValueAsString(actionContext.getData());
             var processedTemplate = templateProcessor.process(actionDataAsJson, context.getData());
             // convert the result back to a map
-            Map<String, Object> processedDataMap = objectMapper.readValue(processedTemplate, new TypeReference<>() {
+            processedDataMap = objectMapper.readValue(processedTemplate, new TypeReference<>() {
             });
-            action.execute(context, new ActionContext(processedDataMap));
-            log.debug("ActionTemplatingInterceptor done.");
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        action.execute(context, new ActionContext(processedDataMap));
+        log.debug("ActionTemplatingInterceptor done.");
     }
 }

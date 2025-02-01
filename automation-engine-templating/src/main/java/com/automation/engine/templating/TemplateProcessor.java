@@ -6,6 +6,7 @@ import io.pebbletemplates.pebble.template.PebbleTemplate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Map;
 
@@ -20,9 +21,9 @@ public class TemplateProcessor {
      * @param templateString The template string to process.
      * @param variables      A map of variables to be used in the template.
      * @return The rendered template as a string.
-     * @throws Exception If there is an error during template processing.
+     * @throws IOException If there is an error during template processing.
      */
-    public String process(String templateString, Map<String, Object> variables) throws Exception {
+    public String process(String templateString, Map<String, Object> variables) throws IOException {
         PebbleTemplate template = pebbleEngine.getLiteralTemplate(templateString);
 
         try (StringWriter writer = new StringWriter()) {

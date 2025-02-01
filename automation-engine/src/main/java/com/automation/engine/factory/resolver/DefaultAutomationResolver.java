@@ -7,17 +7,17 @@ import com.automation.engine.core.actions.IAction;
 import com.automation.engine.core.actions.IBaseAction;
 import com.automation.engine.core.actions.interceptors.IActionInterceptor;
 import com.automation.engine.core.actions.interceptors.InterceptingAction;
-import com.automation.engine.core.conditions.ConditionContext;
 import com.automation.engine.core.conditions.BaseConditionList;
+import com.automation.engine.core.conditions.ConditionContext;
 import com.automation.engine.core.conditions.IBaseCondition;
 import com.automation.engine.core.conditions.ICondition;
 import com.automation.engine.core.conditions.interceptors.IConditionInterceptor;
 import com.automation.engine.core.conditions.interceptors.InterceptingCondition;
 import com.automation.engine.core.events.Event;
+import com.automation.engine.core.triggers.BaseTriggerList;
 import com.automation.engine.core.triggers.IBaseTrigger;
 import com.automation.engine.core.triggers.ITrigger;
 import com.automation.engine.core.triggers.TriggerContext;
-import com.automation.engine.core.triggers.BaseTriggerList;
 import com.automation.engine.core.triggers.interceptors.ITriggerInterceptor;
 import com.automation.engine.core.triggers.interceptors.InterceptingTrigger;
 import com.automation.engine.factory.exceptions.ActionNotFoundException;
@@ -29,6 +29,7 @@ import com.automation.engine.factory.request.CreateRequest;
 import com.automation.engine.factory.request.Trigger;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -68,21 +69,23 @@ public class DefaultAutomationResolver implements IAutomationResolver<CreateRequ
 
         if (ObjectUtils.isEmpty(triggers)) return result;
 
-        var triggersMap = getMap(ITrigger.class);
-        for (var trigger : triggers) {
-            var triggerName = "%sTrigger".formatted(trigger.getTrigger());
-            ITrigger triggerInstance = Optional.ofNullable(triggersMap.get(triggerName))
-                    .orElseThrow(() -> new TriggerNotFoundException(trigger.getTrigger()));
-
-            var interceptingTrigger = new InterceptingTrigger(triggerInstance, triggerInterceptors);
-            var triggerContext = new TriggerContext(trigger.getParams());
-
-            IBaseTrigger newTriggerInstance = event -> interceptingTrigger.isTriggered(event, triggerContext);
-
+        for (Trigger trigger : triggers) {
+            IBaseTrigger newTriggerInstance = buildTrigger(trigger);
             result.add(newTriggerInstance);
         }
 
         return result;
+    }
+
+    private IBaseTrigger buildTrigger(Trigger trigger) {
+        var triggerName = "%sTrigger".formatted(trigger.getTrigger());
+        ITrigger triggerInstance = Optional.ofNullable(getBean(triggerName, ITrigger.class))
+                .orElseThrow(() -> new TriggerNotFoundException(trigger.getTrigger()));
+
+        var interceptingTrigger = new InterceptingTrigger(triggerInstance, triggerInterceptors);
+        var triggerContext = new TriggerContext(trigger.getParams());
+
+        return event -> interceptingTrigger.isTriggered(event, triggerContext);
     }
 
     @NonNull
@@ -91,16 +94,8 @@ public class DefaultAutomationResolver implements IAutomationResolver<CreateRequ
 
         if (ObjectUtils.isEmpty(conditions)) return result;
 
-        var conditionsMap = getMap(ICondition.class);
         for (var condition : conditions) {
-            var conditionName = "%sCondition".formatted(condition.getCondition());
-            ICondition conditionInstance = Optional.ofNullable(conditionsMap.get(conditionName))
-                    .orElseThrow(() -> new ConditionNotFoundException(condition.getCondition()));
-
-            var interceptingCondition = new InterceptingCondition(conditionInstance, conditionInterceptors);
-            var conditionContext = new ConditionContext(condition.getParams());
-
-            IBaseCondition newConditionInstance = eventContext -> interceptingCondition.isSatisfied(eventContext, conditionContext);
+            IBaseCondition newConditionInstance = buildCondition(condition);
 
             result.add(newConditionInstance);
         }
@@ -108,26 +103,40 @@ public class DefaultAutomationResolver implements IAutomationResolver<CreateRequ
         return result;
     }
 
+    private IBaseCondition buildCondition(Condition condition) {
+        var conditionName = "%sCondition".formatted(condition.getCondition());
+        ICondition conditionInstance = Optional.ofNullable(getBean(conditionName, ICondition.class))
+                .orElseThrow(() -> new ConditionNotFoundException(condition.getCondition()));
+
+        var interceptingCondition = new InterceptingCondition(conditionInstance, conditionInterceptors);
+        var conditionContext = new ConditionContext(condition.getParams());
+
+        return eventContext -> interceptingCondition.isSatisfied(eventContext, conditionContext);
+    }
+
     public BaseActionList buildActionsList(List<Action> actions) {
         var result = new BaseActionList();
 
         if (ObjectUtils.isEmpty(actions)) return result;
 
-        var actionsMap = getMap(IAction.class);
         for (var action : actions) {
-            var actionName = "%sAction".formatted(action.getAction());
-            IAction actionInstance = Optional.ofNullable(actionsMap.get(actionName))
-                    .orElseThrow(() -> new ActionNotFoundException(action.getAction()));
-
-            var interceptingAction = new InterceptingAction(actionInstance, actionInterceptors);
-            var actionContext = new ActionContext(action.getParams());
-
-            IBaseAction newActionInstance = eventContext -> interceptingAction.execute(eventContext, actionContext);
+            IBaseAction newActionInstance = buildAction(action);
 
             result.add(newActionInstance);
         }
 
         return result;
+    }
+
+    private IBaseAction buildAction(Action action) {
+        var actionName = "%sAction".formatted(action.getAction());
+        IAction actionInstance = Optional.ofNullable(getBean(actionName, IAction.class))
+                .orElseThrow(() -> new ActionNotFoundException(action.getAction()));
+
+        var interceptingAction = new InterceptingAction(actionInstance, actionInterceptors);
+        var actionContext = new ActionContext(action.getParams());
+
+        return eventContext -> interceptingAction.execute(eventContext, actionContext);
     }
 
     public boolean allConditionsSatisfied(Event eventContext, @Nullable List<Condition> conditions) {
@@ -154,5 +163,14 @@ public class DefaultAutomationResolver implements IAutomationResolver<CreateRequ
     @NonNull
     private <T> Map<String, T> getMap(Class<T> clazz) {
         return applicationContext.getBeansOfType(clazz);
+    }
+
+    public <T> T getBean(String name, Class<T> clazz) {
+        try {
+            return applicationContext.getBean(name, clazz);
+        } catch (NoSuchBeanDefinitionException e) {
+            log.error("Bean {} not found", name, e);
+            return null;
+        }
     }
 }
