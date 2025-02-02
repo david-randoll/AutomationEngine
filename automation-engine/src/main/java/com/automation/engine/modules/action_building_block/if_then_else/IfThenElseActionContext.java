@@ -1,5 +1,6 @@
 package com.automation.engine.modules.action_building_block.if_then_else;
 
+import com.automation.engine.core.actions.IActionContext;
 import com.automation.engine.factory.request.Action;
 import com.automation.engine.factory.request.Condition;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -15,7 +16,9 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class IfThenElseActionContext {
+public class IfThenElseActionContext implements IActionContext {
+    private String alias;
+
     @JsonProperty("if")
     private List<Condition> ifConditions = new ArrayList<>();
 

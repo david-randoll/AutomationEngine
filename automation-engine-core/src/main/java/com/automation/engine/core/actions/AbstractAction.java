@@ -7,7 +7,7 @@ import com.automation.engine.core.utils.TypeConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 
-public abstract class AbstractAction<T> implements IAction {
+public abstract class AbstractAction<T extends IActionContext> implements IAction {
     @Autowired
     private TypeConverter typeConverter;
 
@@ -23,5 +23,5 @@ public abstract class AbstractAction<T> implements IAction {
         execute(eventContext, data);
     }
 
-    public abstract void execute(Event eventContext, T actionContext) throws StopActionSequenceException;
+    public abstract void execute(Event event, T context) throws StopActionSequenceException;
 }

@@ -16,9 +16,9 @@ public class StopActionSequenceAction extends AbstractAction<StopActionSequenceA
     private final DefaultAutomationResolver resolver;
 
     @Override
-    public void execute(Event eventContext, StopActionSequenceActionContext actionContext) throws StopActionSequenceException {
-        if (ObjectUtils.isEmpty(actionContext.getCondition())) return;
-        var isSatisfied = resolver.allConditionsSatisfied(eventContext, List.of(actionContext.getCondition()));
-        if (isSatisfied && actionContext.isStopIfSatisfied()) throw new StopActionSequenceException();
+    public void execute(Event event, StopActionSequenceActionContext context) throws StopActionSequenceException {
+        if (ObjectUtils.isEmpty(context.getCondition())) return;
+        var isSatisfied = resolver.allConditionsSatisfied(event, List.of(context.getCondition()));
+        if (isSatisfied && context.isStopIfSatisfied()) throw new StopActionSequenceException();
     }
 }

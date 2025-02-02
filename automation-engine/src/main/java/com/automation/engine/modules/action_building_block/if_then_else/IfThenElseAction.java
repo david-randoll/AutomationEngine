@@ -13,27 +13,27 @@ public class IfThenElseAction extends AbstractAction<IfThenElseActionContext> {
     private final DefaultAutomationResolver resolver;
 
     @Override
-    public void execute(Event eventContext, IfThenElseActionContext actionContext) {
-        if (!ObjectUtils.isEmpty(actionContext.getIfConditions())) {
-            boolean isSatisfied = resolver.allConditionsSatisfied(eventContext, actionContext.getIfConditions());
+    public void execute(Event event, IfThenElseActionContext context) {
+        if (!ObjectUtils.isEmpty(context.getIfConditions())) {
+            boolean isSatisfied = resolver.allConditionsSatisfied(event, context.getIfConditions());
             if (isSatisfied) {
-                resolver.executeActions(eventContext, actionContext.getThenActions());
+                resolver.executeActions(event, context.getThenActions());
                 return;
             }
         }
 
         // check the ifs conditions
-        if (!ObjectUtils.isEmpty(actionContext.getIfThenBlocks())) {
-            for (var ifBlock : actionContext.getIfThenBlocks()) {
-                var isIfsSatisfied = resolver.allConditionsSatisfied(eventContext, ifBlock.getIfConditions());
+        if (!ObjectUtils.isEmpty(context.getIfThenBlocks())) {
+            for (var ifBlock : context.getIfThenBlocks()) {
+                var isIfsSatisfied = resolver.allConditionsSatisfied(event, ifBlock.getIfConditions());
                 if (isIfsSatisfied) {
-                    resolver.executeActions(eventContext, ifBlock.getThenActions());
+                    resolver.executeActions(event, ifBlock.getThenActions());
                     return;
                 }
             }
         }
 
         // execute else actions
-        resolver.executeActions(eventContext, actionContext.getElseActions());
+        resolver.executeActions(event, context.getElseActions());
     }
 }
