@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK, classes = AutomationEngineApplication.class)
 @ExtendWith(SpringExtension.class)
-class StopActionSequenceActionTest {
+class StopActionTest {
     @Autowired
     private AutomationEngine engine;
 
@@ -50,7 +50,8 @@ class StopActionSequenceActionTest {
                 actions:
                   - action: logger
                     message: "Action before stop"
-                  - action: stopActionSequence
+                  - action: stop
+                    stopActionSequence: true
                     condition:
                       condition: time
                       after: 22:00
@@ -83,7 +84,8 @@ class StopActionSequenceActionTest {
                 actions:
                   - action: logger
                     message: "Action before stop"
-                  - action: stopActionSequence
+                  - action: stop
+                    stopActionSequence: true
                     condition:
                       condition: time
                       after: 22:00
@@ -116,7 +118,7 @@ class StopActionSequenceActionTest {
                 actions:
                   - action: logger
                     message: "Action before stop"
-                  - action: stopActionSequence
+                  - action: stop
                   - action: logger
                     message: "This should be logged"
                 """;
@@ -146,7 +148,8 @@ class StopActionSequenceActionTest {
                 actions:
                   - action: logger
                     message: "Start sequence"
-                  - action: stopActionSequence
+                  - action: stop
+                    stopActionSequence: true
                     condition:
                       condition: alwaysTrue
                   - action: logger
@@ -177,7 +180,8 @@ class StopActionSequenceActionTest {
                   - trigger: time
                     at: 08:00
                 actions:
-                  - action: stopActionSequence
+                  - action: stop
+                    stopActionSequence: true
                     condition:
                       condition: alwaysTrue
                   - action: logger

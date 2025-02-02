@@ -1,7 +1,8 @@
-package com.automation.engine.modules.action_building_block.stop_action_sequence;
+package com.automation.engine.modules.action_building_block.stop;
 
 import com.automation.engine.core.actions.AbstractAction;
 import com.automation.engine.core.actions.exceptions.StopActionSequenceException;
+import com.automation.engine.core.actions.exceptions.StopAutomationException;
 import com.automation.engine.core.events.Event;
 import com.automation.engine.factory.resolver.DefaultAutomationResolver;
 import lombok.RequiredArgsConstructor;
@@ -10,15 +11,17 @@ import org.springframework.util.ObjectUtils;
 
 import java.util.List;
 
-@Component("stopActionSequenceAction")
+@Component("stopAction")
 @RequiredArgsConstructor
-public class StopActionSequenceAction extends AbstractAction<StopActionSequenceActionContext> {
+public class StopAction extends AbstractAction<StopActionContext> {
     private final DefaultAutomationResolver resolver;
 
     @Override
-    public void execute(Event event, StopActionSequenceActionContext context) throws StopActionSequenceException {
+    public void execute(Event event, StopActionContext context) throws StopActionSequenceException {
         if (ObjectUtils.isEmpty(context.getCondition())) return;
         var isSatisfied = resolver.allConditionsSatisfied(event, List.of(context.getCondition()));
-        if (isSatisfied && context.isStopIfSatisfied()) throw new StopActionSequenceException();
+        if (!isSatisfied) return;
+        if (context.isStopAutomation()) throw new StopAutomationException();
+        if (context.isStopActionSequence()) throw new StopActionSequenceException();
     }
 }

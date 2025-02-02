@@ -1,4 +1,4 @@
-package com.automation.engine.modules.action_building_block.stop_action_sequence;
+package com.automation.engine.modules.action_building_block.stop;
 
 import com.automation.engine.core.actions.IActionContext;
 import com.automation.engine.factory.request.Condition;
@@ -11,8 +11,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class StopActionSequenceActionContext implements IActionContext {
+public class StopActionContext implements IActionContext {
     private String alias;
-    private boolean stopIfSatisfied = true;
     private Condition condition;
+    private boolean stopActionSequence;
+    private boolean stopAutomation;
 }
