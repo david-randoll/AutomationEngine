@@ -6,7 +6,7 @@ import com.automation.engine.core.utils.TypeConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 
-public abstract class AbstractTrigger<T> implements ITrigger {
+public abstract class AbstractTrigger<T extends ITriggerContext> implements ITrigger {
     @Autowired
     private TypeConverter typeConverter;
 
@@ -18,12 +18,8 @@ public abstract class AbstractTrigger<T> implements ITrigger {
 
     @Override
     public boolean isTriggered(Event event, TriggerContext triggerContext) {
-        try {
-            T data = typeConverter.convert(triggerContext.getData(), getContextType());
-            return isTriggered(event, data);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to convert trigger context data", e);
-        }
+        T data = typeConverter.convert(triggerContext.getData(), getContextType());
+        return isTriggered(event, data);
     }
 
     public abstract boolean isTriggered(Event event, T triggerContext);
