@@ -289,4 +289,115 @@ class StopActionTest {
                 .noneMatch(msg -> msg.contains("This should never be logged"))
                 .anyMatch(msg -> msg.contains("Unaffected Automation is running"));
     }
+
+    @Test
+    void testStopAutomationVsStopActionSequence() {
+        var yaml = """
+                alias: Stop Automation vs Stop Action Sequence
+                triggers:
+                  - trigger: time
+                    at: 10:00
+                actions:
+                  - action: logger
+                    message: "Start sequence"
+                
+                  # First IF block with stopAutomation
+                  - action: ifThenElse
+                    if:
+                      - condition: time
+                        before: 11:00
+                    then:
+                      - action: logger
+                        message: "Before stopping automation"
+                      - action: stop
+                        condition:
+                          condition: alwaysTrue
+                        stopAutomation: true
+                      - action: logger
+                        message: "This should never be logged"
+                
+                  # Second IF block with stopActionSequence
+                  - action: ifThenElse
+                    if:
+                      - condition: time
+                        before: 11:00
+                    then:
+                      - action: logger
+                        message: "Before stopping sequence"
+                      - action: stop
+                        condition:
+                          condition: alwaysTrue
+                        stopActionSequence: true
+                      - action: logger
+                        message: "This should not be logged inside IF block"
+                
+                  # Actions outside IF should still execute after stopActionSequence
+                  - action: logger
+                    message: "Final log after sequence stop"
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.addAutomation(automation);
+
+        // Act: Create event that meets both stop conditions
+        TimeBasedEvent eventAt10AM = new TimeBasedEvent(LocalTime.of(10, 0));
+
+        // Process event
+        engine.processEvent(eventAt10AM);
+
+        // Assert:
+        assertThat(logAppender.getLoggedMessages())
+                .anyMatch(msg -> msg.contains("Start sequence"))  // Always runs
+                .anyMatch(msg -> msg.contains("Before stopping automation")) // Runs before stopAutomation
+                .noneMatch(msg -> msg.contains("This should never be logged")) // Must not run after stopAutomation
+                .noneMatch(msg -> msg.contains("Before stopping sequence")) // Must not execute second IF (automation already stopped)
+                .noneMatch(msg -> msg.contains("Final log after sequence stop")); // Final action should not run (automation is stopped)
+
+        // Now, let's test stopActionSequence without triggering stopAutomation
+        var yamlWithoutStopAutomation = """
+                alias: Stop Action Sequence Test
+                triggers:
+                  - trigger: time
+                    at: 13:00
+                actions:
+                  - action: logger
+                    message: "Start sequence"
+                
+                  # First IF block does NOT stop automation
+                  - action: ifThenElse
+                    if:
+                      - condition: time
+                        before: 14:00
+                    then:
+                      - action: logger
+                        message: "Before stopping sequence"
+                      - action: stop
+                        condition:
+                          condition: alwaysTrue
+                        stopActionSequence: true
+                      - action: logger
+                        message: "This should not be logged inside IF block"
+                
+                  # Actions outside IF should still execute after stopActionSequence
+                  - action: logger
+                    message: "Final log after sequence stop"
+                """;
+
+        Automation automation2 = factory.createAutomation("yaml", yamlWithoutStopAutomation);
+        engine.addAutomation(automation2);
+
+        // Act: Create event for second test
+        TimeBasedEvent eventAt1PM = new TimeBasedEvent(LocalTime.of(13, 0));
+
+        // Process event
+        engine.processEvent(eventAt1PM);
+
+        // Assert:
+        assertThat(logAppender.getLoggedMessages())
+                .anyMatch(msg -> msg.contains("Start sequence"))  // Always runs
+                .anyMatch(msg -> msg.contains("Before stopping sequence")) // Runs before stopActionSequence
+                .noneMatch(msg -> msg.contains("This should not be logged inside IF block")) // Must not log due to sequence stop
+                .anyMatch(msg -> msg.contains("Final log after sequence stop")); // Final action should execute (automation still running)
+    }
+
 }

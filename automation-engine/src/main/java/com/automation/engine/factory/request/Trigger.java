@@ -3,6 +3,7 @@ package com.automation.engine.factory.request;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,6 +18,7 @@ import java.util.Map;
 @Builder
 public class Trigger {
     private String alias;
+    @NotEmpty
     private String trigger;
 
     @JsonIgnore
