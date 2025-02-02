@@ -17,11 +17,16 @@ public class StopAction extends AbstractAction<StopActionContext> {
     private final DefaultAutomationResolver resolver;
 
     @Override
-    public void execute(Event event, StopActionContext context) throws StopActionSequenceException {
+    public void execute(Event event, StopActionContext context) {
         if (ObjectUtils.isEmpty(context.getCondition())) return;
         var isSatisfied = resolver.allConditionsSatisfied(event, List.of(context.getCondition()));
         if (!isSatisfied) return;
-        if (context.isStopAutomation()) throw new StopAutomationException();
-        if (context.isStopActionSequence()) throw new StopActionSequenceException();
+        if (context.hasStopMessage()) {
+            if (context.isStopAutomation()) throw new StopAutomationException(context.getStopMessage());
+            if (context.isStopActionSequence()) throw new StopActionSequenceException(context.getStopMessage());
+        } else {
+            if (context.isStopAutomation()) throw new StopAutomationException();
+            if (context.isStopActionSequence()) throw new StopActionSequenceException();
+        }
     }
 }

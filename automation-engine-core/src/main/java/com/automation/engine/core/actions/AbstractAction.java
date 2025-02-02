@@ -1,6 +1,5 @@
 package com.automation.engine.core.actions;
 
-import com.automation.engine.core.actions.exceptions.StopActionSequenceException;
 import com.automation.engine.core.events.Event;
 import com.automation.engine.core.utils.GenericTypeResolver;
 import com.automation.engine.core.utils.TypeConverter;
@@ -18,10 +17,10 @@ public abstract class AbstractAction<T extends IActionContext> implements IActio
     }
 
     @Override
-    public void execute(Event eventContext, ActionContext actionContext) throws StopActionSequenceException {
+    public void execute(Event eventContext, ActionContext actionContext) {
         T data = typeConverter.convert(actionContext.getData(), getContextType());
         execute(eventContext, data);
     }
 
-    public abstract void execute(Event event, T context) throws StopActionSequenceException;
+    public abstract void execute(Event event, T context);
 }

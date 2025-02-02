@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.util.ObjectUtils;
 
 @Data
 @AllArgsConstructor
@@ -16,4 +17,9 @@ public class StopActionContext implements IActionContext {
     private Condition condition;
     private boolean stopActionSequence;
     private boolean stopAutomation;
+    private String stopMessage;
+
+    public boolean hasStopMessage() {
+        return !ObjectUtils.isEmpty(stopMessage);
+    }
 }

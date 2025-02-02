@@ -1,6 +1,7 @@
 package com.automation.engine.core;
 
 import com.automation.engine.core.actions.BaseActionList;
+import com.automation.engine.core.actions.exceptions.StopAutomationException;
 import com.automation.engine.core.conditions.BaseConditionList;
 import com.automation.engine.core.events.Event;
 import com.automation.engine.core.triggers.BaseTriggerList;
@@ -41,6 +42,10 @@ public class Automation {
      */
     public void performActions(Event context) {
         if (ObjectUtils.isEmpty(actions)) return;
-        actions.executeAll(context);
+        try {
+            actions.executeAll(context);
+        } catch (StopAutomationException e) {
+            // This exception is thrown when the automation should be stopped
+        }
     }
 }

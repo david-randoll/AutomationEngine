@@ -201,4 +201,92 @@ class StopActionTest {
         assertThat(logAppender.getLoggedMessages())
                 .noneMatch(msg -> msg.contains("This should not be logged"));
     }
+
+    @Test
+    void testStopAutomationAffectsOnlyCurrentAutomation() {
+        var yaml1 = """
+                alias: Automation 1
+                triggers:
+                  - trigger: time
+                    at: 10:00
+                actions:
+                  - action: logger
+                    message: "Automation 1 before stop"
+                  - action: stop
+                    condition:
+                      condition: alwaysTrue
+                    stopAutomation: true
+                  - action: logger
+                    message: "This should not be logged in Automation 1"
+                """;
+
+        var yaml2 = """
+                alias: Automation 2
+                triggers:
+                  - trigger: time
+                    at: 10:00
+                actions:
+                  - action: logger
+                    message: "Automation 2 running"
+                """;
+
+        Automation automation1 = factory.createAutomation("yaml", yaml1);
+        Automation automation2 = factory.createAutomation("yaml", yaml2);
+        engine.addAutomation(automation1);
+        engine.addAutomation(automation2);
+
+        // Act: Create a time event at 10:00
+        TimeBasedEvent eventAt10AM = new TimeBasedEvent(LocalTime.of(10, 0));
+        engine.processEvent(eventAt10AM);
+
+        // Assert: Automation 1 should stop after the stop action, but Automation 2 should continue
+        assertThat(logAppender.getLoggedMessages())
+                .anyMatch(msg -> msg.contains("Automation 1 before stop"))
+                .noneMatch(msg -> msg.contains("This should not be logged in Automation 1"))
+                .anyMatch(msg -> msg.contains("Automation 2 running"));
+    }
+
+    @Test
+    void testStopAutomationWithoutAffectingOthers() {
+        var yaml1 = """
+                alias: Stop-Affected Automation
+                triggers:
+                  - trigger: time
+                    at: 15:00
+                actions:
+                  - action: logger
+                    message: "Stopping automation now"
+                  - action: stop
+                    condition:
+                      condition: alwaysTrue
+                    stopAutomation: true
+                  - action: logger
+                    message: "This should never be logged"
+                """;
+
+        var yaml2 = """
+                alias: Unaffected Automation
+                triggers:
+                  - trigger: time
+                    at: 15:00
+                actions:
+                  - action: logger
+                    message: "Unaffected Automation is running"
+                """;
+
+        Automation stopAffected = factory.createAutomation("yaml", yaml1);
+        Automation unaffected = factory.createAutomation("yaml", yaml2);
+        engine.addAutomation(stopAffected);
+        engine.addAutomation(unaffected);
+
+        // Act: Create a time event at 15:00
+        TimeBasedEvent eventAt3PM = new TimeBasedEvent(LocalTime.of(15, 0));
+        engine.processEvent(eventAt3PM);
+
+        // Assert: The first automation should stop, the second should proceed
+        assertThat(logAppender.getLoggedMessages())
+                .anyMatch(msg -> msg.contains("Stopping automation now"))
+                .noneMatch(msg -> msg.contains("This should never be logged"))
+                .anyMatch(msg -> msg.contains("Unaffected Automation is running"));
+    }
 }
