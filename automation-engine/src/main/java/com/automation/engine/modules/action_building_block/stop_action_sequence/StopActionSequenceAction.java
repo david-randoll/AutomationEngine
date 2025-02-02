@@ -19,6 +19,6 @@ public class StopActionSequenceAction extends AbstractAction<StopActionSequenceA
     public void execute(Event eventContext, StopActionSequenceActionContext actionContext) throws StopActionSequenceException {
         if (ObjectUtils.isEmpty(actionContext.getCondition())) return;
         var isSatisfied = resolver.allConditionsSatisfied(eventContext, List.of(actionContext.getCondition()));
-        if (isSatisfied) throw new StopActionSequenceException();
+        if (isSatisfied && actionContext.isStopIfSatisfied()) throw new StopActionSequenceException();
     }
 }

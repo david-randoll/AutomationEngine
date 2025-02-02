@@ -12,5 +12,6 @@ import lombok.NoArgsConstructor;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class StopActionSequenceActionContext {
     private String alias;
+    private boolean stopIfSatisfied = true;
     private Condition condition;
 }
