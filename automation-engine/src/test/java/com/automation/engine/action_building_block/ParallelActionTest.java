@@ -174,9 +174,9 @@ class ParallelActionTest {
                   - action: parallel
                     actions:
                       - action: delay
-                        duration: PT5S
+                        duration: PT2S
                       - action: delay
-                        duration: PT4S
+                        duration: PT1S
                       - action: logger
                         message: "Parallel action completed"
                   - action: logger
@@ -192,7 +192,7 @@ class ParallelActionTest {
         engine.processEvent(eventAt6PM);
         long endTime = System.currentTimeMillis();
 
-        assertThat(endTime - startTime).isLessThan(5500);
+        assertThat(endTime - startTime).isLessThan(2100);
 
         // Assert: Ensure main actions execute immediately while parallel actions complete later
         assertThat(logAppender.getLoggedMessages())

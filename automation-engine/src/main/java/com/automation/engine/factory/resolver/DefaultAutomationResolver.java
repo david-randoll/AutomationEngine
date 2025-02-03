@@ -140,6 +140,21 @@ public class DefaultAutomationResolver implements IAutomationResolver<CreateRequ
         return eventContext -> interceptingAction.execute(eventContext, actionContext);
     }
 
+    public boolean anyTriggersTriggered(Event event, @Nullable List<Trigger> triggers) {
+        BaseTriggerList resolvedTriggers = buildTriggersList(triggers);
+        return resolvedTriggers.anyTriggered(event);
+    }
+
+    public boolean allTriggersTriggered(Event event, @Nullable List<Trigger> triggers) {
+        BaseTriggerList resolvedTriggers = buildTriggersList(triggers);
+        return resolvedTriggers.allTriggered(event);
+    }
+
+    public boolean noneTriggersTriggered(Event event, @Nullable List<Trigger> triggers) {
+        BaseTriggerList resolvedTriggers = buildTriggersList(triggers);
+        return resolvedTriggers.noneTriggered(event);
+    }
+
     public boolean allConditionsSatisfied(Event event, @Nullable List<Condition> conditions) {
         BaseConditionList resolvedConditions = buildConditionsList(conditions);
         return resolvedConditions.allSatisfied(event);
