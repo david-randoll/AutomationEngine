@@ -39,6 +39,7 @@ import org.springframework.util.ObjectUtils;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.Executor;
 
 @Slf4j
 @Service("manualAutomationResolver")
@@ -139,25 +140,37 @@ public class DefaultAutomationResolver implements IAutomationResolver<CreateRequ
         return eventContext -> interceptingAction.execute(eventContext, actionContext);
     }
 
-    public boolean allConditionsSatisfied(Event eventContext, @Nullable List<Condition> conditions) {
+    public boolean allConditionsSatisfied(Event event, @Nullable List<Condition> conditions) {
         BaseConditionList resolvedConditions = buildConditionsList(conditions);
-        return resolvedConditions.allSatisfied(eventContext);
+        return resolvedConditions.allSatisfied(event);
     }
 
-    public boolean anyConditionSatisfied(Event eventContext, @Nullable List<Condition> conditions) {
+    public boolean anyConditionSatisfied(Event event, @Nullable List<Condition> conditions) {
         BaseConditionList resolvedConditions = buildConditionsList(conditions);
-        return resolvedConditions.anySatisfied(eventContext);
+        return resolvedConditions.anySatisfied(event);
     }
 
-    public boolean noneConditionSatisfied(Event eventContext, @Nullable List<Condition> conditions) {
+    public boolean noneConditionSatisfied(Event event, @Nullable List<Condition> conditions) {
         BaseConditionList resolvedConditions = buildConditionsList(conditions);
-        return resolvedConditions.noneSatisfied(eventContext);
+        return resolvedConditions.noneSatisfied(event);
     }
 
-    public void executeActions(Event eventContext, @Nullable List<Action> actions) {
+    public void executeActions(Event event, @Nullable List<Action> actions) {
         if (ObjectUtils.isEmpty(actions)) return;
         BaseActionList resolvedActions = buildActionsList(actions);
-        resolvedActions.executeAll(eventContext);
+        resolvedActions.executeAll(event);
+    }
+
+    public void executeActionsAsync(Event event, @Nullable List<Action> actions) {
+        if (ObjectUtils.isEmpty(actions)) return;
+        BaseActionList resolvedActions = buildActionsList(actions);
+        resolvedActions.executeAllAsync(event);
+    }
+
+    public void executeActionsAsync(Event event, @Nullable List<Action> actions, Executor executor) {
+        if (ObjectUtils.isEmpty(actions)) return;
+        BaseActionList resolvedActions = buildActionsList(actions);
+        resolvedActions.executeAllAsync(event, executor);
     }
 
     @NonNull
