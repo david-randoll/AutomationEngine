@@ -163,4 +163,37 @@ public class WaitForTriggerActionTest {
                 .anyMatch(msg -> msg.contains("Waiting with default timeout..."))
                 .anyMatch(msg -> msg.contains("Action proceeds after default timeout"));
     }
+
+    @Test
+    void testWaitForTriggerActionWithLongTimeoutButEarlyTrigger() {
+        var yaml = """
+                alias: Wait for Trigger with Long Timeout But Early Trigger
+                triggers:
+                  - trigger: time
+                    at: 19:00
+                actions:
+                  - action: logger
+                    message: "Waiting for trigger..."
+                  - action: waitForTrigger
+                    timeout: PT5M
+                    triggers:
+                      - trigger: time
+                        at: 19:01
+                  - action: logger
+                    message: "Trigger met, proceeding early!"
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.addAutomation(automation);
+
+        // Act: Trigger automation at 19:00
+        TimeBasedEvent eventAt1900 = new TimeBasedEvent(LocalTime.of(19, 0));
+        engine.processEvent(eventAt1900);
+
+        // Assert: The waiting log should appear, and execution should proceed after 1 minute, not 5
+        assertThat(logAppender.getLoggedMessages())
+                .anyMatch(msg -> msg.contains("Waiting for trigger..."))
+                .anyMatch(msg -> msg.contains("Trigger met, proceeding early!"));
+    }
+
 }
