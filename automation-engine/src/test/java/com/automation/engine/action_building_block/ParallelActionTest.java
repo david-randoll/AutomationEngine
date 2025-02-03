@@ -26,7 +26,7 @@ import static org.mockito.Mockito.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK, classes = AutomationEngineApplication.class)
 @ExtendWith(SpringExtension.class)
-public class ParallelActionTest {
+class ParallelActionTest {
     @Autowired
     private AutomationEngine engine;
 
