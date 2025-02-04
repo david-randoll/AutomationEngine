@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK, classes = AutomationEngineApplication.class)
 @ExtendWith(SpringExtension.class)
-public class WaitForTriggerActionTest {
+class WaitForTriggerActionTest {
     @Autowired
     private AutomationEngine engine;
 
@@ -175,10 +175,10 @@ public class WaitForTriggerActionTest {
                   - action: logger
                     message: "Waiting for trigger..."
                   - action: waitForTrigger
-                    timeout: PT5M
+                    timeout: PT5S
                     triggers:
                       - trigger: time
-                        at: 19:01
+                        at: 19:00:02
                   - action: logger
                     message: "Trigger met, proceeding early!"
                 """;
@@ -186,14 +186,20 @@ public class WaitForTriggerActionTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.addAutomation(automation);
 
-        // Act: Trigger automation at 19:00
+        // Act: Trigger automation at 19:00 and record the start time
+        long startTime = System.currentTimeMillis();
         TimeBasedEvent eventAt1900 = new TimeBasedEvent(LocalTime.of(19, 0));
         engine.processEvent(eventAt1900);
+
+        // Measure elapsed time
+        long elapsedTime = System.currentTimeMillis() - startTime;
 
         // Assert: The waiting log should appear, and execution should proceed after 1 minute, not 5
         assertThat(logAppender.getLoggedMessages())
                 .anyMatch(msg -> msg.contains("Waiting for trigger..."))
                 .anyMatch(msg -> msg.contains("Trigger met, proceeding early!"));
-    }
 
+        // Ensure execution took more than 1 minute (60,000 milliseconds) but much less than 5 minutes (300,000 ms)
+        assertThat(elapsedTime).isGreaterThan(2_000).isLessThan(5_000);
+    }
 }

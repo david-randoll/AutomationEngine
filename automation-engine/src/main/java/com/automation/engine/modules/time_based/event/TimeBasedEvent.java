@@ -5,6 +5,7 @@ import org.springframework.lang.NonNull;
 
 import java.time.LocalTime;
 import java.util.Map;
+import java.util.Optional;
 
 public class TimeBasedEvent extends Event {
     public static final String EVENT_NAME = TimeBasedEvent.class.getSimpleName();
@@ -14,8 +15,13 @@ public class TimeBasedEvent extends Event {
         super(EVENT_NAME, Map.of(FIELD_NAME, time));
     }
 
+    public TimeBasedEvent() {
+        super(EVENT_NAME, Map.of());
+    }
+
     @NonNull
     public LocalTime getTime() {
-        return (LocalTime) getData().get(FIELD_NAME);
+        var time = (LocalTime) getData().get(FIELD_NAME);
+        return Optional.ofNullable(time).orElse(LocalTime.now());
     }
 }
