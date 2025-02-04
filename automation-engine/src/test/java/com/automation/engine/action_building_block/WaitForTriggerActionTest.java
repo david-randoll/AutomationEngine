@@ -166,29 +166,32 @@ class WaitForTriggerActionTest {
 
     @Test
     void testWaitForTriggerActionWithLongTimeoutButEarlyTrigger() {
+        var time = LocalTime.now().withNano(0);
+        var triggerStr = time.toString();
+        var waitForTriggerStr = time.plusMinutes(1).toString();
         var yaml = """
                 alias: Wait for Trigger with Long Timeout But Early Trigger
                 triggers:
                   - trigger: time
-                    at: 19:00
+                    at: %s
                 actions:
                   - action: logger
                     message: "Waiting for trigger..."
                   - action: waitForTrigger
-                    timeout: PT5S
+                    timeout: PT2M
                     triggers:
                       - trigger: time
-                        at: 19:00:02
+                        at: %s
                   - action: logger
                     message: "Trigger met, proceeding early!"
-                """;
+                """.formatted(triggerStr, waitForTriggerStr);
 
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.addAutomation(automation);
 
         // Act: Trigger automation at 19:00 and record the start time
         long startTime = System.currentTimeMillis();
-        TimeBasedEvent eventAt1900 = new TimeBasedEvent(LocalTime.of(19, 0));
+        TimeBasedEvent eventAt1900 = new TimeBasedEvent(time);
         engine.processEvent(eventAt1900);
 
         // Measure elapsed time
@@ -199,7 +202,6 @@ class WaitForTriggerActionTest {
                 .anyMatch(msg -> msg.contains("Waiting for trigger..."))
                 .anyMatch(msg -> msg.contains("Trigger met, proceeding early!"));
 
-        // Ensure execution took more than 2 seconds but less than 5 seconds
-        assertThat(elapsedTime).isGreaterThan(2_000).isLessThan(5_000);
+        assertThat(elapsedTime).isGreaterThan(30_000).isLessThan(61_000);
     }
 }
