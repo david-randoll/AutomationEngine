@@ -4,6 +4,7 @@ import com.automation.engine.core.actions.exceptions.StopActionSequenceException
 import com.automation.engine.core.events.Event;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -41,5 +42,17 @@ public class BaseActionList extends ArrayList<IBaseAction> {
         } catch (StopActionSequenceException e) {
             // This exception is thrown when the action sequence should be stopped
         }
+    }
+
+    public static BaseActionList of(IBaseAction... actions) {
+        BaseActionList actionList = new BaseActionList();
+        Collections.addAll(actionList, actions);
+        return actionList;
+    }
+
+    public static BaseActionList of(List<IBaseAction> actions) {
+        BaseActionList actionList = new BaseActionList();
+        actionList.addAll(actions);
+        return actionList;
     }
 }

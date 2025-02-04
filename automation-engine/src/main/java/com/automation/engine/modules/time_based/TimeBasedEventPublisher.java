@@ -4,6 +4,7 @@ import com.automation.engine.core.AutomationEngine;
 import com.automation.engine.modules.time_based.event.TimeBasedEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -14,10 +15,13 @@ import java.time.LocalTime;
 @RequiredArgsConstructor
 public class TimeBasedEventPublisher {
     private final AutomationEngine engine;
+    private final ApplicationEventPublisher publisher;
 
     // publish a TimeBasedEvent every minute (60 seconds)
     @Scheduled(fixedRate = 60_000)
     public void run() {
-        engine.processEvent(new TimeBasedEvent(LocalTime.now()));
+        var timeBasedEvent = new TimeBasedEvent(LocalTime.now());
+        engine.processEvent(timeBasedEvent);
+        publisher.publishEvent(timeBasedEvent);
     }
 }

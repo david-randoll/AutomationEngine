@@ -3,10 +3,13 @@ package com.automation.engine.example.time_based;
 import com.automation.engine.core.Automation;
 import com.automation.engine.core.AutomationEngine;
 import com.automation.engine.core.actions.ActionContext;
+import com.automation.engine.core.actions.BaseActionList;
 import com.automation.engine.core.actions.IBaseAction;
 import com.automation.engine.core.actions.interceptors.IActionInterceptor;
 import com.automation.engine.core.actions.interceptors.InterceptingAction;
+import com.automation.engine.core.conditions.BaseConditionList;
 import com.automation.engine.core.conditions.IBaseCondition;
+import com.automation.engine.core.triggers.BaseTriggerList;
 import com.automation.engine.core.triggers.IBaseTrigger;
 import com.automation.engine.core.triggers.TriggerContext;
 import com.automation.engine.core.triggers.interceptors.ITriggerInterceptor;
@@ -34,9 +37,9 @@ public class AutomationExample {
 
     @PostConstruct
     public void init() {
-        List<IBaseTrigger> triggers = List.of(getTrigger());
-        List<IBaseCondition> conditions = List.of();
-        List<IBaseAction> actions = List.of(getAction());
+        BaseTriggerList triggers = BaseTriggerList.of(getTrigger());
+        BaseConditionList conditions = BaseConditionList.of();
+        BaseActionList actions = BaseActionList.of(getAction());
         var automation = new Automation("Time based automation", triggers, conditions, actions);
         engine.addAutomation(automation);
     }

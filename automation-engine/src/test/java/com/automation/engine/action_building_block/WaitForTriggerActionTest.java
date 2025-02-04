@@ -199,7 +199,7 @@ class WaitForTriggerActionTest {
                 .anyMatch(msg -> msg.contains("Waiting for trigger..."))
                 .anyMatch(msg -> msg.contains("Trigger met, proceeding early!"));
 
-        // Ensure execution took more than 1 minute (60,000 milliseconds) but much less than 5 minutes (300,000 ms)
+        // Ensure execution took more than 2 seconds but less than 5 seconds
         assertThat(elapsedTime).isGreaterThan(2_000).isLessThan(5_000);
     }
 }
