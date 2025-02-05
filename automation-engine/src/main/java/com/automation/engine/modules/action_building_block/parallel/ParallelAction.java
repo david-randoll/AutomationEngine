@@ -1,5 +1,6 @@
 package com.automation.engine.modules.action_building_block.parallel;
 
+import com.automation.engine.AutomationEngineConfigProvider;
 import com.automation.engine.core.actions.AbstractAction;
 import com.automation.engine.core.events.Event;
 import com.automation.engine.factory.resolver.DefaultAutomationResolver;
@@ -16,15 +17,16 @@ public class ParallelAction extends AbstractAction<ParallelActionContext> {
     private final DefaultAutomationResolver resolver;
 
     @Autowired(required = false)
-    private ExecutorProvider executorProvider;
+    private AutomationEngineConfigProvider provider;
 
     @Override
     public void execute(Event event, ParallelActionContext context) {
         if (ObjectUtils.isEmpty(context.getActions())) return;
 
-        if (executorProvider != null) {
+        var executor = provider != null ? provider.getExecutor() : null;
+        if (executor != null) {
             log.debug("Executor provider found, using provided executor");
-            resolver.executeActionsAsync(event, context.getActions(), executorProvider.getExecutor());
+            resolver.executeActionsAsync(event, context.getActions(), executor);
         } else {
             log.debug("No executor provider found, using default executor");
             resolver.executeActionsAsync(event, context.getActions());

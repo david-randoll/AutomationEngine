@@ -204,4 +204,80 @@ class WaitForTriggerActionTest {
 
         assertThat(elapsedTime).isGreaterThan(30_000).isLessThan(61_000);
     }
+
+    @Test
+    void testWaitForTriggerActionTriggerBeforeTimeout() {
+        var yaml = """
+                alias: Wait for Trigger with Default Timeout
+                triggers:
+                  - trigger: time
+                    at: 18:00
+                actions:
+                  - action: logger
+                    message: "Waiting with default timeout..."
+                  - action: waitForTrigger
+                    timeout: PT10S
+                    triggers:
+                      - trigger: alwaysTrue
+                  - action: logger
+                    message: "Action proceeds after default timeout"
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.addAutomation(automation);
+
+        // Act: Trigger automation without sending the expected trigger event
+        long startTime = System.currentTimeMillis();
+        TimeBasedEvent eventAt6PM = new TimeBasedEvent(LocalTime.of(18, 0));
+        engine.processEvent(eventAt6PM);
+
+        // Measure elapsed time
+        long elapsedTime = System.currentTimeMillis() - startTime;
+
+        // Assert: The waiting message should appear, and the next action should proceed after the default timeout of 60 seconds
+        assertThat(logAppender.getLoggedMessages())
+                .anyMatch(msg -> msg.contains("Waiting with default timeout..."))
+                .anyMatch(msg -> msg.contains("Action proceeds after default timeout"));
+
+        assertThat(elapsedTime).isLessThan(1_000);
+
+    }
+
+    @Test
+    void testWaitForTriggerActionTriggerTimeout() {
+        var yaml = """
+                alias: Wait for Trigger with Default Timeout
+                triggers:
+                  - trigger: time
+                    at: 18:00
+                actions:
+                  - action: logger
+                    message: "Waiting with default timeout..."
+                  - action: waitForTrigger
+                    timeout: PT3S
+                    triggers:
+                      - trigger: alwaysFalse
+                  - action: logger
+                    message: "Action proceeds after default timeout"
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.addAutomation(automation);
+
+        // Act: Trigger automation without sending the expected trigger event
+        long startTime = System.currentTimeMillis();
+        TimeBasedEvent eventAt6PM = new TimeBasedEvent(LocalTime.of(18, 0));
+        engine.processEvent(eventAt6PM);
+
+        // Measure elapsed time
+        long elapsedTime = System.currentTimeMillis() - startTime;
+
+        // Assert: The waiting message should appear, and the next action should proceed after the default timeout of 60 seconds
+        assertThat(logAppender.getLoggedMessages())
+                .anyMatch(msg -> msg.contains("Waiting with default timeout..."))
+                .anyMatch(msg -> msg.contains("Action proceeds after default timeout"));
+
+        assertThat(elapsedTime).isGreaterThan(3_000);
+
+    }
 }

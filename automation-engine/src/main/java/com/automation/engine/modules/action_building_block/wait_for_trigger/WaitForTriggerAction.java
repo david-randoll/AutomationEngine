@@ -1,11 +1,14 @@
 package com.automation.engine.modules.action_building_block.wait_for_trigger;
 
+import com.automation.engine.AutomationEngineConfigProvider;
 import com.automation.engine.core.actions.AbstractAction;
 import com.automation.engine.core.events.Event;
 import com.automation.engine.factory.request.Trigger;
 import com.automation.engine.factory.resolver.DefaultAutomationResolver;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldNameConstants;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
@@ -18,9 +21,13 @@ import java.util.concurrent.*;
 @Slf4j
 @Component("waitForTriggerAction")
 @RequiredArgsConstructor
+@FieldNameConstants
 public class WaitForTriggerAction extends AbstractAction<WaitForTriggerActionContext> {
     private final DefaultAutomationResolver resolver;
     private final List<WaitingAction> waitingActions = new CopyOnWriteArrayList<>();
+
+    @Autowired(required = false)
+    private AutomationEngineConfigProvider provider;
 
     @Override
     public void execute(Event event, WaitForTriggerActionContext context) {
@@ -31,6 +38,16 @@ public class WaitForTriggerAction extends AbstractAction<WaitForTriggerActionCon
 
         CompletableFuture<Boolean> future = new CompletableFuture<>();
         waitingActions.add(new WaitingAction(context.getTriggers(), future));
+
+        ScheduledFuture<?> pollingTask = null;
+        ScheduledExecutorService scheduler = provider != null ? provider.getScheduledExecutorService() : null;
+        if (scheduler != null) {
+            pollingTask = scheduler.scheduleAtFixedRate(() -> {
+                if (!future.isDone() && resolver.anyTriggersTriggered(event, context.getTriggers())) {
+                    future.complete(true);
+                }
+            }, 0, 1, TimeUnit.SECONDS);
+        }
 
         try {
             boolean triggerMet = future.get(timeout, TimeUnit.MILLISECONDS);
@@ -43,6 +60,8 @@ public class WaitForTriggerAction extends AbstractAction<WaitForTriggerActionCon
             log.info("Timeout or error occurred, proceeding...");
             Thread.currentThread().interrupt();
         } finally {
+            if (pollingTask != null)
+                pollingTask.cancel(true);
             waitingActions.removeIf(action -> action.future == future);
         }
     }

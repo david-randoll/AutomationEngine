@@ -6,8 +6,9 @@ import com.automation.engine.TestLogAppender;
 import com.automation.engine.core.Automation;
 import com.automation.engine.core.AutomationEngine;
 import com.automation.engine.factory.AutomationFactory;
-import com.automation.engine.modules.action_building_block.parallel.ExecutorProvider;
+import com.automation.engine.AutomationEngineConfigProvider;
 import com.automation.engine.modules.action_building_block.parallel.ParallelAction;
+import com.automation.engine.modules.action_building_block.wait_for_trigger.WaitForTriggerAction;
 import com.automation.engine.modules.time_based.event.TimeBasedEvent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -86,11 +87,11 @@ class ParallelActionTest {
     @Test
     void testParallelExecutionWithExecutorProvider() {
         // Mock executor provider to check if it was used
-        ExecutorProvider mockExecutorProvider = mock(ExecutorProvider.class);
-        when(mockExecutorProvider.getExecutor()).thenReturn(Executors.newFixedThreadPool(2));
+        AutomationEngineConfigProvider mockAutomationEngineConfigurationProvider = mock(AutomationEngineConfigProvider.class);
+        when(mockAutomationEngineConfigurationProvider.getExecutor()).thenReturn(Executors.newFixedThreadPool(2));
 
         // Inject mock provider
-        ReflectionTestUtils.setField(parallelAction, "executorProvider", mockExecutorProvider);
+        ReflectionTestUtils.setField(parallelAction, WaitForTriggerAction.Fields.provider, mockAutomationEngineConfigurationProvider);
 
         var yaml = """
                 alias: Parallel Execution With ExecutorProvider
@@ -118,7 +119,7 @@ class ParallelActionTest {
         engine.processEvent(eventAt4PM);
 
         // Assert: Ensure parallel execution was used with the provided executor
-        verify(mockExecutorProvider, times(1)).getExecutor();
+        verify(mockAutomationEngineConfigurationProvider, times(1)).getExecutor();
         assertThat(logAppender.getLoggedMessages())
                 .anyMatch(msg -> msg.contains("Before parallel execution"))
                 .anyMatch(msg -> msg.contains("Parallel action 1"))
