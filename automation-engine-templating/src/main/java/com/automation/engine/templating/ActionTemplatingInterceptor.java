@@ -7,10 +7,13 @@ import com.automation.engine.core.events.Event;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ObjectUtils;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
@@ -35,8 +38,30 @@ public class ActionTemplatingInterceptor implements IActionInterceptor {
      */
 
     @Override
+    @SneakyThrows
     public void intercept(Event event, ActionContext context, IAction action) {
         log.debug("ActionTemplatingInterceptor: Processing action data...");
+        if (ObjectUtils.isEmpty(context.getData())) return;
+        if (ObjectUtils.isEmpty(event.getData())) return;
+
+        processOnlyStringFields(event, context, action);
+        log.debug("ActionTemplatingInterceptor done.");
+
+        //processEntireContextAsString(event, context, action);
+    }
+
+    private void processOnlyStringFields(Event event, ActionContext context, IAction action) throws IOException {
+        var mapCopy = new HashMap<>(context.getData());
+        for (Map.Entry<String, Object> entry : mapCopy.entrySet()) {
+            if (entry.getValue() instanceof String valueStr) {
+                String processedValue = templateProcessor.process(valueStr, event.getData());
+                entry.setValue(processedValue);
+            }
+        }
+        action.execute(event, new ActionContext(mapCopy));
+    }
+
+    private void processEntireContextAsString(Event event, ActionContext context, IAction action) {
         Map<String, Object> processedDataMap = null;
         try {
             String actionDataAsJson = objectMapper.writeValueAsString(context.getData());
@@ -48,6 +73,5 @@ public class ActionTemplatingInterceptor implements IActionInterceptor {
             throw new RuntimeException(e);
         }
         action.execute(event, new ActionContext(processedDataMap));
-        log.debug("ActionTemplatingInterceptor done.");
     }
 }

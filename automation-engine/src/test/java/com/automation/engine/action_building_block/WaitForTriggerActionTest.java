@@ -124,6 +124,7 @@ class WaitForTriggerActionTest {
         engine.addAutomation(automation);
 
         // Act: Trigger automation, but do NOT send the expected trigger event
+        long startTime = System.currentTimeMillis();
         TimeBasedEvent eventAt4PM = new TimeBasedEvent(LocalTime.of(16, 0));
         engine.processEvent(eventAt4PM);
 
@@ -131,6 +132,10 @@ class WaitForTriggerActionTest {
         assertThat(logAppender.getLoggedMessages())
                 .anyMatch(msg -> msg.contains("Waiting for trigger..."))
                 .anyMatch(msg -> msg.contains("This should be logged after timeout"));
+
+        // Measure elapsed time
+        long elapsedTime = System.currentTimeMillis() - startTime;
+        assertThat(elapsedTime).isLessThan(3500); // 3 seconds
     }
 
     @Test
@@ -155,6 +160,7 @@ class WaitForTriggerActionTest {
         engine.addAutomation(automation);
 
         // Act: Trigger automation without sending the expected trigger event
+        long startTime = System.currentTimeMillis();
         TimeBasedEvent eventAt6PM = new TimeBasedEvent(LocalTime.of(18, 0));
         engine.processEvent(eventAt6PM);
 
@@ -162,6 +168,10 @@ class WaitForTriggerActionTest {
         assertThat(logAppender.getLoggedMessages())
                 .anyMatch(msg -> msg.contains("Waiting with default timeout..."))
                 .anyMatch(msg -> msg.contains("Action proceeds after default timeout"));
+
+        // Measure elapsed time
+        long elapsedTime = System.currentTimeMillis() - startTime;
+        assertThat(elapsedTime).isLessThan(61000); // 60 seconds
     }
 
     @Test
