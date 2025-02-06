@@ -29,26 +29,25 @@ public class ActionTemplatingInterceptor implements IActionInterceptor {
      * the placeholder {{name}} with the corresponding value from the event context.
      * If a string does not contain a template, it remains unchanged.
      *
-     * @param context       the event context providing data for template replacement
-     * @param actionContext the action context containing data to process
-     * @param action        the action to be executed after processing
+     * @param event   the event context providing data for template replacement
+     * @param context the action context containing data to process
+     * @param action  the action to be executed after processing
      */
 
     @Override
-    public void intercept(Event context, ActionContext actionContext, IAction action) {
+    public void intercept(Event event, ActionContext context, IAction action) {
         log.debug("ActionTemplatingInterceptor: Processing action data...");
-        String actionDataAsJson = null;
         Map<String, Object> processedDataMap = null;
         try {
-            actionDataAsJson = objectMapper.writeValueAsString(actionContext.getData());
-            var processedTemplate = templateProcessor.process(actionDataAsJson, context.getData());
+            String actionDataAsJson = objectMapper.writeValueAsString(context.getData());
+            var processedTemplate = templateProcessor.process(actionDataAsJson, event.getData());
             // convert the result back to a map
             processedDataMap = objectMapper.readValue(processedTemplate, new TypeReference<>() {
             });
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        action.execute(context, new ActionContext(processedDataMap));
+        action.execute(event, new ActionContext(processedDataMap));
         log.debug("ActionTemplatingInterceptor done.");
     }
 }
