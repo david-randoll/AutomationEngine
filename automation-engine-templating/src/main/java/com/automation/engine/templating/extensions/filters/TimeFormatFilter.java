@@ -22,10 +22,17 @@ public class TimeFormatFilter implements Filter {
     @Override
     public Object apply(Object input, Map<String, Object> args, PebbleTemplate self, EvaluationContext context, int lineNumber) throws PebbleException {
         if (input instanceof LocalTime localTime) {
-            String pattern = args.getOrDefault("pattern", "hh:mm a").toString();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
-            return localTime.format(formatter);
+            return formatLocalTimeToUserFriendlyName(args, localTime);
+        } else if (input instanceof String string) {
+            var localTime = LocalTime.parse(string);
+            return formatLocalTimeToUserFriendlyName(args, localTime);
         }
         return input;
+    }
+
+    private static String formatLocalTimeToUserFriendlyName(Map<String, Object> args, LocalTime localTime) {
+        String pattern = args.getOrDefault("pattern", "hh:mm a").toString();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
+        return localTime.format(formatter);
     }
 }
