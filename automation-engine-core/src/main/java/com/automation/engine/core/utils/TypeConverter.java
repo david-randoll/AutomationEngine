@@ -1,6 +1,7 @@
 package com.automation.engine.core.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +16,11 @@ public class TypeConverter {
 
     @SneakyThrows
     public <T> T convert(Object object, Class<?> clazz) {
-        var dataStr = objectMapper.writeValueAsString(object);
-        return (T) objectMapper.readValue(dataStr, clazz);
+        try {
+            var dataStr = objectMapper.writeValueAsString(object);
+            return (T) objectMapper.readValue(dataStr, clazz);
+        } catch (MismatchedInputException e) {
+            throw new InvalidInputException(e);
+        }
     }
 }

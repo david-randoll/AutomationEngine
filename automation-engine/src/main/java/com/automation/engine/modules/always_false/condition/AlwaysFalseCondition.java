@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class AlwaysFalseCondition extends AbstractCondition<AlwaysFalseConditionContext> {
     @Override
-    public boolean isSatisfied(Event context, AlwaysFalseConditionContext conditionContext) {
+    public boolean isSatisfied(Event event, AlwaysFalseConditionContext context) {
         return false;
     }
 }

@@ -13,8 +13,8 @@ public class NotCondition extends AbstractCondition<NotConditionContext> {
     private final DefaultAutomationResolver resolver;
 
     @Override
-    public boolean isSatisfied(Event context, NotConditionContext conditionContext) {
-        if (ObjectUtils.isEmpty(conditionContext.getConditions())) return true;
-        return resolver.noneConditionSatisfied(context, conditionContext.getConditions());
+    public boolean isSatisfied(Event event, NotConditionContext context) {
+        if (ObjectUtils.isEmpty(context.getConditions())) return true;
+        return resolver.noneConditionSatisfied(event, context.getConditions());
     }
 }

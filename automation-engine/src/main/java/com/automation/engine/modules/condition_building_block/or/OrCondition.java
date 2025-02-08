@@ -13,8 +13,8 @@ public class OrCondition extends AbstractCondition<OrConditionContext> {
     private final DefaultAutomationResolver resolver;
 
     @Override
-    public boolean isSatisfied(Event context, OrConditionContext conditionContext) {
-        if (ObjectUtils.isEmpty(conditionContext.getConditions())) return true;
-        return resolver.anyConditionSatisfied(context, conditionContext.getConditions());
+    public boolean isSatisfied(Event event, OrConditionContext context) {
+        if (ObjectUtils.isEmpty(context.getConditions())) return true;
+        return resolver.anyConditionSatisfied(event, context.getConditions());
     }
 }

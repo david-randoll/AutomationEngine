@@ -17,10 +17,10 @@ public abstract class AbstractCondition<T extends IConditionContext> implements 
     }
 
     @Override
-    public boolean isSatisfied(Event eventContext, ConditionContext conditionContext) {
-        T data = typeConverter.convert(conditionContext.getData(), getContextType());
-        return isSatisfied(eventContext, data);
+    public boolean isSatisfied(Event event, ConditionContext context) {
+        T data = typeConverter.convert(context.getData(), getContextType());
+        return isSatisfied(event, data);
     }
 
-    public abstract boolean isSatisfied(Event context, T conditionContext);
+    public abstract boolean isSatisfied(Event event, T context);
 }

@@ -4,7 +4,6 @@ import com.automation.engine.core.actions.ActionContext;
 import com.automation.engine.core.actions.IAction;
 import com.automation.engine.core.actions.interceptors.IActionInterceptor;
 import com.automation.engine.core.events.Event;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -12,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,16 +39,10 @@ public class ActionTemplatingInterceptor implements IActionInterceptor {
     @SneakyThrows
     public void intercept(Event event, ActionContext context, IAction action) {
         log.debug("ActionTemplatingInterceptor: Processing action data...");
-        if (ObjectUtils.isEmpty(context.getData())) return;
-        if (ObjectUtils.isEmpty(event.getData())) return;
+        if (ObjectUtils.isEmpty(context.getData()) || ObjectUtils.isEmpty(event.getData())) {
+            action.execute(event, context);
+        }
 
-        processOnlyStringFields(event, context, action);
-        log.debug("ActionTemplatingInterceptor done.");
-
-        //processEntireContextAsString(event, context, action);
-    }
-
-    private void processOnlyStringFields(Event event, ActionContext context, IAction action) throws IOException {
         var mapCopy = new HashMap<>(context.getData());
         for (Map.Entry<String, Object> entry : mapCopy.entrySet()) {
             if (entry.getValue() instanceof String valueStr) {
@@ -59,19 +51,6 @@ public class ActionTemplatingInterceptor implements IActionInterceptor {
             }
         }
         action.execute(event, new ActionContext(mapCopy));
-    }
-
-    private void processEntireContextAsString(Event event, ActionContext context, IAction action) {
-        Map<String, Object> processedDataMap = null;
-        try {
-            String actionDataAsJson = objectMapper.writeValueAsString(context.getData());
-            var processedTemplate = templateProcessor.process(actionDataAsJson, event.getData());
-            // convert the result back to a map
-            processedDataMap = objectMapper.readValue(processedTemplate, new TypeReference<>() {
-            });
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        action.execute(event, new ActionContext(processedDataMap));
+        log.debug("ActionTemplatingInterceptor done.");
     }
 }

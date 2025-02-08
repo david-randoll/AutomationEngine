@@ -13,8 +13,8 @@ public class AndCondition extends AbstractCondition<AndConditionContext> {
     private final DefaultAutomationResolver resolver;
 
     @Override
-    public boolean isSatisfied(Event context, AndConditionContext conditionContext) {
-        if (ObjectUtils.isEmpty(conditionContext.getConditions())) return true;
-        return resolver.allConditionsSatisfied(context, conditionContext.getConditions());
+    public boolean isSatisfied(Event event, AndConditionContext context) {
+        if (ObjectUtils.isEmpty(context.getConditions())) return true;
+        return resolver.allConditionsSatisfied(event, context.getConditions());
     }
 }

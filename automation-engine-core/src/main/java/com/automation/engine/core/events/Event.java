@@ -24,8 +24,26 @@ public class Event {
 
     public void addVariables(@Nullable Map<String, Object> variables) {
         if (ObjectUtils.isEmpty(variables)) return;
-        if (ObjectUtils.isEmpty(data)) return;
+        if (ObjectUtils.isEmpty(data)) data = new HashMap<>();
         data = new HashMap<>(data);
         data.putAll(variables);
+    }
+
+    public void addVariable(@NonNull String key, @Nullable Object value) {
+        var map = new HashMap<String, Object>();
+        map.put(key, value);
+        addVariables(map);
+    }
+
+    public void removeVariable(@NonNull String key) {
+        if (ObjectUtils.isEmpty(data)) return;
+        data = new HashMap<>(data);
+        data.remove(key);
+    }
+
+    @Nullable
+    public Object getVariable(@NonNull String key) {
+        if (ObjectUtils.isEmpty(getData())) return null;
+        return getData().get(key);
     }
 }

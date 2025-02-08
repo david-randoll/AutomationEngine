@@ -25,15 +25,16 @@ public class InterceptingCondition implements ICondition {
         return executeInterceptors(0, event, context);
     }
 
-    private boolean executeInterceptors(int index, Event event, ConditionContext conditionContext) {
+    private boolean executeInterceptors(int index, Event event, ConditionContext context) {
         if (index < interceptors.size()) {
             IConditionInterceptor interceptor = interceptors.get(index);
-            ICondition action = (ec, cc) -> this.executeInterceptors(index + 1, ec, cc);
-            interceptor.intercept(event, conditionContext, action);
-            return true; // doesn't matter what the interceptor returns, the delegate will return the final result
+            final boolean[] resultHolder = {false};
+            ICondition condition = (ec, cc) -> resultHolder[0] = this.executeInterceptors(index + 1, ec, cc);
+            interceptor.intercept(event, context, condition);
+            return resultHolder[0];
         } else {
-            // All interceptors have been processed, execute the delegate
-            return delegate.isSatisfied(event, conditionContext);
+            // All interceptors processed, execute the delegate
+            return delegate.isSatisfied(event, context);
         }
     }
 }

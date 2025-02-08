@@ -25,15 +25,16 @@ public class InterceptingTrigger implements ITrigger {
         return executeInterceptors(0, event, triggerContext);
     }
 
-    private boolean executeInterceptors(int index, Event event, TriggerContext triggerContext) {
+    private boolean executeInterceptors(int index, Event event, TriggerContext context) {
         if (index < interceptors.size()) {
             ITriggerInterceptor interceptor = interceptors.get(index);
-            ITrigger action = (e, tc) -> this.executeInterceptors(index + 1, e, tc);
-            interceptor.intercept(event, triggerContext, action);
-            return true; // doesn't matter what the interceptor returns, the delegate will return the final result
+            final boolean[] resultHolder = {false};
+            ITrigger trigger = (ec, cc) -> resultHolder[0] = this.executeInterceptors(index + 1, ec, cc);
+            interceptor.intercept(event, context, trigger);
+            return resultHolder[0];
         } else {
-            // All interceptors have been processed, execute the delegate
-            return delegate.isTriggered(event, triggerContext);
+            // All interceptors processed, execute the delegate
+            return delegate.isTriggered(event, context);
         }
     }
 }
