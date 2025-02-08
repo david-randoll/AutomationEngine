@@ -1,4 +1,4 @@
-package com.automation.engine.modules.condition_building_block.template;
+package com.automation.engine.modules.template.condition;
 
 import com.automation.engine.core.conditions.AbstractCondition;
 import com.automation.engine.core.events.Event;

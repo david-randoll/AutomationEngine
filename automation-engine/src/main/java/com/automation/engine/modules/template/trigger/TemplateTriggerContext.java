@@ -1,6 +1,6 @@
-package com.automation.engine.modules.condition_building_block.template;
+package com.automation.engine.modules.template.trigger;
 
-import com.automation.engine.core.conditions.IConditionContext;
+import com.automation.engine.core.triggers.ITriggerContext;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class TemplateConditionContext implements IConditionContext {
+public class TemplateTriggerContext implements ITriggerContext {
     private String alias;
     private String expression;
 }

@@ -17,10 +17,10 @@ public abstract class AbstractTrigger<T extends ITriggerContext> implements ITri
     }
 
     @Override
-    public boolean isTriggered(Event event, TriggerContext triggerContext) {
-        T data = typeConverter.convert(triggerContext.getData(), getContextType());
+    public boolean isTriggered(Event event, TriggerContext context) {
+        T data = typeConverter.convert(context.getData(), getContextType());
         return isTriggered(event, data);
     }
 
-    public abstract boolean isTriggered(Event event, T triggerContext);
+    public abstract boolean isTriggered(Event event, T context);
 }

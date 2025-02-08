@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 public class AlwaysFalseTrigger extends AbstractTrigger<AlwaysFalseTriggerContext> {
 
     @Override
-    public boolean isTriggered(Event event, AlwaysFalseTriggerContext triggerContext) {
+    public boolean isTriggered(Event event, AlwaysFalseTriggerContext context) {
         return false;
     }
 }
