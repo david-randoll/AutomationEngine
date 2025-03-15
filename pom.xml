@@ -18,6 +18,7 @@
         <module>automation-engine-core</module>
         <module>automation-engine-templating</module>
         <module>automation-engine</module>
+        <module>automation-engine-http</module>
     </modules>
     <properties>
         <java.version>21</java.version>

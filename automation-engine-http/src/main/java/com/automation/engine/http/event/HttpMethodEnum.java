@@ -1,4 +1,4 @@
-package com.automation.engine.modules.http_request.event;
+package com.automation.engine.http.event;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,13 +1,14 @@
-package com.automation.engine.modules.http_request.event;
+package com.automation.engine.http.event;
 
 import com.automation.engine.core.events.Event;
 import com.fasterxml.jackson.databind.JsonNode;
+import org.springframework.http.HttpStatus;
 
 import java.util.ArrayList;
 import java.util.Map;
 
-public class HttpRequestEvent extends Event {
-    public static final String EVENT_NAME = HttpRequestEvent.class.getSimpleName();
+public class HttpResponseEvent extends Event {
+    public static final String EVENT_NAME = HttpResponseEvent.class.getSimpleName();
 
     public static final String FULL_URL = "fullUrl";
     public static final String PATH = "path";
@@ -16,15 +17,19 @@ public class HttpRequestEvent extends Event {
     public static final String QUERY_PARAMS = "queryParams";
     public static final String PATH_PARAMS = "pathParams";
     public static final String REQUEST_BODY = "requestBody";
+    public static final String RESPONSE_BODY = "responseBody";
+    public static final String RESPONSE_STATUS = "responseStatus";
 
 
-    public HttpRequestEvent(String fullUrl,
-                            String path,
-                            HttpMethodEnum method,
-                            Map<String, ArrayList<String>> headers,
-                            Map<String, Object> queryParams,
-                            Map<String, Object> pathParams,
-                            JsonNode requestBody) {
+    public HttpResponseEvent(String fullUrl,
+                             String path,
+                             HttpMethodEnum method,
+                             Map<String, ArrayList<String>> headers,
+                             Map<String, Object> queryParams,
+                             Map<String, Object> pathParams,
+                             JsonNode requestBody,
+                             JsonNode responseBody,
+                             HttpStatus responseStatus) {
         super(EVENT_NAME, Map.of(
                 FULL_URL, fullUrl,
                 PATH, path,
@@ -32,7 +37,9 @@ public class HttpRequestEvent extends Event {
                 HEADERS, headers,
                 QUERY_PARAMS, queryParams,
                 PATH_PARAMS, pathParams,
-                REQUEST_BODY, requestBody
+                REQUEST_BODY, requestBody,
+                RESPONSE_BODY, responseBody,
+                RESPONSE_STATUS, responseStatus
         ));
     }
 
@@ -62,5 +69,13 @@ public class HttpRequestEvent extends Event {
 
     public JsonNode getRequestBody() {
         return (JsonNode) super.getData().get(REQUEST_BODY);
+    }
+
+    public JsonNode getResponseBody() {
+        return (JsonNode) super.getData().get(RESPONSE_BODY);
+    }
+
+    public HttpStatus getResponseStatus() {
+        return (HttpStatus) super.getData().get(RESPONSE_STATUS);
     }
 }
