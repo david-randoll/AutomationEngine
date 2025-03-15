@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
@@ -19,6 +20,7 @@ import org.springframework.web.util.ContentCachingResponseWrapper;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.concurrent.CompletionStage;
 
 @Slf4j
 @Component
@@ -56,7 +58,22 @@ public class HttpRequestResponseEventPublisher extends OncePerRequestFilter {
         } else {
             filterChain.doFilter(requestWrapper, responseWrapper);
         }
-        var responseStatus = responseWrapper.getStatus();
-        var responseBody = RequestUtils.getResponseBody(requestWrapper, responseWrapper, objectMapper);
+        HttpStatus responseStatus = HttpStatus.valueOf(responseWrapper.getStatus());
+        CompletionStage<JsonNode> responseBody = RequestUtils.getResponseBody(requestWrapper, responseWrapper, objectMapper);
+
+        responseBody.thenAccept(body -> {
+            var responseEvent = new HttpResponseEvent(
+                    fullUrl,
+                    path,
+                    method,
+                    headers,
+                    queryParams,
+                    pathParams,
+                    requestBody,
+                    body,
+                    responseStatus
+            );
+            engine.publishEvent(responseEvent);
+        });
     }
 }
