@@ -8,6 +8,7 @@ import java.util.Map;
 
 public class HttpRequestEvent extends Event {
     public static final String EVENT_NAME = HttpRequestEvent.class.getSimpleName();
+
     public static final String FULL_URL = "fullUrl";
     public static final String PATH = "path";
     public static final String METHOD = "method";

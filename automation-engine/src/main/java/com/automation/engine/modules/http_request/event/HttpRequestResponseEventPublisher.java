@@ -36,19 +36,19 @@ public class HttpRequestResponseEventPublisher extends OncePerRequestFilter {
         String fullUrl = requestWrapper.getRequestURL().toString();
         HttpMethodEnum method = HttpMethodEnum.valueOf(requestWrapper.getMethod());
         Map<String, ArrayList<String>> headers = RequestUtils.getHeaders(requestWrapper);
-        Map<String, Object> requestParams = RequestUtils.getRequestParams(requestWrapper);
+        Map<String, Object> queryParams = RequestUtils.getRequestParams(requestWrapper);
         Map<String, Object> pathParams = RequestUtils.getPathVariables(requestWrapper);
         JsonNode requestBody = RequestUtils.getRequestBody(requestWrapper, objectMapper);
 
-        var requestEvent = HttpRequestEvent.builder()
-                .fullUrl(fullUrl)
-                .path(path)
-                .method(method)
-                .headers(headers)
-                .queryParams(requestParams)
-                .pathParams(pathParams)
-                .body(requestBody)
-                .build();
+        var requestEvent = new HttpRequestEvent(
+                fullUrl,
+                path,
+                method,
+                headers,
+                queryParams,
+                pathParams,
+                requestBody
+        );
         engine.publishEvent(requestEvent);
 
         if (ObjectUtils.isEmpty(requestWrapper)) {
