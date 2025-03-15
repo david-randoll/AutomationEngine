@@ -21,7 +21,6 @@ public class TimeBasedEventPublisher {
     @Scheduled(fixedRate = 60_000)
     public void run() {
         var timeBasedEvent = new TimeBasedEvent(LocalTime.now());
-        engine.processEvent(timeBasedEvent);
-        publisher.publishEvent(timeBasedEvent);
+        engine.publishEvent(timeBasedEvent);
     }
 }

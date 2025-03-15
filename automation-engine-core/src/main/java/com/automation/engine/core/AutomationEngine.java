@@ -3,6 +3,7 @@ package com.automation.engine.core;
 import com.automation.engine.core.events.Event;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +14,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class AutomationEngine {
+    private final ApplicationEventPublisher publisher;
     private final List<Automation> automations = new ArrayList<>();
 
     public void addAutomation(Automation automation) {
@@ -31,6 +33,11 @@ public class AutomationEngine {
         for (Automation automation : automations) {
             runAutomation(automation, event);
         }
+    }
+
+    public void publishEvent(@NonNull Event event) {
+        processEvent(event);
+        publisher.publishEvent(event);
     }
 
     public void runAutomation(Automation automation, Event event) {
