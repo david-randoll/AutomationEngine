@@ -1,9 +1,8 @@
 package com.automation.engine.http.publisher;
 
 import com.automation.engine.core.AutomationEngine;
+import com.automation.engine.http.event.HttpRequestEvent;
 import com.automation.engine.http.event.HttpResponseEvent;
-import com.automation.engine.http.utils.RequestUtils;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -16,7 +15,6 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
-import org.springframework.web.util.ContentCachingResponseWrapper;
 
 import java.io.IOException;
 import java.util.concurrent.CompletionStage;
@@ -31,9 +29,9 @@ public class HttpRequestResponseEventPublisher extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
         var requestWrapper = new CachedBodyHttpServletRequest(request);
-        var responseWrapper = new ContentCachingResponseWrapper(response);
+        var responseWrapper = new CachedBodyHttpServletResponse(response);
 
-        var requestEvent = requestWrapper.toHttpRequestEvent();
+        HttpRequestEvent requestEvent = requestWrapper.toHttpRequestEvent();
         engine.publishEvent(requestEvent);
 
         if (ObjectUtils.isEmpty(requestWrapper)) {
@@ -42,7 +40,7 @@ public class HttpRequestResponseEventPublisher extends OncePerRequestFilter {
             filterChain.doFilter(requestWrapper, responseWrapper);
         }
         HttpStatus responseStatus = HttpStatus.valueOf(responseWrapper.getStatus());
-        CompletionStage<JsonNode> responseBody = RequestUtils.getResponseBody(requestWrapper, responseWrapper, objectMapper);
+        CompletionStage<String> responseBody = responseWrapper.getResponseBody(requestWrapper);
 
         responseBody.thenAccept(body -> {
             var responseEvent = new HttpResponseEvent(

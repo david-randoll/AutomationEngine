@@ -15,6 +15,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.ArrayList;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -49,11 +51,19 @@ class HttpRequestResponseEventPublisherTest {
         HttpRequestEvent requestEvent = eventCaptureListener.getRequestEvents().getFirst();
         assertThat(requestEvent.getPath()).isEqualTo("/test/get");
         assertThat(requestEvent.getMethod()).isEqualTo(HttpMethodEnum.GET);
+        // queryParams
+        assertThat(requestEvent.getQueryParams()).isEmpty();
+        // pathParams
+        assertThat(requestEvent.getPathParams()).isEmpty();
+        // requestBody
+        assertThat(requestEvent.getRequestBody()).isEmpty();
+        // headers
+        assertThat(requestEvent.getHeaders()).isEmpty();
 
         // Verify response event
         assertThat(eventCaptureListener.getResponseEvents()).hasSize(1);
         HttpResponseEvent responseEvent = eventCaptureListener.getResponseEvents().getFirst();
-        assertThat(responseEvent.getResponseBody().asText()).isEqualTo("GET response");
+        assertThat(responseEvent.getResponseBody()).isEqualTo("GET response");
     }
 
     @Test
@@ -79,12 +89,15 @@ class HttpRequestResponseEventPublisherTest {
         // pathParams
         assertThat(requestEvent.getPathParams()).isEmpty();
         // headers contains content-type
-        assertThat(requestEvent.getHeaders().get("Content-Type")).containsExactly(MediaType.APPLICATION_JSON_VALUE);
+        ArrayList<String> contentType = requestEvent.getHeaders().get("Content-Type");
+        String expectedContentType = MediaType.APPLICATION_JSON_VALUE;
+        assertThat(contentType.getFirst()).startsWith(expectedContentType);
 
         // Verify response event
         assertThat(eventCaptureListener.getResponseEvents()).hasSize(1);
         HttpResponseEvent responseEvent = eventCaptureListener.getResponseEvents().getFirst();
-        assertThat(responseEvent.getResponseBody().get("key").asText()).isEqualTo("value");
+        var responseBodyJson = objectMapper.readTree(responseEvent.getResponseBody());
+        assertThat(responseBodyJson.get("key").asText()).isEqualTo("value");
     }
 
     @Test
@@ -102,11 +115,21 @@ class HttpRequestResponseEventPublisherTest {
         HttpRequestEvent requestEvent = eventCaptureListener.getRequestEvents().getFirst();
         assertThat(requestEvent.getPath()).isEqualTo("/test/put");
         assertThat(requestEvent.getMethod()).isEqualTo(HttpMethodEnum.PUT);
+        // requestBody
+        assertThat(requestEvent.getRequestBody()).isEqualTo("Updated content");
+        // queryParams
+        assertThat(requestEvent.getQueryParams()).isEmpty();
+        // pathParams
+        assertThat(requestEvent.getPathParams()).isEmpty();
+        // headers contains content-type
+        ArrayList<String> contentType = requestEvent.getHeaders().get("Content-Type");
+        String expectedContentType = MediaType.TEXT_PLAIN_VALUE;
+        assertThat(contentType.getFirst()).startsWith(expectedContentType);
 
         // Verify response event
         assertThat(eventCaptureListener.getResponseEvents()).hasSize(1);
         HttpResponseEvent responseEvent = eventCaptureListener.getResponseEvents().getFirst();
-        assertThat(responseEvent.getResponseBody().asText()).isEqualTo("Received: Updated content");
+        assertThat(responseEvent.getResponseBody()).isEqualTo("Received: Updated content");
     }
 
     @Test

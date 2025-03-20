@@ -1,7 +1,6 @@
 package com.automation.engine.http.event;
 
 import com.automation.engine.core.events.Event;
-import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.http.HttpStatus;
 
 import java.util.ArrayList;
@@ -28,7 +27,7 @@ public class HttpResponseEvent extends Event {
                              Map<String, Object> queryParams,
                              Map<String, Object> pathParams,
                              String requestBody,
-                             JsonNode responseBody,
+                             String responseBody,
                              HttpStatus responseStatus) {
         super(EVENT_NAME, Map.of(
                 FULL_URL, fullUrl,
@@ -67,12 +66,12 @@ public class HttpResponseEvent extends Event {
         return (Map<String, Object>) super.getData().get(PATH_PARAMS);
     }
 
-    public JsonNode getRequestBody() {
-        return (JsonNode) super.getData().get(REQUEST_BODY);
+    public String getRequestBody() {
+        return (String) super.getData().get(REQUEST_BODY);
     }
 
-    public JsonNode getResponseBody() {
-        return (JsonNode) super.getData().get(RESPONSE_BODY);
+    public String getResponseBody() {
+        return (String) super.getData().get(RESPONSE_BODY);
     }
 
     public HttpStatus getResponseStatus() {
