@@ -27,7 +27,7 @@ public class HttpResponseEvent extends Event {
                              Map<String, ArrayList<String>> headers,
                              Map<String, Object> queryParams,
                              Map<String, Object> pathParams,
-                             JsonNode requestBody,
+                             String requestBody,
                              JsonNode responseBody,
                              HttpStatus responseStatus) {
         super(EVENT_NAME, Map.of(

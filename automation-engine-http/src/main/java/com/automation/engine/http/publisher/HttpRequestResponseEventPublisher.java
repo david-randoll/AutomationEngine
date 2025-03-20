@@ -1,10 +1,8 @@
 package com.automation.engine.http.publisher;
 
 import com.automation.engine.core.AutomationEngine;
-import com.automation.engine.http.event.HttpMethodEnum;
-import com.automation.engine.http.utils.RequestUtils;
-import com.automation.engine.http.event.HttpRequestEvent;
 import com.automation.engine.http.event.HttpResponseEvent;
+import com.automation.engine.http.utils.RequestUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
@@ -18,12 +16,9 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
-import org.springframework.web.util.ContentCachingRequestWrapper;
 import org.springframework.web.util.ContentCachingResponseWrapper;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Map;
 import java.util.concurrent.CompletionStage;
 
 @Slf4j
@@ -35,26 +30,10 @@ public class HttpRequestResponseEventPublisher extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
-        var requestWrapper = new ContentCachingRequestWrapper(request);
+        var requestWrapper = new CachedBodyHttpServletRequest(request);
         var responseWrapper = new ContentCachingResponseWrapper(response);
 
-        String path = requestWrapper.getRequestURI();
-        String fullUrl = requestWrapper.getRequestURL().toString();
-        HttpMethodEnum method = HttpMethodEnum.valueOf(requestWrapper.getMethod());
-        Map<String, ArrayList<String>> headers = RequestUtils.getHeaders(requestWrapper);
-        Map<String, Object> queryParams = RequestUtils.getRequestParams(requestWrapper);
-        Map<String, Object> pathParams = RequestUtils.getPathVariables(requestWrapper);
-        JsonNode requestBody = RequestUtils.getRequestBody(requestWrapper, objectMapper);
-
-        var requestEvent = new HttpRequestEvent(
-                fullUrl,
-                path,
-                method,
-                headers,
-                queryParams,
-                pathParams,
-                requestBody
-        );
+        var requestEvent = requestWrapper.toHttpRequestEvent();
         engine.publishEvent(requestEvent);
 
         if (ObjectUtils.isEmpty(requestWrapper)) {
@@ -67,13 +46,13 @@ public class HttpRequestResponseEventPublisher extends OncePerRequestFilter {
 
         responseBody.thenAccept(body -> {
             var responseEvent = new HttpResponseEvent(
-                    fullUrl,
-                    path,
-                    method,
-                    headers,
-                    queryParams,
-                    pathParams,
-                    requestBody,
+                    requestEvent.getFullUrl(),
+                    requestEvent.getPath(),
+                    requestEvent.getMethod(),
+                    requestEvent.getHeaders(),
+                    requestEvent.getQueryParams(),
+                    requestEvent.getPathParams(),
+                    requestEvent.getRequestBody(),
                     body,
                     responseStatus
             );

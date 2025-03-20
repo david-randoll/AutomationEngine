@@ -1,7 +1,6 @@
 package com.automation.engine.http.event;
 
 import com.automation.engine.core.events.Event;
-import com.fasterxml.jackson.databind.JsonNode;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -24,7 +23,7 @@ public class HttpRequestEvent extends Event {
                             Map<String, ArrayList<String>> headers,
                             Map<String, Object> queryParams,
                             Map<String, Object> pathParams,
-                            JsonNode requestBody) {
+                            String requestBody) {
         super(EVENT_NAME, Map.of(
                 FULL_URL, fullUrl,
                 PATH, path,
@@ -60,7 +59,7 @@ public class HttpRequestEvent extends Event {
         return (Map<String, Object>) super.getData().get(PATH_PARAMS);
     }
 
-    public JsonNode getRequestBody() {
-        return (JsonNode) super.getData().get(REQUEST_BODY);
+    public String getRequestBody() {
+        return (String) super.getData().get(REQUEST_BODY);
     }
 }

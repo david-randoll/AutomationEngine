@@ -1,11 +1,14 @@
 package com.automation.engine.http.utils;
 
+import com.automation.engine.http.publisher.CachedBodyHttpServletRequest;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.AsyncEvent;
 import jakarta.servlet.AsyncListener;
 import lombok.NonNull;
+import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
+import org.apache.commons.io.IOUtils;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.util.ContentCachingRequestWrapper;
 import org.springframework.web.util.ContentCachingResponseWrapper;
@@ -22,31 +25,6 @@ import java.util.stream.Collectors;
 
 @UtilityClass
 public class RequestUtils {
-    public Map<String, Object> getRequestParams(@NonNull ContentCachingRequestWrapper request) {
-        return request.getParameterMap()
-                .entrySet().stream()
-                .collect(Collectors.toMap(
-                        Map.Entry::getKey,
-                        e -> Arrays.asList(e.getValue())
-                ));
-    }
-
-    public Map<String, Object> getPathVariables(@NonNull ContentCachingRequestWrapper request) {
-        var pathVariables = request.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
-        if (pathVariables instanceof Map<?, ?>) {
-            return (Map<String, Object>) pathVariables;
-        }
-        return Collections.emptyMap();
-    }
-
-    public JsonNode getRequestBody(@NonNull ContentCachingRequestWrapper request, ObjectMapper objectMapper) {
-        try {
-            var body = new String(request.getContentAsByteArray(), StandardCharsets.UTF_8);
-            return objectMapper.readTree(body);
-        } catch (IOException e) {
-            return objectMapper.nullNode();
-        }
-    }
 
     public CompletionStage<JsonNode> getResponseBody(ContentCachingRequestWrapper request, ContentCachingResponseWrapper response, ObjectMapper objectMapper) throws IOException {
         var future = new CompletableFuture<JsonNode>();
@@ -85,14 +63,6 @@ public class RequestUtils {
             }
         }
         return future;
-    }
-
-    public Map<String, ArrayList<String>> getHeaders(@NonNull ContentCachingRequestWrapper request) {
-        return Collections.list(request.getHeaderNames()).stream()
-                .collect(Collectors.toMap(
-                        h -> h,
-                        h -> Collections.list(request.getHeaders(h))
-                ));
     }
 }
 

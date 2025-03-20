@@ -4,6 +4,7 @@ import com.automation.engine.http.AutomationEngineHttpApplication;
 import com.automation.engine.http.event.HttpMethodEnum;
 import com.automation.engine.http.event.HttpRequestEvent;
 import com.automation.engine.http.event.HttpResponseEvent;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -29,6 +30,9 @@ class HttpRequestResponseEventPublisherTest {
     @Autowired
     private EventCaptureListener eventCaptureListener; // Capture published events
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
     @BeforeEach
     void setUp() {
         eventCaptureListener.clearEvents(); // Reset events before each test
@@ -42,13 +46,13 @@ class HttpRequestResponseEventPublisherTest {
 
         // Verify request event
         assertThat(eventCaptureListener.getRequestEvents()).hasSize(1);
-        HttpRequestEvent requestEvent = eventCaptureListener.getRequestEvents().get(0);
+        HttpRequestEvent requestEvent = eventCaptureListener.getRequestEvents().getFirst();
         assertThat(requestEvent.getPath()).isEqualTo("/test/get");
         assertThat(requestEvent.getMethod()).isEqualTo(HttpMethodEnum.GET);
 
         // Verify response event
         assertThat(eventCaptureListener.getResponseEvents()).hasSize(1);
-        HttpResponseEvent responseEvent = eventCaptureListener.getResponseEvents().get(0);
+        HttpResponseEvent responseEvent = eventCaptureListener.getResponseEvents().getFirst();
         assertThat(responseEvent.getResponseBody().asText()).isEqualTo("GET response");
     }
 
@@ -64,13 +68,22 @@ class HttpRequestResponseEventPublisherTest {
 
         // Verify request event
         assertThat(eventCaptureListener.getRequestEvents()).hasSize(1);
-        HttpRequestEvent requestEvent = eventCaptureListener.getRequestEvents().get(0);
+        HttpRequestEvent requestEvent = eventCaptureListener.getRequestEvents().getFirst();
         assertThat(requestEvent.getPath()).isEqualTo("/test/post");
         assertThat(requestEvent.getMethod()).isEqualTo(HttpMethodEnum.POST);
+        // requestBody
+        var bodyJson = objectMapper.readTree(requestEvent.getRequestBody());
+        assertThat(bodyJson.get("key").asText()).isEqualTo("value");
+        // queryParams
+        assertThat(requestEvent.getQueryParams()).isEmpty();
+        // pathParams
+        assertThat(requestEvent.getPathParams()).isEmpty();
+        // headers contains content-type
+        assertThat(requestEvent.getHeaders().get("Content-Type")).containsExactly(MediaType.APPLICATION_JSON_VALUE);
 
         // Verify response event
         assertThat(eventCaptureListener.getResponseEvents()).hasSize(1);
-        HttpResponseEvent responseEvent = eventCaptureListener.getResponseEvents().get(0);
+        HttpResponseEvent responseEvent = eventCaptureListener.getResponseEvents().getFirst();
         assertThat(responseEvent.getResponseBody().get("key").asText()).isEqualTo("value");
     }
 
@@ -86,13 +99,13 @@ class HttpRequestResponseEventPublisherTest {
 
         // Verify request event
         assertThat(eventCaptureListener.getRequestEvents()).hasSize(1);
-        HttpRequestEvent requestEvent = eventCaptureListener.getRequestEvents().get(0);
+        HttpRequestEvent requestEvent = eventCaptureListener.getRequestEvents().getFirst();
         assertThat(requestEvent.getPath()).isEqualTo("/test/put");
         assertThat(requestEvent.getMethod()).isEqualTo(HttpMethodEnum.PUT);
 
         // Verify response event
         assertThat(eventCaptureListener.getResponseEvents()).hasSize(1);
-        HttpResponseEvent responseEvent = eventCaptureListener.getResponseEvents().get(0);
+        HttpResponseEvent responseEvent = eventCaptureListener.getResponseEvents().getFirst();
         assertThat(responseEvent.getResponseBody().asText()).isEqualTo("Received: Updated content");
     }
 
@@ -103,14 +116,32 @@ class HttpRequestResponseEventPublisherTest {
 
         // Verify request event
         assertThat(eventCaptureListener.getRequestEvents()).hasSize(1);
-        HttpRequestEvent requestEvent = eventCaptureListener.getRequestEvents().get(0);
+        HttpRequestEvent requestEvent = eventCaptureListener.getRequestEvents().getFirst();
         assertThat(requestEvent.getPath()).isEqualTo("/test/delete");
         assertThat(requestEvent.getMethod()).isEqualTo(HttpMethodEnum.DELETE);
+        // queryParams
+        assertThat(requestEvent.getQueryParams()).isEmpty();
+        // pathParams
+        assertThat(requestEvent.getPathParams()).isEmpty();
+        // headers
+        assertThat(requestEvent.getHeaders()).isEmpty();
+        // requestBody
+        assertThat(requestEvent.getRequestBody()).isEmpty();
 
         // Verify response event
         assertThat(eventCaptureListener.getResponseEvents()).hasSize(1);
-        HttpResponseEvent responseEvent = eventCaptureListener.getResponseEvents().get(0);
+        HttpResponseEvent responseEvent = eventCaptureListener.getResponseEvents().getFirst();
         assertThat(responseEvent.getResponseStatus()).isEqualTo(HttpStatus.NO_CONTENT);
+        // responseBody
+        assertThat(responseEvent.getResponseBody()).isEmpty();
+        // headers
+        assertThat(responseEvent.getHeaders()).isEmpty();
+        // requestBody
+        assertThat(responseEvent.getRequestBody()).isEmpty();
+        // queryParams
+        assertThat(responseEvent.getQueryParams()).isEmpty();
+        // pathParams
+        assertThat(responseEvent.getPathParams()).isEmpty();
     }
 
 }
