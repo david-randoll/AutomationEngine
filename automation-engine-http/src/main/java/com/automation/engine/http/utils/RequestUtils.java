@@ -11,6 +11,7 @@ import org.springframework.web.util.ContentCachingRequestWrapper;
 import org.springframework.web.util.ContentCachingResponseWrapper;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -40,7 +41,8 @@ public class RequestUtils {
 
     public JsonNode getRequestBody(@NonNull ContentCachingRequestWrapper request, ObjectMapper objectMapper) {
         try {
-            return objectMapper.readTree(request.getContentAsByteArray());
+            var body = new String(request.getContentAsByteArray(), StandardCharsets.UTF_8);
+            return objectMapper.readTree(body);
         } catch (IOException e) {
             return objectMapper.nullNode();
         }
@@ -52,7 +54,7 @@ public class RequestUtils {
         if (request.isAsyncStarted()) {
             request.getAsyncContext().addListener(new AsyncListener() {
                 public void onComplete(AsyncEvent asyncEvent) throws IOException {
-                    byte[] body = response.getContentAsByteArray();
+                    var body = new String(response.getContentAsByteArray(), StandardCharsets.UTF_8);
                     response.copyBodyToResponse(); // IMPORTANT: copy response back into original response
                     try {
                         future.complete(objectMapper.readTree(body));
@@ -74,7 +76,7 @@ public class RequestUtils {
                 }
             });
         } else {
-            byte[] body = response.getContentAsByteArray();
+            String body = new String(response.getContentAsByteArray(), StandardCharsets.UTF_8);
             response.copyBodyToResponse(); // IMPORTANT: copy response back into original response
             try {
                 future.complete(objectMapper.readTree(body));
