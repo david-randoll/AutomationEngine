@@ -6,6 +6,7 @@ import jakarta.servlet.ServletInputStream;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.SneakyThrows;
 import org.apache.commons.io.IOUtils;
+import org.springframework.http.HttpHeaders;
 import org.springframework.lang.NonNull;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.servlet.HandlerMapping;
@@ -71,6 +72,12 @@ public class CachedBodyHttpServletRequest extends ContentCachingRequestWrapper {
                 ));
     }
 
+    public HttpHeaders getHttpHeaders() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.putAll(this.getHeaders());
+        return headers;
+    }
+
     public String getPath() {
         return this.getRequestURI();
     }
@@ -84,7 +91,7 @@ public class CachedBodyHttpServletRequest extends ContentCachingRequestWrapper {
                 this.getFullUrl(),
                 this.getPath(),
                 HttpMethodEnum.fromValue(this.getMethod()),
-                this.getHeaders(),
+                this.getHttpHeaders(),
                 this.getRequestParams(),
                 this.getPathVariables(),
                 this.getBody()

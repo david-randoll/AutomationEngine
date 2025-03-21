@@ -1,8 +1,8 @@
 package com.automation.engine.http.event;
 
 import com.automation.engine.core.events.Event;
+import org.springframework.http.HttpHeaders;
 
-import java.util.ArrayList;
 import java.util.Map;
 
 public class HttpRequestEvent extends Event {
@@ -20,7 +20,7 @@ public class HttpRequestEvent extends Event {
     public HttpRequestEvent(String fullUrl,
                             String path,
                             HttpMethodEnum method,
-                            Map<String, ArrayList<String>> headers,
+                            HttpHeaders headers,
                             Map<String, Object> queryParams,
                             Map<String, Object> pathParams,
                             String requestBody) {
@@ -47,8 +47,8 @@ public class HttpRequestEvent extends Event {
         return (HttpMethodEnum) super.getData().get(METHOD);
     }
 
-    public Map<String, ArrayList<String>> getHeaders() {
-        return (Map<String, ArrayList<String>>) super.getData().get(HEADERS);
+    public HttpHeaders getHeaders() {
+        return (HttpHeaders) super.getData().get(HEADERS);
     }
 
     public Map<String, Object> getQueryParams() {

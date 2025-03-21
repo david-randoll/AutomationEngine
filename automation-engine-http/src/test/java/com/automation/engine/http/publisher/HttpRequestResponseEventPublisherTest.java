@@ -15,7 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.ArrayList;
+import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -89,9 +89,9 @@ class HttpRequestResponseEventPublisherTest {
         // pathParams
         assertThat(requestEvent.getPathParams()).isEmpty();
         // headers contains content-type
-        ArrayList<String> contentType = requestEvent.getHeaders().get("Content-Type");
+        String contentType = Objects.requireNonNull(requestEvent.getHeaders().getContentType()).toString();
         String expectedContentType = MediaType.APPLICATION_JSON_VALUE;
-        assertThat(contentType.getFirst()).startsWith(expectedContentType);
+        assertThat(contentType).startsWith(expectedContentType);
 
         // Verify response event
         assertThat(eventCaptureListener.getResponseEvents()).hasSize(1);
@@ -122,9 +122,9 @@ class HttpRequestResponseEventPublisherTest {
         // pathParams
         assertThat(requestEvent.getPathParams()).isEmpty();
         // headers contains content-type
-        ArrayList<String> contentType = requestEvent.getHeaders().get("Content-Type");
+        String contentType = Objects.requireNonNull(requestEvent.getHeaders().getContentType()).toString();
         String expectedContentType = MediaType.TEXT_PLAIN_VALUE;
-        assertThat(contentType.getFirst()).startsWith(expectedContentType);
+        assertThat(contentType).startsWith(expectedContentType);
 
         // Verify response event
         assertThat(eventCaptureListener.getResponseEvents()).hasSize(1);
