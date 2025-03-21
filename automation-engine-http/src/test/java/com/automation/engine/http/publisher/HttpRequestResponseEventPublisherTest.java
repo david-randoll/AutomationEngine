@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.List;
 import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -166,5 +167,83 @@ class HttpRequestResponseEventPublisherTest {
         // pathParams
         assertThat(responseEvent.getPathParams()).isEmpty();
     }
+
+    @Test
+    void testGetWithQueryParamsPublishesEvents() throws Exception {
+        mockMvc.perform(get("/test/get-with-params")
+                        .param("key", "value")
+                        .param("otherKey", "otherValue")
+                        .header("Custom-Header", "HeaderValue"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("Query Params: {key=[value], otherKey=[otherValue]}"));
+
+        // Verify request event
+        assertThat(eventCaptureListener.getRequestEvents()).hasSize(1);
+        HttpRequestEvent requestEvent = eventCaptureListener.getRequestEvents().getFirst();
+        assertThat(requestEvent.getPath()).isEqualTo("/test/get-with-params");
+        assertThat(requestEvent.getQueryParams()).containsEntry("key", List.of("value"));
+        assertThat(requestEvent.getQueryParams()).containsEntry("otherKey", List.of("otherValue"));
+        assertThat(requestEvent.getHeaders()).containsEntry("Custom-Header", List.of("HeaderValue"));
+
+        // Verify response event
+        assertThat(eventCaptureListener.getResponseEvents()).hasSize(1);
+        HttpResponseEvent responseEvent = eventCaptureListener.getResponseEvents().getFirst();
+        assertThat(responseEvent.getResponseBody()).isEqualTo("Query Params: {key=[value], otherKey=[otherValue]}");
+    }
+
+    @Test
+    void testGetWithPathVariablePublishesEvents() throws Exception {
+        mockMvc.perform(get("/test/get-with-path/123")
+                        .header("Another-Header", "AnotherValue"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("Path Variable: 123"));
+
+        // Verify request event
+        assertThat(eventCaptureListener.getRequestEvents()).hasSize(1);
+        HttpRequestEvent requestEvent = eventCaptureListener.getRequestEvents().getFirst();
+        assertThat(requestEvent.getPath()).isEqualTo("/test/get-with-path/123");
+        assertThat(requestEvent.getPathParams()).containsEntry("id", "123");
+        assertThat(requestEvent.getHeaders()).containsEntry("Another-Header", List.of("AnotherValue"));
+
+        // Verify response event
+        assertThat(eventCaptureListener.getResponseEvents()).hasSize(1);
+        HttpResponseEvent responseEvent = eventCaptureListener.getResponseEvents().getFirst();
+        assertThat(responseEvent.getResponseBody()).isEqualTo("Path Variable: 123");
+    }
+
+    @Test
+    void testPostWithQueryParamsAndHeadersPublishesEvents() throws Exception {
+        String requestBody = "{\"name\": \"Test\"}";
+
+        mockMvc.perform(post("/test/post-with-params/456")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody)
+                        .param("key", "value")
+                        .header("Post-Header", "HeaderValue"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.pathId").value("456"))
+                .andExpect(jsonPath("$.queryParams.key[0]").value("value"))
+                .andExpect(jsonPath("$.body.name").value("Test"));
+
+        // Verify request event
+        assertThat(eventCaptureListener.getRequestEvents()).hasSize(1);
+        HttpRequestEvent requestEvent = eventCaptureListener.getRequestEvents().getFirst();
+        assertThat(requestEvent.getPath()).isEqualTo("/test/post-with-params/456");
+        assertThat(requestEvent.getPathParams()).containsEntry("id", "456");
+        assertThat(requestEvent.getQueryParams()).containsEntry("key", List.of("value"));
+        assertThat(requestEvent.getHeaders()).containsEntry("Post-Header", List.of("HeaderValue"));
+
+        var bodyJson = objectMapper.readTree(requestEvent.getRequestBody());
+        assertThat(bodyJson.get("name").asText()).isEqualTo("Test");
+
+        // Verify response event
+        assertThat(eventCaptureListener.getResponseEvents()).hasSize(1);
+        HttpResponseEvent responseEvent = eventCaptureListener.getResponseEvents().getFirst();
+        var responseBodyJson = objectMapper.readTree(responseEvent.getResponseBody());
+        assertThat(responseBodyJson.get("pathId").asText()).isEqualTo("456");
+        assertThat(responseBodyJson.get("queryParams").get("key").get(0).asText()).isEqualTo("value");
+        assertThat(responseBodyJson.get("body").get("name").asText()).isEqualTo("Test");
+    }
+
 
 }
