@@ -1,12 +1,10 @@
 package com.automation.engine.http.publisher;
 
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Objects;
 
 @RestController
 @RequestMapping("/test")
@@ -32,26 +30,32 @@ public class TestController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/get/{id}")
-    public ResponseEntity<String> getWithParams(@PathVariable String id, @RequestParam(required = false) String query) {
-        String response = "GET response with id: " + id + (query != null ? ", query: " + query : "");
+    @GetMapping("/get-with-params")
+    public ResponseEntity<String> getWithParams(@RequestParam Map<String, String> queryParams,
+                                                @RequestHeader(value = "Custom-Header", required = false) String customHeader) {
+        String response = "Query Params: " + queryParams;
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/post/header")
-    public ResponseEntity<Map<String, String>> postEndpoint(@RequestBody Map<String, String> body, @RequestHeader HttpHeaders headers) {
-        Map<String, String> response = new HashMap<>(body);
-        response.put("Content-Type", Objects.requireNonNull(headers.getContentType()).toString());
+    @GetMapping("/get-with-path/{id}")
+    public ResponseEntity<String> getWithPath(@PathVariable String id,
+                                              @RequestHeader(value = "Another-Header", required = false) String anotherHeader) {
+        String response = "Path Variable: " + id;
         return ResponseEntity.ok(response);
     }
 
-    @PutMapping("/put/{id}")
-    public ResponseEntity<String> putEndpoint(@PathVariable String id, @RequestBody String body) {
-        return ResponseEntity.ok("Updated ID: " + id + " with body: " + body);
-    }
-
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deleteEndpoint(@PathVariable String id) {
-        return ResponseEntity.ok("Deleted ID: " + id);
+    @PostMapping("/post-with-params/{id}")
+    public ResponseEntity<Map<String, Object>> postWithParams(@PathVariable String id,
+                                                              @RequestParam Map<String, String> queryParams,
+                                                              @RequestBody Map<String, String> body,
+                                                              @RequestHeader(value = "Post-Header", required = false) String postHeader) {
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("pathId", id);
+        response.put("queryParams", queryParams);
+        response.put("body", body);
+        if (postHeader != null) {
+            response.put("Post-Header", postHeader);
+        }
+        return ResponseEntity.ok(response);
     }
 }

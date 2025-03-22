@@ -175,7 +175,7 @@ class HttpRequestResponseEventPublisherTest {
                         .param("otherKey", "otherValue")
                         .header("Custom-Header", "HeaderValue"))
                 .andExpect(status().isOk())
-                .andExpect(content().string("Query Params: {key=[value], otherKey=[otherValue]}"));
+                .andExpect(content().string("Query Params: {key=value, otherKey=otherValue}"));
 
         // Verify request event
         assertThat(eventCaptureListener.getRequestEvents()).hasSize(1);
@@ -188,7 +188,7 @@ class HttpRequestResponseEventPublisherTest {
         // Verify response event
         assertThat(eventCaptureListener.getResponseEvents()).hasSize(1);
         HttpResponseEvent responseEvent = eventCaptureListener.getResponseEvents().getFirst();
-        assertThat(responseEvent.getResponseBody()).isEqualTo("Query Params: {key=[value], otherKey=[otherValue]}");
+        assertThat(responseEvent.getResponseBody()).isEqualTo("Query Params: {key=value, otherKey=otherValue}");
     }
 
     @Test
@@ -222,7 +222,7 @@ class HttpRequestResponseEventPublisherTest {
                         .header("Post-Header", "HeaderValue"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.pathId").value("456"))
-                .andExpect(jsonPath("$.queryParams.key[0]").value("value"))
+                .andExpect(jsonPath("$.queryParams.key").value("value"))
                 .andExpect(jsonPath("$.body.name").value("Test"));
 
         // Verify request event
