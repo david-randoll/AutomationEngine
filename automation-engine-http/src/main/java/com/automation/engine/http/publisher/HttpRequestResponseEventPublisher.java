@@ -31,14 +31,15 @@ public class HttpRequestResponseEventPublisher extends OncePerRequestFilter {
         var requestWrapper = new CachedBodyHttpServletRequest(request);
         var responseWrapper = new CachedBodyHttpServletResponse(response);
 
-        HttpRequestEvent requestEvent = requestWrapper.toHttpRequestEvent();
-        engine.publishEvent(requestEvent);
-
         if (ObjectUtils.isEmpty(requestWrapper)) {
             filterChain.doFilter(request, response);
         } else {
             filterChain.doFilter(requestWrapper, responseWrapper);
         }
+
+        HttpRequestEvent requestEvent = requestWrapper.toHttpRequestEvent();
+        engine.publishEvent(requestEvent);
+
         HttpStatus responseStatus = HttpStatus.valueOf(responseWrapper.getStatus());
         CompletionStage<String> responseBody = responseWrapper.getResponseBody(requestWrapper);
 

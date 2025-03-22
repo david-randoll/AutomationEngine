@@ -241,7 +241,7 @@ class HttpRequestResponseEventPublisherTest {
         HttpResponseEvent responseEvent = eventCaptureListener.getResponseEvents().getFirst();
         var responseBodyJson = objectMapper.readTree(responseEvent.getResponseBody());
         assertThat(responseBodyJson.get("pathId").asText()).isEqualTo("456");
-        assertThat(responseBodyJson.get("queryParams").get("key").get(0).asText()).isEqualTo("value");
+        assertThat(responseBodyJson.get("queryParams").get("key").asText()).isEqualTo("value");
         assertThat(responseBodyJson.get("body").get("name").asText()).isEqualTo("Test");
     }
 
