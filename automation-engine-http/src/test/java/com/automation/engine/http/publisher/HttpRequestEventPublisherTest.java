@@ -14,7 +14,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -245,5 +248,73 @@ class HttpRequestEventPublisherTest {
         assertThat(responseBodyJson.get("body").get("name").asText()).isEqualTo("Test");
     }
 
+    @Test
+    void testEndpointNotFoundPublishesNoEvents() throws Exception {
+        mockMvc.perform(get("/test/notfound"))
+                .andExpect(status().isNotFound());
 
+        // Verify no events are published
+        assertThat(eventCaptureListener.getRequestEvents()).isEmpty();
+        assertThat(eventCaptureListener.getResponseEvents()).isEmpty();
+    }
+
+    @Test
+    void testConcurrentRequestsPublishesEventsInOrder() throws Exception {
+        // Fire multiple requests concurrently
+        List<MockHttpServletRequestBuilder> requests = Arrays.asList(
+                get("/test/long-process"),
+                get("/test/long-process"),
+                get("/test/long-process")
+        );
+
+        // Perform all requests concurrently
+        List<ResultActions> results = requests.stream()
+                .map(request -> {
+                    try {
+                        return mockMvc.perform(request);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                })
+                .toList();
+
+        // Wait for all requests to complete
+        for (ResultActions result : results) {
+            result.andExpect(status().isOk());
+        }
+
+        // Ensure events are published in order
+        assertThat(eventCaptureListener.getRequestEvents()).hasSize(3);
+        assertThat(eventCaptureListener.getResponseEvents()).hasSize(3);
+
+        // Check that events are in order (this checks that the first request's event is the first one, and so on)
+        for (int i = 0; i < 3; i++) {
+            assertThat(eventCaptureListener.getRequestEvents().get(i).getPath()).isEqualTo("/test/long-process");
+            assertThat(eventCaptureListener.getResponseEvents().get(i).getResponseBody()).isEqualTo("Long process completed");
+        }
+    }
+
+    @Test
+    void testPostWithUnexpectedFieldsPublishesEvents() throws Exception {
+        String requestBody = "{\"unexpectedField\": \"value\"}";
+
+        mockMvc.perform(post("/test/post")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.unexpectedField").value("value"));
+
+        // Verify request event
+        assertThat(eventCaptureListener.getRequestEvents()).hasSize(1);
+        HttpRequestEvent requestEvent = eventCaptureListener.getRequestEvents().getFirst();
+        assertThat(requestEvent.getPath()).isEqualTo("/test/post");
+        var bodyJson = objectMapper.readTree(requestEvent.getRequestBody());
+        assertThat(bodyJson.get("unexpectedField").asText()).isEqualTo("value");
+
+        // Verify response event
+        assertThat(eventCaptureListener.getResponseEvents()).hasSize(1);
+        HttpResponseEvent responseEvent = eventCaptureListener.getResponseEvents().getFirst();
+        var responseBodyJson = objectMapper.readTree(responseEvent.getResponseBody());
+        assertThat(responseBodyJson.get("unexpectedField").asText()).isEqualTo("value");
+    }
 }

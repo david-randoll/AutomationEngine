@@ -1,11 +1,13 @@
 package com.automation.engine.http.publisher;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+@Slf4j
 @RestController
 @RequestMapping("/test")
 public class TestController {
@@ -57,5 +59,16 @@ public class TestController {
             response.put("Post-Header", postHeader);
         }
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/notfound")
+    public ResponseEntity<String> notFoundEndpoint() {
+        return ResponseEntity.notFound().build();
+    }
+
+    @GetMapping("/long-process")
+    public ResponseEntity<String> longProcessEndpoint() throws InterruptedException {
+        Thread.sleep(100); // Simulating a long process
+        return ResponseEntity.ok("Long process completed");
     }
 }
