@@ -1,9 +1,10 @@
-package com.automation.engine.http.publisher;
+package com.automation.engine.http.publisher.response;
 
 import com.automation.engine.core.AutomationEngine;
 import com.automation.engine.http.event.HttpRequestEvent;
 import com.automation.engine.http.event.HttpResponseEvent;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.automation.engine.http.publisher.request.CachedBodyHttpServletRequest;
+import com.automation.engine.http.publisher.request.HttpRequestEventPublisher;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,32 +14,31 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
-import org.springframework.util.ObjectUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.concurrent.CompletionStage;
 
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class HttpRequestResponseEventPublisher extends OncePerRequestFilter {
-    private final ObjectMapper objectMapper;
+public class HttpResponseEventPublisher extends OncePerRequestFilter {
     private final AutomationEngine engine;
 
+    /**
+     * NOTE: Cannot publish the request event here because the path params are not available here yet.
+     * After the filter chain is executed, the path params are available in the requestWrapper object.
+     * This is why in the {@link  HttpRequestEventPublisher#preHandle}, the event is published in the preHandle method.
+     */
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
         var requestWrapper = new CachedBodyHttpServletRequest(request);
         var responseWrapper = new CachedBodyHttpServletResponse(response);
 
-        if (ObjectUtils.isEmpty(requestWrapper)) {
-            filterChain.doFilter(request, response);
-        } else {
-            filterChain.doFilter(requestWrapper, responseWrapper);
-        }
+        filterChain.doFilter(requestWrapper, responseWrapper);
 
         HttpRequestEvent requestEvent = requestWrapper.toHttpRequestEvent();
-        engine.publishEvent(requestEvent);
 
         HttpStatus responseStatus = HttpStatus.valueOf(responseWrapper.getStatus());
         CompletionStage<String> responseBody = responseWrapper.getResponseBody(requestWrapper);

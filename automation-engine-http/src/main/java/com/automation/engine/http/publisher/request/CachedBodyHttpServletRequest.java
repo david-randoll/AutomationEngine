@@ -1,4 +1,4 @@
-package com.automation.engine.http.publisher;
+package com.automation.engine.http.publisher.request;
 
 import com.automation.engine.http.event.HttpMethodEnum;
 import com.automation.engine.http.event.HttpRequestEvent;
