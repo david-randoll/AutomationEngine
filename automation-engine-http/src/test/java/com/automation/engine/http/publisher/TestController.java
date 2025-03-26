@@ -61,11 +61,6 @@ public class TestController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/notfound")
-    public ResponseEntity<String> notFoundEndpoint() {
-        return ResponseEntity.notFound().build();
-    }
-
     @GetMapping("/long-process")
     public ResponseEntity<String> longProcessEndpoint() throws InterruptedException {
         Thread.sleep(100); // Simulating a long process
