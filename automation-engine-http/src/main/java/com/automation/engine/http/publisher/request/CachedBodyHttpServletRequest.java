@@ -4,6 +4,8 @@ import com.automation.engine.http.event.HttpMethodEnum;
 import com.automation.engine.http.event.HttpRequestEvent;
 import jakarta.servlet.ServletInputStream;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.SneakyThrows;
 import org.apache.commons.io.IOUtils;
 import org.springframework.http.HttpHeaders;
@@ -22,6 +24,9 @@ import java.util.stream.Collectors;
 
 public class CachedBodyHttpServletRequest extends ContentCachingRequestWrapper {
     private final byte[] cachedBody;
+    @Getter
+    @Setter
+    private boolean endpointExists;
 
     public CachedBodyHttpServletRequest(HttpServletRequest request) throws IOException {
         super(request);

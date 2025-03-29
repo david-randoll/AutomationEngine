@@ -18,8 +18,14 @@ public class HttpRequestEventPublisher implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull Object handler) throws Exception {
-        var requestWrapper = new CachedBodyHttpServletRequest(request);
+        CachedBodyHttpServletRequest requestWrapper = null;
+        if (request instanceof CachedBodyHttpServletRequest cachedBodyHttpServletRequest) {
+            requestWrapper = cachedBodyHttpServletRequest;
+        } else {
+            requestWrapper = new CachedBodyHttpServletRequest(request);
+        }
 
+        requestWrapper.setEndpointExists(true);
         HttpRequestEvent requestEvent = requestWrapper.toHttpRequestEvent();
         engine.publishEvent(requestEvent);
 

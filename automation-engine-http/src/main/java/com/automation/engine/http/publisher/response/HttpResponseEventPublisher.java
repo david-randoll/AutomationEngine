@@ -38,6 +38,8 @@ public class HttpResponseEventPublisher extends OncePerRequestFilter {
 
         filterChain.doFilter(requestWrapper, responseWrapper);
 
+        if (!requestWrapper.isEndpointExists()) return;
+
         HttpRequestEvent requestEvent = requestWrapper.toHttpRequestEvent();
 
         HttpStatus responseStatus = HttpStatus.valueOf(responseWrapper.getStatus());
@@ -58,5 +60,4 @@ public class HttpResponseEventPublisher extends OncePerRequestFilter {
             engine.publishEvent(responseEvent);
         });
     }
-    
 }
