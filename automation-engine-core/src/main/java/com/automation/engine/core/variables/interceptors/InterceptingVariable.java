@@ -9,11 +9,11 @@ import org.springframework.util.ObjectUtils;
 
 import java.util.List;
 
-public class InterceptingAction implements IVariable {
+public class InterceptingVariable implements IVariable {
     private final IBaseVariable delegate;
     private final List<IVariableInterceptor> interceptors;
 
-    public InterceptingAction(IBaseVariable delegate, List<IVariableInterceptor> interceptors) {
+    public InterceptingVariable(IBaseVariable delegate, List<IVariableInterceptor> interceptors) {
         this.delegate = delegate;
         this.interceptors = ObjectUtils.isEmpty(interceptors) ? List.of() : interceptors.stream()
                 .sorted(OrderComparator.INSTANCE)
@@ -21,7 +21,7 @@ public class InterceptingAction implements IVariable {
     }
 
     @Override
-    public void setVariable(Event event, VariableContext variableContext) {
+    public void resolve(Event event, VariableContext variableContext) {
         executeInterceptors(0, event, variableContext);
     }
 
@@ -32,7 +32,7 @@ public class InterceptingAction implements IVariable {
             interceptor.intercept(event, variableContext, action);
         } else {
             // All interceptors have been processed, execute the delegate
-            delegate.setVariable(event, variableContext);
+            delegate.resolve(event, variableContext);
         }
     }
 }

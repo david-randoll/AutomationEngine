@@ -17,10 +17,10 @@ public abstract class AbstractVariable<T extends IVariableContext> implements IV
     }
 
     @Override
-    public void setVariable(Event eventContext, VariableContext variableContext) {
+    public void resolve(Event eventContext, VariableContext variableContext) {
         T data = typeConverter.convert(variableContext.getData(), getContextType());
-        setVariable(eventContext, data);
+        resolve(eventContext, data);
     }
 
-    public abstract void setVariable(Event event, T context);
+    public abstract void resolve(Event event, T context);
 }

@@ -6,7 +6,7 @@ import org.springframework.lang.Nullable;
 @FunctionalInterface
 public interface IVariable extends IBaseVariable {
     @Override
-    default void setVariable(Event context) {
+    default void resolve(Event context) {
         // used by FunctionalInterface to execute the execute method with VariableContext
     }
 
@@ -16,5 +16,5 @@ public interface IVariable extends IBaseVariable {
     }
 
     @Override
-    void setVariable(Event context, VariableContext variableContext);
+    void resolve(Event context, VariableContext variableContext);
 }

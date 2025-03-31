@@ -1,4 +1,4 @@
-package com.automation.engine.factory.request;
+package com.automation.engine.factory.model;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;

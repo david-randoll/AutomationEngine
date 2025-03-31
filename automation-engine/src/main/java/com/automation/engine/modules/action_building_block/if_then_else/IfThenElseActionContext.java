@@ -1,8 +1,8 @@
 package com.automation.engine.modules.action_building_block.if_then_else;
 
 import com.automation.engine.core.actions.IActionContext;
-import com.automation.engine.factory.request.Action;
-import com.automation.engine.factory.request.Condition;
+import com.automation.engine.factory.model.Action;
+import com.automation.engine.factory.model.Condition;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;

@@ -1,7 +1,7 @@
 package com.automation.engine.factory;
 
 import com.automation.engine.core.Automation;
-import com.automation.engine.factory.request.CreateRequest;
+import com.automation.engine.factory.model.CreateRequest;
 import com.automation.engine.factory.resolver.IAutomationResolver;
 import com.automation.engine.factory.resolver.DefaultAutomationResolver;
 import lombok.RequiredArgsConstructor;

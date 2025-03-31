@@ -1,4 +1,4 @@
-package com.automation.engine.factory.request;
+package com.automation.engine.factory.model;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
@@ -16,10 +16,10 @@ import java.util.Map;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Trigger {
+public class Condition {
     private String alias;
     @NotEmpty
-    private String trigger;
+    private String condition;
 
     @JsonIgnore
     @JsonAnyGetter

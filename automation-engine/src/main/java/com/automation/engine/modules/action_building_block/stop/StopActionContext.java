@@ -1,7 +1,7 @@
 package com.automation.engine.modules.action_building_block.stop;
 
 import com.automation.engine.core.actions.IActionContext;
-import com.automation.engine.factory.request.Condition;
+import com.automation.engine.factory.model.Condition;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;

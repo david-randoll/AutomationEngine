@@ -4,9 +4,9 @@ import com.automation.engine.core.events.Event;
 
 @FunctionalInterface
 public interface IBaseVariable {
-    void setVariable(Event context);
+    void resolve(Event context);
 
-    default void setVariable(Event context, VariableContext variableContext) {
-        setVariable(context);
+    default void resolve(Event context, VariableContext variableContext) {
+        resolve(context);
     }
 }

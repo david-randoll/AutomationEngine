@@ -1,7 +1,7 @@
 package com.automation.engine.factory.resolver;
 
 import com.automation.engine.core.Automation;
-import com.automation.engine.factory.request.CreateRequest;
+import com.automation.engine.factory.model.CreateRequest;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;

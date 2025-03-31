@@ -3,7 +3,7 @@ package com.automation.engine.modules.action_building_block.wait_for_trigger;
 import com.automation.engine.AutomationEngineConfigProvider;
 import com.automation.engine.core.actions.AbstractAction;
 import com.automation.engine.core.events.Event;
-import com.automation.engine.factory.request.Trigger;
+import com.automation.engine.factory.model.Trigger;
 import com.automation.engine.factory.resolver.DefaultAutomationResolver;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldNameConstants;
