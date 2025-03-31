@@ -5,6 +5,7 @@ import com.automation.engine.core.actions.exceptions.StopAutomationException;
 import com.automation.engine.core.conditions.BaseConditionList;
 import com.automation.engine.core.events.Event;
 import com.automation.engine.core.triggers.BaseTriggerList;
+import com.automation.engine.core.variables.BaseVariableList;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.util.ObjectUtils;
@@ -13,9 +14,18 @@ import org.springframework.util.ObjectUtils;
 @AllArgsConstructor
 public class Automation {
     private final String alias;
+    private final BaseVariableList variables;
     private final BaseTriggerList triggers;
     private final BaseConditionList conditions;
     private final BaseActionList actions;
+
+    /**
+     * Set the variables
+     */
+    public void setVariables(Event event) {
+        if (ObjectUtils.isEmpty(variables)) return;
+        variables.setAll(event);
+    }
 
     /**
      * Check if any of the triggers are triggered

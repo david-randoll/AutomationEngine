@@ -9,13 +9,13 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
 public class BaseVariableList extends ArrayList<IBaseVariable> {
-    public void setVariables(Event event) {
+    public void setAll(Event event) {
         for (IBaseVariable variable : this) {
             variable.setVariable(event);
         }
     }
 
-    public void setVariablesAsync(Event event) {
+    public void setAllAsync(Event event) {
         List<CompletableFuture<Void>> futures = this.stream()
                 .map(variable -> CompletableFuture.runAsync(() -> variable.setVariable(event)))
                 .toList();
@@ -23,7 +23,7 @@ public class BaseVariableList extends ArrayList<IBaseVariable> {
         CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
     }
 
-    public void setVariablesAsync(Event event, Executor executor) {
+    public void setAllAsync(Event event, Executor executor) {
         List<CompletableFuture<Void>> futures = this.stream()
                 .map(variable -> CompletableFuture.runAsync(() -> variable.setVariable(event), executor))
                 .toList();
