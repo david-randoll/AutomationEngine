@@ -1,0 +1,20 @@
+package com.automation.engine.modules.conditions.or;
+
+import com.automation.engine.core.conditions.AbstractCondition;
+import com.automation.engine.core.events.Event;
+import com.automation.engine.factory.resolver.DefaultAutomationResolver;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
+import org.springframework.util.ObjectUtils;
+
+@Component("orCondition")
+@RequiredArgsConstructor
+public class OrCondition extends AbstractCondition<OrConditionContext> {
+    private final DefaultAutomationResolver resolver;
+
+    @Override
+    public boolean isSatisfied(Event event, OrConditionContext context) {
+        if (ObjectUtils.isEmpty(context.getConditions())) return true;
+        return resolver.anyConditionSatisfied(event, context.getConditions());
+    }
+}
