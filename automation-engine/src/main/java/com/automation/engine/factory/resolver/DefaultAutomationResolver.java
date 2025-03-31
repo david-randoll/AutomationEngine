@@ -231,4 +231,10 @@ public class DefaultAutomationResolver implements IAutomationResolver<CreateRequ
             return null;
         }
     }
+
+    public void resolveVariables(Event event, List<Variable> variables) {
+        if (ObjectUtils.isEmpty(variables)) return;
+        BaseVariableList resolvedVariables = buildVariablesList(variables);
+        resolvedVariables.setAll(event);
+    }
 }
