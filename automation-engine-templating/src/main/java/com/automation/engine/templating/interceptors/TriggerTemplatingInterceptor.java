@@ -1,9 +1,10 @@
-package com.automation.engine.templating;
+package com.automation.engine.templating.interceptors;
 
 import com.automation.engine.core.events.Event;
 import com.automation.engine.core.triggers.ITrigger;
 import com.automation.engine.core.triggers.TriggerContext;
 import com.automation.engine.core.triggers.interceptors.ITriggerInterceptor;
+import com.automation.engine.templating.TemplateProcessor;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;

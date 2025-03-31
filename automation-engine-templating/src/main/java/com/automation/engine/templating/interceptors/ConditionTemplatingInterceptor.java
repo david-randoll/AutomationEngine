@@ -1,9 +1,10 @@
-package com.automation.engine.templating;
+package com.automation.engine.templating.interceptors;
 
 import com.automation.engine.core.conditions.ConditionContext;
 import com.automation.engine.core.conditions.ICondition;
 import com.automation.engine.core.conditions.interceptors.IConditionInterceptor;
 import com.automation.engine.core.events.Event;
+import com.automation.engine.templating.TemplateProcessor;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
