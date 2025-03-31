@@ -1,8 +1,10 @@
 package com.automation.engine.http.publisher;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -65,5 +67,21 @@ public class TestController {
     public ResponseEntity<String> longProcessEndpoint() throws InterruptedException {
         Thread.sleep(100); // Simulating a long process
         return ResponseEntity.ok("Long process completed");
+    }
+
+    @GetMapping("/query")
+    public ResponseEntity<Map<String, String>> handleQueryParams(@RequestParam Map<String, String> params) {
+        return ResponseEntity.ok(params);
+    }
+
+    @GetMapping("/error")
+    public ResponseEntity<String> handleError() {
+        throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unexpected error occurred");
+    }
+
+    @GetMapping("/slow-response")
+    public ResponseEntity<String> handleSlowResponse() throws InterruptedException {
+        Thread.sleep(5000); // Simulate slow response
+        return ResponseEntity.ok("Processed after delay");
     }
 }

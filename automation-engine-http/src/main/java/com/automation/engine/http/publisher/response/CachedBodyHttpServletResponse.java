@@ -3,14 +3,15 @@ package com.automation.engine.http.publisher.response;
 import jakarta.servlet.AsyncEvent;
 import jakarta.servlet.AsyncListener;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.util.ContentCachingRequestWrapper;
 import org.springframework.web.util.ContentCachingResponseWrapper;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
+@Slf4j
 public class CachedBodyHttpServletResponse extends ContentCachingResponseWrapper {
     public CachedBodyHttpServletResponse(HttpServletResponse response) {
         super(response);
@@ -22,9 +23,7 @@ public class CachedBodyHttpServletResponse extends ContentCachingResponseWrapper
         if (request.isAsyncStarted()) {
             request.getAsyncContext().addListener(new AsyncListener() {
                 public void onComplete(AsyncEvent asyncEvent) throws IOException {
-                    var body = new String(CachedBodyHttpServletResponse.super.getContentAsByteArray(), StandardCharsets.UTF_8);
-                    CachedBodyHttpServletResponse.super.copyBodyToResponse(); // IMPORTANT: copy response back into original response
-                    future.complete(body);
+                    getBody(future);
                 }
 
                 public void onTimeout(AsyncEvent asyncEvent) {
@@ -33,6 +32,7 @@ public class CachedBodyHttpServletResponse extends ContentCachingResponseWrapper
 
                 public void onError(AsyncEvent asyncEvent) {
                     //ignore
+                    log.error("Error occurred while processing async request", asyncEvent.getThrowable());
                 }
 
                 public void onStartAsync(AsyncEvent asyncEvent) {
@@ -40,10 +40,14 @@ public class CachedBodyHttpServletResponse extends ContentCachingResponseWrapper
                 }
             });
         } else {
-            String body = new String(this.getContentAsByteArray(), StandardCharsets.UTF_8);
-            this.copyBodyToResponse(); // IMPORTANT: copy response back into original response
-            future.complete(body);
+            getBody(future);
         }
         return future;
+    }
+
+    private void getBody(CompletableFuture<String> future) throws IOException {
+        String body = new String(this.getContentAsByteArray(), this.getCharacterEncoding());
+        this.copyBodyToResponse(); // IMPORTANT: copy response back into original response
+        future.complete(body);
     }
 }

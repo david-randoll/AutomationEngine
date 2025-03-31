@@ -317,4 +317,46 @@ class HttpRequestEventPublisherTest {
         var responseBodyJson = objectMapper.readTree(responseEvent.getResponseBody());
         assertThat(responseBodyJson.get("unexpectedField").asText()).isEqualTo("value");
     }
+
+    @Test
+    void testInternalServerErrorPublishesEvents() throws Exception {
+        mockMvc.perform(get("/test/error"))
+                .andExpect(status().isInternalServerError());
+
+        // Verify request event
+        assertThat(eventCaptureListener.getRequestEvents()).hasSize(1);
+        assertThat(eventCaptureListener.getResponseEvents()).hasSize(1);
+
+        // Verify error response
+        HttpResponseEvent responseEvent = eventCaptureListener.getResponseEvents().getFirst();
+        assertThat(responseEvent.getResponseStatus()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
+        assertThat(responseEvent.getResponseBody()).contains("Unexpected error occurred");
+    }
+
+    @Test
+    void testSlowResponsePublishesEvents() throws Exception {
+        mockMvc.perform(get("/test/slow-response"))
+                .andExpect(status().isOk());
+
+        // Verify request and response events
+        assertThat(eventCaptureListener.getRequestEvents()).hasSize(1);
+        assertThat(eventCaptureListener.getResponseEvents()).hasSize(1);
+
+        HttpResponseEvent responseEvent = eventCaptureListener.getResponseEvents().getFirst();
+        assertThat(responseEvent.getResponseBody()).isEqualTo("Processed after delay");
+    }
+
+    @Test
+    void testQueryParamEncodingPublishesEvents() throws Exception {
+        mockMvc.perform(get("/test/query")
+                        .param("q", "value with spaces & special!"))
+                .andExpect(status().isOk());
+
+        // Verify request event
+        HttpRequestEvent requestEvent = eventCaptureListener.getRequestEvents().getFirst();
+        assertThat(requestEvent.getQueryParams()).containsEntry("q", List.of("value with spaces & special!"));
+    }
+
+
+
 }

@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.4.1</version>
+        <version>3.4.4</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
@@ -26,6 +26,11 @@
         <dependency>
             <groupId>com.automation.engine</groupId>
             <artifactId>automation-engine</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.automation.engine.http</groupId>
+            <artifactId>automation-engine-http</artifactId>
             <version>${revision}</version>
         </dependency>
 

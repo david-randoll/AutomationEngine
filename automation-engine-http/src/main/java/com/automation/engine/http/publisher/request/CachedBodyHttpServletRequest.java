@@ -28,6 +28,8 @@ public class CachedBodyHttpServletRequest extends ContentCachingRequestWrapper {
     @Setter
     private boolean endpointExists;
 
+    private HttpRequestEvent httpRequestEvent;
+
     public CachedBodyHttpServletRequest(HttpServletRequest request) throws IOException {
         super(request);
         InputStream requestInputStream = request.getInputStream();
@@ -92,7 +94,10 @@ public class CachedBodyHttpServletRequest extends ContentCachingRequestWrapper {
     }
 
     public HttpRequestEvent toHttpRequestEvent() {
-        return new HttpRequestEvent(
+        if (this.httpRequestEvent != null) {
+            return this.httpRequestEvent;
+        }
+        this.httpRequestEvent = new HttpRequestEvent(
                 this.getFullUrl(),
                 this.getPath(),
                 HttpMethodEnum.fromValue(this.getMethod()),
@@ -101,5 +106,6 @@ public class CachedBodyHttpServletRequest extends ContentCachingRequestWrapper {
                 this.getPathVariables(),
                 this.getBody()
         );
+        return this.httpRequestEvent;
     }
 }
