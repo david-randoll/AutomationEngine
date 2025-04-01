@@ -42,7 +42,7 @@ public class AutomationEngine {
 
     public void runAutomation(Automation automation, Event event) {
         log.debug("Processing automation: {}", automation.getAlias());
-        automation.setVariables(event);
+        automation.resolveVariables(event);
         if (automation.anyTriggerActivated(event) && automation.allConditionsMet(event)) {
             log.debug("Automation triggered and conditions met. Executing actions.");
             automation.performActions(event);

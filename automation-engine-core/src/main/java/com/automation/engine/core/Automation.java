@@ -22,9 +22,9 @@ public class Automation {
     /**
      * Set the variables
      */
-    public void setVariables(Event event) {
+    public void resolveVariables(Event event) {
         if (ObjectUtils.isEmpty(variables)) return;
-        variables.setAll(event);
+        variables.resolveAll(event);
     }
 
     /**
