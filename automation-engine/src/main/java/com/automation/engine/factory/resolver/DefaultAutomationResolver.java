@@ -20,13 +20,16 @@ import com.automation.engine.core.triggers.ITrigger;
 import com.automation.engine.core.triggers.TriggerContext;
 import com.automation.engine.core.triggers.interceptors.ITriggerInterceptor;
 import com.automation.engine.core.triggers.interceptors.InterceptingTrigger;
+import com.automation.engine.core.variables.BaseVariableList;
+import com.automation.engine.core.variables.IBaseVariable;
+import com.automation.engine.core.variables.IVariable;
+import com.automation.engine.core.variables.VariableContext;
+import com.automation.engine.core.variables.interceptors.IVariableInterceptor;
+import com.automation.engine.core.variables.interceptors.InterceptingVariable;
 import com.automation.engine.factory.exceptions.ActionNotFoundException;
 import com.automation.engine.factory.exceptions.ConditionNotFoundException;
 import com.automation.engine.factory.exceptions.TriggerNotFoundException;
-import com.automation.engine.factory.request.Action;
-import com.automation.engine.factory.request.Condition;
-import com.automation.engine.factory.request.CreateRequest;
-import com.automation.engine.factory.request.Trigger;
+import com.automation.engine.factory.model.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -47,6 +50,7 @@ import java.util.concurrent.Executor;
 public class DefaultAutomationResolver implements IAutomationResolver<CreateRequest> {
     private final ApplicationContext applicationContext;
 
+    private final List<IVariableInterceptor> variableInterceptors;
     private final List<ITriggerInterceptor> triggerInterceptors;
     private final List<IConditionInterceptor> conditionInterceptors;
     private final List<IActionInterceptor> actionInterceptors;
@@ -56,12 +60,38 @@ public class DefaultAutomationResolver implements IAutomationResolver<CreateRequ
     public Automation create(CreateRequest createRequest) {
         log.info("Start creating automation: {}", createRequest.getAlias());
         var alias = createRequest.getAlias();
+        BaseVariableList variables = buildVariablesList(createRequest.getVariables());
         BaseTriggerList triggers = buildTriggersList(createRequest.getTriggers());
         BaseConditionList conditions = buildConditionsList(createRequest.getConditions());
         BaseActionList actions = buildActionsList(createRequest.getActions());
-        var automation = new Automation(alias, triggers, conditions, actions);
+        var automation = new Automation(alias, variables, triggers, conditions, actions);
         log.info("Automation {} created successfully", alias);
         return automation;
+    }
+
+    @NonNull
+    public BaseVariableList buildVariablesList(List<Variable> variables) {
+        var result = new BaseVariableList();
+
+        if (ObjectUtils.isEmpty(variables)) return result;
+
+        for (Variable variable : variables) {
+            IBaseVariable newVariableInstance = buildVariable(variable);
+            result.add(newVariableInstance);
+        }
+
+        return result;
+    }
+
+    private IBaseVariable buildVariable(Variable variable) {
+        var variableName = "%sVariable".formatted(variable.getVariable());
+        IVariable variableInstance = Optional.ofNullable(getBean(variableName, IVariable.class))
+                .orElseThrow(() -> new ActionNotFoundException(variable.getVariable()));
+
+        var interceptingVariable = new InterceptingVariable(variableInstance, variableInterceptors);
+        var variableContext = new VariableContext(variable.getParams());
+
+        return event -> interceptingVariable.resolve(event, variableContext);
     }
 
     @NonNull
@@ -200,5 +230,11 @@ public class DefaultAutomationResolver implements IAutomationResolver<CreateRequ
             log.error("Bean {} not found", name, e);
             return null;
         }
+    }
+
+    public void resolveVariables(Event event, List<Variable> variables) {
+        if (ObjectUtils.isEmpty(variables)) return;
+        BaseVariableList resolvedVariables = buildVariablesList(variables);
+        resolvedVariables.setAll(event);
     }
 }
