@@ -1,6 +1,6 @@
 package com.automation.engine.templating.interceptors;
 
-import com.automation.engine.core.events.Event;
+import com.automation.engine.core.events.EventContext;
 import com.automation.engine.core.triggers.ITrigger;
 import com.automation.engine.core.triggers.TriggerContext;
 import com.automation.engine.core.triggers.interceptors.ITriggerInterceptor;
@@ -22,20 +22,20 @@ public class TriggerTemplatingInterceptor implements ITriggerInterceptor {
 
     @Override
     @SneakyThrows
-    public void intercept(Event event, TriggerContext context, ITrigger trigger) {
+    public void intercept(EventContext eventContext, TriggerContext context, ITrigger trigger) {
         log.debug("TriggerTemplatingInterceptor: Processing trigger data...");
-        if (ObjectUtils.isEmpty(context.getData()) || ObjectUtils.isEmpty(event.getEventData())) {
-            trigger.isTriggered(event, context);
+        if (ObjectUtils.isEmpty(context.getData()) || ObjectUtils.isEmpty(eventContext.getEventData())) {
+            trigger.isTriggered(eventContext, context);
         }
 
         var mapCopy = new HashMap<>(context.getData());
         for (Map.Entry<String, Object> entry : mapCopy.entrySet()) {
             if (entry.getValue() instanceof String valueStr) {
-                String processedValue = templateProcessor.process(valueStr, event.getEventData());
+                String processedValue = templateProcessor.process(valueStr, eventContext.getEventData());
                 entry.setValue(processedValue);
             }
         }
-        trigger.isTriggered(event, new TriggerContext(mapCopy));
+        trigger.isTriggered(eventContext, new TriggerContext(mapCopy));
         log.debug("TriggerTemplatingInterceptor: Trigger data processed successfully.");
     }
 }

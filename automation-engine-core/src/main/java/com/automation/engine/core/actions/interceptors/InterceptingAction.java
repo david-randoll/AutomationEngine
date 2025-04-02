@@ -3,7 +3,7 @@ package com.automation.engine.core.actions.interceptors;
 import com.automation.engine.core.actions.ActionContext;
 import com.automation.engine.core.actions.IAction;
 import com.automation.engine.core.actions.IBaseAction;
-import com.automation.engine.core.events.Event;
+import com.automation.engine.core.events.EventContext;
 import org.springframework.core.OrderComparator;
 import org.springframework.util.ObjectUtils;
 
@@ -21,18 +21,18 @@ public class InterceptingAction implements IAction {
     }
 
     @Override
-    public void execute(Event event, ActionContext actionContext) {
-        executeInterceptors(0, event, actionContext);
+    public void execute(EventContext eventContext, ActionContext actionContext) {
+        executeInterceptors(0, eventContext, actionContext);
     }
 
-    private void executeInterceptors(int index, Event event, ActionContext actionContext) {
+    private void executeInterceptors(int index, EventContext eventContext, ActionContext actionContext) {
         if (index < interceptors.size()) {
             IActionInterceptor interceptor = interceptors.get(index);
             IAction action = (ec, ac) -> this.executeInterceptors(index + 1, ec, ac);
-            interceptor.intercept(event, actionContext, action);
+            interceptor.intercept(eventContext, actionContext, action);
         } else {
             // All interceptors have been processed, execute the delegate
-            delegate.execute(event, actionContext);
+            delegate.execute(eventContext, actionContext);
         }
     }
 }

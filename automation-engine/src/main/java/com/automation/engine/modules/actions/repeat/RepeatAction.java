@@ -1,7 +1,7 @@
 package com.automation.engine.modules.actions.repeat;
 
 import com.automation.engine.core.actions.AbstractAction;
-import com.automation.engine.core.events.Event;
+import com.automation.engine.core.events.EventContext;
 import com.automation.engine.factory.resolver.DefaultAutomationResolver;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,29 +15,29 @@ public class RepeatAction extends AbstractAction<RepeatActionContext> {
     private final DefaultAutomationResolver resolver;
 
     @Override
-    public void execute(Event event, RepeatActionContext context) {
-        if (ObjectUtils.isEmpty(context.getActions())) return;
-        for (int i = 0; i < context.getCount(); i++) {
-            resolver.executeActions(event, context.getActions());
+    public void execute(EventContext eventContext, RepeatActionContext actionContext) {
+        if (ObjectUtils.isEmpty(actionContext.getActions())) return;
+        for (int i = 0; i < actionContext.getCount(); i++) {
+            resolver.executeActions(eventContext, actionContext.getActions());
         }
 
-        if (context.hasWhileConditions()) {
-            while (resolver.allConditionsSatisfied(event, context.getWhileConditions())) {
-                resolver.executeActions(event, context.getActions());
+        if (actionContext.hasWhileConditions()) {
+            while (resolver.allConditionsSatisfied(eventContext, actionContext.getWhileConditions())) {
+                resolver.executeActions(eventContext, actionContext.getActions());
             }
         }
 
-        if (context.hasUntilConditions()) {
-            while (!resolver.allConditionsSatisfied(event, context.getUntilConditions())) {
-                resolver.executeActions(event, context.getActions());
+        if (actionContext.hasUntilConditions()) {
+            while (!resolver.allConditionsSatisfied(eventContext, actionContext.getUntilConditions())) {
+                resolver.executeActions(eventContext, actionContext.getActions());
             }
         }
 
-        if (context.hasForEach()) {
-            for (Object item : context.getForEach()) {
-                event.addVariable("item", item);
-                resolver.executeActions(event, context.getActions());
-                event.removeVariable("item");
+        if (actionContext.hasForEach()) {
+            for (Object item : actionContext.getForEach()) {
+                eventContext.addVariable("item", item);
+                resolver.executeActions(eventContext, actionContext.getActions());
+                eventContext.removeVariable("item");
             }
         }
     }

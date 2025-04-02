@@ -1,7 +1,7 @@
 package com.automation.engine.modules.conditions.always_true;
 
 import com.automation.engine.core.conditions.AbstractCondition;
-import com.automation.engine.core.events.Event;
+import com.automation.engine.core.events.EventContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class AlwaysTrueCondition extends AbstractCondition<AlwaysTrueConditionContext> {
     @Override
-    public boolean isSatisfied(Event event, AlwaysTrueConditionContext context) {
+    public boolean isSatisfied(EventContext eventContext, AlwaysTrueConditionContext conditionContext) {
         return true;
     }
 }

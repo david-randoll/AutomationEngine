@@ -1,6 +1,6 @@
 package com.automation.engine.templating.interceptors;
 
-import com.automation.engine.core.events.Event;
+import com.automation.engine.core.events.EventContext;
 import com.automation.engine.core.variables.IVariable;
 import com.automation.engine.core.variables.VariableContext;
 import com.automation.engine.core.variables.interceptors.IVariableInterceptor;
@@ -31,27 +31,27 @@ public class VariableTemplatingInterceptor implements IVariableInterceptor {
      * the placeholder {{name}} with the corresponding value from the event context.
      * If a string does not contain a template, it remains unchanged.
      *
-     * @param event    the event context providing data for template replacement
-     * @param context  the variable context containing data to process
+     * @param eventContext    the event context providing data for template replacement
+     * @param variableContext  the variable context containing data to process
      * @param variable the variable to set after processing
      */
 
     @Override
     @SneakyThrows
-    public void intercept(Event event, VariableContext context, IVariable variable) {
+    public void intercept(EventContext eventContext, VariableContext variableContext, IVariable variable) {
         log.debug("VariableTemplatingInterceptor: Processing variable data...");
-        if (ObjectUtils.isEmpty(context.getData()) || ObjectUtils.isEmpty(event.getEventData())) {
-            variable.resolve(event, context);
+        if (ObjectUtils.isEmpty(variableContext.getData()) || ObjectUtils.isEmpty(eventContext.getEventData())) {
+            variable.resolve(eventContext, variableContext);
         }
 
-        var mapCopy = new HashMap<>(context.getData());
+        var mapCopy = new HashMap<>(variableContext.getData());
         for (Map.Entry<String, Object> entry : mapCopy.entrySet()) {
             if (entry.getValue() instanceof String valueStr) {
-                String processedValue = templateProcessor.process(valueStr, event.getEventData());
+                String processedValue = templateProcessor.process(valueStr, eventContext.getEventData());
                 entry.setValue(processedValue);
             }
         }
-        variable.resolve(event, new VariableContext(mapCopy));
+        variable.resolve(eventContext, new VariableContext(mapCopy));
         log.debug("VariableTemplatingInterceptor done.");
     }
 }

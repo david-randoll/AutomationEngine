@@ -1,7 +1,7 @@
 package com.automation.engine.modules.actions.sequence;
 
 import com.automation.engine.core.actions.AbstractAction;
-import com.automation.engine.core.events.Event;
+import com.automation.engine.core.events.EventContext;
 import com.automation.engine.factory.resolver.DefaultAutomationResolver;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,8 +15,8 @@ public class SequenceAction extends AbstractAction<SequenceActionContext> {
     private final DefaultAutomationResolver resolver;
 
     @Override
-    public void execute(Event event, SequenceActionContext context) {
-        if (ObjectUtils.isEmpty(context.getActions())) return;
-        resolver.executeActions(event, context.getActions());
+    public void execute(EventContext eventContext, SequenceActionContext actionContext) {
+        if (ObjectUtils.isEmpty(actionContext.getActions())) return;
+        resolver.executeActions(eventContext, actionContext.getActions());
     }
 }

@@ -3,7 +3,7 @@ package com.automation.engine.templating.interceptors;
 import com.automation.engine.core.actions.ActionContext;
 import com.automation.engine.core.actions.IAction;
 import com.automation.engine.core.actions.interceptors.IActionInterceptor;
-import com.automation.engine.core.events.Event;
+import com.automation.engine.core.events.EventContext;
 import com.automation.engine.templating.TemplateProcessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -31,27 +31,27 @@ public class ActionTemplatingInterceptor implements IActionInterceptor {
      * the placeholder {{name}} with the corresponding value from the event context.
      * If a string does not contain a template, it remains unchanged.
      *
-     * @param event   the event context providing data for template replacement
-     * @param context the action context containing data to process
+     * @param eventContext   the event context providing data for template replacement
+     * @param actionContext the action context containing data to process
      * @param action  the action to be executed after processing
      */
 
     @Override
     @SneakyThrows
-    public void intercept(Event event, ActionContext context, IAction action) {
+    public void intercept(EventContext eventContext, ActionContext actionContext, IAction action) {
         log.debug("ActionTemplatingInterceptor: Processing action data...");
-        if (ObjectUtils.isEmpty(context.getData()) || ObjectUtils.isEmpty(event.getEventData())) {
-            action.execute(event, context);
+        if (ObjectUtils.isEmpty(actionContext.getData()) || ObjectUtils.isEmpty(eventContext.getEventData())) {
+            action.execute(eventContext, actionContext);
         }
 
-        var mapCopy = new HashMap<>(context.getData());
+        var mapCopy = new HashMap<>(actionContext.getData());
         for (Map.Entry<String, Object> entry : mapCopy.entrySet()) {
             if (entry.getValue() instanceof String valueStr) {
-                String processedValue = templateProcessor.process(valueStr, event.getEventData());
+                String processedValue = templateProcessor.process(valueStr, eventContext.getEventData());
                 entry.setValue(processedValue);
             }
         }
-        action.execute(event, new ActionContext(mapCopy));
+        action.execute(eventContext, new ActionContext(mapCopy));
         log.debug("ActionTemplatingInterceptor done.");
     }
 }

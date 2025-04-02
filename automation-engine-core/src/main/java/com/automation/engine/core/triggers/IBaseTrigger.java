@@ -1,12 +1,12 @@
 package com.automation.engine.core.triggers;
 
-import com.automation.engine.core.events.Event;
+import com.automation.engine.core.events.EventContext;
 
 @FunctionalInterface
 public interface IBaseTrigger {
-    boolean isTriggered(Event event);
+    boolean isTriggered(EventContext eventContext);
 
-    default boolean isTriggered(Event event, TriggerContext triggerContext) {
-        return isTriggered(event);
+    default boolean isTriggered(EventContext eventContext, TriggerContext triggerContext) {
+        return isTriggered(eventContext);
     }
 }

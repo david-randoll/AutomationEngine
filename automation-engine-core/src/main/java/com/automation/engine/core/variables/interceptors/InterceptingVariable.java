@@ -1,6 +1,6 @@
 package com.automation.engine.core.variables.interceptors;
 
-import com.automation.engine.core.events.Event;
+import com.automation.engine.core.events.EventContext;
 import com.automation.engine.core.variables.IBaseVariable;
 import com.automation.engine.core.variables.IVariable;
 import com.automation.engine.core.variables.VariableContext;
@@ -21,18 +21,18 @@ public class InterceptingVariable implements IVariable {
     }
 
     @Override
-    public void resolve(Event event, VariableContext variableContext) {
-        executeInterceptors(0, event, variableContext);
+    public void resolve(EventContext eventContext, VariableContext variableContext) {
+        executeInterceptors(0, eventContext, variableContext);
     }
 
-    private void executeInterceptors(int index, Event event, VariableContext variableContext) {
+    private void executeInterceptors(int index, EventContext eventContext, VariableContext variableContext) {
         if (index < interceptors.size()) {
             IVariableInterceptor interceptor = interceptors.get(index);
             IVariable action = (ec, ac) -> this.executeInterceptors(index + 1, ec, ac);
-            interceptor.intercept(event, variableContext, action);
+            interceptor.intercept(eventContext, variableContext, action);
         } else {
             // All interceptors have been processed, execute the delegate
-            delegate.resolve(event, variableContext);
+            delegate.resolve(eventContext, variableContext);
         }
     }
 }

@@ -1,6 +1,7 @@
 package com.automation.engine.core;
 
-import com.automation.engine.core.events.Event;
+import com.automation.engine.core.events.EventContext;
+import com.automation.engine.core.events.IEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -29,23 +30,29 @@ public class AutomationEngine {
         automations.clear();
     }
 
-    public void processEvent(@NonNull Event event) {
+    public void processEvent(@NonNull EventContext eventContext) {
         for (Automation automation : automations) {
-            runAutomation(automation, event);
+            runAutomation(automation, eventContext);
         }
     }
 
-    public void publishEvent(@NonNull Event event) {
+    public void processEvent(@NonNull IEvent event) {
+        for (Automation automation : automations) {
+            runAutomation(automation, EventContext.of(event));
+        }
+    }
+
+    public void publishEvent(@NonNull IEvent event) {
         processEvent(event);
         publisher.publishEvent(event);
     }
 
-    public void runAutomation(Automation automation, Event event) {
+    public void runAutomation(Automation automation, EventContext eventContext) {
         log.debug("Processing automation: {}", automation.getAlias());
-        automation.resolveVariables(event);
-        if (automation.anyTriggerActivated(event) && automation.allConditionsMet(event)) {
+        automation.resolveVariables(eventContext);
+        if (automation.anyTriggerActivated(eventContext) && automation.allConditionsMet(eventContext)) {
             log.debug("Automation triggered and conditions met. Executing actions.");
-            automation.performActions(event);
+            automation.performActions(eventContext);
         }
         log.debug("Done processing automation: {}", automation.getAlias());
     }

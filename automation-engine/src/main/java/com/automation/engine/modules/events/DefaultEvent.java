@@ -1,23 +1,11 @@
 package com.automation.engine.modules.events;
 
-import com.automation.engine.core.events.Event;
-import lombok.AllArgsConstructor;
+import com.automation.engine.core.events.IEvent;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.FieldNameConstants;
-import org.springframework.lang.NonNull;
-
-import java.util.Map;
+import lombok.NoArgsConstructor;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
-@AllArgsConstructor
-@FieldNameConstants
-public class DefaultEvent extends Event {
+@NoArgsConstructor
+public class DefaultEvent implements IEvent {
 
-    @Override
-    @NonNull
-    public Map<String, Object> getFieldValue() {
-        return Map.of();
-    }
 }

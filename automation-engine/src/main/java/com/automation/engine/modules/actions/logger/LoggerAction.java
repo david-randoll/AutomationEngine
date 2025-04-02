@@ -1,7 +1,7 @@
 package com.automation.engine.modules.actions.logger;
 
 import com.automation.engine.core.actions.AbstractAction;
-import com.automation.engine.core.events.Event;
+import com.automation.engine.core.events.EventContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 public class LoggerAction extends AbstractAction<LoggerActionContext> {
 
     @Override
-    public void execute(Event event, LoggerActionContext context) {
-        log.info("{}", context.getMessage());
+    public void execute(EventContext eventContext, LoggerActionContext actionContext) {
+        log.info("{}", actionContext.getMessage());
     }
 }

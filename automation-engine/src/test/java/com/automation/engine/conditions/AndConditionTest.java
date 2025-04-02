@@ -5,6 +5,7 @@ import com.automation.engine.AutomationEngineApplication;
 import com.automation.engine.TestLogAppender;
 import com.automation.engine.core.Automation;
 import com.automation.engine.core.AutomationEngine;
+import com.automation.engine.core.events.EventContext;
 import com.automation.engine.factory.AutomationFactory;
 import com.automation.engine.modules.events.time_based.TimeBasedEvent;
 import org.junit.jupiter.api.BeforeEach;
@@ -63,9 +64,9 @@ class AndConditionTest {
         engine.addAutomation(automation);
 
         // Act: Create events at different times
-        TimeBasedEvent withinRangeEvent = new TimeBasedEvent(LocalTime.of(22, 37));
-        TimeBasedEvent beforeRangeEvent = new TimeBasedEvent(LocalTime.of(22, 20));
-        TimeBasedEvent afterRangeEvent = new TimeBasedEvent(LocalTime.of(23, 5));
+        EventContext withinRangeEvent = EventContext.of(new TimeBasedEvent(LocalTime.of(22, 37)));
+        EventContext beforeRangeEvent = EventContext.of(new TimeBasedEvent(LocalTime.of(22, 20)));
+        EventContext afterRangeEvent = EventContext.of(new TimeBasedEvent(LocalTime.of(23, 5)));
 
         // Process events
         engine.processEvent(withinRangeEvent);
@@ -132,8 +133,8 @@ class AndConditionTest {
         engine.addAutomation(automation);
 
         // Act: Create events exactly at boundary times
-        TimeBasedEvent onBoundaryBefore = new TimeBasedEvent(LocalTime.of(22, 30)); // On the "after 22:30" boundary
-        TimeBasedEvent onBoundaryAfter = new TimeBasedEvent(LocalTime.of(23, 0)); // On the "before 23:00" boundary
+        EventContext onBoundaryBefore = EventContext.of(new TimeBasedEvent(LocalTime.of(22, 30))); // On the "after 22:30" boundary
+        EventContext onBoundaryAfter = EventContext.of(new TimeBasedEvent(LocalTime.of(23, 0))); // On the "before 23:00" boundary
 
         // Process events
         engine.processEvent(onBoundaryBefore);
@@ -186,8 +187,8 @@ class AndConditionTest {
         engine.addAutomation(automation);
 
         // Act: Create events that fail the condition
-        TimeBasedEvent failingEvent = new TimeBasedEvent(LocalTime.of(22, 37)); // Fails the "before 22:35" condition
-        TimeBasedEvent passingEvent = new TimeBasedEvent(LocalTime.of(22, 33)); // Meets both conditions
+        EventContext failingEvent = EventContext.of(new TimeBasedEvent(LocalTime.of(22, 37))); // Fails the "before 22:35" condition
+        EventContext passingEvent = EventContext.of(new TimeBasedEvent(LocalTime.of(22, 33))); // Meets both conditions
 
         // Process events
         engine.processEvent(failingEvent);
@@ -238,9 +239,9 @@ class AndConditionTest {
         engine.addAutomation(automation);
 
         // Act: Create events at various times
-        TimeBasedEvent withinRangeEvent = new TimeBasedEvent(LocalTime.of(22, 37)); // Between 22:30 and 22:45
-        TimeBasedEvent outsideRangeBefore = new TimeBasedEvent(LocalTime.of(22, 20)); // Before 22:30
-        TimeBasedEvent outsideRangeAfter = new TimeBasedEvent(LocalTime.of(22, 50)); // After 22:45
+        EventContext withinRangeEvent = EventContext.of(new TimeBasedEvent(LocalTime.of(22, 37))); // Between 22:30 and 22:45
+        EventContext outsideRangeBefore = EventContext.of(new TimeBasedEvent(LocalTime.of(22, 20))); // Before 22:30
+        EventContext outsideRangeAfter = EventContext.of(new TimeBasedEvent(LocalTime.of(22, 50))); // After 22:45
 
         // Process events
         engine.processEvent(withinRangeEvent);
@@ -302,8 +303,8 @@ class AndConditionTest {
         engine.addAutomation(automation);
 
         // Act: Create events at boundary times
-        TimeBasedEvent failingBoundaryEvent = new TimeBasedEvent(LocalTime.of(22, 35)); // On the "before 22:35" boundary
-        TimeBasedEvent passingBoundaryEvent = new TimeBasedEvent(LocalTime.of(22, 34)); // Before 22:35
+        EventContext failingBoundaryEvent = EventContext.of(new TimeBasedEvent(LocalTime.of(22, 35))); // On the "before 22:35" boundary
+        EventContext passingBoundaryEvent = EventContext.of(new TimeBasedEvent(LocalTime.of(22, 34))); // Before 22:35
 
         // Process events
         engine.processEvent(failingBoundaryEvent);
@@ -362,9 +363,9 @@ class AndConditionTest {
         engine.addAutomation(automation);
 
         // Act: Create events to test nested conditions
-        TimeBasedEvent matchingEvent = new TimeBasedEvent(LocalTime.of(22, 40)); // Satisfies both nested conditions
-        TimeBasedEvent failingFirstAndCondition = new TimeBasedEvent(LocalTime.of(22, 55)); // Fails first AND condition
-        TimeBasedEvent failingSecondAndCondition = new TimeBasedEvent(LocalTime.of(22, 33)); // Fails second AND condition
+        EventContext matchingEvent = EventContext.of(new TimeBasedEvent(LocalTime.of(22, 40))); // Satisfies both nested conditions
+        EventContext failingFirstAndCondition = EventContext.of(new TimeBasedEvent(LocalTime.of(22, 55))); // Fails first AND condition
+        EventContext failingSecondAndCondition = EventContext.of(new TimeBasedEvent(LocalTime.of(22, 33))); // Fails second AND condition
 
         // Process events
         engine.processEvent(matchingEvent);
@@ -442,10 +443,10 @@ class AndConditionTest {
         engine.addAutomation(automation);
 
         // Act: Create events to test deep nested conditions
-        TimeBasedEvent matchingEvent = new TimeBasedEvent(LocalTime.of(22, 42)); // Satisfies all nested conditions
-        TimeBasedEvent failingFirstLayer = new TimeBasedEvent(LocalTime.of(22, 55)); // Fails first AND condition
-        TimeBasedEvent failingSecondLayer = new TimeBasedEvent(LocalTime.of(22, 33)); // Fails second AND condition
-        TimeBasedEvent failingThirdLayer = new TimeBasedEvent(LocalTime.of(22, 37)); // Fails third AND condition
+        EventContext matchingEvent = EventContext.of(new TimeBasedEvent(LocalTime.of(22, 42))); // Satisfies all nested conditions
+        EventContext failingFirstLayer = EventContext.of(new TimeBasedEvent(LocalTime.of(22, 55))); // Fails first AND condition
+        EventContext failingSecondLayer = EventContext.of(new TimeBasedEvent(LocalTime.of(22, 33))); // Fails second AND condition
+        EventContext failingThirdLayer = EventContext.of(new TimeBasedEvent(LocalTime.of(22, 37))); // Fails third AND condition
 
         // Process events
         engine.processEvent(matchingEvent);

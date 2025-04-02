@@ -3,7 +3,7 @@ package com.automation.engine.core;
 import com.automation.engine.core.actions.BaseActionList;
 import com.automation.engine.core.actions.exceptions.StopAutomationException;
 import com.automation.engine.core.conditions.BaseConditionList;
-import com.automation.engine.core.events.Event;
+import com.automation.engine.core.events.EventContext;
 import com.automation.engine.core.triggers.BaseTriggerList;
 import com.automation.engine.core.variables.BaseVariableList;
 import lombok.AllArgsConstructor;
@@ -22,9 +22,9 @@ public class Automation {
     /**
      * Set the variables
      */
-    public void resolveVariables(Event event) {
+    public void resolveVariables(EventContext eventContext) {
         if (ObjectUtils.isEmpty(variables)) return;
-        variables.resolveAll(event);
+        variables.resolveAll(eventContext);
     }
 
     /**
@@ -32,9 +32,9 @@ public class Automation {
      *
      * @return true if any of the triggers are triggered
      */
-    public boolean anyTriggerActivated(Event event) {
+    public boolean anyTriggerActivated(EventContext eventContext) {
         if (ObjectUtils.isEmpty(triggers)) return false;
-        return triggers.anyTriggered(event);
+        return triggers.anyTriggered(eventContext);
     }
 
     /**
@@ -42,7 +42,7 @@ public class Automation {
      *
      * @return true if all conditions are met
      */
-    public boolean allConditionsMet(Event context) {
+    public boolean allConditionsMet(EventContext context) {
         if (ObjectUtils.isEmpty(conditions)) return true;
         return conditions.allSatisfied(context);
     }
@@ -50,7 +50,7 @@ public class Automation {
     /**
      * Perform all actions
      */
-    public void performActions(Event context) {
+    public void performActions(EventContext context) {
         if (ObjectUtils.isEmpty(actions)) return;
         try {
             actions.executeAll(context);

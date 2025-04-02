@@ -1,6 +1,6 @@
 package com.automation.engine.core.conditions;
 
-import com.automation.engine.core.events.Event;
+import com.automation.engine.core.events.EventContext;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,17 +8,17 @@ import java.util.List;
 
 public class BaseConditionList extends ArrayList<IBaseCondition> {
 
-    public boolean allSatisfied(Event context) {
+    public boolean allSatisfied(EventContext context) {
         return this.stream()
                 .allMatch(condition -> condition.isSatisfied(context));
     }
 
-    public boolean anySatisfied(Event context) {
+    public boolean anySatisfied(EventContext context) {
         return this.stream()
                 .anyMatch(condition -> condition.isSatisfied(context));
     }
 
-    public boolean noneSatisfied(Event context) {
+    public boolean noneSatisfied(EventContext context) {
         return this.stream()
                 .noneMatch(condition -> condition.isSatisfied(context));
     }

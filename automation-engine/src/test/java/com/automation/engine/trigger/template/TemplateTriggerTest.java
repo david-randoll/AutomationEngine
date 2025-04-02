@@ -5,6 +5,7 @@ import com.automation.engine.AutomationEngineApplication;
 import com.automation.engine.TestLogAppender;
 import com.automation.engine.core.Automation;
 import com.automation.engine.core.AutomationEngine;
+import com.automation.engine.core.events.EventContext;
 import com.automation.engine.factory.AutomationFactory;
 import com.automation.engine.modules.events.DefaultEvent;
 import com.automation.engine.modules.triggers.template.TemplateTrigger;
@@ -91,7 +92,7 @@ class TemplateTriggerTest {
         TemplateTriggerContext context = new TemplateTriggerContext();
         context.setExpression(null);
         TemplateTrigger trigger = new TemplateTrigger();
-        boolean result = trigger.isTriggered(new DefaultEvent(), context);
+        boolean result = trigger.isTriggered(EventContext.of(new DefaultEvent()), context);
 
         assertThat(result).isFalse();
     }
@@ -112,7 +113,7 @@ class TemplateTriggerTest {
         engine.addAutomation(automation);
 
         // Act: Create an event and add a variable
-        var event = new DefaultEvent();
+        var event = EventContext.of(new DefaultEvent());
         event.addVariable("status", "active");
 
         engine.processEvent(event);

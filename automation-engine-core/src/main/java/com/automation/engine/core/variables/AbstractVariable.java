@@ -1,6 +1,6 @@
 package com.automation.engine.core.variables;
 
-import com.automation.engine.core.events.Event;
+import com.automation.engine.core.events.EventContext;
 import com.automation.engine.core.utils.GenericTypeResolver;
 import com.automation.engine.core.utils.TypeConverter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +17,10 @@ public abstract class AbstractVariable<T extends IVariableContext> implements IV
     }
 
     @Override
-    public void resolve(Event eventContext, VariableContext variableContext) {
+    public void resolve(EventContext eventContext, VariableContext variableContext) {
         T data = typeConverter.convert(variableContext.getData(), getContextType());
         resolve(eventContext, data);
     }
 
-    public abstract void resolve(Event event, T context);
+    public abstract void resolve(EventContext eventContext, T variableContext);
 }

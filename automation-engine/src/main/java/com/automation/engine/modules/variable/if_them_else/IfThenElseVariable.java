@@ -1,6 +1,6 @@
 package com.automation.engine.modules.variable.if_them_else;
 
-import com.automation.engine.core.events.Event;
+import com.automation.engine.core.events.EventContext;
 import com.automation.engine.core.variables.AbstractVariable;
 import com.automation.engine.factory.resolver.DefaultAutomationResolver;
 import lombok.RequiredArgsConstructor;
@@ -13,27 +13,27 @@ public class IfThenElseVariable extends AbstractVariable<IfThenElseVariableConte
     private final DefaultAutomationResolver resolver;
 
     @Override
-    public void resolve(Event event, IfThenElseVariableContext context) {
-        if (!ObjectUtils.isEmpty(context.getIfConditions())) {
-            boolean isSatisfied = resolver.allConditionsSatisfied(event, context.getIfConditions());
+    public void resolve(EventContext eventContext, IfThenElseVariableContext variableContext) {
+        if (!ObjectUtils.isEmpty(variableContext.getIfConditions())) {
+            boolean isSatisfied = resolver.allConditionsSatisfied(eventContext, variableContext.getIfConditions());
             if (isSatisfied) {
-                resolver.resolveVariables(event, context.getThenVariables());
+                resolver.resolveVariables(eventContext, variableContext.getThenVariables());
                 return;
             }
         }
 
         // check the ifs conditions
-        if (!ObjectUtils.isEmpty(context.getIfThenBlocks())) {
-            for (var ifBlock : context.getIfThenBlocks()) {
-                var isIfsSatisfied = resolver.allConditionsSatisfied(event, ifBlock.getIfConditions());
+        if (!ObjectUtils.isEmpty(variableContext.getIfThenBlocks())) {
+            for (var ifBlock : variableContext.getIfThenBlocks()) {
+                var isIfsSatisfied = resolver.allConditionsSatisfied(eventContext, ifBlock.getIfConditions());
                 if (isIfsSatisfied) {
-                    resolver.resolveVariables(event, ifBlock.getThenVariables());
+                    resolver.resolveVariables(eventContext, ifBlock.getThenVariables());
                     return;
                 }
             }
         }
 
         // execute else actions
-        resolver.resolveVariables(event, context.getElseVariable());
+        resolver.resolveVariables(eventContext, variableContext.getElseVariable());
     }
 }
