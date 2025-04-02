@@ -30,7 +30,7 @@ public abstract class Event {
     }
 
     @NonNull
-    public abstract Map<String, Object> getFieldValue();
+    protected abstract Map<String, Object> getFieldValue();
 
 
     public void addVariables(@Nullable Map<String, Object> variables) {
