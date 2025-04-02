@@ -13,7 +13,6 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 
-import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.*;
@@ -34,7 +33,7 @@ public class WaitForTriggerAction extends AbstractAction<WaitForTriggerActionCon
         if (ObjectUtils.isEmpty(actionContext.getTriggers())) return;
 
         long timeout = Optional.ofNullable(actionContext.getTimeout())
-                .orElse(Duration.ofSeconds(60)).toMillis();
+                .orElse(provider.getDefaultTimeout()).toMillis();
 
         CompletableFuture<Boolean> future = new CompletableFuture<>();
         waitingActions.add(new WaitingAction(actionContext.getTriggers(), future));

@@ -171,7 +171,7 @@ class WaitForTriggerActionTest {
 
         // Measure elapsed time
         long elapsedTime = System.currentTimeMillis() - startTime;
-        assertThat(elapsedTime).isLessThan(61000); // 60 seconds
+        assertThat(elapsedTime).isLessThan(2000); // 60 seconds
     }
 
     @Test
