@@ -51,6 +51,7 @@ class VariableActionTest {
                 actions:
                   - action: variable
                     someVar: "14:00"
+                    time: 17:00
                   - action: logger
                     message: "Automation triggered at {{ someVar }}"
                 """;

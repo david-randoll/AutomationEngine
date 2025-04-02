@@ -1,18 +1,23 @@
 package com.automation.engine.modules.events;
 
 import com.automation.engine.core.events.Event;
-import com.automation.engine.modules.events.time_based.TimeBasedEvent;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.experimental.FieldNameConstants;
+import org.springframework.lang.NonNull;
 
 import java.util.Map;
 
+@Data
+@EqualsAndHashCode(callSuper = true)
+@AllArgsConstructor
+@FieldNameConstants
 public class DefaultEvent extends Event {
-    public static final String EVENT_NAME = TimeBasedEvent.class.getSimpleName();
 
-    public DefaultEvent() {
-        super(EVENT_NAME, Map.of());
-    }
-
-    public DefaultEvent(String name, Map<String, Object> data) {
-        super(name, data);
+    @Override
+    @NonNull
+    public Map<String, Object> getFieldValue() {
+        return Map.of();
     }
 }

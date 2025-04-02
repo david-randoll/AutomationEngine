@@ -1,7 +1,8 @@
 package com.automation.engine.core.events;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
+import lombok.NoArgsConstructor;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.util.ObjectUtils;
@@ -10,23 +11,33 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+@NoArgsConstructor
+public abstract class Event {
+    @JsonAnyGetter
+    @JsonAnySetter
+    private Map<String, Object> metadata;
 
-@AllArgsConstructor
-public class Event {
-    @Getter
-    private String name;
-    private Map<String, Object> data;
+    public String getName() {
+        return getClass().getSimpleName();
+    }
 
     @NonNull
-    public Map<String, Object> getData() {
-        return Optional.ofNullable(data).orElse(Map.of());
+    public Map<String, Object> getEventData() {
+        var result = new HashMap<String, Object>();
+        result.putAll(getFieldValue());
+        result.putAll(Optional.ofNullable(metadata).orElse(Map.of()));
+        return result;
     }
+
+    @NonNull
+    public abstract Map<String, Object> getFieldValue();
+
 
     public void addVariables(@Nullable Map<String, Object> variables) {
         if (ObjectUtils.isEmpty(variables)) return;
-        if (ObjectUtils.isEmpty(data)) data = new HashMap<>();
-        data = new HashMap<>(data);
-        data.putAll(variables);
+        if (ObjectUtils.isEmpty(metadata)) metadata = new HashMap<>();
+        metadata = new HashMap<>(metadata);
+        metadata.putAll(variables);
     }
 
     public void addVariable(@NonNull String key, @Nullable Object value) {
@@ -36,14 +47,14 @@ public class Event {
     }
 
     public void removeVariable(@NonNull String key) {
-        if (ObjectUtils.isEmpty(data)) return;
-        data = new HashMap<>(data);
-        data.remove(key);
+        if (ObjectUtils.isEmpty(metadata)) return;
+        metadata = new HashMap<>(metadata);
+        metadata.remove(key);
     }
 
     @Nullable
     public Object getVariable(@NonNull String key) {
-        if (ObjectUtils.isEmpty(getData())) return null;
-        return getData().get(key);
+        if (ObjectUtils.isEmpty(getEventData())) return null;
+        return getEventData().get(key);
     }
 }

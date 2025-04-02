@@ -40,14 +40,14 @@ public class VariableTemplatingInterceptor implements IVariableInterceptor {
     @SneakyThrows
     public void intercept(Event event, VariableContext context, IVariable variable) {
         log.debug("VariableTemplatingInterceptor: Processing variable data...");
-        if (ObjectUtils.isEmpty(context.getData()) || ObjectUtils.isEmpty(event.getData())) {
+        if (ObjectUtils.isEmpty(context.getData()) || ObjectUtils.isEmpty(event.getEventData())) {
             variable.resolve(event, context);
         }
 
         var mapCopy = new HashMap<>(context.getData());
         for (Map.Entry<String, Object> entry : mapCopy.entrySet()) {
             if (entry.getValue() instanceof String valueStr) {
-                String processedValue = templateProcessor.process(valueStr, event.getData());
+                String processedValue = templateProcessor.process(valueStr, event.getEventData());
                 entry.setValue(processedValue);
             }
         }

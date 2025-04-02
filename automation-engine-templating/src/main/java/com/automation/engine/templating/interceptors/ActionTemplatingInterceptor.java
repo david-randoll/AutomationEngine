@@ -40,14 +40,14 @@ public class ActionTemplatingInterceptor implements IActionInterceptor {
     @SneakyThrows
     public void intercept(Event event, ActionContext context, IAction action) {
         log.debug("ActionTemplatingInterceptor: Processing action data...");
-        if (ObjectUtils.isEmpty(context.getData()) || ObjectUtils.isEmpty(event.getData())) {
+        if (ObjectUtils.isEmpty(context.getData()) || ObjectUtils.isEmpty(event.getEventData())) {
             action.execute(event, context);
         }
 
         var mapCopy = new HashMap<>(context.getData());
         for (Map.Entry<String, Object> entry : mapCopy.entrySet()) {
             if (entry.getValue() instanceof String valueStr) {
-                String processedValue = templateProcessor.process(valueStr, event.getData());
+                String processedValue = templateProcessor.process(valueStr, event.getEventData());
                 entry.setValue(processedValue);
             }
         }
