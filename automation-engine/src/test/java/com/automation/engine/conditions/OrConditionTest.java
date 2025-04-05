@@ -38,7 +38,7 @@ class OrConditionTest {
         logger.addAppender(logAppender);
         logAppender.start();
 
-        engine.clearAutomations();
+        engine.removeAll();
     }
 
     @Test
@@ -61,7 +61,7 @@ class OrConditionTest {
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.addAutomation(automation);
+        engine.register(automation);
 
         // Act: Create events at different times
         var withinRangeEvent = EventContext.of(new TimeBasedEvent(LocalTime.of(22, 37))); // Should trigger
@@ -69,9 +69,9 @@ class OrConditionTest {
         var afterRangeEvent = EventContext.of(new TimeBasedEvent(LocalTime.of(23, 5)));   // Should not trigger
 
         // Process events
-        engine.processEvent(withinRangeEvent);
-        engine.processEvent(beforeRangeEvent);
-        engine.processEvent(afterRangeEvent);
+        engine.publishEvent(withinRangeEvent);
+        engine.publishEvent(beforeRangeEvent);
+        engine.publishEvent(afterRangeEvent);
 
         // Assert: Automation should trigger for events that meet any condition
         assertThat(automation.anyTriggerActivated(withinRangeEvent))
@@ -124,15 +124,15 @@ class OrConditionTest {
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.addAutomation(automation);
+        engine.register(automation);
 
         // Act: Create events exactly at boundary times
         var onBoundaryBefore = EventContext.of(new TimeBasedEvent(LocalTime.of(22, 30))); // On the "after 22:30" boundary
         var onBoundaryAfter = EventContext.of(new TimeBasedEvent(LocalTime.of(23, 0))); // On the "before 23:00" boundary
 
         // Process events
-        engine.processEvent(onBoundaryBefore);
-        engine.processEvent(onBoundaryAfter);
+        engine.publishEvent(onBoundaryBefore);
+        engine.publishEvent(onBoundaryAfter);
 
         // Assert: Automation should trigger when on the boundary
         assertThat(automation.anyTriggerActivated(onBoundaryBefore))
@@ -178,15 +178,15 @@ class OrConditionTest {
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.addAutomation(automation);
+        engine.register(automation);
 
         // Act: Create events that fail and pass the condition
         var failingEvent = EventContext.of(new TimeBasedEvent(LocalTime.of(22, 37))); // Fails "before 22:35" but passes "after 22:30"
         var passingEvent = EventContext.of(new TimeBasedEvent(LocalTime.of(22, 33))); // Meets "after 22:30" and "before 22:35"
 
         // Process events
-        engine.processEvent(failingEvent);
-        engine.processEvent(passingEvent);
+        engine.publishEvent(failingEvent);
+        engine.publishEvent(passingEvent);
 
         // Assert: Automation should trigger for both events due to 'or' condition
         assertThat(automation.anyTriggerActivated(failingEvent))
@@ -230,7 +230,7 @@ class OrConditionTest {
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.addAutomation(automation);
+        engine.register(automation);
 
         // Act: Create events at various times
         var withinRangeEvent = EventContext.of(new TimeBasedEvent(LocalTime.of(22, 37))); // Between 22:30 and 22:45
@@ -238,9 +238,9 @@ class OrConditionTest {
         var outsideRangeAfter = EventContext.of(new TimeBasedEvent(LocalTime.of(22, 50))); // After 22:45
 
         // Process events
-        engine.processEvent(withinRangeEvent);
-        engine.processEvent(outsideRangeBefore);
-        engine.processEvent(outsideRangeAfter);
+        engine.publishEvent(withinRangeEvent);
+        engine.publishEvent(outsideRangeBefore);
+        engine.publishEvent(outsideRangeAfter);
 
         // Assert: Automation should only trigger for the within-range event
         assertThat(automation.anyTriggerActivated(withinRangeEvent))
@@ -294,15 +294,15 @@ class OrConditionTest {
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.addAutomation(automation);
+        engine.register(automation);
 
         // Act: Create events at boundary times
         var boundaryFailingEvent = EventContext.of(new TimeBasedEvent(LocalTime.of(22, 35))); // Fails at boundary
         var boundaryPassingEvent = EventContext.of(new TimeBasedEvent(LocalTime.of(22, 34))); // Passes within range
 
         // Process events
-        engine.processEvent(boundaryFailingEvent);
-        engine.processEvent(boundaryPassingEvent);
+        engine.publishEvent(boundaryFailingEvent);
+        engine.publishEvent(boundaryPassingEvent);
 
         // Assert: Automation should not activate when failing boundary is reached
         assertThat(automation.anyTriggerActivated(boundaryFailingEvent))
@@ -354,7 +354,7 @@ class OrConditionTest {
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.addAutomation(automation);
+        engine.register(automation);
 
         // Act: Create events to test nested conditions
         var validEvent = EventContext.of(new TimeBasedEvent(LocalTime.of(22, 40))); // Satisfies at least one OR condition
@@ -362,9 +362,9 @@ class OrConditionTest {
         var eventOutsideRange2 = EventContext.of(new TimeBasedEvent(LocalTime.of(22, 33))); // Fails all OR conditions
 
         // Process events
-        engine.processEvent(validEvent);
-        engine.processEvent(eventOutsideRange1);
-        engine.processEvent(eventOutsideRange2);
+        engine.publishEvent(validEvent);
+        engine.publishEvent(eventOutsideRange1);
+        engine.publishEvent(eventOutsideRange2);
 
         // Assert: Only the valid event should trigger the automation
         assertThat(automation.anyTriggerActivated(validEvent))
@@ -434,7 +434,7 @@ class OrConditionTest {
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.addAutomation(automation);
+        engine.register(automation);
 
         // Act: Create events to test deep nested conditions
         var matchingEvent = EventContext.of(new TimeBasedEvent(LocalTime.of(22, 42))); // Satisfies all nested conditions
@@ -443,10 +443,10 @@ class OrConditionTest {
         var failingThirdLayer = EventContext.of(new TimeBasedEvent(LocalTime.of(22, 37))); // Fails third AND condition
 
         // Process events
-        engine.processEvent(matchingEvent);
-        engine.processEvent(failingFirstLayer);
-        engine.processEvent(failingSecondLayer);
-        engine.processEvent(failingThirdLayer);
+        engine.publishEvent(matchingEvent);
+        engine.publishEvent(failingFirstLayer);
+        engine.publishEvent(failingSecondLayer);
+        engine.publishEvent(failingThirdLayer);
 
         // Assert: Only the matching event should trigger the automation
         assertThat(automation.anyTriggerActivated(matchingEvent))

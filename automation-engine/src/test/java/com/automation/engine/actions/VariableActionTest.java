@@ -38,7 +38,7 @@ class VariableActionTest {
         logger.addAppender(logAppender);
         logAppender.start();
 
-        engine.clearAutomations();
+        engine.removeAll();
     }
 
     @Test
@@ -57,11 +57,11 @@ class VariableActionTest {
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.addAutomation(automation);
+        engine.register(automation);
 
         // Act: Trigger automation at 14:00
         TimeBasedEvent eventAt14 = new TimeBasedEvent(LocalTime.of(14, 0));
-        engine.processEvent(eventAt14);
+        engine.publishEvent(eventAt14);
 
         // Assert: Ensure the log contains the resolved message
         assertThat(logAppender.getLoggedMessages())
@@ -83,11 +83,11 @@ class VariableActionTest {
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.addAutomation(automation);
+        engine.register(automation);
 
         // Act: Trigger automation at 15:30
         TimeBasedEvent eventAt1530 = new TimeBasedEvent(LocalTime.of(15, 30));
-        engine.processEvent(eventAt1530);
+        engine.publishEvent(eventAt1530);
 
         // Assert: Ensure the log contains the formatted time
         assertThat(logAppender.getLoggedMessages())
@@ -109,11 +109,11 @@ class VariableActionTest {
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.addAutomation(automation);
+        engine.register(automation);
 
         // Act: Trigger automation at 16:45
         TimeBasedEvent eventAt1645 = new TimeBasedEvent(LocalTime.of(16, 45));
-        engine.processEvent(eventAt1645);
+        engine.publishEvent(eventAt1645);
 
         // Assert: Ensure the logger correctly logs the message stored in the variable
         assertThat(logAppender.getLoggedMessages())
@@ -143,11 +143,11 @@ class VariableActionTest {
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.addAutomation(automation);
+        engine.register(automation);
 
         // Act: Trigger automation at 18:00 (before 18:30, so 'then' branch should execute)
         TimeBasedEvent eventAt18 = new TimeBasedEvent(LocalTime.of(18, 0));
-        engine.processEvent(eventAt18);
+        engine.publishEvent(eventAt18);
 
         // Assert: Ensure the logger outputs the correct message based on the condition
         assertThat(logAppender.getLoggedMessages())

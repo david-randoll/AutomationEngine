@@ -37,7 +37,7 @@ class BasicVariableTest {
         logger.addAppender(logAppender);
         logAppender.start();
 
-        engine.clearAutomations();
+        engine.removeAll();
     }
 
     @Test
@@ -55,10 +55,10 @@ class BasicVariableTest {
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.addAutomation(automation);
+        engine.register(automation);
 
         TimeBasedEvent eventAt14 = new TimeBasedEvent(LocalTime.of(14, 0));
-        engine.processEvent(eventAt14);
+        engine.publishEvent(eventAt14);
 
         assertThat(logAppender.getLoggedMessages())
                 .anyMatch(msg -> msg.contains("Automation triggered at 14:00"));
@@ -79,10 +79,10 @@ class BasicVariableTest {
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.addAutomation(automation);
+        engine.register(automation);
 
         TimeBasedEvent eventAt1530 = new TimeBasedEvent(LocalTime.of(15, 30));
-        engine.processEvent(eventAt1530);
+        engine.publishEvent(eventAt1530);
 
         assertThat(logAppender.getLoggedMessages())
                 .anyMatch(msg -> msg.contains("Automation triggered at 03:30 PM"));
@@ -103,10 +103,10 @@ class BasicVariableTest {
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.addAutomation(automation);
+        engine.register(automation);
 
         TimeBasedEvent eventAt1645 = new TimeBasedEvent(LocalTime.of(16, 45));
-        engine.processEvent(eventAt1645);
+        engine.publishEvent(eventAt1645);
 
         assertThat(logAppender.getLoggedMessages())
                 .anyMatch(msg -> msg.contains("Dynamic log message!"));

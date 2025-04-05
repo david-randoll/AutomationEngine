@@ -41,7 +41,7 @@ class RepeatActionTest {
         logger.addAppender(logAppender);
         logAppender.start();
 
-        engine.clearAutomations();
+        engine.removeAll();
     }
 
     @Test
@@ -60,10 +60,10 @@ class RepeatActionTest {
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.addAutomation(automation);
+        engine.register(automation);
 
         // Trigger the automation
-        engine.processEvent(new TimeBasedEvent(LocalTime.of(12, 0)));
+        engine.publishEvent(new TimeBasedEvent(LocalTime.of(12, 0)));
 
         // Assert that the message appears exactly 3 times
         assertThat(logAppender.getLoggedMessages())
@@ -93,10 +93,10 @@ class RepeatActionTest {
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.addAutomation(automation);
+        engine.register(automation);
 
         // Trigger the automation
-        engine.processEvent(new TimeBasedEvent(LocalTime.of(13, 0)));
+        engine.publishEvent(new TimeBasedEvent(LocalTime.of(13, 0)));
 
         // Assert that the logger message appears exactly 3 times
         assertThat(logAppender.getLoggedMessages())
@@ -126,10 +126,10 @@ class RepeatActionTest {
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.addAutomation(automation);
+        engine.register(automation);
 
         // Trigger the automation
-        engine.processEvent(new TimeBasedEvent(LocalTime.of(14, 0)));
+        engine.publishEvent(new TimeBasedEvent(LocalTime.of(14, 0)));
 
         // Assert that the logger message appears exactly 3 times
         assertThat(logAppender.getLoggedMessages())
@@ -153,10 +153,10 @@ class RepeatActionTest {
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.addAutomation(automation);
+        engine.register(automation);
 
         // Trigger the automation
-        engine.processEvent(new TimeBasedEvent(LocalTime.of(15, 0)));
+        engine.publishEvent(new TimeBasedEvent(LocalTime.of(15, 0)));
 
         // Assert that the messages appear with correct values
         assertThat(logAppender.getLoggedMessages())
@@ -185,10 +185,10 @@ class RepeatActionTest {
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.addAutomation(automation);
+        engine.register(automation);
 
         // Trigger the automation
-        engine.processEvent(new TimeBasedEvent(LocalTime.of(16, 0)));
+        engine.publishEvent(new TimeBasedEvent(LocalTime.of(16, 0)));
 
         // Assert that the messages appear with correct key-value pairs
         assertThat(logAppender.getLoggedMessages())

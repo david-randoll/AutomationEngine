@@ -41,7 +41,7 @@ public class AutomationExample {
         BaseConditionList conditions = BaseConditionList.of();
         BaseActionList actions = BaseActionList.of(getAction());
         var automation = new Automation("Time based automation", triggers, conditions, actions);
-        engine.addAutomation(automation);
+        engine.register(automation);
     }
 
     private IBaseTrigger getTrigger() {

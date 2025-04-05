@@ -38,7 +38,7 @@ class AndConditionTest {
         logger.addAppender(logAppender);
         logAppender.start();
 
-        engine.clearAutomations();
+        engine.removeAll();
     }
 
     @Test
@@ -61,7 +61,7 @@ class AndConditionTest {
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.addAutomation(automation);
+        engine.register(automation);
 
         // Act: Create events at different times
         EventContext withinRangeEvent = EventContext.of(new TimeBasedEvent(LocalTime.of(22, 37)));
@@ -69,9 +69,9 @@ class AndConditionTest {
         EventContext afterRangeEvent = EventContext.of(new TimeBasedEvent(LocalTime.of(23, 5)));
 
         // Process events
-        engine.processEvent(withinRangeEvent);
-        engine.processEvent(beforeRangeEvent);
-        engine.processEvent(afterRangeEvent);
+        engine.publishEvent(withinRangeEvent);
+        engine.publishEvent(beforeRangeEvent);
+        engine.publishEvent(afterRangeEvent);
 
         // Assert: Automation should only trigger for the within-range event
         assertThat(automation.anyTriggerActivated(withinRangeEvent))
@@ -130,15 +130,15 @@ class AndConditionTest {
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.addAutomation(automation);
+        engine.register(automation);
 
         // Act: Create events exactly at boundary times
         EventContext onBoundaryBefore = EventContext.of(new TimeBasedEvent(LocalTime.of(22, 30))); // On the "after 22:30" boundary
         EventContext onBoundaryAfter = EventContext.of(new TimeBasedEvent(LocalTime.of(23, 0))); // On the "before 23:00" boundary
 
         // Process events
-        engine.processEvent(onBoundaryBefore);
-        engine.processEvent(onBoundaryAfter);
+        engine.publishEvent(onBoundaryBefore);
+        engine.publishEvent(onBoundaryAfter);
 
         // Assert: Automation should trigger when on the boundary
         assertThat(automation.anyTriggerActivated(onBoundaryBefore))
@@ -184,15 +184,15 @@ class AndConditionTest {
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.addAutomation(automation);
+        engine.register(automation);
 
         // Act: Create events that fail the condition
         EventContext failingEvent = EventContext.of(new TimeBasedEvent(LocalTime.of(22, 37))); // Fails the "before 22:35" condition
         EventContext passingEvent = EventContext.of(new TimeBasedEvent(LocalTime.of(22, 33))); // Meets both conditions
 
         // Process events
-        engine.processEvent(failingEvent);
-        engine.processEvent(passingEvent);
+        engine.publishEvent(failingEvent);
+        engine.publishEvent(passingEvent);
 
         // Assert: Automation should fail when one condition is violated
         assertThat(automation.anyTriggerActivated(failingEvent))
@@ -236,7 +236,7 @@ class AndConditionTest {
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.addAutomation(automation);
+        engine.register(automation);
 
         // Act: Create events at various times
         EventContext withinRangeEvent = EventContext.of(new TimeBasedEvent(LocalTime.of(22, 37))); // Between 22:30 and 22:45
@@ -244,9 +244,9 @@ class AndConditionTest {
         EventContext outsideRangeAfter = EventContext.of(new TimeBasedEvent(LocalTime.of(22, 50))); // After 22:45
 
         // Process events
-        engine.processEvent(withinRangeEvent);
-        engine.processEvent(outsideRangeBefore);
-        engine.processEvent(outsideRangeAfter);
+        engine.publishEvent(withinRangeEvent);
+        engine.publishEvent(outsideRangeBefore);
+        engine.publishEvent(outsideRangeAfter);
 
         // Assert: Automation should only trigger for the within-range event
         assertThat(automation.anyTriggerActivated(withinRangeEvent))
@@ -300,15 +300,15 @@ class AndConditionTest {
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.addAutomation(automation);
+        engine.register(automation);
 
         // Act: Create events at boundary times
         EventContext failingBoundaryEvent = EventContext.of(new TimeBasedEvent(LocalTime.of(22, 35))); // On the "before 22:35" boundary
         EventContext passingBoundaryEvent = EventContext.of(new TimeBasedEvent(LocalTime.of(22, 34))); // Before 22:35
 
         // Process events
-        engine.processEvent(failingBoundaryEvent);
-        engine.processEvent(passingBoundaryEvent);
+        engine.publishEvent(failingBoundaryEvent);
+        engine.publishEvent(passingBoundaryEvent);
 
         // Assert: Automation should fail when boundary is exactly on the failed condition
         assertThat(automation.anyTriggerActivated(failingBoundaryEvent))
@@ -360,7 +360,7 @@ class AndConditionTest {
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.addAutomation(automation);
+        engine.register(automation);
 
         // Act: Create events to test nested conditions
         EventContext matchingEvent = EventContext.of(new TimeBasedEvent(LocalTime.of(22, 40))); // Satisfies both nested conditions
@@ -368,9 +368,9 @@ class AndConditionTest {
         EventContext failingSecondAndCondition = EventContext.of(new TimeBasedEvent(LocalTime.of(22, 33))); // Fails second AND condition
 
         // Process events
-        engine.processEvent(matchingEvent);
-        engine.processEvent(failingFirstAndCondition);
-        engine.processEvent(failingSecondAndCondition);
+        engine.publishEvent(matchingEvent);
+        engine.publishEvent(failingFirstAndCondition);
+        engine.publishEvent(failingSecondAndCondition);
 
         // Assert: Only the matching event should trigger the automation
         assertThat(automation.anyTriggerActivated(matchingEvent))
@@ -440,7 +440,7 @@ class AndConditionTest {
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.addAutomation(automation);
+        engine.register(automation);
 
         // Act: Create events to test deep nested conditions
         EventContext matchingEvent = EventContext.of(new TimeBasedEvent(LocalTime.of(22, 42))); // Satisfies all nested conditions
@@ -449,10 +449,10 @@ class AndConditionTest {
         EventContext failingThirdLayer = EventContext.of(new TimeBasedEvent(LocalTime.of(22, 37))); // Fails third AND condition
 
         // Process events
-        engine.processEvent(matchingEvent);
-        engine.processEvent(failingFirstLayer);
-        engine.processEvent(failingSecondLayer);
-        engine.processEvent(failingThirdLayer);
+        engine.publishEvent(matchingEvent);
+        engine.publishEvent(failingFirstLayer);
+        engine.publishEvent(failingSecondLayer);
+        engine.publishEvent(failingThirdLayer);
 
         // Assert: Only the matching event should trigger the automation
         assertThat(automation.anyTriggerActivated(matchingEvent))

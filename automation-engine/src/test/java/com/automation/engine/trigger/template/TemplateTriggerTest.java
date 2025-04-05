@@ -38,7 +38,7 @@ class TemplateTriggerTest {
         logger.addAppender(logAppender);
         logAppender.start();
 
-        engine.clearAutomations();
+        engine.removeAll();
     }
 
     @Test
@@ -54,10 +54,10 @@ class TemplateTriggerTest {
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.addAutomation(automation);
+        engine.register(automation);
 
         // Act
-        engine.processEvent(new DefaultEvent());
+        engine.publishEvent(new DefaultEvent());
 
         // Assert
         assertThat(logAppender.getLoggedMessages())
@@ -77,10 +77,10 @@ class TemplateTriggerTest {
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.addAutomation(automation);
+        engine.register(automation);
 
         // Act
-        engine.processEvent(new DefaultEvent());
+        engine.publishEvent(new DefaultEvent());
 
         // Assert
         assertThat(logAppender.getLoggedMessages())
@@ -110,13 +110,13 @@ class TemplateTriggerTest {
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.addAutomation(automation);
+        engine.register(automation);
 
         // Act: Create an event and add a variable
         var event = EventContext.of(new DefaultEvent());
         event.addMetadata("status", "active");
 
-        engine.processEvent(event);
+        engine.publishEvent(event);
 
         // Assert: Ensure the action was logged
         assertThat(logAppender.getLoggedMessages())

@@ -42,7 +42,7 @@ class SequenceActionTest {
         logger.addAppender(logAppender);
         logAppender.start();
 
-        engine.clearAutomations();
+        engine.removeAll();
     }
 
     @Test
@@ -67,11 +67,11 @@ class SequenceActionTest {
 
         // Create automation from YAML
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.addAutomation(automation);
+        engine.register(automation);
 
         // Act: Trigger the automation
         TimeBasedEvent eventAt10AM = new TimeBasedEvent(LocalTime.of(10, 0));
-        engine.processEvent(eventAt10AM);
+        engine.publishEvent(eventAt10AM);
 
         // Assert: Ensure all actions were logged in the correct order
         assertThat(logAppender.getLoggedMessages())

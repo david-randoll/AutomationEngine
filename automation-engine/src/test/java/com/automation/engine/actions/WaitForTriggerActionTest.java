@@ -37,7 +37,7 @@ class WaitForTriggerActionTest {
         logger.addAppender(logAppender);
         logAppender.start();
 
-        engine.clearAutomations();
+        engine.removeAll();
     }
 
     @Test
@@ -56,11 +56,11 @@ class WaitForTriggerActionTest {
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.addAutomation(automation);
+        engine.register(automation);
 
         // Act: Trigger the automation
         TimeBasedEvent eventAtNoon = new TimeBasedEvent(LocalTime.of(12, 0));
-        engine.processEvent(eventAtNoon);
+        engine.publishEvent(eventAtNoon);
 
         // Assert: The logger message should be logged immediately since there are no triggers to wait for
         assertThat(logAppender.getLoggedMessages())
@@ -87,13 +87,13 @@ class WaitForTriggerActionTest {
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.addAutomation(automation);
+        engine.register(automation);
 
         // Act: Create event that satisfies the trigger early
         TimeBasedEvent eventAt1405 = new TimeBasedEvent(LocalTime.of(14, 0));
 
         // Process event (should trigger action before timeout)
-        engine.processEvent(eventAt1405);
+        engine.publishEvent(eventAt1405);
 
         // Assert: The waiting log should appear, and the next action should execute immediately after trigger is fired
         assertThat(logAppender.getLoggedMessages())
@@ -121,12 +121,12 @@ class WaitForTriggerActionTest {
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.addAutomation(automation);
+        engine.register(automation);
 
         // Act: Trigger automation, but do NOT send the expected trigger event
         long startTime = System.currentTimeMillis();
         TimeBasedEvent eventAt4PM = new TimeBasedEvent(LocalTime.of(16, 0));
-        engine.processEvent(eventAt4PM);
+        engine.publishEvent(eventAt4PM);
 
         // Assert: The waiting log should appear, and the action should proceed after timeout
         assertThat(logAppender.getLoggedMessages())
@@ -157,12 +157,12 @@ class WaitForTriggerActionTest {
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.addAutomation(automation);
+        engine.register(automation);
 
         // Act: Trigger automation without sending the expected trigger event
         long startTime = System.currentTimeMillis();
         TimeBasedEvent eventAt6PM = new TimeBasedEvent(LocalTime.of(18, 0));
-        engine.processEvent(eventAt6PM);
+        engine.publishEvent(eventAt6PM);
 
         // Assert: The waiting message should appear, and the next action should proceed after the default timeout of 60 seconds
         assertThat(logAppender.getLoggedMessages())
@@ -197,12 +197,12 @@ class WaitForTriggerActionTest {
                 """.formatted(triggerStr, waitForTriggerStr);
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.addAutomation(automation);
+        engine.register(automation);
 
         // Act: Trigger automation at 19:00 and record the start time
         long startTime = System.currentTimeMillis();
         TimeBasedEvent eventAt1900 = new TimeBasedEvent(time);
-        engine.processEvent(eventAt1900);
+        engine.publishEvent(eventAt1900);
 
         // Measure elapsed time
         long elapsedTime = System.currentTimeMillis() - startTime;
@@ -234,12 +234,12 @@ class WaitForTriggerActionTest {
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.addAutomation(automation);
+        engine.register(automation);
 
         // Act: Trigger automation without sending the expected trigger event
         long startTime = System.currentTimeMillis();
         TimeBasedEvent eventAt6PM = new TimeBasedEvent(LocalTime.of(18, 0));
-        engine.processEvent(eventAt6PM);
+        engine.publishEvent(eventAt6PM);
 
         // Measure elapsed time
         long elapsedTime = System.currentTimeMillis() - startTime;
@@ -272,12 +272,12 @@ class WaitForTriggerActionTest {
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.addAutomation(automation);
+        engine.register(automation);
 
         // Act: Trigger automation without sending the expected trigger event
         long startTime = System.currentTimeMillis();
         TimeBasedEvent eventAt6PM = new TimeBasedEvent(LocalTime.of(18, 0));
-        engine.processEvent(eventAt6PM);
+        engine.publishEvent(eventAt6PM);
 
         // Measure elapsed time
         long elapsedTime = System.currentTimeMillis() - startTime;

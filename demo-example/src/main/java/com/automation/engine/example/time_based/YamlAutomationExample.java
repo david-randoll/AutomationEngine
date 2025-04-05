@@ -28,6 +28,6 @@ public class YamlAutomationExample {
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.addAutomation(automation);
+        engine.register(automation);
     }
 }

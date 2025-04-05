@@ -37,7 +37,7 @@ class IfThenElseVariableTest {
         logger.addAppender(logAppender);
         logAppender.start();
 
-        engine.clearAutomations();
+        engine.removeAll();
     }
 
     @Test
@@ -62,10 +62,10 @@ class IfThenElseVariableTest {
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.addAutomation(automation);
+        engine.register(automation);
 
         TimeBasedEvent eventAt18 = new TimeBasedEvent(LocalTime.of(18, 0));
-        engine.processEvent(eventAt18);
+        engine.publishEvent(eventAt18);
 
         assertThat(logAppender.getLoggedMessages())
                 .anyMatch(msg -> msg.contains("Its still early!"))
@@ -94,13 +94,13 @@ class IfThenElseVariableTest {
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.addAutomation(automation);
+        engine.register(automation);
 
         // Act: Create an event where the condition is met
         TimeBasedEvent event = new TimeBasedEvent(LocalTime.of(22, 37)); // Condition: after 22:30
 
         // Process event
-        engine.processEvent(event);
+        engine.publishEvent(event);
 
         // Assert: THEN action should be executed
         assertThat(logAppender.getLoggedMessages())
@@ -130,13 +130,13 @@ class IfThenElseVariableTest {
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.addAutomation(automation);
+        engine.register(automation);
 
         // Act: Create an event where the condition is not met
         TimeBasedEvent event = new TimeBasedEvent(LocalTime.of(22, 37)); // Condition: after 23:00 is not satisfied
 
         // Process event
-        engine.processEvent(event);
+        engine.publishEvent(event);
 
         // Assert: ELSE action should be executed
         assertThat(logAppender.getLoggedMessages())
@@ -173,13 +173,13 @@ class IfThenElseVariableTest {
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.addAutomation(automation);
+        engine.register(automation);
 
         // Act: Create an event where the first condition is met
         TimeBasedEvent event = new TimeBasedEvent(LocalTime.of(22, 37)); // Condition: after 22:30
 
         // Process event
-        engine.processEvent(event);
+        engine.publishEvent(event);
 
         // Assert: First block's THEN action should be executed, others should not
         assertThat(logAppender.getLoggedMessages())
@@ -217,13 +217,13 @@ class IfThenElseVariableTest {
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.addAutomation(automation);
+        engine.register(automation);
 
         // Act: Create an event where none of the conditions are met
         TimeBasedEvent event = new TimeBasedEvent(LocalTime.of(22, 37)); // No condition is satisfied
 
         // Process event
-        engine.processEvent(event);
+        engine.publishEvent(event);
 
         // Assert: ELSE action should be executed
         assertThat(logAppender.getLoggedMessages())
@@ -260,13 +260,13 @@ class IfThenElseVariableTest {
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.addAutomation(automation);
+        engine.register(automation);
 
         // Act: Create an event where the main condition and nested condition are both met
         TimeBasedEvent event = new TimeBasedEvent(LocalTime.of(22, 37)); // Condition: after 22:30 and before 23:00
 
         // Process event
-        engine.processEvent(event);
+        engine.publishEvent(event);
 
         // Assert: Nested THEN action should be executed
         assertThat(logAppender.getLoggedMessages())
@@ -308,13 +308,13 @@ class IfThenElseVariableTest {
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.addAutomation(automation);
+        engine.register(automation);
 
         // Act: Create events that satisfy the second if condition (before 10:30 PM)
         TimeBasedEvent eventBefore1030 = new TimeBasedEvent(LocalTime.of(22, 15));
 
         // Process event
-        engine.processEvent(eventBefore1030);
+        engine.publishEvent(eventBefore1030);
 
         // Assert: Should trigger the first if-then block and the second if-then block
         assertThat(logAppender.getLoggedMessages())
@@ -357,13 +357,13 @@ class IfThenElseVariableTest {
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.addAutomation(automation);
+        engine.register(automation);
 
         // Act: Create event that doesn't match any "if" condition (after 10:45 PM)
         TimeBasedEvent eventAfter1045 = new TimeBasedEvent(LocalTime.of(9, 45));
 
         // Process event
-        engine.processEvent(eventAfter1045);
+        engine.publishEvent(eventAfter1045);
 
         // Assert: Should trigger the "else" block
         assertThat(logAppender.getLoggedMessages())
@@ -406,13 +406,13 @@ class IfThenElseVariableTest {
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.addAutomation(automation);
+        engine.register(automation);
 
         // Act: Create event that fails all "if" conditions (before 10:00 PM)
         TimeBasedEvent eventBefore10 = new TimeBasedEvent(LocalTime.of(9, 30));
 
         // Process event
-        engine.processEvent(eventBefore10);
+        engine.publishEvent(eventBefore10);
 
         // Assert: Should trigger the "else" block
         assertThat(logAppender.getLoggedMessages())
@@ -456,13 +456,13 @@ class IfThenElseVariableTest {
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.addAutomation(automation);
+        engine.register(automation);
 
         // Act: Create event that satisfies the first if block condition (after 10:30 PM)
         TimeBasedEvent eventAfter1030 = new TimeBasedEvent(LocalTime.of(22, 35));
 
         // Process event
-        engine.processEvent(eventAfter1030);
+        engine.publishEvent(eventAfter1030);
 
         // Assert: Should trigger the "else" block because the second "if" block fails
         assertThat(logAppender.getLoggedMessages())
@@ -495,13 +495,13 @@ class IfThenElseVariableTest {
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.addAutomation(automation);
+        engine.register(automation);
 
         // Act: Create event that fails all if conditions (before 10 PM)
         TimeBasedEvent eventBefore10PM = new TimeBasedEvent(LocalTime.of(21, 30));
 
         // Process event
-        engine.processEvent(eventBefore10PM);
+        engine.publishEvent(eventBefore10PM);
 
         // Assert: Should trigger the "else" block
         assertThat(logAppender.getLoggedMessages())
@@ -535,13 +535,13 @@ class IfThenElseVariableTest {
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.addAutomation(automation);
+        engine.register(automation);
 
         // Act: Create event that satisfies the first "if" block condition (after 10 PM)
         TimeBasedEvent eventAfter10PM = new TimeBasedEvent(LocalTime.of(22, 15));
 
         // Process event
-        engine.processEvent(eventAfter10PM);
+        engine.publishEvent(eventAfter10PM);
 
         // Assert: Should trigger the first "if" block
         assertThat(logAppender.getLoggedMessages())
@@ -575,13 +575,13 @@ class IfThenElseVariableTest {
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.addAutomation(automation);
+        engine.register(automation);
 
         // Act: Create event that satisfies the second "if" block condition (after 10 PM)
         TimeBasedEvent eventAfter10PM = new TimeBasedEvent(LocalTime.of(22, 30));
 
         // Process event
-        engine.processEvent(eventAfter10PM);
+        engine.publishEvent(eventAfter10PM);
 
         // Assert: Should trigger the second "if" block
         assertThat(logAppender.getLoggedMessages())
@@ -615,13 +615,13 @@ class IfThenElseVariableTest {
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.addAutomation(automation);
+        engine.register(automation);
 
         // Act: Create event that satisfies none of the conditions (before 10 PM)
         TimeBasedEvent eventBefore10PM = new TimeBasedEvent(LocalTime.of(21, 30));
 
         // Process event
-        engine.processEvent(eventBefore10PM);
+        engine.publishEvent(eventBefore10PM);
 
         // Assert: Should not trigger any "if" blocks
         assertThat(logAppender.getLoggedMessages())
@@ -655,13 +655,13 @@ class IfThenElseVariableTest {
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.addAutomation(automation);
+        engine.register(automation);
 
         // Act: Create event that fails all conditions (before 9:00 PM)
         TimeBasedEvent eventBefore9PM = new TimeBasedEvent(LocalTime.of(20, 45));
 
         // Process event
-        engine.processEvent(eventBefore9PM);
+        engine.publishEvent(eventBefore9PM);
 
         // Assert: Should not trigger any "if" blocks
         assertThat(logAppender.getLoggedMessages())
@@ -695,13 +695,13 @@ class IfThenElseVariableTest {
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.addAutomation(automation);
+        engine.register(automation);
 
         // Act: Create event that satisfies all conditions in the first block (after 10 PM but before 11 PM)
         TimeBasedEvent eventAfter10Before11PM = new TimeBasedEvent(LocalTime.of(22, 30));
 
         // Process event
-        engine.processEvent(eventAfter10Before11PM);
+        engine.publishEvent(eventAfter10Before11PM);
 
         // Assert: Should trigger the first "if" block
         assertThat(logAppender.getLoggedMessages())

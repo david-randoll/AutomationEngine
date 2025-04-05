@@ -1,7 +1,6 @@
 package com.automation.engine.core;
 
-import com.automation.engine.core.events.EventContext;
-import com.automation.engine.core.events.IEvent;
+import com.automation.engine.core.events.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -18,35 +17,35 @@ public class AutomationEngine {
     private final ApplicationEventPublisher publisher;
     private final List<Automation> automations = new ArrayList<>();
 
-    public void addAutomation(Automation automation) {
+    public void register(Automation automation) {
         automations.add(automation);
+        publisher.publishEvent(new AutomationEngineRegisterEvent(automation));
     }
 
-    public void removeAutomation(Automation automation) {
+    public void remove(Automation automation) {
         automations.remove(automation);
+        publisher.publishEvent(new AutomationEngineRemoveEvent(automation));
     }
 
-    public void clearAutomations() {
+    public void removeAll() {
+        //automations.forEach(this::remove);
         automations.clear();
     }
 
-    public void processEvent(@NonNull EventContext eventContext) {
+    public void publishEvent(@NonNull EventContext eventContext) {
         for (Automation automation : automations) {
             runAutomation(automation, eventContext);
         }
-    }
-
-    public void processEvent(@NonNull IEvent event) {
-        for (Automation automation : automations) {
-            runAutomation(automation, EventContext.of(event));
-        }
+        publisher.publishEvent(eventContext.getEvent()); //publish the event
+        publisher.publishEvent(eventContext); //publish the context
     }
 
     public void publishEvent(@NonNull IEvent event) {
-        var context = EventContext.of(event);
-        processEvent(context);
+        for (Automation automation : automations) {
+            runAutomation(automation, EventContext.of(event));
+        }
         publisher.publishEvent(event); //publish the event
-        publisher.publishEvent(context); //publish the context
+        publisher.publishEvent(EventContext.of(event)); //publish the context
     }
 
     public void runAutomation(Automation automation, EventContext eventContext) {
@@ -56,6 +55,7 @@ public class AutomationEngine {
             log.debug("Automation triggered and conditions met. Executing actions.");
             automation.performActions(eventContext);
         }
+        publisher.publishEvent(new AutomationEngineProcessedEvent(automation, eventContext));
         log.debug("Done processing automation: {}", automation.getAlias());
     }
 }

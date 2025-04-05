@@ -46,7 +46,7 @@ class ParallelActionTest {
         logger.addAppender(logAppender);
         logAppender.start();
 
-        engine.clearAutomations();
+        engine.removeAll();
     }
 
     @Test
@@ -70,11 +70,11 @@ class ParallelActionTest {
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.addAutomation(automation);
+        engine.register(automation);
 
         // Act: Trigger the automation
         TimeBasedEvent eventAt3PM = new TimeBasedEvent(LocalTime.of(15, 0));
-        engine.processEvent(eventAt3PM);
+        engine.publishEvent(eventAt3PM);
 
         // Assert: Ensure all actions were logged
         assertThat(logAppender.getLoggedMessages())
@@ -112,11 +112,11 @@ class ParallelActionTest {
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.addAutomation(automation);
+        engine.register(automation);
 
         // Act: Trigger the automation
         TimeBasedEvent eventAt4PM = new TimeBasedEvent(LocalTime.of(16, 0));
-        engine.processEvent(eventAt4PM);
+        engine.publishEvent(eventAt4PM);
 
         // Assert: Ensure parallel execution was used with the provided executor
         verify(mockAutomationEngineConfigurationProvider, times(1)).getExecutor();
@@ -148,11 +148,11 @@ class ParallelActionTest {
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.addAutomation(automation);
+        engine.register(automation);
 
         // Act: Trigger the automation
         TimeBasedEvent eventAt5PM = new TimeBasedEvent(LocalTime.of(17, 0));
-        engine.processEvent(eventAt5PM);
+        engine.publishEvent(eventAt5PM);
 
         // Assert: Ensure all actions executed and default executor was used
         assertThat(logAppender.getLoggedMessages())
@@ -185,12 +185,12 @@ class ParallelActionTest {
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.addAutomation(automation);
+        engine.register(automation);
 
         // Act: Trigger the automation
         TimeBasedEvent eventAt6PM = new TimeBasedEvent(LocalTime.of(18, 0));
         long startTime = System.currentTimeMillis();
-        engine.processEvent(eventAt6PM);
+        engine.publishEvent(eventAt6PM);
         long endTime = System.currentTimeMillis();
 
         assertThat(endTime - startTime).isLessThan(2100);

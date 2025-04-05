@@ -37,7 +37,7 @@ class StopActionTest {
         logger.addAppender(logAppender);
         logAppender.start();
 
-        engine.clearAutomations();
+        engine.removeAll();
     }
 
     @Test
@@ -60,13 +60,13 @@ class StopActionTest {
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.addAutomation(automation);
+        engine.register(automation);
 
         // Act: Create event that satisfies stop condition (after 10 PM)
         TimeBasedEvent eventAfter10PM = new TimeBasedEvent(LocalTime.of(22, 30));
 
         // Process event
-        engine.processEvent(eventAfter10PM);
+        engine.publishEvent(eventAfter10PM);
 
         // Assert: The first log message should be logged, but the second should not
         assertThat(logAppender.getLoggedMessages())
@@ -94,13 +94,13 @@ class StopActionTest {
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.addAutomation(automation);
+        engine.register(automation);
 
         // Act: Create event that does not satisfy stop condition (before 10 PM)
         TimeBasedEvent eventBefore10PM = new TimeBasedEvent(LocalTime.of(21, 30));
 
         // Process event
-        engine.processEvent(eventBefore10PM);
+        engine.publishEvent(eventBefore10PM);
 
         // Assert: Both log messages should be logged
         assertThat(logAppender.getLoggedMessages())
@@ -124,13 +124,13 @@ class StopActionTest {
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.addAutomation(automation);
+        engine.register(automation);
 
         // Act: Create an event with no condition set
         TimeBasedEvent event = new TimeBasedEvent(LocalTime.of(20, 0));
 
         // Process event
-        engine.processEvent(event);
+        engine.publishEvent(event);
 
         // Assert: Stop action has no condition, so execution should continue
         assertThat(logAppender.getLoggedMessages())
@@ -157,13 +157,13 @@ class StopActionTest {
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.addAutomation(automation);
+        engine.register(automation);
 
         // Act: Create a time event at 12:00
         TimeBasedEvent eventAtNoon = new TimeBasedEvent(LocalTime.of(12, 0));
 
         // Process event
-        engine.processEvent(eventAtNoon);
+        engine.publishEvent(eventAtNoon);
 
         // Assert: The first log message should be logged, but the second should not
         assertThat(logAppender.getLoggedMessages())
@@ -189,13 +189,13 @@ class StopActionTest {
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.addAutomation(automation);
+        engine.register(automation);
 
         // Act: Create a time event at 08:00
         TimeBasedEvent eventAt8AM = new TimeBasedEvent(LocalTime.of(8, 0));
 
         // Process event
-        engine.processEvent(eventAt8AM);
+        engine.publishEvent(eventAt8AM);
 
         // Assert: No actions should be logged since the sequence is stopped immediately
         assertThat(logAppender.getLoggedMessages())
@@ -232,12 +232,12 @@ class StopActionTest {
 
         Automation automation1 = factory.createAutomation("yaml", yaml1);
         Automation automation2 = factory.createAutomation("yaml", yaml2);
-        engine.addAutomation(automation1);
-        engine.addAutomation(automation2);
+        engine.register(automation1);
+        engine.register(automation2);
 
         // Act: Create a time event at 10:00
         TimeBasedEvent eventAt10AM = new TimeBasedEvent(LocalTime.of(10, 0));
-        engine.processEvent(eventAt10AM);
+        engine.publishEvent(eventAt10AM);
 
         // Assert: Automation 1 should stop after the stop action, but Automation 2 should continue
         assertThat(logAppender.getLoggedMessages())
@@ -276,12 +276,12 @@ class StopActionTest {
 
         Automation stopAffected = factory.createAutomation("yaml", yaml1);
         Automation unaffected = factory.createAutomation("yaml", yaml2);
-        engine.addAutomation(stopAffected);
-        engine.addAutomation(unaffected);
+        engine.register(stopAffected);
+        engine.register(unaffected);
 
         // Act: Create a time event at 15:00
         TimeBasedEvent eventAt3PM = new TimeBasedEvent(LocalTime.of(15, 0));
-        engine.processEvent(eventAt3PM);
+        engine.publishEvent(eventAt3PM);
 
         // Assert: The first automation should stop, the second should proceed
         assertThat(logAppender.getLoggedMessages())
@@ -337,13 +337,13 @@ class StopActionTest {
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.addAutomation(automation);
+        engine.register(automation);
 
         // Act: Create event that meets both stop conditions
         TimeBasedEvent eventAt10AM = new TimeBasedEvent(LocalTime.of(10, 0));
 
         // Process event
-        engine.processEvent(eventAt10AM);
+        engine.publishEvent(eventAt10AM);
 
         // Assert:
         assertThat(logAppender.getLoggedMessages())
@@ -384,13 +384,13 @@ class StopActionTest {
                 """;
 
         Automation automation2 = factory.createAutomation("yaml", yamlWithoutStopAutomation);
-        engine.addAutomation(automation2);
+        engine.register(automation2);
 
         // Act: Create event for second test
         TimeBasedEvent eventAt1PM = new TimeBasedEvent(LocalTime.of(13, 0));
 
         // Process event
-        engine.processEvent(eventAt1PM);
+        engine.publishEvent(eventAt1PM);
 
         // Assert:
         assertThat(logAppender.getLoggedMessages())
