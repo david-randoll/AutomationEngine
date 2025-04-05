@@ -1,9 +1,9 @@
 package com.automation.engine.core.events;
 
 import com.automation.engine.core.AutomationEngine;
+import com.automation.engine.core.utils.ReflectionUtils;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.reflect.FieldUtils;
 
 import java.time.Instant;
 import java.util.HashMap;
@@ -65,7 +65,7 @@ public class EventContext {
      */
     public Map<String, Object> getEventData() {
         var result = new HashMap<String, Object>();
-        result.putAll(buildMapFromEventData());
+        result.putAll(ReflectionUtils.buildMapFromObject(event));
         result.putAll(metadata);
         return result;
     }
@@ -118,26 +118,6 @@ public class EventContext {
         Map<String, Object> eventData = getEventData();
         if (isNull(eventData)) return null;
         return eventData.get(key);
-    }
-
-    /**
-     * This method builds a map from the event data.
-     * It uses reflection to get all fields of the event class and their values.
-     * The field names are used as keys in the map.
-     *
-     * @return a map containing the event data
-     */
-    private Map<String, Object> buildMapFromEventData() {
-        var result = new HashMap<String, Object>();
-        var fields = FieldUtils.getAllFields(event.getClass());
-        for (var field : fields) {
-            try {
-                result.put(field.getName(), FieldUtils.readField(field, event, true));
-            } catch (IllegalAccessException e) {
-                log.error("Error reading field {} from event {}", field.getName(), event.getClass().getSimpleName(), e);
-            }
-        }
-        return result;
     }
 
     /**
