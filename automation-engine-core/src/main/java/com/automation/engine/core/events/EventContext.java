@@ -2,6 +2,7 @@ package com.automation.engine.core.events;
 
 import com.automation.engine.core.AutomationEngine;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -17,6 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * EventContext is a class that represents the context of an event.
  * It contains the event data and metadata associated with the event.
  */
+@Slf4j
 @Getter
 public class EventContext {
     private final IEvent event;
@@ -133,7 +135,7 @@ public class EventContext {
             try {
                 result.put(field.getName(), FieldUtils.readField(field, event, true));
             } catch (IllegalAccessException e) {
-                e.printStackTrace();
+                log.error("Error reading field {} from event {}", field.getName(), event.getClass().getSimpleName(), e);
             }
         }
         return result;
