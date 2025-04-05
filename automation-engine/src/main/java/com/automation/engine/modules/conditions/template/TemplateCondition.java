@@ -1,7 +1,7 @@
 package com.automation.engine.modules.conditions.template;
 
-import com.automation.engine.core.conditions.AbstractCondition;
 import com.automation.engine.core.events.EventContext;
+import com.automation.engine.spi.AbstractCondition;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

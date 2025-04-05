@@ -1,10 +1,10 @@
 package com.automation.engine.modules.actions.stop;
 
-import com.automation.engine.core.actions.AbstractAction;
 import com.automation.engine.core.actions.exceptions.StopActionSequenceException;
 import com.automation.engine.core.actions.exceptions.StopAutomationException;
 import com.automation.engine.core.events.EventContext;
 import com.automation.engine.factory.resolver.DefaultAutomationResolver;
+import com.automation.engine.spi.AbstractAction;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
@@ -23,7 +23,8 @@ public class StopAction extends AbstractAction<StopActionContext> {
         if (!isSatisfied) return;
         if (actionContext.hasStopMessage()) {
             if (actionContext.isStopAutomation()) throw new StopAutomationException(actionContext.getStopMessage());
-            if (actionContext.isStopActionSequence()) throw new StopActionSequenceException(actionContext.getStopMessage());
+            if (actionContext.isStopActionSequence())
+                throw new StopActionSequenceException(actionContext.getStopMessage());
         } else {
             if (actionContext.isStopAutomation()) throw new StopAutomationException();
             if (actionContext.isStopActionSequence()) throw new StopActionSequenceException();
