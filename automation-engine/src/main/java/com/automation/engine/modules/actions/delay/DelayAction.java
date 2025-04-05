@@ -1,7 +1,7 @@
 package com.automation.engine.modules.actions.delay;
 
 import com.automation.engine.core.actions.AbstractAction;
-import com.automation.engine.core.events.Event;
+import com.automation.engine.core.events.EventContext;
 import com.automation.engine.factory.resolver.DefaultAutomationResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -14,8 +14,8 @@ public class DelayAction extends AbstractAction<DelayActionContext> {
     private final DefaultAutomationResolver resolver;
 
     @Override
-    public void execute(Event event, DelayActionContext context) {
-        Duration duration = context.getDuration();
+    public void execute(EventContext eventContext, DelayActionContext actionContext) {
+        Duration duration = actionContext.getDuration();
         try {
             Thread.sleep(duration.toMillis());
         } catch (InterruptedException e) {

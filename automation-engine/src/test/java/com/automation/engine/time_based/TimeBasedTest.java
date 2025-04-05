@@ -5,6 +5,7 @@ import com.automation.engine.AutomationEngineApplication;
 import com.automation.engine.TestLogAppender;
 import com.automation.engine.core.Automation;
 import com.automation.engine.core.AutomationEngine;
+import com.automation.engine.core.events.EventContext;
 import com.automation.engine.factory.AutomationFactory;
 import com.automation.engine.modules.events.time_based.TimeBasedEvent;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,7 +38,7 @@ class TimeBasedTest {
         logger.addAppender(logAppender);
         logAppender.start();
 
-        engine.clearAutomations();
+        engine.removeAll();
     }
 
     @Test
@@ -53,10 +54,10 @@ class TimeBasedTest {
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.addAutomation(automation);
+        engine.register(automation);
 
-        TimeBasedEvent matchingEvent = new TimeBasedEvent(LocalTime.of(22, 37, 0));
-        engine.processEvent(matchingEvent);
+        var matchingEvent = EventContext.of(new TimeBasedEvent(LocalTime.of(22, 37, 0)));
+        engine.publishEvent(matchingEvent);
 
         // Assert: Check that the automation triggered as expected
         assertThat(automation.anyTriggerActivated(matchingEvent))
@@ -85,10 +86,10 @@ class TimeBasedTest {
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.addAutomation(automation);
+        engine.register(automation);
 
-        TimeBasedEvent nonMatchingEvent = new TimeBasedEvent(LocalTime.of(10, 0, 0));
-        engine.processEvent(nonMatchingEvent);
+        var nonMatchingEvent = EventContext.of(new TimeBasedEvent(LocalTime.of(10, 0, 0)));
+        engine.publishEvent(nonMatchingEvent);
 
         // Assert: Check that the automation did not trigger
         assertThat(automation.anyTriggerActivated(nonMatchingEvent))
@@ -124,12 +125,12 @@ class TimeBasedTest {
 
         Automation morningAutomation = factory.createAutomation("yaml", yaml1);
         Automation eveningAutomation = factory.createAutomation("yaml", yaml2);
-        engine.addAutomation(morningAutomation);
-        engine.addAutomation(eveningAutomation);
+        engine.register(morningAutomation);
+        engine.register(eveningAutomation);
 
         // Act: Trigger morning automation
-        TimeBasedEvent morningEvent = new TimeBasedEvent(LocalTime.of(8, 0, 0));
-        engine.processEvent(morningEvent);
+        var morningEvent = EventContext.of(new TimeBasedEvent(LocalTime.of(8, 0, 0)));
+        engine.publishEvent(morningEvent);
 
         // Assert: Morning automation triggered
         assertThat(morningAutomation.anyTriggerActivated(morningEvent))
@@ -140,8 +141,8 @@ class TimeBasedTest {
                 .anyMatch(msg -> msg.contains("Good morning! Automation triggered at 08:00 AM"));
 
         // Act: Trigger evening automation
-        TimeBasedEvent eveningEvent = new TimeBasedEvent(LocalTime.of(20, 0, 0));
-        engine.processEvent(eveningEvent);
+        var eveningEvent = EventContext.of(new TimeBasedEvent(LocalTime.of(20, 0, 0)));
+        engine.publishEvent(eveningEvent);
 
         // Assert: Evening automation triggered
         assertThat(eveningAutomation.anyTriggerActivated(eveningEvent))
@@ -157,7 +158,7 @@ class TimeBasedTest {
         TimeBasedEvent event = new TimeBasedEvent(LocalTime.of(22, 37, 0));
 
         // Act: Process event without adding any automation
-        engine.processEvent(event);
+        engine.publishEvent(event);
 
         // Assert: No automations were triggered
         assertThat(logAppender.getLoggedMessages())
@@ -181,17 +182,17 @@ class TimeBasedTest {
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.addAutomation(automation);
+        engine.register(automation);
 
         // Act: Create events at different times
-        TimeBasedEvent withinRangeEvent = new TimeBasedEvent(LocalTime.of(22, 37));
-        TimeBasedEvent beforeRangeEvent = new TimeBasedEvent(LocalTime.of(22, 20));
-        TimeBasedEvent afterRangeEvent = new TimeBasedEvent(LocalTime.of(23, 5));
+        var withinRangeEvent = EventContext.of(new TimeBasedEvent(LocalTime.of(22, 37)));
+        var beforeRangeEvent = EventContext.of(new TimeBasedEvent(LocalTime.of(22, 20)));
+        var afterRangeEvent = EventContext.of(new TimeBasedEvent(LocalTime.of(23, 5)));
 
         // Process events
-        engine.processEvent(withinRangeEvent);
-        engine.processEvent(beforeRangeEvent);
-        engine.processEvent(afterRangeEvent);
+        engine.publishEvent(withinRangeEvent);
+        engine.publishEvent(beforeRangeEvent);
+        engine.publishEvent(afterRangeEvent);
 
         // Assert: Automation should only trigger for the within-range event
         assertThat(automation.anyTriggerActivated(withinRangeEvent))

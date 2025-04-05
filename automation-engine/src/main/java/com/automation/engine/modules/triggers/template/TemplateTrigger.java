@@ -1,6 +1,6 @@
 package com.automation.engine.modules.triggers.template;
 
-import com.automation.engine.core.events.Event;
+import com.automation.engine.core.events.EventContext;
 import com.automation.engine.core.triggers.AbstractTrigger;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,8 +15,8 @@ public class TemplateTrigger extends AbstractTrigger<TemplateTriggerContext> {
      * The template is already evaluated via interceptor, so we just need to check if it is true
      */
     @Override
-    public boolean isTriggered(Event event, TemplateTriggerContext context) {
-        var result = ObjectUtils.nullSafeEquals(context.getExpression(), "true");
+    public boolean isTriggered(EventContext eventContext, TemplateTriggerContext triggerContext) {
+        var result = ObjectUtils.nullSafeEquals(triggerContext.getExpression(), "true");
         log.debug("Template condition is satisfied: {}", result);
         return result;
     }

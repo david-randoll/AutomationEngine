@@ -1,7 +1,7 @@
 package com.automation.engine.modules.actions.if_then_else;
 
 import com.automation.engine.core.actions.AbstractAction;
-import com.automation.engine.core.events.Event;
+import com.automation.engine.core.events.EventContext;
 import com.automation.engine.factory.resolver.DefaultAutomationResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -13,27 +13,27 @@ public class IfThenElseAction extends AbstractAction<IfThenElseActionContext> {
     private final DefaultAutomationResolver resolver;
 
     @Override
-    public void execute(Event event, IfThenElseActionContext context) {
-        if (!ObjectUtils.isEmpty(context.getIfConditions())) {
-            boolean isSatisfied = resolver.allConditionsSatisfied(event, context.getIfConditions());
+    public void execute(EventContext eventContext, IfThenElseActionContext actionContext) {
+        if (!ObjectUtils.isEmpty(actionContext.getIfConditions())) {
+            boolean isSatisfied = resolver.allConditionsSatisfied(eventContext, actionContext.getIfConditions());
             if (isSatisfied) {
-                resolver.executeActions(event, context.getThenActions());
+                resolver.executeActions(eventContext, actionContext.getThenActions());
                 return;
             }
         }
 
         // check the ifs conditions
-        if (!ObjectUtils.isEmpty(context.getIfThenBlocks())) {
-            for (var ifBlock : context.getIfThenBlocks()) {
-                var isIfsSatisfied = resolver.allConditionsSatisfied(event, ifBlock.getIfConditions());
+        if (!ObjectUtils.isEmpty(actionContext.getIfThenBlocks())) {
+            for (var ifBlock : actionContext.getIfThenBlocks()) {
+                var isIfsSatisfied = resolver.allConditionsSatisfied(eventContext, ifBlock.getIfConditions());
                 if (isIfsSatisfied) {
-                    resolver.executeActions(event, ifBlock.getThenActions());
+                    resolver.executeActions(eventContext, ifBlock.getThenActions());
                     return;
                 }
             }
         }
 
         // execute else actions
-        resolver.executeActions(event, context.getElseActions());
+        resolver.executeActions(eventContext, actionContext.getElseActions());
     }
 }

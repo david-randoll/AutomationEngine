@@ -2,9 +2,9 @@ package com.automation.engine.core.conditions.interceptors;
 
 import com.automation.engine.core.conditions.ConditionContext;
 import com.automation.engine.core.conditions.ICondition;
-import com.automation.engine.core.events.Event;
+import com.automation.engine.core.events.EventContext;
 
 @FunctionalInterface
 public interface IConditionInterceptor {
-    void intercept(Event event, ConditionContext context, ICondition condition);
+    void intercept(EventContext eventContext, ConditionContext conditionContext, ICondition condition);
 }

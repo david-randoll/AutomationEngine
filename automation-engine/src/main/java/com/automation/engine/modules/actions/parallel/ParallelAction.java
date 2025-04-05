@@ -2,7 +2,7 @@ package com.automation.engine.modules.actions.parallel;
 
 import com.automation.engine.AutomationEngineConfigProvider;
 import com.automation.engine.core.actions.AbstractAction;
-import com.automation.engine.core.events.Event;
+import com.automation.engine.core.events.EventContext;
 import com.automation.engine.factory.resolver.DefaultAutomationResolver;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,16 +20,16 @@ public class ParallelAction extends AbstractAction<ParallelActionContext> {
     private AutomationEngineConfigProvider provider;
 
     @Override
-    public void execute(Event event, ParallelActionContext context) {
-        if (ObjectUtils.isEmpty(context.getActions())) return;
+    public void execute(EventContext eventContext, ParallelActionContext actionContext) {
+        if (ObjectUtils.isEmpty(actionContext.getActions())) return;
 
         var executor = provider != null ? provider.getExecutor() : null;
         if (executor != null) {
             log.debug("Executor provider found, using provided executor");
-            resolver.executeActionsAsync(event, context.getActions(), executor);
+            resolver.executeActionsAsync(eventContext, actionContext.getActions(), executor);
         } else {
             log.debug("No executor provider found, using default executor");
-            resolver.executeActionsAsync(event, context.getActions());
+            resolver.executeActionsAsync(eventContext, actionContext.getActions());
         }
     }
 }

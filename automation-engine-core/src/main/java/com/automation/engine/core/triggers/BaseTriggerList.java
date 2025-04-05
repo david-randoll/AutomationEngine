@@ -1,25 +1,25 @@
 package com.automation.engine.core.triggers;
 
-import com.automation.engine.core.events.Event;
+import com.automation.engine.core.events.EventContext;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class BaseTriggerList extends ArrayList<IBaseTrigger> {
-    public boolean allTriggered(Event event) {
+    public boolean allTriggered(EventContext eventContext) {
         return this.stream()
-                .allMatch(trigger -> trigger.isTriggered(event));
+                .allMatch(trigger -> trigger.isTriggered(eventContext));
     }
 
-    public boolean anyTriggered(Event event) {
+    public boolean anyTriggered(EventContext eventContext) {
         return this.stream()
-                .anyMatch(trigger -> trigger.isTriggered(event));
+                .anyMatch(trigger -> trigger.isTriggered(eventContext));
     }
 
-    public boolean noneTriggered(Event event) {
+    public boolean noneTriggered(EventContext eventContext) {
         return this.stream()
-                .noneMatch(trigger -> trigger.isTriggered(event));
+                .noneMatch(trigger -> trigger.isTriggered(eventContext));
     }
 
     public static BaseTriggerList of(IBaseTrigger... triggers) {

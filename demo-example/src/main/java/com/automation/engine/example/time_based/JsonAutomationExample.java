@@ -35,6 +35,6 @@ public class JsonAutomationExample {
                 """;
 
         var automation = factory.createAutomation("json", json);
-        engine.addAutomation(automation);
+        engine.register(automation);
     }
 }

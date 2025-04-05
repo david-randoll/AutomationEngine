@@ -1,6 +1,6 @@
 package com.automation.engine.modules.triggers.always_true;
 
-import com.automation.engine.core.events.Event;
+import com.automation.engine.core.events.EventContext;
 import com.automation.engine.core.triggers.AbstractTrigger;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 public class AlwaysTrueTrigger extends AbstractTrigger<AlwaysTrueTriggerContext> {
 
     @Override
-    public boolean isTriggered(Event event, AlwaysTrueTriggerContext context) {
+    public boolean isTriggered(EventContext eventContext, AlwaysTrueTriggerContext triggerContext) {
         return true;
     }
 }

@@ -1,7 +1,7 @@
 package com.automation.engine.modules.conditions.template;
 
 import com.automation.engine.core.conditions.AbstractCondition;
-import com.automation.engine.core.events.Event;
+import com.automation.engine.core.events.EventContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -15,8 +15,8 @@ public class TemplateCondition extends AbstractCondition<TemplateConditionContex
      * The template is already evaluated via interceptor, so we just need to check if it is true
      */
     @Override
-    public boolean isSatisfied(Event event, TemplateConditionContext context) {
-        var result = ObjectUtils.nullSafeEquals(context.getExpression(), "true");
+    public boolean isSatisfied(EventContext eventContext, TemplateConditionContext conditionContext) {
+        var result = ObjectUtils.nullSafeEquals(conditionContext.getExpression(), "true");
         log.debug("Template condition is satisfied: {}", result);
         return result;
     }

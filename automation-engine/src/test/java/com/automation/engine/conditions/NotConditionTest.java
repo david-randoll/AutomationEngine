@@ -5,6 +5,7 @@ import com.automation.engine.AutomationEngineApplication;
 import com.automation.engine.TestLogAppender;
 import com.automation.engine.core.Automation;
 import com.automation.engine.core.AutomationEngine;
+import com.automation.engine.core.events.EventContext;
 import com.automation.engine.factory.AutomationFactory;
 import com.automation.engine.modules.events.time_based.TimeBasedEvent;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,7 +38,7 @@ class NotConditionTest {
         logger.addAppender(logAppender);
         logAppender.start();
 
-        engine.clearAutomations();
+        engine.removeAll();
     }
 
     @Test
@@ -62,17 +63,17 @@ class NotConditionTest {
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.addAutomation(automation);
+        engine.register(automation);
 
         // Act: Create events at different times
-        TimeBasedEvent beforeRangeEvent = new TimeBasedEvent(LocalTime.of(22, 27));
-        TimeBasedEvent withinRangeEvent = new TimeBasedEvent(LocalTime.of(22, 31));
-        TimeBasedEvent afterRangeEvent = new TimeBasedEvent(LocalTime.of(23, 5));
+        var beforeRangeEvent = EventContext.of(new TimeBasedEvent(LocalTime.of(22, 27)));
+        var withinRangeEvent = EventContext.of(new TimeBasedEvent(LocalTime.of(22, 31)));
+        var afterRangeEvent = EventContext.of(new TimeBasedEvent(LocalTime.of(23, 5)));
 
         // Process events
-        engine.processEvent(withinRangeEvent);
-        engine.processEvent(beforeRangeEvent);
-        engine.processEvent(afterRangeEvent);
+        engine.publishEvent(withinRangeEvent);
+        engine.publishEvent(beforeRangeEvent);
+        engine.publishEvent(afterRangeEvent);
 
         // Assert: Automation should trigger for events that meet any condition
         assertThat(automation.anyTriggerActivated(beforeRangeEvent))
@@ -127,15 +128,15 @@ class NotConditionTest {
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.addAutomation(automation);
+        engine.register(automation);
 
         // Act: Create events exactly at boundary times
-        TimeBasedEvent onBoundaryBefore = new TimeBasedEvent(LocalTime.of(22, 30)); // Should trigger
-        TimeBasedEvent onBoundaryAfter = new TimeBasedEvent(LocalTime.of(23, 0)); // Should trigger
+        var onBoundaryBefore = EventContext.of(new TimeBasedEvent(LocalTime.of(22, 30))); // Should trigger
+        var onBoundaryAfter = EventContext.of(new TimeBasedEvent(LocalTime.of(23, 0))); // Should trigger
 
         // Process events
-        engine.processEvent(onBoundaryBefore);
-        engine.processEvent(onBoundaryAfter);
+        engine.publishEvent(onBoundaryBefore);
+        engine.publishEvent(onBoundaryAfter);
 
         // Assert: Automation should trigger when on the boundary
         assertThat(automation.anyTriggerActivated(onBoundaryBefore))

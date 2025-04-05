@@ -1,7 +1,7 @@
 package com.automation.engine.modules.conditions.and;
 
 import com.automation.engine.core.conditions.AbstractCondition;
-import com.automation.engine.core.events.Event;
+import com.automation.engine.core.events.EventContext;
 import com.automation.engine.factory.resolver.DefaultAutomationResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -13,8 +13,8 @@ public class AndCondition extends AbstractCondition<AndConditionContext> {
     private final DefaultAutomationResolver resolver;
 
     @Override
-    public boolean isSatisfied(Event event, AndConditionContext context) {
-        if (ObjectUtils.isEmpty(context.getConditions())) return true;
-        return resolver.allConditionsSatisfied(event, context.getConditions());
+    public boolean isSatisfied(EventContext eventContext, AndConditionContext conditionContext) {
+        if (ObjectUtils.isEmpty(conditionContext.getConditions())) return true;
+        return resolver.allConditionsSatisfied(eventContext, conditionContext.getConditions());
     }
 }

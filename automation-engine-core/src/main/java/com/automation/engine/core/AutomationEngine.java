@@ -1,52 +1,61 @@
 package com.automation.engine.core;
 
-import com.automation.engine.core.events.Event;
+import com.automation.engine.core.events.EventContext;
+import com.automation.engine.core.events.IEvent;
+import com.automation.engine.core.events.publisher.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.lang.NonNull;
-import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
-@Service
 @RequiredArgsConstructor
 public class AutomationEngine {
-    private final ApplicationEventPublisher publisher;
+    private final IEventPublisher publisher;
     private final List<Automation> automations = new ArrayList<>();
 
-    public void addAutomation(Automation automation) {
+    public void register(Automation automation) {
         automations.add(automation);
+        publisher.publishEvent(new AutomationEngineRegisterEvent(automation));
     }
 
-    public void removeAutomation(Automation automation) {
+    public void remove(Automation automation) {
         automations.remove(automation);
+        publisher.publishEvent(new AutomationEngineRemoveEvent(automation));
     }
 
-    public void clearAutomations() {
+    public void removeAll() {
+        var automationsCopy = new ArrayList<>(automations);
         automations.clear();
+        publisher.publishEvent(new AutomationEngineRemoveAllEvent(automationsCopy));
     }
 
-    public void processEvent(@NonNull Event event) {
+    public void publishEvent(@NonNull EventContext eventContext) {
         for (Automation automation : automations) {
-            runAutomation(automation, event);
+            runAutomation(automation, eventContext);
         }
+        publisher.publishEvent(eventContext.getEvent()); //publish the event
+        publisher.publishEvent(eventContext); //publish the context
     }
 
-    public void publishEvent(@NonNull Event event) {
-        processEvent(event);
-        publisher.publishEvent(event);
+    public void publishEvent(@NonNull IEvent event) {
+        for (Automation automation : automations) {
+            runAutomation(automation, EventContext.of(event));
+        }
+        publisher.publishEvent(event); //publish the event
+        publisher.publishEvent(EventContext.of(event)); //publish the context
     }
 
-    public void runAutomation(Automation automation, Event event) {
+    public void runAutomation(Automation automation, EventContext eventContext) {
         log.debug("Processing automation: {}", automation.getAlias());
-        automation.resolveVariables(event);
-        if (automation.anyTriggerActivated(event) && automation.allConditionsMet(event)) {
+        automation.resolveVariables(eventContext);
+        if (automation.anyTriggerActivated(eventContext) && automation.allConditionsMet(eventContext)) {
             log.debug("Automation triggered and conditions met. Executing actions.");
-            automation.performActions(event);
+            automation.performActions(eventContext);
         }
+        publisher.publishEvent(new AutomationEngineProcessedEvent(automation, eventContext));
         log.debug("Done processing automation: {}", automation.getAlias());
     }
 }

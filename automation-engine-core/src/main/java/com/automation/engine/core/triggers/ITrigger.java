@@ -1,12 +1,12 @@
 package com.automation.engine.core.triggers;
 
-import com.automation.engine.core.events.Event;
+import com.automation.engine.core.events.EventContext;
 import org.springframework.lang.Nullable;
 
 @FunctionalInterface
 public interface ITrigger extends IBaseTrigger {
     @Override
-    default boolean isTriggered(Event event) {
+    default boolean isTriggered(EventContext eventContext) {
         return false;
     }
 
@@ -16,5 +16,5 @@ public interface ITrigger extends IBaseTrigger {
     }
 
     @Override
-    boolean isTriggered(Event event, TriggerContext triggerContext);
+    boolean isTriggered(EventContext eventContext, TriggerContext triggerContext);
 }

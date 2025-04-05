@@ -13,7 +13,7 @@ import com.automation.engine.core.conditions.IBaseCondition;
 import com.automation.engine.core.conditions.ICondition;
 import com.automation.engine.core.conditions.interceptors.IConditionInterceptor;
 import com.automation.engine.core.conditions.interceptors.InterceptingCondition;
-import com.automation.engine.core.events.Event;
+import com.automation.engine.core.events.EventContext;
 import com.automation.engine.core.triggers.BaseTriggerList;
 import com.automation.engine.core.triggers.IBaseTrigger;
 import com.automation.engine.core.triggers.ITrigger;
@@ -170,52 +170,52 @@ public class DefaultAutomationResolver implements IAutomationResolver<CreateRequ
         return eventContext -> interceptingAction.execute(eventContext, actionContext);
     }
 
-    public boolean anyTriggersTriggered(Event event, @Nullable List<Trigger> triggers) {
+    public boolean anyTriggersTriggered(EventContext eventContext, @Nullable List<Trigger> triggers) {
         BaseTriggerList resolvedTriggers = buildTriggersList(triggers);
-        return resolvedTriggers.anyTriggered(event);
+        return resolvedTriggers.anyTriggered(eventContext);
     }
 
-    public boolean allTriggersTriggered(Event event, @Nullable List<Trigger> triggers) {
+    public boolean allTriggersTriggered(EventContext eventContext, @Nullable List<Trigger> triggers) {
         BaseTriggerList resolvedTriggers = buildTriggersList(triggers);
-        return resolvedTriggers.allTriggered(event);
+        return resolvedTriggers.allTriggered(eventContext);
     }
 
-    public boolean noneTriggersTriggered(Event event, @Nullable List<Trigger> triggers) {
+    public boolean noneTriggersTriggered(EventContext eventContext, @Nullable List<Trigger> triggers) {
         BaseTriggerList resolvedTriggers = buildTriggersList(triggers);
-        return resolvedTriggers.noneTriggered(event);
+        return resolvedTriggers.noneTriggered(eventContext);
     }
 
-    public boolean allConditionsSatisfied(Event event, @Nullable List<Condition> conditions) {
+    public boolean allConditionsSatisfied(EventContext eventContext, @Nullable List<Condition> conditions) {
         BaseConditionList resolvedConditions = buildConditionsList(conditions);
-        return resolvedConditions.allSatisfied(event);
+        return resolvedConditions.allSatisfied(eventContext);
     }
 
-    public boolean anyConditionSatisfied(Event event, @Nullable List<Condition> conditions) {
+    public boolean anyConditionSatisfied(EventContext eventContext, @Nullable List<Condition> conditions) {
         BaseConditionList resolvedConditions = buildConditionsList(conditions);
-        return resolvedConditions.anySatisfied(event);
+        return resolvedConditions.anySatisfied(eventContext);
     }
 
-    public boolean noneConditionSatisfied(Event event, @Nullable List<Condition> conditions) {
+    public boolean noneConditionSatisfied(EventContext eventContext, @Nullable List<Condition> conditions) {
         BaseConditionList resolvedConditions = buildConditionsList(conditions);
-        return resolvedConditions.noneSatisfied(event);
+        return resolvedConditions.noneSatisfied(eventContext);
     }
 
-    public void executeActions(Event event, @Nullable List<Action> actions) {
+    public void executeActions(EventContext eventContext, @Nullable List<Action> actions) {
         if (ObjectUtils.isEmpty(actions)) return;
         BaseActionList resolvedActions = buildActionsList(actions);
-        resolvedActions.executeAll(event);
+        resolvedActions.executeAll(eventContext);
     }
 
-    public void executeActionsAsync(Event event, @Nullable List<Action> actions) {
+    public void executeActionsAsync(EventContext eventContext, @Nullable List<Action> actions) {
         if (ObjectUtils.isEmpty(actions)) return;
         BaseActionList resolvedActions = buildActionsList(actions);
-        resolvedActions.executeAllAsync(event);
+        resolvedActions.executeAllAsync(eventContext);
     }
 
-    public void executeActionsAsync(Event event, @Nullable List<Action> actions, Executor executor) {
+    public void executeActionsAsync(EventContext eventContext, @Nullable List<Action> actions, Executor executor) {
         if (ObjectUtils.isEmpty(actions)) return;
         BaseActionList resolvedActions = buildActionsList(actions);
-        resolvedActions.executeAllAsync(event, executor);
+        resolvedActions.executeAllAsync(eventContext, executor);
     }
 
     @NonNull
@@ -232,9 +232,9 @@ public class DefaultAutomationResolver implements IAutomationResolver<CreateRequ
         }
     }
 
-    public void resolveVariables(Event event, List<Variable> variables) {
+    public void resolveVariables(EventContext eventContext, List<Variable> variables) {
         if (ObjectUtils.isEmpty(variables)) return;
         BaseVariableList resolvedVariables = buildVariablesList(variables);
-        resolvedVariables.resolveAll(event);
+        resolvedVariables.resolveAll(eventContext);
     }
 }

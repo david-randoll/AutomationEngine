@@ -41,6 +41,6 @@ public class ManualAutomationExample {
                 .actions(List.of(action))
                 .build();
         var automation = factory.createAutomation(request);
-        engine.addAutomation(automation);
+        engine.register(automation);
     }
 }

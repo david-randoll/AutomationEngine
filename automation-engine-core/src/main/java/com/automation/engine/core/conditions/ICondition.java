@@ -1,12 +1,12 @@
 package com.automation.engine.core.conditions;
 
-import com.automation.engine.core.events.Event;
+import com.automation.engine.core.events.EventContext;
 import org.springframework.lang.Nullable;
 
 @FunctionalInterface
 public interface ICondition extends IBaseCondition {
     @Override
-    default boolean isSatisfied(Event context) {
+    default boolean isSatisfied(EventContext context) {
         return false;
     }
 
@@ -16,5 +16,5 @@ public interface ICondition extends IBaseCondition {
     }
 
     @Override
-    boolean isSatisfied(Event context, ConditionContext conditionContext);
+    boolean isSatisfied(EventContext context, ConditionContext conditionContext);
 }

@@ -2,13 +2,13 @@ package com.automation.engine.core.actions;
 
 import com.automation.engine.core.actions.exceptions.StopActionSequenceException;
 import com.automation.engine.core.actions.exceptions.StopAutomationException;
-import com.automation.engine.core.events.Event;
+import com.automation.engine.core.events.EventContext;
 import org.springframework.lang.Nullable;
 
 @FunctionalInterface
 public interface IAction extends IBaseAction {
     @Override
-    default void execute(Event context) throws StopActionSequenceException, StopAutomationException {
+    default void execute(EventContext context) throws StopActionSequenceException, StopAutomationException {
         // used by FunctionalInterface to execute the execute method with ActionContext
     }
 
@@ -18,5 +18,5 @@ public interface IAction extends IBaseAction {
     }
 
     @Override
-    void execute(Event context, ActionContext actionContext) throws StopActionSequenceException, StopAutomationException;
+    void execute(EventContext context, ActionContext actionContext) throws StopActionSequenceException, StopAutomationException;
 }

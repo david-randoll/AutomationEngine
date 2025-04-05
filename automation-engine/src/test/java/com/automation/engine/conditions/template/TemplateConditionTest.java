@@ -5,10 +5,11 @@ import com.automation.engine.AutomationEngineApplication;
 import com.automation.engine.TestLogAppender;
 import com.automation.engine.core.Automation;
 import com.automation.engine.core.AutomationEngine;
+import com.automation.engine.core.events.EventContext;
 import com.automation.engine.factory.AutomationFactory;
-import com.automation.engine.modules.events.DefaultEvent;
 import com.automation.engine.modules.conditions.template.TemplateCondition;
 import com.automation.engine.modules.conditions.template.TemplateConditionContext;
+import com.automation.engine.modules.events.DefaultEvent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,7 +38,7 @@ class TemplateConditionTest {
         logger.addAppender(logAppender);
         logAppender.start();
 
-        engine.clearAutomations();
+        engine.removeAll();
     }
 
     @Test
@@ -54,10 +55,10 @@ class TemplateConditionTest {
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.addAutomation(automation);
+        engine.register(automation);
 
         // Act
-        engine.processEvent(new DefaultEvent());
+        engine.publishEvent(new DefaultEvent());
 
         // Assert
         assertThat(logAppender.getLoggedMessages())
@@ -78,10 +79,10 @@ class TemplateConditionTest {
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.addAutomation(automation);
+        engine.register(automation);
 
         // Act
-        engine.processEvent(new DefaultEvent());
+        engine.publishEvent(new DefaultEvent());
 
         // Assert
         assertThat(logAppender.getLoggedMessages())
@@ -93,7 +94,8 @@ class TemplateConditionTest {
         TemplateConditionContext context = new TemplateConditionContext();
         context.setExpression(null);
         TemplateCondition condition = new TemplateCondition();
-        boolean result = condition.isSatisfied(new DefaultEvent(), context);
+
+        boolean result = condition.isSatisfied(EventContext.of(new DefaultEvent()), context);
 
         assertThat(result).isFalse();
     }
@@ -112,13 +114,13 @@ class TemplateConditionTest {
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.addAutomation(automation);
+        engine.register(automation);
 
         // Act: Create an event and add a variable
-        var event = new DefaultEvent();
-        event.addVariable("status", "active");
+        var event = EventContext.of(new DefaultEvent());
+        event.addMetadata("status", "active");
 
-        engine.processEvent(event);
+        engine.publishEvent(event);
 
         // Assert: Ensure the action was logged
         assertThat(logAppender.getLoggedMessages())

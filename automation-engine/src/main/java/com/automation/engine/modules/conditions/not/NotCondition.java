@@ -1,7 +1,7 @@
 package com.automation.engine.modules.conditions.not;
 
 import com.automation.engine.core.conditions.AbstractCondition;
-import com.automation.engine.core.events.Event;
+import com.automation.engine.core.events.EventContext;
 import com.automation.engine.factory.resolver.DefaultAutomationResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -13,8 +13,8 @@ public class NotCondition extends AbstractCondition<NotConditionContext> {
     private final DefaultAutomationResolver resolver;
 
     @Override
-    public boolean isSatisfied(Event event, NotConditionContext context) {
-        if (ObjectUtils.isEmpty(context.getConditions())) return true;
-        return resolver.noneConditionSatisfied(event, context.getConditions());
+    public boolean isSatisfied(EventContext eventContext, NotConditionContext conditionContext) {
+        if (ObjectUtils.isEmpty(conditionContext.getConditions())) return true;
+        return resolver.noneConditionSatisfied(eventContext, conditionContext.getConditions());
     }
 }

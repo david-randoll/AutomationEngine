@@ -1,14 +1,14 @@
 package com.automation.engine.core.triggers;
 
-import com.automation.engine.core.events.Event;
+import com.automation.engine.core.events.EventContext;
 import com.automation.engine.core.utils.GenericTypeResolver;
-import com.automation.engine.core.utils.TypeConverter;
+import com.automation.engine.core.utils.ITypeConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 
 public abstract class AbstractTrigger<T extends ITriggerContext> implements ITrigger {
     @Autowired
-    private TypeConverter typeConverter;
+    private ITypeConverter typeConverter;
 
     @Override
     @NonNull
@@ -17,10 +17,10 @@ public abstract class AbstractTrigger<T extends ITriggerContext> implements ITri
     }
 
     @Override
-    public boolean isTriggered(Event event, TriggerContext context) {
-        T data = typeConverter.convert(context.getData(), getContextType());
-        return isTriggered(event, data);
+    public boolean isTriggered(EventContext eventContext, TriggerContext triggerContext) {
+        T data = typeConverter.convert(triggerContext.getData(), getContextType());
+        return isTriggered(eventContext, data);
     }
 
-    public abstract boolean isTriggered(Event event, T context);
+    public abstract boolean isTriggered(EventContext eventContext, T triggerContext);
 }
