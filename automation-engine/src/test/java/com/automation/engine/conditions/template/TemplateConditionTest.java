@@ -118,7 +118,7 @@ class TemplateConditionTest {
 
         // Act: Create an event and add a variable
         var event = EventContext.of(new DefaultEvent());
-        event.addVariable("status", "active");
+        event.addMetadata("status", "active");
 
         engine.processEvent(event);
 

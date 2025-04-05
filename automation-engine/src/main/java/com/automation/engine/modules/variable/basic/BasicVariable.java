@@ -16,6 +16,6 @@ public class BasicVariable extends AbstractVariable<BasicVariableContext> {
     public void resolve(EventContext eventContext, BasicVariableContext variableContext) {
         log.info("Resolving basic variable: {}", variableContext.getAlias());
         if (ObjectUtils.isEmpty(variableContext.getVariables())) return;
-        eventContext.addVariables(variableContext.getVariables());
+        eventContext.addMetadata(variableContext.getVariables());
     }
 }

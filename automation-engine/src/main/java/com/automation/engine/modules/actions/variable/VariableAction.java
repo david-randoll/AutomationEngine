@@ -17,6 +17,6 @@ public class VariableAction extends AbstractAction<VariableActionContext> {
     public void execute(EventContext eventContext, VariableActionContext actionContext) {
         log.info("Executing variable action");
         if (ObjectUtils.isEmpty(actionContext.getVariables())) return;
-        eventContext.addVariables(actionContext.getVariables());
+        eventContext.addMetadata(actionContext.getVariables());
     }
 }

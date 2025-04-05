@@ -35,9 +35,9 @@ public class RepeatAction extends AbstractAction<RepeatActionContext> {
 
         if (actionContext.hasForEach()) {
             for (Object item : actionContext.getForEach()) {
-                eventContext.addVariable("item", item);
+                eventContext.addMetadata("item", item);
                 resolver.executeActions(eventContext, actionContext.getActions());
-                eventContext.removeVariable("item");
+                eventContext.removeMetadata("item");
             }
         }
     }
