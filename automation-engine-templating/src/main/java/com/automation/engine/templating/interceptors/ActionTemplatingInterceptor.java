@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 
@@ -18,6 +19,7 @@ import java.util.Map;
 @Slf4j
 @Component
 @RequiredArgsConstructor
+@Order(-1)
 public class ActionTemplatingInterceptor implements IActionInterceptor {
     private final TemplateProcessor templateProcessor;
     private final ObjectMapper objectMapper;
@@ -31,9 +33,9 @@ public class ActionTemplatingInterceptor implements IActionInterceptor {
      * the placeholder {{name}} with the corresponding value from the event context.
      * If a string does not contain a template, it remains unchanged.
      *
-     * @param eventContext   the event context providing data for template replacement
+     * @param eventContext  the event context providing data for template replacement
      * @param actionContext the action context containing data to process
-     * @param action  the action to be executed after processing
+     * @param action        the action to be executed after processing
      */
 
     @Override

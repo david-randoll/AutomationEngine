@@ -4,10 +4,9 @@ import com.automation.engine.core.events.EventContext;
 import com.automation.engine.core.variables.IBaseVariable;
 import com.automation.engine.core.variables.IVariable;
 import com.automation.engine.core.variables.VariableContext;
-import org.springframework.core.OrderComparator;
-import org.springframework.util.ObjectUtils;
 
 import java.util.List;
+import java.util.Optional;
 
 public class InterceptingVariable implements IVariable {
     private final IBaseVariable delegate;
@@ -15,9 +14,7 @@ public class InterceptingVariable implements IVariable {
 
     public InterceptingVariable(IBaseVariable delegate, List<IVariableInterceptor> interceptors) {
         this.delegate = delegate;
-        this.interceptors = ObjectUtils.isEmpty(interceptors) ? List.of() : interceptors.stream()
-                .sorted(OrderComparator.INSTANCE)
-                .toList();
+        this.interceptors = Optional.ofNullable(interceptors).orElse(List.of());
     }
 
     @Override
