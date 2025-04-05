@@ -45,7 +45,8 @@ public class AutomationEngine {
     public void publishEvent(@NonNull IEvent event) {
         var context = EventContext.of(event);
         processEvent(context);
-        publisher.publishEvent(context);
+        publisher.publishEvent(event); //publish the event
+        publisher.publishEvent(context); //publish the context
     }
 
     public void runAutomation(Automation automation, EventContext eventContext) {
