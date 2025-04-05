@@ -2,13 +2,13 @@ package com.automation.engine.core.triggers;
 
 import com.automation.engine.core.events.EventContext;
 import com.automation.engine.core.utils.GenericTypeResolver;
-import com.automation.engine.core.utils.TypeConverter;
+import com.automation.engine.core.utils.ITypeConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 
 public abstract class AbstractTrigger<T extends ITriggerContext> implements ITrigger {
     @Autowired
-    private TypeConverter typeConverter;
+    private ITypeConverter typeConverter;
 
     @Override
     @NonNull

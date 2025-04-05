@@ -1,20 +1,20 @@
-package com.automation.engine.core.utils;
+package com.automation.engine.factory.converter;
 
+import com.automation.engine.core.utils.ITypeConverter;
+import com.automation.engine.core.utils.InvalidInputException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 
 @Service
-@SuppressWarnings("unchecked")
-public class TypeConverter {
+@RequiredArgsConstructor
+public class TypeConverter implements ITypeConverter {
     private final ObjectMapper objectMapper;
 
-    public TypeConverter(ObjectMapper objectMapper) {
-        this.objectMapper = objectMapper;
-    }
-
     @SneakyThrows
+    @SuppressWarnings("unchecked")
     public <T> T convert(Object object, Class<?> clazz) {
         try {
             var dataStr = objectMapper.writeValueAsString(object);

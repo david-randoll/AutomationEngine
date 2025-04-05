@@ -1,21 +1,16 @@
 package com.automation.engine.core;
 
-import com.automation.engine.core.events.publisher.IEventPublisher;
-import com.automation.engine.core.events.*;
-import com.automation.engine.core.events.publisher.AutomationEngineProcessedEvent;
-import com.automation.engine.core.events.publisher.AutomationEngineRegisterEvent;
-import com.automation.engine.core.events.publisher.AutomationEngineRemoveAllEvent;
-import com.automation.engine.core.events.publisher.AutomationEngineRemoveEvent;
+import com.automation.engine.core.events.EventContext;
+import com.automation.engine.core.events.IEvent;
+import com.automation.engine.core.events.publisher.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
-import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
-@Service
 @RequiredArgsConstructor
 public class AutomationEngine {
     private final IEventPublisher publisher;
