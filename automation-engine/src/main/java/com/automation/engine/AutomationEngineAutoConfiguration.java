@@ -1,5 +1,7 @@
 package com.automation.engine;
 
+import com.automation.engine.core.AutomationEngine;
+import com.automation.engine.core.events.publisher.IEventPublisher;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
@@ -17,5 +19,11 @@ public class AutomationEngineAutoConfiguration {
     @ConditionalOnMissingBean
     public AutomationEngineConfigProvider automationEngineConfigProvider() {
         return new AutomationEngineConfigProvider();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public AutomationEngine automationEngine(IEventPublisher publisher) {
+        return new AutomationEngine(publisher);
     }
 }

@@ -1,10 +1,10 @@
 package com.automation.engine.modules.actions.wait_for_trigger;
 
 import com.automation.engine.AutomationEngineConfigProvider;
-import com.automation.engine.core.actions.AbstractAction;
 import com.automation.engine.core.events.EventContext;
 import com.automation.engine.factory.model.Trigger;
 import com.automation.engine.factory.resolver.DefaultAutomationResolver;
+import com.automation.engine.spi.AbstractAction;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldNameConstants;
 import lombok.extern.slf4j.Slf4j;

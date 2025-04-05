@@ -1,7 +1,6 @@
 package com.automation.engine.core.conditions;
 
 import com.automation.engine.core.events.EventContext;
-import org.springframework.lang.Nullable;
 
 @FunctionalInterface
 public interface ICondition extends IBaseCondition {
@@ -10,7 +9,6 @@ public interface ICondition extends IBaseCondition {
         return false;
     }
 
-    @Nullable
     default Class<?> getContextType() {
         return null;
     }

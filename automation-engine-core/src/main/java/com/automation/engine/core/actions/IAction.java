@@ -3,7 +3,6 @@ package com.automation.engine.core.actions;
 import com.automation.engine.core.actions.exceptions.StopActionSequenceException;
 import com.automation.engine.core.actions.exceptions.StopAutomationException;
 import com.automation.engine.core.events.EventContext;
-import org.springframework.lang.Nullable;
 
 @FunctionalInterface
 public interface IAction extends IBaseAction {
@@ -12,7 +11,6 @@ public interface IAction extends IBaseAction {
         // used by FunctionalInterface to execute the execute method with ActionContext
     }
 
-    @Nullable
     default Class<?> getContextType() {
         return null;
     }

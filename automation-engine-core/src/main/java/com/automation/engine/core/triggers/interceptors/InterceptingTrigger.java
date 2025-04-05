@@ -4,10 +4,9 @@ import com.automation.engine.core.events.EventContext;
 import com.automation.engine.core.triggers.IBaseTrigger;
 import com.automation.engine.core.triggers.ITrigger;
 import com.automation.engine.core.triggers.TriggerContext;
-import org.springframework.core.OrderComparator;
-import org.springframework.util.ObjectUtils;
 
 import java.util.List;
+import java.util.Optional;
 
 public class InterceptingTrigger implements ITrigger {
     private final IBaseTrigger delegate;
@@ -15,9 +14,7 @@ public class InterceptingTrigger implements ITrigger {
 
     public InterceptingTrigger(IBaseTrigger delegate, List<ITriggerInterceptor> interceptors) {
         this.delegate = delegate;
-        this.interceptors = ObjectUtils.isEmpty(interceptors) ? List.of() : interceptors.stream()
-                .sorted(OrderComparator.INSTANCE)
-                .toList();
+        this.interceptors = Optional.ofNullable(interceptors).orElse(List.of());
     }
 
     @Override

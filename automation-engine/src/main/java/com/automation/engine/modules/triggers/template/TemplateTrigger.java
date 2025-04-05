@@ -1,7 +1,7 @@
 package com.automation.engine.modules.triggers.template;
 
 import com.automation.engine.core.events.EventContext;
-import com.automation.engine.core.triggers.AbstractTrigger;
+import com.automation.engine.spi.AbstractTrigger;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

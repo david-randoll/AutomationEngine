@@ -3,22 +3,18 @@ package com.automation.engine.core.conditions;
 import com.automation.engine.core.events.EventContext;
 import com.automation.engine.core.utils.GenericTypeResolver;
 import com.automation.engine.core.utils.ITypeConverter;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.lang.NonNull;
 
-public abstract class AbstractCondition<T extends IConditionContext> implements ICondition {
-    @Autowired
-    private ITypeConverter typeConverter;
+public abstract class BaseAbstractCondition<T extends IConditionContext> implements ICondition {
+    protected abstract ITypeConverter getTypeConverter();
 
     @Override
-    @NonNull
     public Class<?> getContextType() {
         return GenericTypeResolver.getGenericParameterClass(getClass());
     }
 
     @Override
     public boolean isSatisfied(EventContext eventContext, ConditionContext conditionContext) {
-        T data = typeConverter.convert(conditionContext.getData(), getContextType());
+        T data = getTypeConverter().convert(conditionContext.getData(), getContextType());
         return isSatisfied(eventContext, data);
     }
 

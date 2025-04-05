@@ -1,8 +1,8 @@
 package com.automation.engine.modules.conditions.not;
 
-import com.automation.engine.core.conditions.AbstractCondition;
 import com.automation.engine.core.events.EventContext;
 import com.automation.engine.factory.resolver.DefaultAutomationResolver;
+import com.automation.engine.spi.AbstractCondition;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;

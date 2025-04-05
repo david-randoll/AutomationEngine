@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 
@@ -18,6 +19,7 @@ import java.util.Map;
 @Slf4j
 @Component
 @RequiredArgsConstructor
+@Order(-1)
 public class VariableTemplatingInterceptor implements IVariableInterceptor {
     private final TemplateProcessor templateProcessor;
     private final ObjectMapper objectMapper;
@@ -32,8 +34,8 @@ public class VariableTemplatingInterceptor implements IVariableInterceptor {
      * If a string does not contain a template, it remains unchanged.
      *
      * @param eventContext    the event context providing data for template replacement
-     * @param variableContext  the variable context containing data to process
-     * @param variable the variable to set after processing
+     * @param variableContext the variable context containing data to process
+     * @param variable        the variable to set after processing
      */
 
     @Override

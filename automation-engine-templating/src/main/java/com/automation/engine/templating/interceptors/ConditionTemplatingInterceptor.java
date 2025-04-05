@@ -8,6 +8,7 @@ import com.automation.engine.templating.TemplateProcessor;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 
@@ -17,6 +18,7 @@ import java.util.Map;
 @Slf4j
 @Component
 @RequiredArgsConstructor
+@Order(-1)
 public class ConditionTemplatingInterceptor implements IConditionInterceptor {
     private final TemplateProcessor templateProcessor;
 

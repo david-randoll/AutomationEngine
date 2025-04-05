@@ -1,9 +1,9 @@
 package com.automation.engine.modules.actions.parallel;
 
 import com.automation.engine.AutomationEngineConfigProvider;
-import com.automation.engine.core.actions.AbstractAction;
 import com.automation.engine.core.events.EventContext;
 import com.automation.engine.factory.resolver.DefaultAutomationResolver;
+import com.automation.engine.spi.AbstractAction;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
