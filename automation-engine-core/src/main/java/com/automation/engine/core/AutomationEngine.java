@@ -5,7 +5,6 @@ import com.automation.engine.core.events.IEvent;
 import com.automation.engine.core.events.publisher.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.lang.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +31,8 @@ public class AutomationEngine {
         publisher.publishEvent(new AutomationEngineRemoveAllEvent(automationsCopy));
     }
 
-    public void publishEvent(@NonNull EventContext eventContext) {
+    public void publishEvent(EventContext eventContext) {
+        if (eventContext == null) throw new IllegalArgumentException("EventContext cannot be null");
         for (Automation automation : automations) {
             runAutomation(automation, eventContext);
         }
@@ -40,7 +40,8 @@ public class AutomationEngine {
         publisher.publishEvent(eventContext); //publish the context
     }
 
-    public void publishEvent(@NonNull IEvent event) {
+    public void publishEvent(IEvent event) {
+        if (event == null) throw new IllegalArgumentException("Event cannot be null");
         for (Automation automation : automations) {
             runAutomation(automation, EventContext.of(event));
         }

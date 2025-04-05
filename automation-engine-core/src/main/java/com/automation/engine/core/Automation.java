@@ -8,7 +8,8 @@ import com.automation.engine.core.triggers.BaseTriggerList;
 import com.automation.engine.core.variables.BaseVariableList;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.springframework.util.ObjectUtils;
+
+import static java.util.Objects.isNull;
 
 @Data
 @AllArgsConstructor
@@ -23,7 +24,7 @@ public class Automation {
      * Set the variables
      */
     public void resolveVariables(EventContext eventContext) {
-        if (ObjectUtils.isEmpty(variables)) return;
+        if (isNull(variables)) return;
         variables.resolveAll(eventContext);
     }
 
@@ -33,7 +34,7 @@ public class Automation {
      * @return true if any of the triggers are triggered
      */
     public boolean anyTriggerActivated(EventContext eventContext) {
-        if (ObjectUtils.isEmpty(triggers)) return false;
+        if (isNull(triggers)) return false;
         return triggers.anyTriggered(eventContext);
     }
 
@@ -43,7 +44,7 @@ public class Automation {
      * @return true if all conditions are met
      */
     public boolean allConditionsMet(EventContext context) {
-        if (ObjectUtils.isEmpty(conditions)) return true;
+        if (isNull(conditions)) return true;
         return conditions.allSatisfied(context);
     }
 
@@ -51,7 +52,7 @@ public class Automation {
      * Perform all actions
      */
     public void performActions(EventContext context) {
-        if (ObjectUtils.isEmpty(actions)) return;
+        if (isNull(actions)) return;
         try {
             actions.executeAll(context);
         } catch (StopAutomationException e) {

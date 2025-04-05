@@ -4,15 +4,13 @@ import com.automation.engine.core.AutomationEngine;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.springframework.lang.NonNull;
-import org.springframework.lang.Nullable;
-import org.springframework.util.Assert;
-import org.springframework.util.ObjectUtils;
 
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import static java.util.Objects.isNull;
 
 /**
  * EventContext is a class that represents the context of an event.
@@ -32,7 +30,8 @@ public class EventContext {
     private final String source;
 
     public EventContext(IEvent event) {
-        Assert.notNull(event, "Event cannot be null");
+        if (isNull(event)) throw new IllegalArgumentException("Event cannot be null");
+
         this.event = event;
         this.metadata = new ConcurrentHashMap<>(); // some actions may be executed in parallel
         this.type = event.getClass();
@@ -64,7 +63,6 @@ public class EventContext {
      *
      * @return a map containing the event data and metadata
      */
-    @NonNull
     public Map<String, Object> getEventData() {
         var result = new HashMap<String, Object>();
         result.putAll(buildMapFromEventData());
@@ -78,8 +76,8 @@ public class EventContext {
      *
      * @param metadata a map containing any variables or other information that is not part of the event data.
      */
-    public void addMetadata(@Nullable Map<String, Object> metadata) {
-        if (ObjectUtils.isEmpty(metadata)) return;
+    public void addMetadata(Map<String, Object> metadata) {
+        if (isNull(metadata)) return;
         this.metadata.putAll(metadata);
     }
 
@@ -90,7 +88,8 @@ public class EventContext {
      * @param key   the key for the metadata entry
      * @param value the value for the metadata entry
      */
-    public void addMetadata(@NonNull String key, @Nullable Object value) {
+    public void addMetadata(String key, Object value) {
+        if (isNull(key)) throw new IllegalArgumentException("Key cannot be null");
         var map = new HashMap<String, Object>();
         map.put(key, value);
         addMetadata(map);
@@ -102,7 +101,8 @@ public class EventContext {
      *
      * @param key the key for the metadata entry to be removed
      */
-    public void removeMetadata(@NonNull String key) {
+    public void removeMetadata(String key) {
+        if (isNull(key)) throw new IllegalArgumentException("Key cannot be null");
         metadata.remove(key);
     }
 
@@ -113,10 +113,10 @@ public class EventContext {
      * @param key the key for the metadata entry to be retrieved
      * @return the value associated with the specified key, or null if no such key exists
      */
-    @Nullable
-    public Object getMetadata(@NonNull String key) {
+    public Object getMetadata(String key) {
+        if (isNull(key)) throw new IllegalArgumentException("Key cannot be null");
         Map<String, Object> eventData = getEventData();
-        if (ObjectUtils.isEmpty(eventData)) return null;
+        if (isNull(eventData)) return null;
         return eventData.get(key);
     }
 
@@ -127,7 +127,6 @@ public class EventContext {
      *
      * @return a map containing the event data
      */
-    @NonNull
     private Map<String, Object> buildMapFromEventData() {
         var result = new HashMap<String, Object>();
         var fields = FieldUtils.getAllFields(event.getClass());
