@@ -1,4 +1,4 @@
-package com.automation.engine.core.events;
+package com.automation.engine.core.events.publisher;
 
 import com.automation.engine.core.Automation;
 import lombok.AllArgsConstructor;

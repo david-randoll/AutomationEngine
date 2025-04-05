@@ -1,9 +1,13 @@
 package com.automation.engine.core;
 
+import com.automation.engine.core.events.publisher.IEventPublisher;
 import com.automation.engine.core.events.*;
+import com.automation.engine.core.events.publisher.AutomationEngineProcessedEvent;
+import com.automation.engine.core.events.publisher.AutomationEngineRegisterEvent;
+import com.automation.engine.core.events.publisher.AutomationEngineRemoveAllEvent;
+import com.automation.engine.core.events.publisher.AutomationEngineRemoveEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +18,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class AutomationEngine {
-    private final ApplicationEventPublisher publisher;
+    private final IEventPublisher publisher;
     private final List<Automation> automations = new ArrayList<>();
 
     public void register(Automation automation) {
@@ -28,8 +32,9 @@ public class AutomationEngine {
     }
 
     public void removeAll() {
-        //automations.forEach(this::remove);
+        var automationsCopy = new ArrayList<>(automations);
         automations.clear();
+        publisher.publishEvent(new AutomationEngineRemoveAllEvent(automationsCopy));
     }
 
     public void publishEvent(@NonNull EventContext eventContext) {
