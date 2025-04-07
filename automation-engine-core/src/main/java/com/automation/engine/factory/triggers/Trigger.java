@@ -1,4 +1,4 @@
-package com.automation.engine.factory.model;
+package com.automation.engine.factory.triggers;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;

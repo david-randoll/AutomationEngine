@@ -29,7 +29,7 @@
             <version>${revision}</version>
         </dependency>
         <dependency>
-            <groupId>com.automation.engine.http</groupId>
+            <groupId>com.automation.engine</groupId>
             <artifactId>automation-engine-http</artifactId>
             <version>${revision}</version>
         </dependency>

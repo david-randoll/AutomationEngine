@@ -1,7 +1,7 @@
 package com.automation.engine.factory.resolver;
 
 import com.automation.engine.core.Automation;
-import com.automation.engine.factory.model.CreateRequest;
+import com.automation.engine.factory.CreateAutomationRequest;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +21,7 @@ public class YamlAutomationResolver implements IAutomationResolver<String> {
     public Automation create(String yaml) {
         var mapper = getYamlObjectMapper();
         try {
-            CreateRequest createRequest = mapper.readValue(yaml, CreateRequest.class);
+            CreateAutomationRequest createRequest = mapper.readValue(yaml, CreateAutomationRequest.class);
             return defaultAutomationResolver.create(createRequest);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);

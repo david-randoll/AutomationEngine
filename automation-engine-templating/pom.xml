@@ -9,7 +9,6 @@
         <version>0.0.1-beta</version>
     </parent>
 
-    <groupId>com.automation.engine.templating</groupId>
     <artifactId>automation-engine-templating</artifactId>
 
     <properties>
@@ -22,7 +21,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.automation.engine.core</groupId>
+            <groupId>com.automation.engine</groupId>
             <artifactId>automation-engine-core</artifactId>
             <version>${revision}</version>
         </dependency>

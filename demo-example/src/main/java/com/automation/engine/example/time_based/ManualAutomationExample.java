@@ -2,9 +2,9 @@ package com.automation.engine.example.time_based;
 
 import com.automation.engine.core.AutomationEngine;
 import com.automation.engine.factory.AutomationFactory;
-import com.automation.engine.factory.model.Action;
-import com.automation.engine.factory.model.CreateRequest;
-import com.automation.engine.factory.model.Trigger;
+import com.automation.engine.core.factory.model.Action;
+import com.automation.engine.core.factory.model.CreateRequest;
+import com.automation.engine.core.factory.model.Trigger;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

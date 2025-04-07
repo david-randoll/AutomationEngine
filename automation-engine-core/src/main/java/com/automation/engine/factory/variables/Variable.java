@@ -1,9 +1,8 @@
-package com.automation.engine.factory.model;
+package com.automation.engine.factory.variables;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,10 +15,10 @@ import java.util.Map;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Condition {
+public class Variable {
     private String alias;
-    @NotEmpty
-    private String condition;
+
+    private String variable = "basic";
 
     @JsonIgnore
     @JsonAnyGetter

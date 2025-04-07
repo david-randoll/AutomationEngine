@@ -1,4 +1,4 @@
-package com.automation.engine.factory.exceptions;
+package com.automation.engine.factory.triggers;
 
 public class TriggerNotFoundException extends RuntimeException {
     public TriggerNotFoundException(String name) {

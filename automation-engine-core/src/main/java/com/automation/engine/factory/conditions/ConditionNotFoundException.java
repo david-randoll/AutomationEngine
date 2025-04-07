@@ -1,4 +1,4 @@
-package com.automation.engine.factory.exceptions;
+package com.automation.engine.factory.conditions;
 
 public class ConditionNotFoundException extends RuntimeException {
     public ConditionNotFoundException(String name) {

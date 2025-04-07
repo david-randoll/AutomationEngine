@@ -1,7 +1,6 @@
 package com.automation.engine.factory;
 
 import com.automation.engine.core.Automation;
-import com.automation.engine.factory.model.CreateRequest;
 import com.automation.engine.factory.resolver.IAutomationResolver;
 import com.automation.engine.factory.resolver.DefaultAutomationResolver;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +17,7 @@ public class AutomationFactory {
     private final DefaultAutomationResolver defaultAutomationResolver;
     private final Map<String, IAutomationResolver<?>> resolverMap;
 
-    public Automation createAutomation(CreateRequest createRequest) {
+    public Automation createAutomation(CreateAutomationRequest createRequest) {
         return defaultAutomationResolver.create(createRequest);
     }
 

@@ -1,5 +1,9 @@
-package com.automation.engine.factory.model;
+package com.automation.engine.factory;
 
+import com.automation.engine.factory.actions.Action;
+import com.automation.engine.factory.conditions.Condition;
+import com.automation.engine.factory.triggers.Trigger;
+import com.automation.engine.factory.variables.Variable;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,7 +18,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class CreateRequest {
+public class CreateAutomationRequest {
     private String alias;
     private List<Variable> variables = new ArrayList<>();
     private List<Trigger> triggers = new ArrayList<>();

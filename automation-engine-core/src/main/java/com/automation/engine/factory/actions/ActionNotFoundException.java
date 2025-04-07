@@ -1,4 +1,4 @@
-package com.automation.engine.factory.exceptions;
+package com.automation.engine.factory.actions;
 
 public class ActionNotFoundException extends RuntimeException {
     public ActionNotFoundException(String name) {

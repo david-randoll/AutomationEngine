@@ -1,7 +1,7 @@
 package com.automation.engine.modules.actions.parallel;
 
 import com.automation.engine.core.actions.IActionContext;
-import com.automation.engine.factory.model.Action;
+import com.automation.engine.factory.actions.Action;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
