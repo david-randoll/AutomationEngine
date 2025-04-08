@@ -2,14 +2,14 @@ package com.automation.engine.modules.conditions.or;
 
 import com.automation.engine.core.events.EventContext;
 import com.automation.engine.factory.resolver.DefaultAutomationResolver;
-import com.automation.engine.spi.AbstractCondition;
+import com.automation.engine.spi.PluggableCondition;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 
 @Component("orCondition")
 @RequiredArgsConstructor
-public class OrCondition extends AbstractCondition<OrConditionContext> {
+public class OrCondition extends PluggableCondition<OrConditionContext> {
     private final DefaultAutomationResolver resolver;
 
     @Override

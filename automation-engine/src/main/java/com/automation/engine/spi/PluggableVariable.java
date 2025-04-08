@@ -1,16 +1,19 @@
 package com.automation.engine.spi;
 
 import com.automation.engine.core.utils.ITypeConverter;
-import com.automation.engine.core.variables.BaseAbstractVariable;
 import com.automation.engine.core.variables.IVariableContext;
+import com.automation.engine.factory.AutomationResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public abstract class AbstractVariable<T extends IVariableContext> extends BaseAbstractVariable<T> {
+public abstract class PluggableVariable<T extends IVariableContext> implements TypedVariable<T> {
     @Autowired
     private ITypeConverter typeConverter;
 
+    @Autowired
+    private AutomationResolver resolver;
+
     @Override
-    protected ITypeConverter getTypeConverter() {
+    public ITypeConverter getTypeConverter() {
         return typeConverter;
     }
 }

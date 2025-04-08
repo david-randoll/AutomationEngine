@@ -1,16 +1,19 @@
 package com.automation.engine.spi;
 
-import com.automation.engine.core.triggers.BaseAbstractTrigger;
 import com.automation.engine.core.triggers.ITriggerContext;
 import com.automation.engine.core.utils.ITypeConverter;
+import com.automation.engine.factory.AutomationResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public abstract class AbstractTrigger<T extends ITriggerContext> extends BaseAbstractTrigger<T> {
+public abstract class PluggableTrigger<T extends ITriggerContext> implements TypedTrigger<T> {
     @Autowired
     private ITypeConverter typeConverter;
 
+    @Autowired
+    private AutomationResolver resolver;
+
     @Override
-    protected ITypeConverter getTypeConverter() {
+    public ITypeConverter getTypeConverter() {
         return typeConverter;
     }
 }

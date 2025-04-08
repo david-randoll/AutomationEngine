@@ -1,16 +1,19 @@
 package com.automation.engine.spi;
 
-import com.automation.engine.core.actions.BaseAbstractAction;
 import com.automation.engine.core.actions.IActionContext;
 import com.automation.engine.core.utils.ITypeConverter;
+import com.automation.engine.factory.AutomationResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public abstract class AbstractAction<T extends IActionContext> extends BaseAbstractAction<T> {
+public abstract class PluggableAction<T extends IActionContext> implements TypedAction<T> {
     @Autowired
     private ITypeConverter typeConverter;
 
+    @Autowired
+    private AutomationResolver resolver;
+
     @Override
-    protected ITypeConverter getTypeConverter() {
+    public ITypeConverter getTypeConverter() {
         return typeConverter;
     }
 }

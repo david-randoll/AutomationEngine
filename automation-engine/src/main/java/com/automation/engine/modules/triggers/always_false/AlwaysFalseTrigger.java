@@ -1,14 +1,13 @@
 package com.automation.engine.modules.triggers.always_false;
 
 import com.automation.engine.core.events.EventContext;
-import com.automation.engine.core.triggers.BaseAbstractTrigger;
-import com.automation.engine.spi.AbstractTrigger;
+import com.automation.engine.spi.PluggableTrigger;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component("alwaysFalseTrigger")
 @RequiredArgsConstructor
-public class AlwaysFalseTrigger extends AbstractTrigger<AlwaysFalseTriggerContext> {
+public class AlwaysFalseTrigger extends PluggableTrigger<AlwaysFalseTriggerContext> {
 
     @Override
     public boolean isTriggered(EventContext eventContext, AlwaysFalseTriggerContext triggerContext) {

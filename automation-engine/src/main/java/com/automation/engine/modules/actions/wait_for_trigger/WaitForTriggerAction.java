@@ -4,7 +4,7 @@ import com.automation.engine.AutomationEngineConfigProvider;
 import com.automation.engine.core.events.EventContext;
 import com.automation.engine.factory.triggers.Trigger;
 import com.automation.engine.factory.resolver.DefaultAutomationResolver;
-import com.automation.engine.spi.AbstractAction;
+import com.automation.engine.spi.PluggableAction;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldNameConstants;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +21,7 @@ import java.util.concurrent.*;
 @Component("waitForTriggerAction")
 @RequiredArgsConstructor
 @FieldNameConstants
-public class WaitForTriggerAction extends AbstractAction<WaitForTriggerActionContext> {
+public class WaitForTriggerAction extends PluggableAction<WaitForTriggerActionContext> {
     private final DefaultAutomationResolver resolver;
     private final List<WaitingAction> waitingActions = new CopyOnWriteArrayList<>();
 

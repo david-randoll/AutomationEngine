@@ -2,13 +2,13 @@ package com.automation.engine.modules.triggers.time_based;
 
 import com.automation.engine.core.events.EventContext;
 import com.automation.engine.modules.events.time_based.TimeBasedEvent;
-import com.automation.engine.spi.AbstractTrigger;
+import com.automation.engine.spi.PluggableTrigger;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalTime;
 
 @Component("timeTrigger")
-public class TimeBasedTrigger extends AbstractTrigger<TimeBasedTriggerContext> {
+public class TimeBasedTrigger extends PluggableTrigger<TimeBasedTriggerContext> {
 
     @Override
     public boolean isTriggered(EventContext eventContext, TimeBasedTriggerContext triggerContext) {
