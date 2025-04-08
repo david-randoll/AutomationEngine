@@ -10,7 +10,6 @@ import org.springframework.util.ObjectUtils;
 @Component("notCondition")
 @RequiredArgsConstructor
 public class NotCondition extends PluggableCondition<NotConditionContext> {
-    private final DefaultAutomationResolver resolver;
 
     @Override
     public boolean isSatisfied(EventContext eventContext, NotConditionContext conditionContext) {

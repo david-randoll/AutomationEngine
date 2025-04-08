@@ -14,7 +14,6 @@ import java.util.List;
 @Component("stopAction")
 @RequiredArgsConstructor
 public class StopAction extends PluggableAction<StopActionContext> {
-    private final DefaultAutomationResolver resolver;
 
     @Override
     public void execute(EventContext eventContext, StopActionContext actionContext) {

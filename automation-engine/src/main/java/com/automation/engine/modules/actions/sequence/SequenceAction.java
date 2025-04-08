@@ -12,7 +12,6 @@ import org.springframework.util.ObjectUtils;
 @Component("sequenceAction")
 @RequiredArgsConstructor
 public class SequenceAction extends PluggableAction<SequenceActionContext> {
-    private final DefaultAutomationResolver resolver;
 
     @Override
     public void execute(EventContext eventContext, SequenceActionContext actionContext) {

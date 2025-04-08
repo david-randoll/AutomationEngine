@@ -22,7 +22,6 @@ import java.util.concurrent.*;
 @RequiredArgsConstructor
 @FieldNameConstants
 public class WaitForTriggerAction extends PluggableAction<WaitForTriggerActionContext> {
-    private final DefaultAutomationResolver resolver;
     private final List<WaitingAction> waitingActions = new CopyOnWriteArrayList<>();
 
     @Autowired(required = false)

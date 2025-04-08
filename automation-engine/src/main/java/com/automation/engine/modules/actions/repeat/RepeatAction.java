@@ -1,7 +1,6 @@
 package com.automation.engine.modules.actions.repeat;
 
 import com.automation.engine.core.events.EventContext;
-import com.automation.engine.factory.resolver.DefaultAutomationResolver;
 import com.automation.engine.spi.PluggableAction;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +11,6 @@ import org.springframework.util.ObjectUtils;
 @Component("repeatAction")
 @RequiredArgsConstructor
 public class RepeatAction extends PluggableAction<RepeatActionContext> {
-    private final DefaultAutomationResolver resolver;
 
     @Override
     public void execute(EventContext eventContext, RepeatActionContext actionContext) {

@@ -10,7 +10,6 @@ import org.springframework.util.ObjectUtils;
 @Component("ifThenElseVariable")
 @RequiredArgsConstructor
 public class IfThenElseVariable extends PluggableVariable<IfThenElseVariableContext> {
-    private final DefaultAutomationResolver resolver;
 
     @Override
     public void resolve(EventContext eventContext, IfThenElseVariableContext variableContext) {

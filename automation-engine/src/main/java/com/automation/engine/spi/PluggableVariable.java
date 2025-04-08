@@ -10,7 +10,7 @@ public abstract class PluggableVariable<T extends IVariableContext> implements T
     private ITypeConverter typeConverter;
 
     @Autowired
-    private AutomationResolver resolver;
+    protected AutomationResolver resolver;
 
     @Override
     public ITypeConverter getTypeConverter() {

@@ -2,7 +2,6 @@ package com.automation.engine.modules.actions.parallel;
 
 import com.automation.engine.AutomationEngineConfigProvider;
 import com.automation.engine.core.events.EventContext;
-import com.automation.engine.factory.resolver.DefaultAutomationResolver;
 import com.automation.engine.spi.PluggableAction;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +13,6 @@ import org.springframework.util.ObjectUtils;
 @Component("parallelAction")
 @RequiredArgsConstructor
 public class ParallelAction extends PluggableAction<ParallelActionContext> {
-    private final DefaultAutomationResolver resolver;
 
     @Autowired(required = false)
     private AutomationEngineConfigProvider provider;

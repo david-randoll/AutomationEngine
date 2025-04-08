@@ -10,7 +10,6 @@ import org.springframework.util.ObjectUtils;
 @Component("orCondition")
 @RequiredArgsConstructor
 public class OrCondition extends PluggableCondition<OrConditionContext> {
-    private final DefaultAutomationResolver resolver;
 
     @Override
     public boolean isSatisfied(EventContext eventContext, OrConditionContext conditionContext) {

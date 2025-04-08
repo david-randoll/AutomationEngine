@@ -10,7 +10,6 @@ import org.springframework.util.ObjectUtils;
 @Component("andCondition")
 @RequiredArgsConstructor
 public class AndCondition extends PluggableCondition<AndConditionContext> {
-    private final DefaultAutomationResolver resolver;
 
     @Override
     public boolean isSatisfied(EventContext eventContext, AndConditionContext conditionContext) {

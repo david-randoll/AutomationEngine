@@ -22,8 +22,8 @@ import java.util.concurrent.Executor;
 public class AutomationResolver {
     private final ActionResolver actionResolver;
     private final ConditionResolver conditionResolver;
-    private final VariableResolver variableResolver;
     private final TriggerResolver triggerResolver;
+    private final VariableResolver variableResolver;
 
     /*
         Actions

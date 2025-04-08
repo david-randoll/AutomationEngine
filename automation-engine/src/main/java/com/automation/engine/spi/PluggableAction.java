@@ -10,7 +10,7 @@ public abstract class PluggableAction<T extends IActionContext> implements Typed
     private ITypeConverter typeConverter;
 
     @Autowired
-    private AutomationResolver resolver;
+    protected AutomationResolver resolver;
 
     @Override
     public ITypeConverter getTypeConverter() {

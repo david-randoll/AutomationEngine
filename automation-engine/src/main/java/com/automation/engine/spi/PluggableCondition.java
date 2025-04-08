@@ -10,7 +10,7 @@ public abstract class PluggableCondition<T extends IConditionContext> implements
     private ITypeConverter typeConverter;
 
     @Autowired
-    private AutomationResolver resolver;
+    protected AutomationResolver resolver;
 
     @Override
     public ITypeConverter getTypeConverter() {

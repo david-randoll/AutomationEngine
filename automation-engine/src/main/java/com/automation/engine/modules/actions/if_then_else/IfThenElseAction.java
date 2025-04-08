@@ -1,7 +1,6 @@
 package com.automation.engine.modules.actions.if_then_else;
 
 import com.automation.engine.core.events.EventContext;
-import com.automation.engine.factory.resolver.DefaultAutomationResolver;
 import com.automation.engine.spi.PluggableAction;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -10,7 +9,6 @@ import org.springframework.util.ObjectUtils;
 @Component("ifThenElseAction")
 @RequiredArgsConstructor
 public class IfThenElseAction extends PluggableAction<IfThenElseActionContext> {
-    private final DefaultAutomationResolver resolver;
 
     @Override
     public void execute(EventContext eventContext, IfThenElseActionContext actionContext) {
