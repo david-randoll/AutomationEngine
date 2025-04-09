@@ -3,6 +3,7 @@ package com.automation.engine.spi;
 import com.automation.engine.core.conditions.IConditionContext;
 import com.automation.engine.core.utils.ITypeConverter;
 import com.automation.engine.factory.AutomationResolver;
+import lombok.experimental.Delegate;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public abstract class PluggableCondition<T extends IConditionContext> implements TypedCondition<T> {
@@ -10,6 +11,7 @@ public abstract class PluggableCondition<T extends IConditionContext> implements
     private ITypeConverter typeConverter;
 
     @Autowired
+    @Delegate
     protected AutomationResolver resolver;
 
     @Override

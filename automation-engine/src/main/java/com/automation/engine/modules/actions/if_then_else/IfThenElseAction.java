@@ -13,9 +13,9 @@ public class IfThenElseAction extends PluggableAction<IfThenElseActionContext> {
     @Override
     public void execute(EventContext eventContext, IfThenElseActionContext actionContext) {
         if (!ObjectUtils.isEmpty(actionContext.getIfConditions())) {
-            boolean isSatisfied = resolver.allConditionsSatisfied(eventContext, actionContext.getIfConditions());
+            boolean isSatisfied = allConditionsSatisfied(eventContext, actionContext.getIfConditions());
             if (isSatisfied) {
-                resolver.executeActions(eventContext, actionContext.getThenActions());
+                executeActions(eventContext, actionContext.getThenActions());
                 return;
             }
         }
@@ -23,15 +23,15 @@ public class IfThenElseAction extends PluggableAction<IfThenElseActionContext> {
         // check the ifs conditions
         if (!ObjectUtils.isEmpty(actionContext.getIfThenBlocks())) {
             for (var ifBlock : actionContext.getIfThenBlocks()) {
-                var isIfsSatisfied = resolver.allConditionsSatisfied(eventContext, ifBlock.getIfConditions());
+                var isIfsSatisfied = allConditionsSatisfied(eventContext, ifBlock.getIfConditions());
                 if (isIfsSatisfied) {
-                    resolver.executeActions(eventContext, ifBlock.getThenActions());
+                    executeActions(eventContext, ifBlock.getThenActions());
                     return;
                 }
             }
         }
 
         // execute else actions
-        resolver.executeActions(eventContext, actionContext.getElseActions());
+        executeActions(eventContext, actionContext.getElseActions());
     }
 }
