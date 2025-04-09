@@ -1,8 +1,7 @@
 package com.automation.engine.spi;
 
 import com.automation.engine.core.conditions.IConditionContext;
-import com.automation.engine.core.utils.ITypeConverter;
-import com.automation.engine.factory.AutomationProcessor;
+import com.automation.engine.creator.AutomationProcessor;
 import lombok.experimental.Delegate;
 import org.springframework.beans.factory.annotation.Autowired;
 

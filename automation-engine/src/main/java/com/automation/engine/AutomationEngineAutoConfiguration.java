@@ -6,15 +6,20 @@ import com.automation.engine.core.conditions.interceptors.IConditionInterceptor;
 import com.automation.engine.core.events.publisher.IEventPublisher;
 import com.automation.engine.core.triggers.interceptors.ITriggerInterceptor;
 import com.automation.engine.core.variables.interceptors.IVariableInterceptor;
-import com.automation.engine.factory.AutomationProcessor;
-import com.automation.engine.factory.actions.ActionBuilder;
-import com.automation.engine.factory.actions.IActionSupplier;
-import com.automation.engine.factory.conditions.ConditionBuilder;
-import com.automation.engine.factory.conditions.IConditionSupplier;
-import com.automation.engine.factory.triggers.ITriggerSupplier;
-import com.automation.engine.factory.triggers.TriggerBuilder;
-import com.automation.engine.factory.variables.IVariableSupplier;
-import com.automation.engine.factory.variables.VariableBuilder;
+import com.automation.engine.creator.AutomationProcessor;
+import com.automation.engine.creator.actions.ActionBuilder;
+import com.automation.engine.creator.actions.IActionSupplier;
+import com.automation.engine.creator.conditions.ConditionBuilder;
+import com.automation.engine.creator.conditions.IConditionSupplier;
+import com.automation.engine.creator.parsers.ManualAutomationBuilder;
+import com.automation.engine.creator.parsers.json.IJsonConverter;
+import com.automation.engine.creator.parsers.json.JsonAutomationParser;
+import com.automation.engine.creator.parsers.yaml.IYamlConverter;
+import com.automation.engine.creator.parsers.yaml.YamlAutomationParser;
+import com.automation.engine.creator.triggers.ITriggerSupplier;
+import com.automation.engine.creator.triggers.TriggerBuilder;
+import com.automation.engine.creator.variables.IVariableSupplier;
+import com.automation.engine.creator.variables.VariableBuilder;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
@@ -75,5 +80,23 @@ public class AutomationEngineAutoConfiguration {
             VariableBuilder variableBuilder
     ) {
         return new AutomationProcessor(actionBuilder, conditionBuilder, triggerBuilder, variableBuilder);
+    }
+
+    @Bean("manualAutomationParser")
+    @ConditionalOnMissingBean
+    public ManualAutomationBuilder manualAutomationBuilder(AutomationProcessor processor) {
+        return new ManualAutomationBuilder(processor);
+    }
+
+    @Bean("jsonAutomationParser")
+    @ConditionalOnMissingBean
+    public JsonAutomationParser jsonAutomationParser(ManualAutomationBuilder builder, IJsonConverter converter) {
+        return new JsonAutomationParser(builder, converter);
+    }
+
+    @Bean("yamlAutomationParser")
+    @ConditionalOnMissingBean
+    public YamlAutomationParser yamlAutomationParser(ManualAutomationBuilder builder, IYamlConverter converter) {
+        return new YamlAutomationParser(builder, converter);
     }
 }

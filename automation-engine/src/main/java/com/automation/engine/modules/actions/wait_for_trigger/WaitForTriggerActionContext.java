@@ -1,7 +1,7 @@
 package com.automation.engine.modules.actions.wait_for_trigger;
 
 import com.automation.engine.core.actions.IActionContext;
-import com.automation.engine.factory.triggers.Trigger;
+import com.automation.engine.creator.triggers.Trigger;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;

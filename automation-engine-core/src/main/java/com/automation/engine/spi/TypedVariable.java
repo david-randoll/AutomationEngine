@@ -2,7 +2,6 @@ package com.automation.engine.spi;
 
 import com.automation.engine.core.events.EventContext;
 import com.automation.engine.core.utils.GenericTypeResolver;
-import com.automation.engine.core.utils.ITypeConverter;
 import com.automation.engine.core.variables.IVariable;
 import com.automation.engine.core.variables.IVariableContext;
 import com.automation.engine.core.variables.VariableContext;

@@ -1,7 +1,7 @@
 package com.automation.engine.example.time_based;
 
 import com.automation.engine.core.AutomationEngine;
-import com.automation.engine.factory.AutomationCreator;
+import com.automation.engine.creator.AutomationCreator;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -5,7 +5,6 @@ import com.automation.engine.core.triggers.ITrigger;
 import com.automation.engine.core.triggers.ITriggerContext;
 import com.automation.engine.core.triggers.TriggerContext;
 import com.automation.engine.core.utils.GenericTypeResolver;
-import com.automation.engine.core.utils.ITypeConverter;
 
 public interface TypedTrigger<T extends ITriggerContext> extends ITrigger {
     ITypeConverter getTypeConverter();

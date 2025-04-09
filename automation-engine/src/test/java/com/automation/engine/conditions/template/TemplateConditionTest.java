@@ -6,7 +6,7 @@ import com.automation.engine.TestLogAppender;
 import com.automation.engine.core.Automation;
 import com.automation.engine.core.AutomationEngine;
 import com.automation.engine.core.events.EventContext;
-import com.automation.engine.factory.AutomationCreator;
+import com.automation.engine.creator.AutomationCreator;
 import com.automation.engine.modules.conditions.template.TemplateCondition;
 import com.automation.engine.modules.conditions.template.TemplateConditionContext;
 import com.automation.engine.modules.events.DefaultEvent;

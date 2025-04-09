@@ -5,7 +5,6 @@ import com.automation.engine.core.conditions.ICondition;
 import com.automation.engine.core.conditions.IConditionContext;
 import com.automation.engine.core.events.EventContext;
 import com.automation.engine.core.utils.GenericTypeResolver;
-import com.automation.engine.core.utils.ITypeConverter;
 
 public interface TypedCondition<T extends IConditionContext> extends ICondition {
     ITypeConverter getTypeConverter();

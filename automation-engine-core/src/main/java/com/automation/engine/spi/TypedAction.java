@@ -5,7 +5,6 @@ import com.automation.engine.core.actions.IAction;
 import com.automation.engine.core.actions.IActionContext;
 import com.automation.engine.core.events.EventContext;
 import com.automation.engine.core.utils.GenericTypeResolver;
-import com.automation.engine.core.utils.ITypeConverter;
 
 public interface TypedAction<T extends IActionContext> extends IAction {
     ITypeConverter getTypeConverter();

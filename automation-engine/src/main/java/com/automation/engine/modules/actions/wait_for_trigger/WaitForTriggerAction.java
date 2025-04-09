@@ -2,7 +2,7 @@ package com.automation.engine.modules.actions.wait_for_trigger;
 
 import com.automation.engine.AutomationEngineConfigProvider;
 import com.automation.engine.core.events.EventContext;
-import com.automation.engine.factory.triggers.Trigger;
+import com.automation.engine.creator.triggers.Trigger;
 import com.automation.engine.spi.PluggableAction;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldNameConstants;
