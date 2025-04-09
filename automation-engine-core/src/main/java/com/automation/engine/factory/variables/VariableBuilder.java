@@ -16,7 +16,7 @@ import java.util.Optional;
 import static java.util.Objects.isNull;
 
 @RequiredArgsConstructor
-public class VariableResolver {
+public class VariableBuilder {
     private final IVariableSupplier supplier;
     private final List<IVariableInterceptor> variableInterceptors;
 

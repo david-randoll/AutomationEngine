@@ -6,90 +6,90 @@ import com.automation.engine.core.events.EventContext;
 import com.automation.engine.core.triggers.BaseTriggerList;
 import com.automation.engine.core.variables.BaseVariableList;
 import com.automation.engine.factory.actions.Action;
-import com.automation.engine.factory.actions.ActionResolver;
+import com.automation.engine.factory.actions.ActionBuilder;
 import com.automation.engine.factory.conditions.Condition;
-import com.automation.engine.factory.conditions.ConditionResolver;
+import com.automation.engine.factory.conditions.ConditionBuilder;
 import com.automation.engine.factory.triggers.Trigger;
-import com.automation.engine.factory.triggers.TriggerResolver;
+import com.automation.engine.factory.triggers.TriggerBuilder;
 import com.automation.engine.factory.variables.Variable;
-import com.automation.engine.factory.variables.VariableResolver;
+import com.automation.engine.factory.variables.VariableBuilder;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 import java.util.concurrent.Executor;
 
 @RequiredArgsConstructor
-public class AutomationResolver {
-    private final ActionResolver actionResolver;
-    private final ConditionResolver conditionResolver;
-    private final TriggerResolver triggerResolver;
-    private final VariableResolver variableResolver;
+public class AutomationProcessor {
+    private final ActionBuilder actionBuilder;
+    private final ConditionBuilder conditionBuilder;
+    private final TriggerBuilder triggerBuilder;
+    private final VariableBuilder variableBuilder;
 
     /*
         Actions
      */
     public BaseActionList resolveActions(List<Action> actions) {
-        return actionResolver.resolve(actions);
+        return actionBuilder.resolve(actions);
     }
 
     public void executeActions(EventContext eventContext, List<Action> actions) {
-        actionResolver.executeActions(eventContext, actions);
+        actionBuilder.executeActions(eventContext, actions);
     }
 
     public void executeActionsAsync(EventContext eventContext, List<Action> actions) {
-        actionResolver.executeActionsAsync(eventContext, actions);
+        actionBuilder.executeActionsAsync(eventContext, actions);
     }
 
     public void executeActionsAsync(EventContext eventContext, List<Action> actions, Executor executor) {
-        actionResolver.executeActionsAsync(eventContext, actions, executor);
+        actionBuilder.executeActionsAsync(eventContext, actions, executor);
     }
 
     /*
         Conditions
      */
     public BaseConditionList resolveConditions(List<Condition> conditions) {
-        return conditionResolver.resolve(conditions);
+        return conditionBuilder.resolve(conditions);
     }
 
     public boolean allConditionsSatisfied(EventContext eventContext, List<Condition> conditions) {
-        return conditionResolver.allConditionsSatisfied(eventContext, conditions);
+        return conditionBuilder.allConditionsSatisfied(eventContext, conditions);
     }
 
     public boolean anyConditionSatisfied(EventContext eventContext, List<Condition> conditions) {
-        return conditionResolver.anyConditionSatisfied(eventContext, conditions);
+        return conditionBuilder.anyConditionSatisfied(eventContext, conditions);
     }
 
     public boolean noneConditionSatisfied(EventContext eventContext, List<Condition> conditions) {
-        return conditionResolver.noneConditionSatisfied(eventContext, conditions);
+        return conditionBuilder.noneConditionSatisfied(eventContext, conditions);
     }
 
     /*
         Triggers
      */
     public BaseTriggerList resolveTriggers(List<Trigger> triggers) {
-        return triggerResolver.resolve(triggers);
+        return triggerBuilder.resolve(triggers);
     }
 
     public boolean anyTriggersTriggered(EventContext eventContext, List<Trigger> triggers) {
-        return triggerResolver.anyTriggersTriggered(eventContext, triggers);
+        return triggerBuilder.anyTriggersTriggered(eventContext, triggers);
     }
 
     public boolean allTriggersTriggered(EventContext eventContext, List<Trigger> triggers) {
-        return triggerResolver.allTriggersTriggered(eventContext, triggers);
+        return triggerBuilder.allTriggersTriggered(eventContext, triggers);
     }
 
     public boolean noneTriggersTriggered(EventContext eventContext, List<Trigger> triggers) {
-        return triggerResolver.noneTriggersTriggered(eventContext, triggers);
+        return triggerBuilder.noneTriggersTriggered(eventContext, triggers);
     }
 
     /*
         Variables
      */
     public BaseVariableList resolveVariables(List<Variable> variables) {
-        return variableResolver.resolve(variables);
+        return variableBuilder.resolve(variables);
     }
 
     public void resolveVariables(EventContext eventContext, List<Variable> variables) {
-        variableResolver.resolveVariables(eventContext, variables);
+        variableBuilder.resolveVariables(eventContext, variables);
     }
 }

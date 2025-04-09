@@ -15,7 +15,7 @@ import java.util.Optional;
 import static java.util.Objects.isNull;
 
 @RequiredArgsConstructor
-public class ConditionResolver {
+public class ConditionBuilder {
     private final IConditionSupplier supplier;
     private final List<IConditionInterceptor> conditionInterceptors;
 

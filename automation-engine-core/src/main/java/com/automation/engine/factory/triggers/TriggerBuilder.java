@@ -15,7 +15,7 @@ import java.util.Optional;
 import static java.util.Objects.isNull;
 
 @RequiredArgsConstructor
-public class TriggerResolver {
+public class TriggerBuilder {
     private final ITriggerSupplier supplier;
     private final List<ITriggerInterceptor> triggerInterceptors;
 

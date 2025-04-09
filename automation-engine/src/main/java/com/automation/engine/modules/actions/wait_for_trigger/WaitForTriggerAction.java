@@ -3,7 +3,6 @@ package com.automation.engine.modules.actions.wait_for_trigger;
 import com.automation.engine.AutomationEngineConfigProvider;
 import com.automation.engine.core.events.EventContext;
 import com.automation.engine.factory.triggers.Trigger;
-import com.automation.engine.factory.resolver.DefaultAutomationResolver;
 import com.automation.engine.spi.PluggableAction;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldNameConstants;
@@ -41,7 +40,7 @@ public class WaitForTriggerAction extends PluggableAction<WaitForTriggerActionCo
         ScheduledExecutorService scheduler = provider != null ? provider.getScheduledExecutorService() : null;
         if (scheduler != null) {
             pollingTask = scheduler.scheduleAtFixedRate(() -> {
-                if (!future.isDone() && resolver.anyTriggersTriggered(eventContext, actionContext.getTriggers())) {
+                if (!future.isDone() && processor.anyTriggersTriggered(eventContext, actionContext.getTriggers())) {
                     future.complete(true);
                 }
             }, 0, 1, TimeUnit.SECONDS);
@@ -67,7 +66,7 @@ public class WaitForTriggerAction extends PluggableAction<WaitForTriggerActionCo
     @EventListener
     public void handleEvent(EventContext eventContext) {
         for (WaitingAction action : waitingActions) {
-            if (!action.future.isDone() && resolver.anyTriggersTriggered(eventContext, action.triggers)) {
+            if (!action.future.isDone() && processor.anyTriggersTriggered(eventContext, action.triggers)) {
                 action.future.complete(true);
             }
         }

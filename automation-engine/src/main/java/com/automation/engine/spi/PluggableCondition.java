@@ -2,7 +2,7 @@ package com.automation.engine.spi;
 
 import com.automation.engine.core.conditions.IConditionContext;
 import com.automation.engine.core.utils.ITypeConverter;
-import com.automation.engine.factory.AutomationResolver;
+import com.automation.engine.factory.AutomationProcessor;
 import lombok.experimental.Delegate;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -12,7 +12,7 @@ public abstract class PluggableCondition<T extends IConditionContext> implements
 
     @Autowired
     @Delegate
-    protected AutomationResolver resolver;
+    protected AutomationProcessor processor;
 
     @Override
     public ITypeConverter getTypeConverter() {

@@ -24,10 +24,10 @@ public class ParallelAction extends PluggableAction<ParallelActionContext> {
         var executor = provider != null ? provider.getExecutor() : null;
         if (executor != null) {
             log.debug("Executor provider found, using provided executor");
-            resolver.executeActionsAsync(eventContext, actionContext.getActions(), executor);
+            processor.executeActionsAsync(eventContext, actionContext.getActions(), executor);
         } else {
             log.debug("No executor provider found, using default executor");
-            resolver.executeActionsAsync(eventContext, actionContext.getActions());
+            processor.executeActionsAsync(eventContext, actionContext.getActions());
         }
     }
 }

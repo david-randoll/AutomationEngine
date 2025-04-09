@@ -5,7 +5,7 @@ import com.automation.engine.core.actions.BaseActionList;
 import com.automation.engine.core.conditions.BaseConditionList;
 import com.automation.engine.core.triggers.BaseTriggerList;
 import com.automation.engine.core.variables.BaseVariableList;
-import com.automation.engine.factory.AutomationResolver;
+import com.automation.engine.factory.AutomationProcessor;
 import com.automation.engine.factory.CreateAutomationRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 @Service("manualAutomationResolver")
 @RequiredArgsConstructor
 public class DefaultAutomationResolver implements IAutomationResolver<CreateAutomationRequest> {
-    private final AutomationResolver resolver;
+    private final AutomationProcessor resolver;
 
     @Override
     @NonNull

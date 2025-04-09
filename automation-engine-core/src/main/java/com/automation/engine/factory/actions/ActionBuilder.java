@@ -16,7 +16,7 @@ import java.util.concurrent.Executor;
 import static java.util.Objects.isNull;
 
 @RequiredArgsConstructor
-public class ActionResolver {
+public class ActionBuilder {
     private final IActionSupplier supplier;
     private final List<IActionInterceptor> actionInterceptors;
 
