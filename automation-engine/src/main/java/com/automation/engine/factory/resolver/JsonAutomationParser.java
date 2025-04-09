@@ -10,10 +10,10 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 @Slf4j
-@Service("jsonAutomationResolver")
+@Service("jsonAutomationParser")
 @RequiredArgsConstructor
-public class JsonAutomationResolver implements IAutomationResolver<String> {
-    private final DefaultAutomationResolver defaultAutomationResolver;
+public class JsonAutomationParser implements IAutomationFormatParser<String> {
+    private final ManualAutomationBuilder builder;
     private final ObjectMapper mapper;
 
     @Override
@@ -21,7 +21,7 @@ public class JsonAutomationResolver implements IAutomationResolver<String> {
     public Automation create(String json) {
         try {
             CreateAutomationRequest createRequest = mapper.readValue(json, CreateAutomationRequest.class);
-            return defaultAutomationResolver.create(createRequest);
+            return builder.create(createRequest);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }

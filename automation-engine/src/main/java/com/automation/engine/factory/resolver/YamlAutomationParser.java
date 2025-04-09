@@ -11,10 +11,10 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 @Slf4j
-@Service("yamlAutomationResolver")
+@Service("yamlAutomationParser")
 @RequiredArgsConstructor
-public class YamlAutomationResolver implements IAutomationResolver<String> {
-    private final DefaultAutomationResolver defaultAutomationResolver;
+public class YamlAutomationParser implements IAutomationFormatParser<String> {
+    private final ManualAutomationBuilder builder;
 
     @Override
     @NonNull
@@ -22,7 +22,7 @@ public class YamlAutomationResolver implements IAutomationResolver<String> {
         var mapper = getYamlObjectMapper();
         try {
             CreateAutomationRequest createRequest = mapper.readValue(yaml, CreateAutomationRequest.class);
-            return defaultAutomationResolver.create(createRequest);
+            return builder.create(createRequest);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }

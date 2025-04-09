@@ -1,7 +1,7 @@
 package com.automation.engine.example.time_based;
 
 import com.automation.engine.core.AutomationEngine;
-import com.automation.engine.factory.AutomationFactory;
+import com.automation.engine.factory.AutomationCreator;
 import com.automation.engine.core.factory.model.Action;
 import com.automation.engine.core.factory.model.CreateRequest;
 import com.automation.engine.core.factory.model.Trigger;
@@ -19,7 +19,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ManualAutomationExample {
     private final AutomationEngine engine;
-    private final AutomationFactory factory;
+    private final AutomationCreator factory;
 
     @PostConstruct
     public void init() {

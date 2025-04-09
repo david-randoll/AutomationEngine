@@ -1,8 +1,8 @@
 package com.automation.engine.factory;
 
 import com.automation.engine.core.Automation;
-import com.automation.engine.factory.resolver.IAutomationResolver;
-import com.automation.engine.factory.resolver.DefaultAutomationResolver;
+import com.automation.engine.factory.resolver.IAutomationFormatParser;
+import com.automation.engine.factory.resolver.ManualAutomationBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -13,20 +13,20 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 @SuppressWarnings("unchecked")
-public class AutomationFactory {
-    private final DefaultAutomationResolver defaultAutomationResolver;
-    private final Map<String, IAutomationResolver<?>> resolverMap;
+public class AutomationCreator {
+    private final ManualAutomationBuilder builder;
+    private final Map<String, IAutomationFormatParser<?>> formatParsers;
 
     public Automation createAutomation(CreateAutomationRequest createRequest) {
-        return defaultAutomationResolver.create(createRequest);
+        return builder.create(createRequest);
     }
 
     public Automation createAutomation(String format, Object input) {
-        IAutomationResolver<?> resolver = resolverMap.get(format + "AutomationResolver");
+        IAutomationFormatParser<?> resolver = formatParsers.get(format + "AutomationParser");
         if (resolver == null) {
             throw new RuntimeException("Resolver not found for format: " + format);
         }
 
-        return ((IAutomationResolver<Object>) resolver).create(input);
+        return ((IAutomationFormatParser<Object>) resolver).create(input);
     }
 }

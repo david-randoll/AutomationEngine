@@ -1,7 +1,7 @@
 package com.automation.engine.example.time_based;
 
 import com.automation.engine.core.AutomationEngine;
-import com.automation.engine.factory.AutomationFactory;
+import com.automation.engine.factory.AutomationCreator;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class JsonAutomationExample {
     private final AutomationEngine engine;
-    private final AutomationFactory factory;
+    private final AutomationCreator factory;
 
     @PostConstruct
     public void init() {
