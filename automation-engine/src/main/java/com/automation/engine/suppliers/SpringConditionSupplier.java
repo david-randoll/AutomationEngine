@@ -1,4 +1,4 @@
-package com.automation.engine.creator.suppliers;
+package com.automation.engine.suppliers;
 
 import com.automation.engine.core.conditions.ICondition;
 import com.automation.engine.creator.conditions.ConditionNotFoundException;

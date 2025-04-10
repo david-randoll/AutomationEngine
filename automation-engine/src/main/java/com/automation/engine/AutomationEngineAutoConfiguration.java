@@ -6,11 +6,13 @@ import com.automation.engine.core.conditions.interceptors.IConditionInterceptor;
 import com.automation.engine.core.events.publisher.IEventPublisher;
 import com.automation.engine.core.triggers.interceptors.ITriggerInterceptor;
 import com.automation.engine.core.variables.interceptors.IVariableInterceptor;
+import com.automation.engine.creator.AutomationCreator;
 import com.automation.engine.creator.AutomationProcessor;
 import com.automation.engine.creator.actions.ActionBuilder;
 import com.automation.engine.creator.actions.IActionSupplier;
 import com.automation.engine.creator.conditions.ConditionBuilder;
 import com.automation.engine.creator.conditions.IConditionSupplier;
+import com.automation.engine.creator.parsers.IAutomationFormatParser;
 import com.automation.engine.creator.parsers.ManualAutomationBuilder;
 import com.automation.engine.creator.parsers.json.IJsonConverter;
 import com.automation.engine.creator.parsers.json.JsonAutomationParser;
@@ -28,6 +30,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 import java.util.List;
+import java.util.Map;
 
 @AutoConfiguration
 @ComponentScan
@@ -98,5 +101,11 @@ public class AutomationEngineAutoConfiguration {
     @ConditionalOnMissingBean
     public YamlAutomationParser yamlAutomationParser(ManualAutomationBuilder builder, IYamlConverter converter) {
         return new YamlAutomationParser(builder, converter);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public AutomationCreator automationCreator(ManualAutomationBuilder builder, Map<String, IAutomationFormatParser<?>> formatParsers) {
+        return new AutomationCreator(builder, formatParsers);
     }
 }

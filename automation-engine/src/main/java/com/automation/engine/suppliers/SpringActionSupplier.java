@@ -1,4 +1,4 @@
-package com.automation.engine.creator.suppliers;
+package com.automation.engine.suppliers;
 
 import com.automation.engine.core.actions.IAction;
 import com.automation.engine.creator.actions.ActionNotFoundException;
