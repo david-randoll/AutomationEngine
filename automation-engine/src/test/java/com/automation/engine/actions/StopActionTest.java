@@ -5,7 +5,7 @@ import com.automation.engine.AutomationEngineApplication;
 import com.automation.engine.TestLogAppender;
 import com.automation.engine.core.Automation;
 import com.automation.engine.core.AutomationEngine;
-import com.automation.engine.factory.AutomationFactory;
+import com.automation.engine.creator.AutomationCreator;
 import com.automation.engine.modules.events.time_based.TimeBasedEvent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,7 +26,7 @@ class StopActionTest {
     private AutomationEngine engine;
 
     @Autowired
-    private AutomationFactory factory;
+    private AutomationCreator factory;
 
     private TestLogAppender logAppender;
 

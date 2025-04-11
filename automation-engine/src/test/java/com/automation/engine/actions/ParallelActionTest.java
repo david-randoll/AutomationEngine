@@ -5,7 +5,7 @@ import com.automation.engine.AutomationEngineApplication;
 import com.automation.engine.TestLogAppender;
 import com.automation.engine.core.Automation;
 import com.automation.engine.core.AutomationEngine;
-import com.automation.engine.factory.AutomationFactory;
+import com.automation.engine.creator.AutomationCreator;
 import com.automation.engine.AutomationEngineConfigProvider;
 import com.automation.engine.modules.actions.parallel.ParallelAction;
 import com.automation.engine.modules.actions.wait_for_trigger.WaitForTriggerAction;
@@ -32,7 +32,7 @@ class ParallelActionTest {
     private AutomationEngine engine;
 
     @Autowired
-    private AutomationFactory factory;
+    private AutomationCreator factory;
 
     @Autowired
     private ParallelAction parallelAction;

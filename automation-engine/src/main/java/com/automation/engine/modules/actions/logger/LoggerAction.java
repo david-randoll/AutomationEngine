@@ -1,13 +1,13 @@
 package com.automation.engine.modules.actions.logger;
 
 import com.automation.engine.core.events.EventContext;
-import com.automation.engine.spi.AbstractAction;
+import com.automation.engine.spi.PluggableAction;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component("loggerAction")
-public class LoggerAction extends AbstractAction<LoggerActionContext> {
+public class LoggerAction extends PluggableAction<LoggerActionContext> {
 
     @Override
     public void execute(EventContext eventContext, LoggerActionContext actionContext) {

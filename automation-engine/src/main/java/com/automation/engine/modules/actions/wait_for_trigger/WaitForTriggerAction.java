@@ -2,9 +2,8 @@ package com.automation.engine.modules.actions.wait_for_trigger;
 
 import com.automation.engine.AutomationEngineConfigProvider;
 import com.automation.engine.core.events.EventContext;
-import com.automation.engine.factory.model.Trigger;
-import com.automation.engine.factory.resolver.DefaultAutomationResolver;
-import com.automation.engine.spi.AbstractAction;
+import com.automation.engine.creator.triggers.Trigger;
+import com.automation.engine.spi.PluggableAction;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldNameConstants;
 import lombok.extern.slf4j.Slf4j;
@@ -21,8 +20,7 @@ import java.util.concurrent.*;
 @Component("waitForTriggerAction")
 @RequiredArgsConstructor
 @FieldNameConstants
-public class WaitForTriggerAction extends AbstractAction<WaitForTriggerActionContext> {
-    private final DefaultAutomationResolver resolver;
+public class WaitForTriggerAction extends PluggableAction<WaitForTriggerActionContext> {
     private final List<WaitingAction> waitingActions = new CopyOnWriteArrayList<>();
 
     @Autowired(required = false)
@@ -42,7 +40,7 @@ public class WaitForTriggerAction extends AbstractAction<WaitForTriggerActionCon
         ScheduledExecutorService scheduler = provider != null ? provider.getScheduledExecutorService() : null;
         if (scheduler != null) {
             pollingTask = scheduler.scheduleAtFixedRate(() -> {
-                if (!future.isDone() && resolver.anyTriggersTriggered(eventContext, actionContext.getTriggers())) {
+                if (!future.isDone() && processor.anyTriggersTriggered(eventContext, actionContext.getTriggers())) {
                     future.complete(true);
                 }
             }, 0, 1, TimeUnit.SECONDS);
@@ -68,7 +66,7 @@ public class WaitForTriggerAction extends AbstractAction<WaitForTriggerActionCon
     @EventListener
     public void handleEvent(EventContext eventContext) {
         for (WaitingAction action : waitingActions) {
-            if (!action.future.isDone() && resolver.anyTriggersTriggered(eventContext, action.triggers)) {
+            if (!action.future.isDone() && processor.anyTriggersTriggered(eventContext, action.triggers)) {
                 action.future.complete(true);
             }
         }

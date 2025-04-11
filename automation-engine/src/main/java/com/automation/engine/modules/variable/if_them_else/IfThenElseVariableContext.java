@@ -1,8 +1,8 @@
 package com.automation.engine.modules.variable.if_them_else;
 
 import com.automation.engine.core.variables.IVariableContext;
-import com.automation.engine.factory.model.Condition;
-import com.automation.engine.factory.model.Variable;
+import com.automation.engine.creator.conditions.Condition;
+import com.automation.engine.creator.variables.Variable;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;

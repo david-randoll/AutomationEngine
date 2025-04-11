@@ -9,7 +9,6 @@
         <version>0.0.1-beta</version>
     </parent>
 
-    <groupId>com.automation.engine.http</groupId>
     <artifactId>automation-engine-http</artifactId>
 
     <properties>
