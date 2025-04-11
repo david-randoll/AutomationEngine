@@ -1,6 +1,7 @@
 package com.automation.engine.creator;
 
 import com.automation.engine.core.Automation;
+import com.automation.engine.creator.exceptions.FormatParserNotFoundException;
 import com.automation.engine.creator.parsers.IAutomationFormatParser;
 import com.automation.engine.creator.parsers.ManualAutomationBuilder;
 import lombok.RequiredArgsConstructor;
@@ -20,11 +21,11 @@ public class AutomationCreator {
     }
 
     public Automation createAutomation(String format, Object input) {
-        IAutomationFormatParser<?> resolver = formatParsers.get(format + "AutomationParser");
-        if (resolver == null) {
-            throw new RuntimeException("Resolver not found for format: " + format);
+        IAutomationFormatParser<?> formatParser = formatParsers.get(format + "AutomationParser");
+        if (formatParser == null) {
+            throw new FormatParserNotFoundException(format);
         }
 
-        return ((IAutomationFormatParser<Object>) resolver).create(input);
+        return ((IAutomationFormatParser<Object>) formatParser).create(input);
     }
 }
