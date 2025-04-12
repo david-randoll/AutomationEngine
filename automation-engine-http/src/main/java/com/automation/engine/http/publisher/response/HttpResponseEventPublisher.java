@@ -23,6 +23,7 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.concurrent.CompletionStage;
 
 
@@ -50,7 +51,24 @@ public class HttpResponseEventPublisher extends OncePerRequestFilter {
 
         HttpStatus responseStatus = HttpStatus.valueOf(responseWrapper.getStatus());
         HttpRequestEvent requestEvent = requestWrapper.toHttpRequestEvent();
-        HttpResponseEvent responseEvent = HttpResponseEvent.builder()
+        HttpResponseEvent responseEvent = toHttpResponseEvent(requestEvent, responseStatus);
+
+        if (responseStatus.is2xxSuccessful()) {
+            CompletionStage<String> responseBody = responseWrapper.getResponseBody(requestWrapper);
+
+            responseBody.thenAccept(body -> {
+                responseEvent.setResponseBody(body);
+                engine.publishEvent(responseEvent);
+            });
+        } else {
+            var errorAttributes = getErrorAttributes(request);
+            responseEvent.addErrorDetail(errorAttributes);
+            engine.publishEvent(responseEvent);
+        }
+    }
+
+    private static HttpResponseEvent toHttpResponseEvent(HttpRequestEvent requestEvent, HttpStatus responseStatus) {
+        return HttpResponseEvent.builder()
                 .fullUrl(requestEvent.getFullUrl())
                 .path(requestEvent.getPath())
                 .method(requestEvent.getMethod())
@@ -61,20 +79,11 @@ public class HttpResponseEventPublisher extends OncePerRequestFilter {
                 .responseBody("")
                 .responseStatus(responseStatus)
                 .build();
+    }
 
-        if (responseStatus.is2xxSuccessful()) {
-            CompletionStage<String> responseBody = responseWrapper.getResponseBody(requestWrapper);
-
-            responseBody.thenAccept(body -> {
-                responseEvent.setResponseBody(body);
-                engine.publishEvent(responseEvent);
-            });
-        } else {
-            WebRequest webRequest = new ServletWebRequest(request);
-            var options = ErrorAttributeOptions.of(ErrorAttributeOptions.Include.values());
-            var errorAttributes = defaultErrorAttributes.getErrorAttributes(webRequest, options);
-            responseEvent.addErrorDetail(errorAttributes);
-            engine.publishEvent(responseEvent);
-        }
+    private Map<String, Object> getErrorAttributes(HttpServletRequest request) {
+        WebRequest webRequest = new ServletWebRequest(request);
+        var options = ErrorAttributeOptions.of(ErrorAttributeOptions.Include.values());
+        return defaultErrorAttributes.getErrorAttributes(webRequest, options);
     }
 }
