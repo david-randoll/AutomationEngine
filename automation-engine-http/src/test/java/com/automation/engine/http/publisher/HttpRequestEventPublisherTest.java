@@ -364,7 +364,7 @@ class HttpRequestEventPublisherTest {
         // Verify error response
         HttpResponseEvent responseEvent = eventCaptureListener.getResponseEvents().getFirst();
         assertThat(responseEvent.getResponseStatus()).isEqualTo(HttpStatus.BAD_REQUEST);
-        assertThat(responseEvent.getResponseBody()).contains("Unexpected error occurred");
+        assertThat(responseEvent.getResponseBody()).contains("Validation failed for object='testRequest'. Error count: 1");
     }
 
     @Test
@@ -390,6 +390,4 @@ class HttpRequestEventPublisherTest {
         HttpRequestEvent requestEvent = eventCaptureListener.getRequestEvents().getFirst();
         assertThat(requestEvent.getQueryParams()).containsEntry("q", List.of("value with spaces & special!"));
     }
-
-
 }
