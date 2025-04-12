@@ -320,7 +320,7 @@ class HttpRequestEventPublisherTest {
 
     @Test
     void testInternalServerErrorPublishesEvents() throws Exception {
-        mockMvc.perform(get("/test/error"))
+        mockMvc.perform(get("/test/error-500"))
                 .andExpect(status().isInternalServerError());
 
         // Verify request event
@@ -330,6 +330,40 @@ class HttpRequestEventPublisherTest {
         // Verify error response
         HttpResponseEvent responseEvent = eventCaptureListener.getResponseEvents().getFirst();
         assertThat(responseEvent.getResponseStatus()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
+        assertThat(responseEvent.getResponseBody()).contains("Unexpected error occurred");
+    }
+
+    @Test
+    void testBadRequestErrorPublishesEvents() throws Exception {
+        mockMvc.perform(get("/test/error-400"))
+                .andExpect(status().isBadRequest());
+
+        // Verify request event
+        assertThat(eventCaptureListener.getRequestEvents()).hasSize(1);
+        assertThat(eventCaptureListener.getResponseEvents()).hasSize(1);
+
+        // Verify error response
+        HttpResponseEvent responseEvent = eventCaptureListener.getResponseEvents().getFirst();
+        assertThat(responseEvent.getResponseStatus()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(responseEvent.getResponseBody()).contains("Unexpected error occurred");
+    }
+
+    @Test
+    void testValidationErrorPublishesEvents() throws Exception {
+        String requestBody = "{\"unexpectedField\": \"value\"}";
+
+        mockMvc.perform(post("/test/error-validation")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isBadRequest());
+
+        // Verify request event
+        assertThat(eventCaptureListener.getRequestEvents()).hasSize(1);
+        assertThat(eventCaptureListener.getResponseEvents()).hasSize(1);
+
+        // Verify error response
+        HttpResponseEvent responseEvent = eventCaptureListener.getResponseEvents().getFirst();
+        assertThat(responseEvent.getResponseStatus()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(responseEvent.getResponseBody()).contains("Unexpected error occurred");
     }
 
@@ -356,7 +390,6 @@ class HttpRequestEventPublisherTest {
         HttpRequestEvent requestEvent = eventCaptureListener.getRequestEvents().getFirst();
         assertThat(requestEvent.getQueryParams()).containsEntry("q", List.of("value with spaces & special!"));
     }
-
 
 
 }

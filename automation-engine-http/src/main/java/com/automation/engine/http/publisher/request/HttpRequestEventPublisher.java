@@ -2,6 +2,7 @@ package com.automation.engine.http.publisher.request;
 
 import com.automation.engine.core.AutomationEngine;
 import com.automation.engine.http.event.HttpRequestEvent;
+import com.automation.engine.http.publisher.HttpServletUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -18,13 +19,7 @@ public class HttpRequestEventPublisher implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull Object handler) throws Exception {
-        CachedBodyHttpServletRequest requestWrapper = null;
-        if (request instanceof CachedBodyHttpServletRequest cachedBodyHttpServletRequest) {
-            requestWrapper = cachedBodyHttpServletRequest;
-        } else {
-            requestWrapper = new CachedBodyHttpServletRequest(request);
-        }
-
+        CachedBodyHttpServletRequest requestWrapper = HttpServletUtils.toCachedBodyHttpServletRequest(request);
         requestWrapper.setEndpointExists(true);
         HttpRequestEvent requestEvent = requestWrapper.toHttpRequestEvent();
         engine.publishEvent(requestEvent);

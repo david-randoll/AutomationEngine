@@ -1,20 +1,27 @@
 package com.automation.engine.http.publisher.response;
 
+import com.automation.engine.core.AutomationEngine;
+import com.automation.engine.http.publisher.HttpServletUtils;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
-import org.springframework.stereotype.Component;
-import org.springframework.web.context.request.WebRequest;
-
-import java.util.Map;
+import org.springframework.web.servlet.ModelAndView;
 
 @Slf4j
-@Component
+//@Component
+@RequiredArgsConstructor
 public class CustomErrorAttribute extends DefaultErrorAttributes {
+    private final AutomationEngine engine;
 
+    /**
+     * Capture the exception to be used in the {@link  HttpResponseEventPublisher#doFilterInternal}
+     */
     @Override
-    public Map<String, Object> getErrorAttributes(WebRequest webRequest, ErrorAttributeOptions options) {
-        log.error("Error occurred while processing request", getError(webRequest));
-        return super.getErrorAttributes(webRequest, options);
+    public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
+        CachedBodyHttpServletResponse responseWrapper = HttpServletUtils.toCachedBodyHttpServletResponse(response);
+        responseWrapper.setException(ex);
+        return super.resolveException(request, response, handler, ex);
     }
 }

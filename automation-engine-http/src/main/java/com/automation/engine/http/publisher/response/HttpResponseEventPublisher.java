@@ -11,11 +11,15 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.web.error.ErrorAttributeOptions;
+import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.ServletWebRequest;
+import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -28,6 +32,7 @@ import java.util.concurrent.CompletionStage;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class HttpResponseEventPublisher extends OncePerRequestFilter {
     private final AutomationEngine engine;
+    private final DefaultErrorAttributes defaultErrorAttributes;
 
     /**
      * NOTE: Cannot publish the request event here because the path params are not available here yet.
@@ -43,24 +48,33 @@ public class HttpResponseEventPublisher extends OncePerRequestFilter {
 
         if (!requestWrapper.isEndpointExists()) return;
 
-        HttpRequestEvent requestEvent = requestWrapper.toHttpRequestEvent();
-
         HttpStatus responseStatus = HttpStatus.valueOf(responseWrapper.getStatus());
-        CompletionStage<String> responseBody = responseWrapper.getResponseBody(requestWrapper);
+        HttpRequestEvent requestEvent = requestWrapper.toHttpRequestEvent();
+        HttpResponseEvent responseEvent = HttpResponseEvent.builder()
+                .fullUrl(requestEvent.getFullUrl())
+                .path(requestEvent.getPath())
+                .method(requestEvent.getMethod())
+                .headers(requestEvent.getHeaders())
+                .queryParams(requestEvent.getQueryParams())
+                .pathParams(requestEvent.getPathParams())
+                .requestBody(requestEvent.getRequestBody())
+                .responseBody("")
+                .responseStatus(responseStatus)
+                .build();
 
-        responseBody.thenAccept(body -> {
-            var responseEvent = new HttpResponseEvent(
-                    requestEvent.getFullUrl(),
-                    requestEvent.getPath(),
-                    requestEvent.getMethod(),
-                    requestEvent.getHeaders(),
-                    requestEvent.getQueryParams(),
-                    requestEvent.getPathParams(),
-                    requestEvent.getRequestBody(),
-                    body,
-                    responseStatus
-            );
+        if (responseStatus.is2xxSuccessful()) {
+            CompletionStage<String> responseBody = responseWrapper.getResponseBody(requestWrapper);
+
+            responseBody.thenAccept(body -> {
+                responseEvent.setResponseBody(body);
+                engine.publishEvent(responseEvent);
+            });
+        } else {
+            WebRequest webRequest = new ServletWebRequest(request);
+            var options = ErrorAttributeOptions.of(ErrorAttributeOptions.Include.values());
+            var errorAttributes = defaultErrorAttributes.getErrorAttributes(webRequest, options);
+            responseEvent.addErrorDetail(errorAttributes);
             engine.publishEvent(responseEvent);
-        });
+        }
     }
 }

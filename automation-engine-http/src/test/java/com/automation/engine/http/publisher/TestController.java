@@ -1,5 +1,7 @@
 package com.automation.engine.http.publisher;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -74,14 +76,27 @@ public class TestController {
         return ResponseEntity.ok(params);
     }
 
-    @GetMapping("/error")
-    public ResponseEntity<String> handleError() {
+    @GetMapping("/error-500")
+    public ResponseEntity<String> handle500Error() {
         throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unexpected error occurred");
+    }
+
+    @GetMapping("/error-400")
+    public ResponseEntity<String> handle400Error() {
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unexpected error occurred");
+    }
+
+    @PostMapping("/error-validation")
+    public void handleValidationError(@RequestBody @Valid TestRequest body) {
+
     }
 
     @GetMapping("/slow-response")
     public ResponseEntity<String> handleSlowResponse() throws InterruptedException {
         Thread.sleep(5000); // Simulate slow response
         return ResponseEntity.ok("Processed after delay");
+    }
+
+    public record TestRequest(@NotEmpty String name, String value) {
     }
 }
