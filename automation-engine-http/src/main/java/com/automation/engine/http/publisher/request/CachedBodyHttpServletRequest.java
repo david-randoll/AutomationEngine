@@ -97,15 +97,16 @@ public class CachedBodyHttpServletRequest extends ContentCachingRequestWrapper {
         if (this.httpRequestEvent != null) {
             return this.httpRequestEvent;
         }
-        this.httpRequestEvent = new HttpRequestEvent(
-                this.getFullUrl(),
-                this.getPath(),
-                HttpMethodEnum.fromValue(this.getMethod()),
-                this.getHttpHeaders(),
-                this.getRequestParams(),
-                this.getPathVariables(),
-                this.getBody()
-        );
+        this.httpRequestEvent = HttpRequestEvent.builder()
+                .fullUrl(this.getFullUrl())
+                .path(this.getPath())
+                .method(HttpMethodEnum.fromValue(this.getMethod()))
+                .headers(this.getHttpHeaders())
+                .queryParams(this.getRequestParams())
+                .pathParams(this.getPathVariables())
+                .requestBody(this.getBody())
+                .build();
+
         return this.httpRequestEvent;
     }
 }

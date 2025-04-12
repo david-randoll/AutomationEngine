@@ -76,14 +76,13 @@ public class HttpResponseEventPublisher extends OncePerRequestFilter {
                 .queryParams(requestEvent.getQueryParams())
                 .pathParams(requestEvent.getPathParams())
                 .requestBody(requestEvent.getRequestBody())
-                .responseBody("")
                 .responseStatus(responseStatus)
                 .build();
     }
 
     private Map<String, Object> getErrorAttributes(HttpServletRequest request) {
         WebRequest webRequest = new ServletWebRequest(request);
-        var options = ErrorAttributeOptions.of(ErrorAttributeOptions.Include.values());
+        ErrorAttributeOptions options = ErrorAttributeOptions.of(ErrorAttributeOptions.Include.values());
         return defaultErrorAttributes.getErrorAttributes(webRequest, options);
     }
 }
