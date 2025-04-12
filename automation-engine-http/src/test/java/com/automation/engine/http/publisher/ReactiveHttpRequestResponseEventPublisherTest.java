@@ -28,7 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK, classes = AutomationEngineHttpApplication.class)
 @AutoConfigureMockMvc
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class HttpRequestEventPublisherTest {
+class ReactiveHttpRequestResponseEventPublisherTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -46,14 +46,14 @@ class HttpRequestEventPublisherTest {
 
     @Test
     void testGetRequestPublishesEvents() throws Exception {
-        mockMvc.perform(get("/test/get"))
+        mockMvc.perform(get("/test/reactive/get"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("GET response"));
 
         // Verify request event
         assertThat(eventCaptureListener.getRequestEvents()).hasSize(1);
         HttpRequestEvent requestEvent = eventCaptureListener.getRequestEvents().getFirst();
-        assertThat(requestEvent.getPath()).isEqualTo("/test/get");
+        assertThat(requestEvent.getPath()).isEqualTo("/test/reactive/get");
         assertThat(requestEvent.getMethod()).isEqualTo(HttpMethodEnum.GET);
         // queryParams
         assertThat(requestEvent.getQueryParams()).isEmpty();
@@ -74,7 +74,7 @@ class HttpRequestEventPublisherTest {
     void testPostRequestPublishesEvents() throws Exception {
         String requestBody = "{\"key\": \"value\"}";
 
-        mockMvc.perform(post("/test/post")
+        mockMvc.perform(post("/test/reactive/post")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
                 .andExpect(status().isOk())
@@ -83,7 +83,7 @@ class HttpRequestEventPublisherTest {
         // Verify request event
         assertThat(eventCaptureListener.getRequestEvents()).hasSize(1);
         HttpRequestEvent requestEvent = eventCaptureListener.getRequestEvents().getFirst();
-        assertThat(requestEvent.getPath()).isEqualTo("/test/post");
+        assertThat(requestEvent.getPath()).isEqualTo("/test/reactive/post");
         assertThat(requestEvent.getMethod()).isEqualTo(HttpMethodEnum.POST);
         // requestBody
         var bodyJson = objectMapper.readTree(requestEvent.getRequestBody());
@@ -108,7 +108,7 @@ class HttpRequestEventPublisherTest {
     void testPutRequestPublishesEvents() throws Exception {
         String requestBody = "Updated content";
 
-        mockMvc.perform(put("/test/put")
+        mockMvc.perform(put("/test/reactive/put")
                         .contentType(MediaType.TEXT_PLAIN)
                         .content(requestBody))
                 .andExpect(status().isOk())
@@ -117,7 +117,7 @@ class HttpRequestEventPublisherTest {
         // Verify request event
         assertThat(eventCaptureListener.getRequestEvents()).hasSize(1);
         HttpRequestEvent requestEvent = eventCaptureListener.getRequestEvents().getFirst();
-        assertThat(requestEvent.getPath()).isEqualTo("/test/put");
+        assertThat(requestEvent.getPath()).isEqualTo("/test/reactive/put");
         assertThat(requestEvent.getMethod()).isEqualTo(HttpMethodEnum.PUT);
         // requestBody
         assertThat(requestEvent.getRequestBody()).isEqualTo("Updated content");
@@ -138,13 +138,13 @@ class HttpRequestEventPublisherTest {
 
     @Test
     void testDeleteRequestPublishesEvents() throws Exception {
-        mockMvc.perform(delete("/test/delete"))
+        mockMvc.perform(delete("/test/reactive/delete"))
                 .andExpect(status().isNoContent());
 
         // Verify request event
         assertThat(eventCaptureListener.getRequestEvents()).hasSize(1);
         HttpRequestEvent requestEvent = eventCaptureListener.getRequestEvents().getFirst();
-        assertThat(requestEvent.getPath()).isEqualTo("/test/delete");
+        assertThat(requestEvent.getPath()).isEqualTo("/test/reactive/delete");
         assertThat(requestEvent.getMethod()).isEqualTo(HttpMethodEnum.DELETE);
         // queryParams
         assertThat(requestEvent.getQueryParams()).isEmpty();
@@ -173,7 +173,7 @@ class HttpRequestEventPublisherTest {
 
     @Test
     void testGetWithQueryParamsPublishesEvents() throws Exception {
-        mockMvc.perform(get("/test/get-with-params")
+        mockMvc.perform(get("/test/reactive/get-with-params")
                         .param("key", "value")
                         .param("otherKey", "otherValue")
                         .header("Custom-Header", "HeaderValue"))
@@ -183,7 +183,7 @@ class HttpRequestEventPublisherTest {
         // Verify request event
         assertThat(eventCaptureListener.getRequestEvents()).hasSize(1);
         HttpRequestEvent requestEvent = eventCaptureListener.getRequestEvents().getFirst();
-        assertThat(requestEvent.getPath()).isEqualTo("/test/get-with-params");
+        assertThat(requestEvent.getPath()).isEqualTo("/test/reactive/get-with-params");
         assertThat(requestEvent.getQueryParams()).containsEntry("key", List.of("value"));
         assertThat(requestEvent.getQueryParams()).containsEntry("otherKey", List.of("otherValue"));
         assertThat(requestEvent.getHeaders()).containsEntry("Custom-Header", List.of("HeaderValue"));
@@ -196,7 +196,7 @@ class HttpRequestEventPublisherTest {
 
     @Test
     void testGetWithPathVariablePublishesEvents() throws Exception {
-        mockMvc.perform(get("/test/get-with-path/123")
+        mockMvc.perform(get("/test/reactive/get-with-path/123")
                         .header("Another-Header", "AnotherValue"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Path Variable: 123"));
@@ -204,7 +204,7 @@ class HttpRequestEventPublisherTest {
         // Verify request event
         assertThat(eventCaptureListener.getRequestEvents()).hasSize(1);
         HttpRequestEvent requestEvent = eventCaptureListener.getRequestEvents().getFirst();
-        assertThat(requestEvent.getPath()).isEqualTo("/test/get-with-path/123");
+        assertThat(requestEvent.getPath()).isEqualTo("/test/reactive/get-with-path/123");
         assertThat(requestEvent.getPathParams()).containsEntry("id", "123");
         assertThat(requestEvent.getHeaders()).containsEntry("Another-Header", List.of("AnotherValue"));
 
@@ -218,7 +218,7 @@ class HttpRequestEventPublisherTest {
     void testPostWithQueryParamsAndHeadersPublishesEvents() throws Exception {
         String requestBody = "{\"name\": \"Test\"}";
 
-        mockMvc.perform(post("/test/post-with-params/456")
+        mockMvc.perform(post("/test/reactive/post-with-params/456")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody)
                         .param("key", "value")
@@ -231,7 +231,7 @@ class HttpRequestEventPublisherTest {
         // Verify request event
         assertThat(eventCaptureListener.getRequestEvents()).hasSize(1);
         HttpRequestEvent requestEvent = eventCaptureListener.getRequestEvents().getFirst();
-        assertThat(requestEvent.getPath()).isEqualTo("/test/post-with-params/456");
+        assertThat(requestEvent.getPath()).isEqualTo("/test/reactive/post-with-params/456");
         assertThat(requestEvent.getPathParams()).containsEntry("id", "456");
         assertThat(requestEvent.getQueryParams()).containsEntry("key", List.of("value"));
         assertThat(requestEvent.getHeaders()).containsEntry("Post-Header", List.of("HeaderValue"));
@@ -250,7 +250,7 @@ class HttpRequestEventPublisherTest {
 
     @Test
     void testEndpointNotFoundPublishesNoEvents() throws Exception {
-        mockMvc.perform(get("/test/notfound"))
+        mockMvc.perform(get("/test/reactive/notfound"))
                 .andExpect(status().isNotFound());
 
         // Verify no events are published
@@ -262,9 +262,9 @@ class HttpRequestEventPublisherTest {
     void testConcurrentRequestsPublishesEventsInOrder() throws Exception {
         // Fire multiple requests concurrently
         List<MockHttpServletRequestBuilder> requests = Arrays.asList(
-                get("/test/long-process"),
-                get("/test/long-process"),
-                get("/test/long-process")
+                get("/test/reactive/long-process"),
+                get("/test/reactive/long-process"),
+                get("/test/reactive/long-process")
         );
 
         // Perform all requests concurrently
@@ -289,7 +289,7 @@ class HttpRequestEventPublisherTest {
 
         // Check that events are in order (this checks that the first request's event is the first one, and so on)
         for (int i = 0; i < 3; i++) {
-            assertThat(eventCaptureListener.getRequestEvents().get(i).getPath()).isEqualTo("/test/long-process");
+            assertThat(eventCaptureListener.getRequestEvents().get(i).getPath()).isEqualTo("/test/reactive/long-process");
             assertThat(eventCaptureListener.getResponseEvents().get(i).getResponseBody()).isEqualTo("Long process completed");
         }
     }
@@ -298,7 +298,7 @@ class HttpRequestEventPublisherTest {
     void testPostWithUnexpectedFieldsPublishesEvents() throws Exception {
         String requestBody = "{\"unexpectedField\": \"value\"}";
 
-        mockMvc.perform(post("/test/post")
+        mockMvc.perform(post("/test/reactive/post")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
                 .andExpect(status().isOk())
@@ -307,7 +307,7 @@ class HttpRequestEventPublisherTest {
         // Verify request event
         assertThat(eventCaptureListener.getRequestEvents()).hasSize(1);
         HttpRequestEvent requestEvent = eventCaptureListener.getRequestEvents().getFirst();
-        assertThat(requestEvent.getPath()).isEqualTo("/test/post");
+        assertThat(requestEvent.getPath()).isEqualTo("/test/reactive/post");
         var bodyJson = objectMapper.readTree(requestEvent.getRequestBody());
         assertThat(bodyJson.get("unexpectedField").asText()).isEqualTo("value");
 
@@ -320,7 +320,7 @@ class HttpRequestEventPublisherTest {
 
     @Test
     void testInternalServerErrorPublishesEvents() throws Exception {
-        mockMvc.perform(get("/test/error-500"))
+        mockMvc.perform(get("/test/reactive/error-500"))
                 .andExpect(status().isInternalServerError());
 
         // Verify request event
@@ -335,7 +335,7 @@ class HttpRequestEventPublisherTest {
 
     @Test
     void testBadRequestErrorPublishesEvents() throws Exception {
-        mockMvc.perform(get("/test/error-400"))
+        mockMvc.perform(get("/test/reactive/error-400"))
                 .andExpect(status().isBadRequest());
 
         // Verify request event
@@ -352,7 +352,7 @@ class HttpRequestEventPublisherTest {
     void testValidationErrorPublishesEvents() throws Exception {
         String requestBody = "{\"unexpectedField\": \"value\"}";
 
-        mockMvc.perform(post("/test/error-validation")
+        mockMvc.perform(post("/test/reactive/error-validation")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
                 .andExpect(status().isBadRequest());
@@ -369,7 +369,7 @@ class HttpRequestEventPublisherTest {
 
     @Test
     void testSlowResponsePublishesEvents() throws Exception {
-        mockMvc.perform(get("/test/slow-response"))
+        mockMvc.perform(get("/test/reactive/slow-response"))
                 .andExpect(status().isOk());
 
         // Verify request and response events
@@ -382,7 +382,7 @@ class HttpRequestEventPublisherTest {
 
     @Test
     void testQueryParamEncodingPublishesEvents() throws Exception {
-        mockMvc.perform(get("/test/query")
+        mockMvc.perform(get("/test/reactive/query")
                         .param("q", "value with spaces & special!"))
                 .andExpect(status().isOk());
 
