@@ -15,31 +15,24 @@ public class OnHttpRequestTrigger extends PluggableTrigger<OnHttpRequestTriggerC
     @Override
     public boolean isTriggered(EventContext ec, OnHttpRequestTriggerContext tc) {
         if (!(ec.getEvent() instanceof HttpRequestEvent event)) return false;
-        if (tc.hasMethods()) {
-            if (!tc.getMethods().contains(event.getMethod())) return false;
-        }
 
-        if (tc.hasFullPaths()) {
-            var fullPaths = tc.getFullPathsAsRegex();
-            if (fullPaths.stream().noneMatch(event.getFullUrl()::matches)) return false;
-        }
+        var isMethodTriggered = tc.hasMethods() && !tc.getMethods().contains(event.getMethod());
+        if (isMethodTriggered) return false;
 
-        if (tc.hasPaths()) {
-            var paths = tc.getPathsAsRegex();
-            if (paths.stream().noneMatch(event.getPath()::matches)) return false;
-        }
+        var isFullUrlTriggered = tc.hasFullPaths() && tc.getFullPaths().stream().noneMatch(event.getFullUrl()::matches);
+        if (isFullUrlTriggered) return false;
 
-        if (tc.hasHeaders()) {
-            if (checkMap(tc.getHeaders(), event.getHeaders())) return false;
-        }
+        var isPathTriggered = tc.hasPaths() && tc.getPaths().stream().noneMatch(event.getPath()::matches);
+        if (isPathTriggered) return false;
 
-        if (tc.hasQueryParams()) {
-            if (checkMap(tc.getQueryParams(), event.getQueryParams())) return false;
-        }
+        var isHeaderTriggered = tc.hasHeaders() && checkMap(tc.getHeaders(), event.getHeaders());
+        if (isHeaderTriggered) return false;
 
-        if (tc.hasPathParams()) {
-            if (checkMap(tc.getPathParams(), event.getPathParams())) return false;
-        }
+        var isQueryParamTriggered = tc.hasQueryParams() && checkMap(tc.getQueryParams(), event.getQueryParams());
+        if (isQueryParamTriggered) return false;
+
+        var isPathParamTriggered = tc.hasPathParams() && checkMap(tc.getPathParams(), event.getPathParams());
+        if (isPathParamTriggered) return false;
 
         return true;
     }
@@ -55,8 +48,8 @@ public class OnHttpRequestTrigger extends PluggableTrigger<OnHttpRequestTriggerC
             String queryParamName = queryParam.getKey();
             List<String> queryParamValue = queryParam.getValue();
             var queryParamValueList = eventQueryParams.getOrDefault(queryParamName, List.of());
-            if (queryParamValueList == null || queryParamValueList.isEmpty()) return false;
-            if (queryParamValue.stream().noneMatch(queryParamValueList::contains)) return false;
+            if (queryParamValueList == null || queryParamValueList.isEmpty()) return true;
+            if (queryParamValue.stream().noneMatch(queryParamValueList::contains)) return true;
         }
         return false;
     }

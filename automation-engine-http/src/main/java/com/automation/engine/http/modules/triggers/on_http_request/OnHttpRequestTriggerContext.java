@@ -15,14 +15,10 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class OnHttpRequestTriggerContext implements ITriggerContext {
+    private static final String MATCH_PATH_PARAM = "\\{[^}]+}";
     private String alias;
-
     private List<HttpMethodEnum> methods;
-
-    @JsonAlias({"fullPath", "fullPaths"})
     private List<String> fullPaths;
-
-    @JsonAlias({"path", "paths"})
     private List<String> paths;
 
     @JsonAlias({"headers", "header"})
@@ -40,33 +36,46 @@ public class OnHttpRequestTriggerContext implements ITriggerContext {
 
     @JsonAlias({"method", "methods"})
     public void setMethods(Object value) {
-        switch (value) {
-            case String s -> this.methods = List.of(HttpMethodEnum.fromValue(s));
-            case List<?> list -> this.methods = list.stream()
+        this.methods = switch (value) {
+            case String s -> List.of(HttpMethodEnum.fromValue(s));
+            case List<?> list -> list.stream()
                     .map(String::valueOf)
                     .map(HttpMethodEnum::fromValue)
                     .toList();
             default -> throw new IllegalArgumentException("Unsupported type for methods: " + value.getClass());
-        }
+        };
     }
 
     public boolean hasFullPaths() {
         return fullPaths != null && !fullPaths.isEmpty();
     }
 
-    public List<String> getFullPathsAsRegex() {
-        return this.getPaths().stream()
-                .map(path -> path.replaceAll("\\{[^}]+}", ".*"))
-                .toList();
+    @JsonAlias({"fullPath", "fullPaths"})
+    public void setFullPaths(Object value) {
+        this.fullPaths = switch (value) {
+            case String s -> regexReplaceMatchingPathParams(List.of(s));
+            case List<?> list -> regexReplaceMatchingPathParams(list);
+            default -> throw new IllegalArgumentException("Unsupported type for fullPaths: " + value.getClass());
+        };
     }
 
     public boolean hasPaths() {
         return paths != null && !paths.isEmpty();
     }
 
-    public List<String> getPathsAsRegex() {
-        return this.getPaths().stream()
-                .map(path -> path.replaceAll("\\{[^}]+}", ".*"))
+    @JsonAlias({"path", "paths"})
+    public void setPaths(Object value) {
+        this.paths = switch (value) {
+            case String s -> regexReplaceMatchingPathParams(List.of(s));
+            case List<?> list -> regexReplaceMatchingPathParams(list);
+            default -> throw new IllegalArgumentException("Unsupported type for paths: " + value.getClass());
+        };
+    }
+
+    private static List<String> regexReplaceMatchingPathParams(List<?> list) {
+        return list.stream()
+                .map(String::valueOf)
+                .map(path -> path.replaceAll(MATCH_PATH_PARAM, ".*"))
                 .toList();
     }
 
