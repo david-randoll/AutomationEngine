@@ -72,5 +72,4 @@ public class OnHttpRequestTrigger extends PluggableTrigger<OnHttpRequestTriggerC
         }
         return false;
     }
-
 }

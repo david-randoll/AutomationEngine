@@ -46,6 +46,9 @@ class OnHttpRequestTriggerTest {
         engine.removeAll();
     }
 
+    /*
+        Methods
+     */
     @Test
     void testAutomationTriggersForSingleMatchingMethod() {
         var yaml = """
@@ -226,6 +229,9 @@ class OnHttpRequestTriggerTest {
                 .noneMatch(msg -> msg.contains("Should not trigger without method"));
     }
 
+    /*
+        Full Path
+     */
     @Test
     void testAutomationTriggersForExactFullPathMatch() {
         var yaml = """
@@ -660,6 +666,9 @@ class OnHttpRequestTriggerTest {
                 .anyMatch(msg -> msg.contains("This should only match method"));
     }
 
+    /*
+        Path
+     */
     @Test
     void testAutomationTriggersForMatchingPath() {
         var yaml = """
@@ -1158,6 +1167,9 @@ class OnHttpRequestTriggerTest {
     }
 
 
+    /*
+        Headers
+     */
     @Test
     void testAutomationTriggersForMatchingHeader() {
         var yaml = """
