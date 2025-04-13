@@ -1,6 +1,8 @@
 package com.automation.engine.http.event;
 
 import com.automation.engine.core.events.IEvent;
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.FieldNameConstants;
@@ -8,6 +10,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Data
@@ -25,8 +28,18 @@ public class HttpResponseEvent implements IEvent {
     private HttpStatus responseStatus;
     private Map<String, Object> errorDetail;
 
+    @JsonAnySetter
+    @JsonAnyGetter
+    private Map<String, Object> additionalData;
+
+
     public void addErrorDetail(@NonNull Map<String, Object> errorDetail) {
         this.errorDetail = errorDetail;
         this.responseBody = errorDetail.getOrDefault("message", "").toString();
+    }
+
+    public void addAdditionalData(@NonNull Map<String, Object> additionalData) {
+        if (this.additionalData == null) this.additionalData = new HashMap<>();
+        this.additionalData.putAll(additionalData);
     }
 }

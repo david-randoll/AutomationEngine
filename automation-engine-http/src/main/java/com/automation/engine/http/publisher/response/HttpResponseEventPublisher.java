@@ -1,6 +1,7 @@
 package com.automation.engine.http.publisher.response;
 
 import com.automation.engine.core.AutomationEngine;
+import com.automation.engine.http.event.IHttpEventExtension;
 import com.automation.engine.http.event.HttpRequestEvent;
 import com.automation.engine.http.event.HttpResponseEvent;
 import com.automation.engine.http.publisher.request.CachedBodyHttpServletRequest;
@@ -23,6 +24,7 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletionStage;
 
@@ -34,6 +36,7 @@ import java.util.concurrent.CompletionStage;
 public class HttpResponseEventPublisher extends OncePerRequestFilter {
     private final AutomationEngine engine;
     private final DefaultErrorAttributes defaultErrorAttributes;
+    private final List<IHttpEventExtension> httpEventExtensions;
 
     /**
      * NOTE: Cannot publish the request event here because the path params are not available here yet.
@@ -58,13 +61,21 @@ public class HttpResponseEventPublisher extends OncePerRequestFilter {
 
             responseBody.thenAccept(body -> {
                 responseEvent.setResponseBody(body);
-                engine.publishEvent(responseEvent);
+                publishResponseEvent(responseEvent);
             });
         } else {
             var errorAttributes = getErrorAttributes(request);
             responseEvent.addErrorDetail(errorAttributes);
-            engine.publishEvent(responseEvent);
+            publishResponseEvent(responseEvent);
         }
+    }
+
+    private void publishResponseEvent(HttpResponseEvent responseEvent) {
+        for (IHttpEventExtension extension : httpEventExtensions) {
+            var additionalData = extension.extendResponseEvent(responseEvent);
+            responseEvent.addAdditionalData(additionalData);
+        }
+        engine.publishEvent(responseEvent);
     }
 
     private static HttpResponseEvent toHttpResponseEvent(HttpRequestEvent requestEvent, HttpStatus responseStatus) {
