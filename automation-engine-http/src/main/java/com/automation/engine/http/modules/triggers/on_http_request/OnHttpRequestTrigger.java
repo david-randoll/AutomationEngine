@@ -9,6 +9,7 @@ import org.springframework.util.MultiValueMap;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Component("onHttpRequestTrigger")
 public class OnHttpRequestTrigger extends PluggableTrigger<OnHttpRequestTriggerContext> {
@@ -52,12 +53,24 @@ public class OnHttpRequestTrigger extends PluggableTrigger<OnHttpRequestTriggerC
 
     private static boolean checkMap(MultiValueMap<String, String> queryParams, MultiValueMap<String, String> eventQueryParams) {
         for (var queryParam : queryParams.entrySet()) {
-            String queryParamName = queryParam.getKey();
-            List<String> queryParamValue = queryParam.getValue();
-            var queryParamValueList = eventQueryParams.getOrDefault(queryParamName, List.of());
-            if (queryParamValueList == null || queryParamValueList.isEmpty()) return true;
-            if (queryParamValue.stream().noneMatch(queryParamValueList::contains)) return true;
+            String queryParamName = queryParam.getKey().trim();
+            List<String> expectedValues = queryParam.getValue().stream()
+                    .map(String::trim)
+                    .toList();
+
+            List<String> actualValues = eventQueryParams.getOrDefault(queryParamName, List.of());
+            if (actualValues == null || actualValues.isEmpty()) return true;
+
+            boolean noneMatched = expectedValues.stream().noneMatch(expectedPattern ->
+                    actualValues.stream()
+                            .filter(Objects::nonNull)
+                            .map(String::trim)
+                            .anyMatch(actualValue -> actualValue.matches(expectedPattern))
+            );
+
+            if (noneMatched) return true;
         }
         return false;
     }
+
 }
