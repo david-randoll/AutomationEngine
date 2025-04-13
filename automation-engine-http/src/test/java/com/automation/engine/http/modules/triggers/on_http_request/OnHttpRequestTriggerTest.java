@@ -16,6 +16,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.util.MultiValueMap;
+
+import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -653,6 +657,503 @@ class OnHttpRequestTriggerTest {
 
         assertThat(logAppender.getLoggedMessages())
                 .anyMatch(msg -> msg.contains("This should only match method"));
+    }
+
+    @Test
+    void testAutomationTriggersForMatchingPath() {
+        var yaml = """
+                alias: Match /api/users path
+                triggers:
+                  - trigger: onHttpRequest
+                    path: /api/users
+                actions:
+                  - action: logger
+                    message: Path /api/users triggered
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = HttpRequestEvent.builder()
+                .path("/api/users")
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context))
+                .as("Should trigger for exact matching path")
+                .isTrue();
+
+        assertThat(logAppender.getLoggedMessages())
+                .anyMatch(msg -> msg.contains("Path /api/users triggered"));
+    }
+
+    @Test
+    void testAutomationDoesNotTriggerForNonMatchingPath() {
+        var yaml = """
+                alias: Match /api/users path
+                triggers:
+                  - trigger: onHttpRequest
+                    path: /api/users
+                actions:
+                  - action: logger
+                    message: Should not match
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = HttpRequestEvent.builder()
+                .path("/api/accounts")
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context))
+                .as("Should not trigger for non-matching path")
+                .isFalse();
+
+        assertThat(logAppender.getLoggedMessages())
+                .noneMatch(msg -> msg.contains("Should not match"));
+    }
+
+    @Test
+    void testAutomationTriggersWhenOneOfMultiplePathsMatches() {
+        var yaml = """
+                alias: Match multiple paths
+                triggers:
+                  - trigger: onHttpRequest
+                    paths:
+                      - /api/accounts
+                      - /api/users
+                actions:
+                  - action: logger
+                    message: One of the paths matched
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = HttpRequestEvent.builder()
+                .path("/api/users")
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context))
+                .as("Should trigger when one of multiple paths match")
+                .isTrue();
+
+        assertThat(logAppender.getLoggedMessages())
+                .anyMatch(msg -> msg.contains("One of the paths matched"));
+    }
+
+    @Test
+    void testAutomationDoesNotTriggerWhenNoneOfMultiplePathsMatch() {
+        var yaml = """
+                alias: Match multiple paths
+                triggers:
+                  - trigger: onHttpRequest
+                    paths:
+                      - /api/accounts
+                      - /api/items
+                actions:
+                  - action: logger
+                    message: Should not match any path
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = HttpRequestEvent.builder()
+                .path("/api/users")
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context))
+                .as("Should not trigger if no paths match")
+                .isFalse();
+
+        assertThat(logAppender.getLoggedMessages())
+                .noneMatch(msg -> msg.contains("Should not match any path"));
+    }
+
+    @Test
+    void testAutomationTriggersForPathWithDynamicSegment() {
+        var yaml = """
+                alias: Match path with dynamic segment
+                triggers:
+                  - trigger: onHttpRequest
+                    path: /api/users/{id}/posts
+                actions:
+                  - action: logger
+                    message: Dynamic path matched
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = HttpRequestEvent.builder()
+                .path("/api/users/42/posts")
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context))
+                .as("Should match path with dynamic segment")
+                .isTrue();
+
+        assertThat(logAppender.getLoggedMessages())
+                .anyMatch(msg -> msg.contains("Dynamic path matched"));
+    }
+
+    @Test
+    void testAutomationDoesNotTriggerWhenDynamicPathDoesNotMatch() {
+        var yaml = """
+                alias: Dynamic path pattern
+                triggers:
+                  - trigger: onHttpRequest
+                    path: /api/users/{id}/posts
+                actions:
+                  - action: logger
+                    message: Should not match
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = HttpRequestEvent.builder()
+                .path("/api/users/posts")
+                .build(); // missing the {id} in the middle
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context))
+                .as("Should not match if required dynamic part is missing")
+                .isFalse();
+
+        assertThat(logAppender.getLoggedMessages())
+                .noneMatch(msg -> msg.contains("Should not match"));
+    }
+
+    @Test
+    void testAutomationTriggersWhenPathNotSpecified() {
+        var yaml = """
+                alias: No path specified
+                triggers:
+                  - trigger: onHttpRequest
+                    methods: [GET]
+                actions:
+                  - action: logger
+                    message: Triggered by method only
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = HttpRequestEvent.builder()
+                .method(HttpMethodEnum.GET)
+                .path("/some/endpoint")
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context))
+                .as("Should trigger based on method even when path is not specified")
+                .isTrue();
+
+        assertThat(logAppender.getLoggedMessages())
+                .anyMatch(msg -> msg.contains("Triggered by method only"));
+    }
+
+    @Test
+    void testAutomationDoesNotTriggerForPathWithDifferentStaticSegment() {
+        var yaml = """
+                alias: Mismatch in static segment
+                triggers:
+                  - trigger: onHttpRequest
+                    path: /api/users/{id}/posts
+                actions:
+                  - action: logger
+                    message: Should not match mismatched static segment
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = HttpRequestEvent.builder()
+                .path("/api/users/123/order") // should NOT match /api/users/{id}/posts
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context))
+                .as("Should not trigger due to static segment mismatch at the end")
+                .isFalse();
+
+        assertThat(logAppender.getLoggedMessages())
+                .noneMatch(msg -> msg.contains("Should not match mismatched static segment"));
+    }
+
+    @Test
+    void testPathMatchesRegex() {
+        var yaml = """
+                alias: Path with regex
+                triggers:
+                  - trigger: onHttpRequest
+                    paths: ["/api/users/.*/posts"]
+                actions:
+                  - action: logger
+                    message: Regex match triggered
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = HttpRequestEvent.builder()
+                .path("/api/users/123/posts")
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context))
+                .as("Should trigger when path matches regex pattern")
+                .isTrue();
+
+        assertThat(logAppender.getLoggedMessages())
+                .anyMatch(msg -> msg.contains("Regex match triggered"));
+    }
+
+    @Test
+    void testPathDoesNotMatchRegex() {
+        var yaml = """
+                alias: Path with regex no match
+                triggers:
+                  - trigger: onHttpRequest
+                    paths: ["/api/users/.*/posts"]
+                actions:
+                  - action: logger
+                    message: Should not trigger
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = HttpRequestEvent.builder()
+                .path("/api/users/123/comments")
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context))
+                .as("Should not trigger if regex doesn't match")
+                .isFalse();
+
+        assertThat(logAppender.getLoggedMessages())
+                .noneMatch(msg -> msg.contains("Should not trigger"));
+    }
+
+    @Test
+    void testFullPathMatchesRegexWithDynamicInMiddle() {
+        var yaml = """
+                alias: FullPath regex with dynamic in middle
+                triggers:
+                  - trigger: onHttpRequest
+                    fullPaths: ["http://localhost/api/.*/posts"]
+                actions:
+                  - action: logger
+                    message: FullPath regex triggered
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = HttpRequestEvent.builder()
+                .fullUrl("http://localhost/api/123/posts")
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context))
+                .as("Should trigger when full path matches regex")
+                .isTrue();
+
+        assertThat(logAppender.getLoggedMessages())
+                .anyMatch(msg -> msg.contains("FullPath regex triggered"));
+    }
+
+    @Test
+    void testPathMatchingWithTrailingSlash() {
+        var yaml = """
+                alias: Path with trailing slash
+                triggers:
+                  - trigger: onHttpRequest
+                    paths: [/api/users/]
+                actions:
+                  - action: logger
+                    message: Matched trailing slash
+                """;
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = HttpRequestEvent.builder()
+                .path("/api/users")
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isTrue();
+        assertThat(logAppender.getLoggedMessages()).anyMatch(msg -> msg.contains("Matched trailing slash"));
+    }
+
+    @Test
+    void testPathMatchingIgnoresQueryString() {
+        var yaml = """
+                alias: Path match ignores query string
+                triggers:
+                  - trigger: onHttpRequest
+                    paths: [/api/search]
+                actions:
+                  - action: logger
+                    message: Search path matched
+                """;
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = HttpRequestEvent.builder()
+                .path("/api/search")
+                .queryParams(MultiValueMap.fromMultiValue(Map.of("q", List.of("something"))))
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isTrue();
+        assertThat(logAppender.getLoggedMessages()).anyMatch(msg -> msg.contains("Search path matched"));
+    }
+
+    @Test
+    void testPathWithExtraSegmentDoesNotMatch() {
+        var yaml = """
+                alias: No match for extra segment
+                triggers:
+                  - trigger: onHttpRequest
+                    paths: [/api/users]
+                actions:
+                  - action: logger
+                    message: Should not match
+                """;
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = HttpRequestEvent.builder()
+                .path("/api/users/123")
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isFalse();
+        assertThat(logAppender.getLoggedMessages()).noneMatch(msg -> msg.contains("Should not match"));
+    }
+
+    @Test
+    void testPathWithSpecialCharacters() {
+        var yaml = """
+                alias: Match with special characters
+                triggers:
+                  - trigger: onHttpRequest
+                    paths: [/api/items/@special]
+                actions:
+                  - action: logger
+                    message: Special path matched
+                """;
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = HttpRequestEvent.builder()
+                .path("/api/items/@special")
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isTrue();
+        assertThat(logAppender.getLoggedMessages()).anyMatch(msg -> msg.contains("Special path matched"));
+    }
+
+    @Test
+    void testMultipleDynamicSegments() {
+        var yaml = """
+                alias: Match dynamic segments
+                triggers:
+                  - trigger: onHttpRequest
+                    paths: ["/api/{type}/{id}/details"]
+                actions:
+                  - action: logger
+                    message: Dynamic path matched
+                """;
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = HttpRequestEvent.builder()
+                .path("/api/product/42/details")
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isTrue();
+        assertThat(logAppender.getLoggedMessages())
+                .anyMatch(msg -> msg.contains("Dynamic path matched"));
+    }
+
+    @Test
+    void testRegexPathEndingWildcardMatch() {
+        var yaml = """
+                alias: Match any subpath under /api/users
+                triggers:
+                  - trigger: onHttpRequest
+                    paths: [/api/users/.*]
+                actions:
+                  - action: logger
+                    message: Matched user subpath
+                """;
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = HttpRequestEvent.builder()
+                .path("/api/users/123/profile")
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context))
+                .as("Should match any subpath under /api/users/")
+                .isTrue();
+
+        assertThat(logAppender.getLoggedMessages())
+                .anyMatch(msg -> msg.contains("Matched user subpath"));
     }
 
 
