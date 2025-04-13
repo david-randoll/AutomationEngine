@@ -7,7 +7,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
-import org.apache.commons.io.IOUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.lang.NonNull;
 import org.springframework.util.StreamUtils;
@@ -51,7 +50,7 @@ public class CachedBodyHttpServletRequest extends ContentCachingRequestWrapper {
 
     @SneakyThrows
     public String getBody() {
-        return IOUtils.toString(this.getInputStream(), StandardCharsets.UTF_8);
+        return StreamUtils.copyToString(this.getInputStream(), StandardCharsets.UTF_8);
     }
 
     public Map<String, Object> getRequestParams() {
