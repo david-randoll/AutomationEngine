@@ -1381,5 +1381,205 @@ class OnHttpRequestTriggerTest {
                 .anyMatch(msg -> msg.contains("Triggered with no headers specified"));
     }
 
+    @Test
+    void testAutomationDoesNotTriggerForExtraHeader() {
+        var yaml = """
+                alias: Match header X-Auth-Type
+                triggers:
+                  - trigger: onHttpRequest
+                    headers:
+                      X-Auth-Type: Bearer
+                actions:
+                  - action: logger
+                    message: Header matched
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var headers = new HttpHeaders();
+        headers.add("X-Auth-Type", "Bearer");
+        headers.add("X-Extra-Header", "SomeValue"); // extra header
+        var event = HttpRequestEvent.builder()
+                .headers(headers)
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context))
+                .as("Automation should trigger when header matches, even with extra headers present")
+                .isTrue();
+
+        assertThat(logAppender.getLoggedMessages())
+                .anyMatch(msg -> msg.contains("Header matched"));
+    }
+
+    @Test
+    void testHeaderValueWithLeadingTrailingSpaces() {
+        var yaml = """
+                alias: Match header X-Auth-Type with spaces
+                triggers:
+                  - trigger: onHttpRequest
+                    headers:
+                      X-Auth-Type: Bearer
+                actions:
+                  - action: logger
+                    message: Header matched
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var headers = new HttpHeaders();
+        headers.add("X-Auth-Type", "Bearer "); // with trailing space
+        var event = HttpRequestEvent.builder()
+                .headers(headers)
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context))
+                .as("Automation should trigger for header with leading/trailing spaces")
+                .isTrue();
+
+        assertThat(logAppender.getLoggedMessages())
+                .anyMatch(msg -> msg.contains("Header matched"));
+    }
+
+    @Test
+    void testMultipleValuesForHeader() {
+        var yaml = """
+                alias: Match header X-Auth-Type with multiple values
+                triggers:
+                  - trigger: onHttpRequest
+                    headers:
+                      X-Auth-Type: Bearer
+                actions:
+                  - action: logger
+                    message: Header matched
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var headers = new HttpHeaders();
+        headers.add("X-Auth-Type", "Bearer");
+        headers.add("X-Auth-Type", "Basic"); // multiple values for the same header
+        var event = HttpRequestEvent.builder()
+                .headers(headers)
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context))
+                .as("Automation should trigger when header has multiple values and one matches")
+                .isTrue();
+
+        assertThat(logAppender.getLoggedMessages())
+                .anyMatch(msg -> msg.contains("Header matched"));
+    }
+
+    @Test
+    void testEmptyHeaderValueInYaml() {
+        var yaml = """
+                alias: Match empty header value
+                triggers:
+                  - trigger: onHttpRequest
+                    headers:
+                      X-Auth-Type: ""
+                actions:
+                  - action: logger
+                    message: Header matched
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var headers = new HttpHeaders();
+        headers.add("X-Auth-Type", "");  // empty value
+        var event = HttpRequestEvent.builder()
+                .headers(headers)  // empty value
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context))
+                .as("Automation should trigger when empty header value matches")
+                .isTrue();
+
+        assertThat(logAppender.getLoggedMessages())
+                .anyMatch(msg -> msg.contains("Header matched"));
+    }
+
+    @Test
+    void testNullHeaderValueInEvent() {
+        var yaml = """
+                alias: Match null header value
+                triggers:
+                  - trigger: onHttpRequest
+                    headers:
+                      X-Auth-Type: Bearer
+                actions:
+                  - action: logger
+                    message: Header matched
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var headers = new HttpHeaders();
+        headers.add("X-Auth-Type", null);  // null value
+        var event = HttpRequestEvent.builder()
+                .headers(headers)
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context))
+                .as("Automation should not trigger when header is null and does not match")
+                .isFalse();
+
+        assertThat(logAppender.getLoggedMessages())
+                .noneMatch(msg -> msg.contains("Header matched"));
+    }
+
+    @Test
+    void testRegexMatchingHeaderValue() {
+        var yaml = """
+                alias: Match header X-Auth-Type using regex
+                triggers:
+                  - trigger: onHttpRequest
+                    headers:
+                      X-Auth-Type: 'Bearer .*'
+                actions:
+                  - action: logger
+                    message: Header matched
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var headers = new HttpHeaders();
+        headers.add("X-Auth-Type", "Bearer token123");  // matches regex
+        var event = HttpRequestEvent.builder()
+                .headers(headers)
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context))
+                .as("Automation should trigger when header matches regex")
+                .isTrue();
+
+        assertThat(logAppender.getLoggedMessages())
+                .anyMatch(msg -> msg.contains("Header matched"));
+    }
+
 
 }
