@@ -2,7 +2,7 @@ package com.automation.engine.http.publisher.request;
 
 import com.automation.engine.core.AutomationEngine;
 import com.automation.engine.http.event.HttpRequestEvent;
-import com.automation.engine.http.event.IHttpEventExtension;
+import com.automation.engine.http.extensions.IHttpEventExtension;
 import com.automation.engine.http.publisher.HttpServletUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

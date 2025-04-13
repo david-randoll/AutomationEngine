@@ -1,9 +1,9 @@
 package com.automation.engine.http.publisher.response;
 
 import com.automation.engine.core.AutomationEngine;
-import com.automation.engine.http.event.IHttpEventExtension;
 import com.automation.engine.http.event.HttpRequestEvent;
 import com.automation.engine.http.event.HttpResponseEvent;
+import com.automation.engine.http.extensions.IHttpEventExtension;
 import com.automation.engine.http.publisher.request.CachedBodyHttpServletRequest;
 import com.automation.engine.http.publisher.request.HttpRequestEventPublisher;
 import jakarta.servlet.FilterChain;

@@ -1,4 +1,7 @@
-package com.automation.engine.http.event;
+package com.automation.engine.http.extensions;
+
+import com.automation.engine.http.event.HttpRequestEvent;
+import com.automation.engine.http.event.HttpResponseEvent;
 
 import java.util.Map;
 
