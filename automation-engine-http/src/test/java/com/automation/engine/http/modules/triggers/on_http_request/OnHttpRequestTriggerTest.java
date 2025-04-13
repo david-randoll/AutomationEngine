@@ -15,6 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.util.MultiValueMap;
 
@@ -1154,6 +1155,230 @@ class OnHttpRequestTriggerTest {
 
         assertThat(logAppender.getLoggedMessages())
                 .anyMatch(msg -> msg.contains("Matched user subpath"));
+    }
+
+
+    @Test
+    void testAutomationTriggersForMatchingHeader() {
+        var yaml = """
+                alias: Match header X-Auth-Type
+                triggers:
+                  - trigger: onHttpRequest
+                    headers:
+                      X-Auth-Type: Bearer
+                actions:
+                  - action: logger
+                    message: Header match triggered
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var headers = new HttpHeaders();
+        headers.add("X-Auth-Type", "Bearer");
+
+        var event = HttpRequestEvent.builder()
+                .headers(headers)
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context))
+                .as("Automation should trigger when X-Auth-Type matches")
+                .isTrue();
+
+        assertThat(logAppender.getLoggedMessages())
+                .anyMatch(msg -> msg.contains("Header match triggered"));
+    }
+
+    @Test
+    void testAutomationDoesNotTriggerForMismatchingHeader() {
+        var yaml = """
+                alias: Match header X-Auth-Type
+                triggers:
+                  - trigger: onHttpRequest
+                    headers:
+                      X-Auth-Type: Bearer
+                actions:
+                  - action: logger
+                    message: Header mismatch should not trigger
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var headers = new HttpHeaders();
+        headers.add("X-Auth-Type", "Basic");
+
+        var event = HttpRequestEvent.builder()
+                .headers(headers)
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context))
+                .as("Automation should not trigger when X-Auth-Type does not match")
+                .isFalse();
+
+        assertThat(logAppender.getLoggedMessages())
+                .noneMatch(msg -> msg.contains("Header mismatch should not trigger"));
+    }
+
+    @Test
+    void testAutomationTriggersForMultipleMatchingHeaders() {
+        var yaml = """
+                alias: Match multiple headers
+                triggers:
+                  - trigger: onHttpRequest
+                    headers:
+                      X-Auth-Type: Bearer
+                      X-Client-Version: v1
+                actions:
+                  - action: logger
+                    message: Multiple headers matched
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var headers = new HttpHeaders();
+        headers.add("X-Auth-Type", "Bearer");
+        headers.add("X-Client-Version", "v1");
+
+        var event = HttpRequestEvent.builder()
+                .headers(headers)
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isTrue();
+        assertThat(logAppender.getLoggedMessages()).anyMatch(msg -> msg.contains("Multiple headers matched"));
+    }
+
+    @Test
+    void testAutomationDoesNotTriggerWhenOneHeaderDoesNotMatch() {
+        var yaml = """
+                alias: One header mismatched
+                triggers:
+                  - trigger: onHttpRequest
+                    headers:
+                      X-Auth-Type: Bearer
+                      X-Client-Version: v1
+                actions:
+                  - action: logger
+                    message: Should not trigger
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var headers = new HttpHeaders();
+        headers.add("X-Auth-Type", "Bearer");
+        headers.add("X-Client-Version", "v2"); // mismatch here
+
+        var event = HttpRequestEvent.builder()
+                .headers(headers)
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isFalse();
+        assertThat(logAppender.getLoggedMessages()).noneMatch(msg -> msg.contains("Should not trigger"));
+    }
+
+    @Test
+    void testAutomationDoesNotTriggerWhenHeaderIsMissing() {
+        var yaml = """
+                alias: Header missing
+                triggers:
+                  - trigger: onHttpRequest
+                    headers:
+                      X-Auth-Type: Bearer
+                actions:
+                  - action: logger
+                    message: Should not trigger when header is missing
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var headers = new HttpHeaders(); // empty
+
+        var event = HttpRequestEvent.builder()
+                .headers(headers)
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isFalse();
+        assertThat(logAppender.getLoggedMessages()).noneMatch(msg -> msg.contains("Should not trigger when header is missing"));
+    }
+
+    @Test
+    void testAutomationTriggersWhenHeaderNameHasDifferentCase() {
+        var yaml = """
+                alias: Header case insensitive
+                triggers:
+                  - trigger: onHttpRequest
+                    headers:
+                      x-auth-type: Bearer
+                actions:
+                  - action: logger
+                    message: Header matched with different case
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var headers = new HttpHeaders();
+        headers.add("X-Auth-Type", "Bearer"); // uppercase
+
+        var event = HttpRequestEvent.builder()
+                .headers(headers)
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isTrue();
+        assertThat(logAppender.getLoggedMessages()).anyMatch(msg -> msg.contains("Header matched with different case"));
+    }
+
+    @Test
+    void testAutomationTriggersWhenNoHeadersSpecified() {
+        var yaml = """
+                alias: No headers in trigger
+                triggers:
+                  - trigger: onHttpRequest
+                actions:
+                  - action: logger
+                    message: Triggered with no headers specified
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var headers = new HttpHeaders();
+        headers.add("X-Auth-Type", "Bearer");
+
+        var event = HttpRequestEvent.builder()
+                .headers(headers)
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context))
+                .as("Should trigger because no headers are required")
+                .isTrue();
+
+        assertThat(logAppender.getLoggedMessages())
+                .anyMatch(msg -> msg.contains("Triggered with no headers specified"));
     }
 
 

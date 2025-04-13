@@ -10,6 +10,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.util.MultiValueMap;
 
 import java.util.List;
+import java.util.Map;
 
 @Data
 @AllArgsConstructor
@@ -19,8 +20,6 @@ public class OnHttpRequestTriggerContext implements ITriggerContext {
     private List<HttpMethodEnum> methods;
     private List<String> fullPaths;
     private List<String> paths;
-
-    @JsonAlias({"headers", "header"})
     private HttpHeaders headers;
 
     @JsonAlias({"query", "queryString", "queryParam", "queryParams"})
@@ -84,6 +83,41 @@ public class OnHttpRequestTriggerContext implements ITriggerContext {
     public boolean hasHeaders() {
         return headers != null && !headers.isEmpty();
     }
+
+    @JsonAlias({"headers", "header"})
+    public void setHeaders(Object value) {
+        this.headers = switch (value) {
+            case HttpHeaders h -> h;
+            case MultiValueMap<?, ?> m -> {
+                HttpHeaders httpHeaders = new HttpHeaders();
+                m.forEach((key, values) -> {
+                    if (values != null) {
+                        for (Object value1 : values) {
+                            httpHeaders.add(String.valueOf(key), String.valueOf(value1));
+                        }
+                    }
+                });
+                yield httpHeaders;
+            }
+            case Map<?, ?> m -> {
+                HttpHeaders httpHeaders = new HttpHeaders();
+                m.forEach((key, mvalue) -> {
+                    if (mvalue != null) {
+                        if (mvalue instanceof List<?> values) {
+                            for (Object value1 : values) {
+                                httpHeaders.add(String.valueOf(key), String.valueOf(value1));
+                            }
+                        } else {
+                            httpHeaders.add(String.valueOf(key), String.valueOf(mvalue));
+                        }
+                    }
+                });
+                yield httpHeaders;
+            }
+            default -> throw new IllegalArgumentException("Unsupported type for headers: " + value.getClass());
+        };
+    }
+
 
     public boolean hasQueryParams() {
         return queryParams != null && !queryParams.isEmpty();
