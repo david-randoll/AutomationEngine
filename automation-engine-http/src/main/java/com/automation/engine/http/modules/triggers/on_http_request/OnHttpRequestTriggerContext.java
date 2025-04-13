@@ -15,7 +15,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class OnHttpRequestTriggerContext implements ITriggerContext {
-    private static final String MATCH_PATH_PARAM = "\\{[^}]+}";
     private String alias;
     private List<HttpMethodEnum> methods;
     private List<String> fullPaths;
@@ -50,7 +49,7 @@ public class OnHttpRequestTriggerContext implements ITriggerContext {
         return fullPaths != null && !fullPaths.isEmpty();
     }
 
-    @JsonAlias({"fullPath", "fullPaths"})
+    @JsonAlias({"fullPath", "fullPaths", "fullUrl", "fullUrls"})
     public void setFullPaths(Object value) {
         this.fullPaths = switch (value) {
             case String s -> regexReplaceMatchingPathParams(List.of(s));
@@ -75,7 +74,10 @@ public class OnHttpRequestTriggerContext implements ITriggerContext {
     private static List<String> regexReplaceMatchingPathParams(List<?> list) {
         return list.stream()
                 .map(String::valueOf)
-                .map(path -> path.replaceAll(MATCH_PATH_PARAM, ".*"))
+                // match any dynamic path param. for example, /api/v1/{id} will be replaced with /api/v1/.*
+                .map(path -> path.replaceAll("\\{[^}]+}", ".*"))
+                //replace tail slash with empty string
+                .map(path -> path.replaceAll("/$", ""))
                 .toList();
     }
 

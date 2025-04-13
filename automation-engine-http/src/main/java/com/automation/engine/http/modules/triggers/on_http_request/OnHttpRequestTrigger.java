@@ -19,10 +19,12 @@ public class OnHttpRequestTrigger extends PluggableTrigger<OnHttpRequestTriggerC
         var isMethodTriggered = tc.hasMethods() && !tc.getMethods().contains(event.getMethod());
         if (isMethodTriggered) return false;
 
-        var isFullUrlTriggered = tc.hasFullPaths() && tc.getFullPaths().stream().noneMatch(event.getFullUrl()::matches);
+        var fullUrlParsed = normalizedUrl(event.getFullUrl());
+        var isFullUrlTriggered = tc.hasFullPaths() && tc.getFullPaths().stream().noneMatch(fullUrlParsed::matches);
         if (isFullUrlTriggered) return false;
 
-        var isPathTriggered = tc.hasPaths() && tc.getPaths().stream().noneMatch(event.getPath()::matches);
+        var pathParsed = normalizedUrl(event.getPath());
+        var isPathTriggered = tc.hasPaths() && tc.getPaths().stream().noneMatch(pathParsed::matches);
         if (isPathTriggered) return false;
 
         var isHeaderTriggered = tc.hasHeaders() && checkMap(tc.getHeaders(), event.getHeaders());
@@ -35,6 +37,11 @@ public class OnHttpRequestTrigger extends PluggableTrigger<OnHttpRequestTriggerC
         if (isPathParamTriggered) return false;
 
         return true;
+    }
+
+    private static String normalizedUrl(String url) {
+        if (url == null) return null;
+        return url.replaceAll("/$", "");
     }
 
     private static boolean checkMap(MultiValueMap<String, String> queryParams, Map<String, String> eventQueryParams) {
