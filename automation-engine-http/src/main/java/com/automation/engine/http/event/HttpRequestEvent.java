@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.experimental.FieldNameConstants;
 import org.springframework.http.HttpHeaders;
 import org.springframework.lang.NonNull;
+import org.springframework.util.MultiValueMap;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,8 +21,8 @@ public class HttpRequestEvent implements IEvent {
     private String path;
     private HttpMethodEnum method;
     private HttpHeaders headers;
-    private Map<String, Object> queryParams;
-    private Map<String, Object> pathParams;
+    private MultiValueMap<String, String> queryParams;
+    private Map<String, String> pathParams;
     private String requestBody;
 
     @JsonAnySetter

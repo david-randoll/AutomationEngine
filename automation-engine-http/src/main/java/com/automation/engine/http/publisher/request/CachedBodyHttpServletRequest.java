@@ -9,6 +9,8 @@ import lombok.Setter;
 import lombok.SneakyThrows;
 import org.springframework.http.HttpHeaders;
 import org.springframework.lang.NonNull;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.util.ContentCachingRequestWrapper;
@@ -53,19 +55,22 @@ public class CachedBodyHttpServletRequest extends ContentCachingRequestWrapper {
         return StreamUtils.copyToString(this.getInputStream(), StandardCharsets.UTF_8);
     }
 
-    public Map<String, Object> getRequestParams() {
+    public MultiValueMap<String, String> getRequestParams() {
         return this.getParameterMap()
                 .entrySet().stream()
                 .collect(Collectors.toMap(
                         Map.Entry::getKey,
-                        e -> Arrays.asList(e.getValue())
+                        entry -> entry.getValue() != null ? Arrays.asList(entry.getValue()) : Collections.emptyList(),
+                        (a, b) -> b,
+                        LinkedMultiValueMap::new
                 ));
     }
 
-    public Map<String, Object> getPathVariables() {
+    @SuppressWarnings("unchecked")
+    public Map<String, String> getPathVariables() {
         var pathVariables = this.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
         if (pathVariables instanceof Map<?, ?>) {
-            return (Map<String, Object>) pathVariables;
+            return (Map<String, String>) pathVariables;
         }
         return Collections.emptyMap();
     }
