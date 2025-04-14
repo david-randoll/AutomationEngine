@@ -64,8 +64,8 @@ public class CachedBodyHttpServletRequest extends ContentCachingRequestWrapper {
             JsonNodeFactory factory = objectMapper.getNodeFactory();
             if (ObjectUtils.isEmpty(this.cachedBody)) return factory.nullNode();
 
-            String contextType = this.getContentType();
-            if (contextType != null && contextType.contains(MediaType.APPLICATION_JSON_VALUE)) {
+            String contentType = this.getContentType();
+            if (contentType != null && contentType.contains(MediaType.APPLICATION_JSON_VALUE)) {
                 return objectMapper.readTree(this.cachedBody);
             } else {
                 // if the content type is not JSON, we can try to parse it as a text node
