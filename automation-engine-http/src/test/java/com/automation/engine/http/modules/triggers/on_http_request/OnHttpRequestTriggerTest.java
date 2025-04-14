@@ -2224,4 +2224,171 @@ class OnHttpRequestTriggerTest {
         assertThat(automation.anyTriggerActivated(context)).isTrue();
         assertThat(logAppender.getLoggedMessages()).anyMatch(msg -> msg.contains("Triggered for article slug"));
     }
+
+    /*
+        Combination of all
+     */
+    @Test
+    void testAutomationTriggersWhenAllCriteriaMatch() {
+        var yaml = """
+                alias: All Trigger Criteria Match
+                triggers:
+                  - trigger: onHttpRequest
+                    methods: [GET]
+                    path: /api/users/{id}
+                    pathParams:
+                      id: [42]
+                    headers:
+                      X-Auth: [secret]
+                    queryParams:
+                      status: [active]
+                actions:
+                  - action: logger
+                    message: All match success
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var headers = new HttpHeaders();
+        headers.add("X-Auth", "secret");
+        var queryParams = new LinkedMultiValueMap<String, String>();
+        queryParams.add("status", "active");
+        var event = HttpRequestEvent.builder()
+                .method(HttpMethodEnum.GET)
+                .path("/api/users/42")
+                .pathParams(Map.of("id", "42"))
+                .headers(headers)
+                .queryParams(queryParams)
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isTrue();
+        assertThat(logAppender.getLoggedMessages()).anyMatch(msg -> msg.contains("All match success"));
+    }
+
+    @Test
+    void testAutomationDoesNotTriggerWhenOneValueDoesNotMatch() {
+        var yaml = """
+                alias: Fail if Header Wrong
+                triggers:
+                  - trigger: onHttpRequest
+                    methods: [GET]
+                    path: /api/users/{id}
+                    pathParams:
+                      id: [42]
+                    headers:
+                      X-Auth: [secret]
+                    queryParams:
+                      status: [active]
+                actions:
+                  - action: logger
+                    message: This should not run
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var headers = new HttpHeaders();
+        headers.add("X-Auth", "wrong-secret"); // mismatch
+        var queryParams = new LinkedMultiValueMap<String, String>();
+        queryParams.add("status", "active");
+        var event = HttpRequestEvent.builder()
+                .method(HttpMethodEnum.GET)
+                .path("/api/users/42")
+                .pathParams(Map.of("id", "42"))
+                .headers(headers) // mismatch
+                .queryParams(queryParams)
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isFalse();
+        assertThat(logAppender.getLoggedMessages()).noneMatch(msg -> msg.contains("This should not run"));
+    }
+
+    @Test
+    void testAutomationTriggersWithMultipleValuesEachField() {
+        var yaml = """
+                alias: Match One of Each Field
+                triggers:
+                  - trigger: onHttpRequest
+                    methods: [GET, POST]
+                    path: /api/users/{id}
+                    pathParams:
+                      id: [42, 43]
+                    headers:
+                      X-Role: [admin, user]
+                    queryParams:
+                      status: [active, pending]
+                actions:
+                  - action: logger
+                    message: Triggered with one match from each
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var headers = new HttpHeaders();
+        headers.add("X-Role", "admin");
+        var queryParams = new LinkedMultiValueMap<String, String>();
+        queryParams.add("status", "pending");
+        var event = HttpRequestEvent.builder()
+                .method(HttpMethodEnum.POST)
+                .path("/api/users/43")
+                .pathParams(Map.of("id", "43"))
+                .headers(headers)
+                .queryParams(queryParams)
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isTrue();
+        assertThat(logAppender.getLoggedMessages()).anyMatch(msg -> msg.contains("Triggered with one match from each"));
+    }
+
+    @Test
+    void testAutomationFailsWithMissingPathParamEvenIfOthersMatch() {
+        var yaml = """
+                alias: Fail On Missing Path Param
+                triggers:
+                  - trigger: onHttpRequest
+                    methods: [GET]
+                    path: /api/users/{id}
+                    pathParams:
+                      id: [42]
+                    headers:
+                      X-Auth: [secret]
+                    queryParams:
+                      status: [active]
+                actions:
+                  - action: logger
+                    message: Should not trigger due to path param
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var headers = new HttpHeaders();
+        headers.add("X-Auth", "secret");
+        var queryParams = new LinkedMultiValueMap<String, String>();
+        queryParams.add("status", "active");
+        var event = HttpRequestEvent.builder()
+                .method(HttpMethodEnum.GET)
+                .path("/api/users/42")
+                .headers(headers)
+                .queryParams(queryParams)
+                .build(); // Missing pathParams
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isFalse();
+        assertThat(logAppender.getLoggedMessages()).noneMatch(msg -> msg.contains("Should not trigger"));
+    }
+
 }

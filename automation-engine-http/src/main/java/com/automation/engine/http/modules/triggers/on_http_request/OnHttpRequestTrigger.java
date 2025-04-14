@@ -46,12 +46,14 @@ public class OnHttpRequestTrigger extends PluggableTrigger<OnHttpRequestTriggerC
     }
 
     private static boolean checkMap(MultiValueMap<String, String> queryParams, Map<String, String> eventQueryParams) {
+        if (queryParams == null || eventQueryParams == null) return true;
         LinkedMultiValueMap<String, String> eventMultiValueMap = eventQueryParams.entrySet().stream()
                 .collect(LinkedMultiValueMap::new, (map, entry) -> map.add(entry.getKey(), entry.getValue()), LinkedMultiValueMap::addAll);
         return checkMap(queryParams, eventMultiValueMap);
     }
 
     private static boolean checkMap(MultiValueMap<String, String> queryParams, MultiValueMap<String, String> eventQueryParams) {
+        if (queryParams == null || eventQueryParams == null) return true;
         for (var queryParam : queryParams.entrySet()) {
             String queryParamName = queryParam.getKey().trim();
             List<String> expectedValues = queryParam.getValue().stream()
