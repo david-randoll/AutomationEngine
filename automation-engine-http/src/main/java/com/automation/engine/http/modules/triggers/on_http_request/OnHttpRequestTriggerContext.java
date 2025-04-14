@@ -6,6 +6,7 @@ import com.automation.engine.http.jackson.flexible_method.FlexibleHttpMethodList
 import com.automation.engine.http.jackson.flexible_multi_value_map.FlexibleMultiValueMap;
 import com.automation.engine.http.jackson.flexible_string_list.FlexibleStringList;
 import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -44,6 +45,9 @@ public class OnHttpRequestTriggerContext implements ITriggerContext {
     @FlexibleMultiValueMap
     private MultiValueMap<String, String> pathParams;
 
+    @JsonAlias({"body", "requestBody"})
+    private JsonNode body;
+
     public boolean hasMethods() {
         return methods != null && !methods.isEmpty();
     }
@@ -66,5 +70,9 @@ public class OnHttpRequestTriggerContext implements ITriggerContext {
 
     public boolean hasPathParams() {
         return pathParams != null && !pathParams.isEmpty();
+    }
+
+    public boolean hasBody() {
+        return body != null && !body.isEmpty();
     }
 }
