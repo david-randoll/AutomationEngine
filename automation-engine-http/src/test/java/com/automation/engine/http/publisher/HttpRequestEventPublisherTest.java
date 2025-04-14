@@ -68,7 +68,7 @@ class HttpRequestEventPublisherTest {
         // Verify response event
         assertThat(eventCaptureListener.getResponseEvents()).hasSize(1);
         HttpResponseEvent responseEvent = eventCaptureListener.getResponseEvents().getFirst();
-        assertThat(responseEvent.getResponseBody()).isEqualTo("GET response");
+        assertThat(responseEvent.getResponseBody().asText()).isEqualTo("GET response");
     }
 
     @Test
@@ -101,7 +101,7 @@ class HttpRequestEventPublisherTest {
         // Verify response event
         assertThat(eventCaptureListener.getResponseEvents()).hasSize(1);
         HttpResponseEvent responseEvent = eventCaptureListener.getResponseEvents().getFirst();
-        var responseBodyJson = objectMapper.readTree(responseEvent.getResponseBody());
+        JsonNode responseBodyJson = responseEvent.getResponseBody();
         assertThat(responseBodyJson.get("key").asText()).isEqualTo("value");
     }
 
@@ -134,7 +134,7 @@ class HttpRequestEventPublisherTest {
         // Verify response event
         assertThat(eventCaptureListener.getResponseEvents()).hasSize(1);
         HttpResponseEvent responseEvent = eventCaptureListener.getResponseEvents().getFirst();
-        assertThat(responseEvent.getResponseBody()).isEqualTo("Received: Updated content");
+        assertThat(responseEvent.getResponseBody().asText()).isEqualTo("Received: Updated content");
     }
 
     @Test
@@ -192,7 +192,7 @@ class HttpRequestEventPublisherTest {
         // Verify response event
         assertThat(eventCaptureListener.getResponseEvents()).hasSize(1);
         HttpResponseEvent responseEvent = eventCaptureListener.getResponseEvents().getFirst();
-        assertThat(responseEvent.getResponseBody()).isEqualTo("Query Params: {key=value, otherKey=otherValue}");
+        assertThat(responseEvent.getResponseBody().asText()).isEqualTo("Query Params: {key=value, otherKey=otherValue}");
     }
 
     @Test
@@ -212,7 +212,7 @@ class HttpRequestEventPublisherTest {
         // Verify response event
         assertThat(eventCaptureListener.getResponseEvents()).hasSize(1);
         HttpResponseEvent responseEvent = eventCaptureListener.getResponseEvents().getFirst();
-        assertThat(responseEvent.getResponseBody()).isEqualTo("Path Variable: 123");
+        assertThat(responseEvent.getResponseBody().asText()).isEqualTo("Path Variable: 123");
     }
 
     @Test
@@ -243,7 +243,7 @@ class HttpRequestEventPublisherTest {
         // Verify response event
         assertThat(eventCaptureListener.getResponseEvents()).hasSize(1);
         HttpResponseEvent responseEvent = eventCaptureListener.getResponseEvents().getFirst();
-        var responseBodyJson = objectMapper.readTree(responseEvent.getResponseBody());
+        JsonNode responseBodyJson = responseEvent.getResponseBody();
         assertThat(responseBodyJson.get("pathId").asText()).isEqualTo("456");
         assertThat(responseBodyJson.get("queryParams").get("key").asText()).isEqualTo("value");
         assertThat(responseBodyJson.get("body").get("name").asText()).isEqualTo("Test");
@@ -291,7 +291,8 @@ class HttpRequestEventPublisherTest {
         // Check that events are in order (this checks that the first request's event is the first one, and so on)
         for (int i = 0; i < 3; i++) {
             assertThat(eventCaptureListener.getRequestEvents().get(i).getPath()).isEqualTo("/test/long-process");
-            assertThat(eventCaptureListener.getResponseEvents().get(i).getResponseBody()).isEqualTo("Long process completed");
+            assertThat(eventCaptureListener.getResponseEvents().get(i).getResponseBody().asText())
+                    .isEqualTo("Long process completed");
         }
     }
 
@@ -315,7 +316,7 @@ class HttpRequestEventPublisherTest {
         // Verify response event
         assertThat(eventCaptureListener.getResponseEvents()).hasSize(1);
         HttpResponseEvent responseEvent = eventCaptureListener.getResponseEvents().getFirst();
-        var responseBodyJson = objectMapper.readTree(responseEvent.getResponseBody());
+        JsonNode responseBodyJson = responseEvent.getResponseBody();
         assertThat(responseBodyJson.get("unexpectedField").asText()).isEqualTo("value");
     }
 
@@ -331,7 +332,7 @@ class HttpRequestEventPublisherTest {
         // Verify error response
         HttpResponseEvent responseEvent = eventCaptureListener.getResponseEvents().getFirst();
         assertThat(responseEvent.getResponseStatus()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
-        assertThat(responseEvent.getResponseBody()).contains("Unexpected error occurred");
+        assertThat(responseEvent.getResponseBody().asText()).contains("Unexpected error occurred");
     }
 
     @Test
@@ -346,7 +347,7 @@ class HttpRequestEventPublisherTest {
         // Verify error response
         HttpResponseEvent responseEvent = eventCaptureListener.getResponseEvents().getFirst();
         assertThat(responseEvent.getResponseStatus()).isEqualTo(HttpStatus.BAD_REQUEST);
-        assertThat(responseEvent.getResponseBody()).contains("Unexpected error occurred");
+        assertThat(responseEvent.getResponseBody().asText()).contains("Unexpected error occurred");
     }
 
     @Test
@@ -365,7 +366,7 @@ class HttpRequestEventPublisherTest {
         // Verify error response
         HttpResponseEvent responseEvent = eventCaptureListener.getResponseEvents().getFirst();
         assertThat(responseEvent.getResponseStatus()).isEqualTo(HttpStatus.BAD_REQUEST);
-        assertThat(responseEvent.getResponseBody()).contains("Validation failed for object='testRequest'. Error count: 1");
+        assertThat(responseEvent.getResponseBody().asText()).contains("Validation failed for object='testRequest'. Error count: 1");
     }
 
     @Test
@@ -378,7 +379,7 @@ class HttpRequestEventPublisherTest {
         assertThat(eventCaptureListener.getResponseEvents()).hasSize(1);
 
         HttpResponseEvent responseEvent = eventCaptureListener.getResponseEvents().getFirst();
-        assertThat(responseEvent.getResponseBody()).isEqualTo("Processed after delay");
+        assertThat(responseEvent.getResponseBody().asText()).isEqualTo("Processed after delay");
     }
 
     @Test

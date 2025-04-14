@@ -7,6 +7,7 @@ import com.automation.engine.http.extensions.IHttpEventExtension;
 import com.automation.engine.http.publisher.request.CachedBodyHttpServletRequest;
 import com.automation.engine.http.publisher.request.HttpRequestEventPublisher;
 import com.automation.engine.http.utils.HttpServletUtils;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -56,7 +57,7 @@ public class HttpResponseEventPublisher extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
         CachedBodyHttpServletRequest requestWrapper = HttpServletUtils.toCachedBodyHttpServletRequest(request, objectMapper);
-        CachedBodyHttpServletResponse responseWrapper = HttpServletUtils.toCachedBodyHttpServletResponse(response);
+        CachedBodyHttpServletResponse responseWrapper = HttpServletUtils.toCachedBodyHttpServletResponse(response, objectMapper);
 
         filterChain.doFilter(requestWrapper, responseWrapper);
 
@@ -79,7 +80,7 @@ public class HttpResponseEventPublisher extends OncePerRequestFilter {
         HttpResponseEvent responseEvent = toHttpResponseEvent(requestEvent, responseStatus);
 
         if (responseStatus.is2xxSuccessful()) {
-            CompletionStage<String> responseBody = responseWrapper.getResponseBody(requestWrapper);
+            CompletionStage<JsonNode> responseBody = responseWrapper.getResponseBody(requestWrapper);
 
             responseBody.thenAccept(body -> {
                 responseEvent.setResponseBody(body);

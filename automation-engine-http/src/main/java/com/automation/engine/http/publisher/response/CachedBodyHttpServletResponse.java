@@ -1,5 +1,8 @@
 package com.automation.engine.http.publisher.response;
 
+import com.automation.engine.http.utils.HttpServletUtils;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.AsyncEvent;
 import jakarta.servlet.AsyncListener;
 import jakarta.servlet.http.HttpServletResponse;
@@ -13,13 +16,15 @@ import java.util.concurrent.CompletionStage;
 
 @Slf4j
 public class CachedBodyHttpServletResponse extends ContentCachingResponseWrapper {
+    private final ObjectMapper mapper;
 
-    public CachedBodyHttpServletResponse(HttpServletResponse response) {
+    public CachedBodyHttpServletResponse(HttpServletResponse response, ObjectMapper mapper) {
         super(response);
+        this.mapper = mapper;
     }
 
-    public CompletionStage<String> getResponseBody(ContentCachingRequestWrapper request) throws IOException {
-        var future = new CompletableFuture<String>();
+    public CompletionStage<JsonNode> getResponseBody(ContentCachingRequestWrapper request) throws IOException {
+        var future = new CompletableFuture<JsonNode>();
 
         if (request.isAsyncStarted()) {
             request.getAsyncContext().addListener(new AsyncListener() {
@@ -46,8 +51,8 @@ public class CachedBodyHttpServletResponse extends ContentCachingResponseWrapper
         return future;
     }
 
-    private void getBody(CompletableFuture<String> future) throws IOException {
-        String body = new String(this.getContentAsByteArray(), this.getCharacterEncoding());
+    private void getBody(CompletableFuture<JsonNode> future) throws IOException {
+        JsonNode body = HttpServletUtils.parseByteArrayToJsonNode(this.getContentType(), this.getContentAsByteArray(), mapper);
         future.complete(body);
     }
 }

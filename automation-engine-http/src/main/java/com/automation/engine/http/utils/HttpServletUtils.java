@@ -1,26 +1,31 @@
 package com.automation.engine.http.utils;
 
+import com.automation.engine.http.extensions.AutomationEngineHttpParseException;
 import com.automation.engine.http.publisher.request.CachedBodyHttpServletRequest;
 import com.automation.engine.http.publisher.response.CachedBodyHttpServletResponse;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.lang.NonNull;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 @Slf4j
 @UtilityClass
 public class HttpServletUtils {
-
     public static final String DEFAULT_IP = "0.0.0.0";
 
     public CachedBodyHttpServletRequest toCachedBodyHttpServletRequest(@NonNull HttpServletRequest request, ObjectMapper mapper) throws IOException {
@@ -29,10 +34,10 @@ public class HttpServletUtils {
         return new CachedBodyHttpServletRequest(request, mapper);
     }
 
-    public CachedBodyHttpServletResponse toCachedBodyHttpServletResponse(@NonNull HttpServletResponse response) {
+    public CachedBodyHttpServletResponse toCachedBodyHttpServletResponse(@NonNull HttpServletResponse response, ObjectMapper mapper) {
         if (response instanceof CachedBodyHttpServletResponse cachedBodyHttpServletResponse)
             return cachedBodyHttpServletResponse;
-        return new CachedBodyHttpServletResponse(response);
+        return new CachedBodyHttpServletResponse(response, mapper);
     }
 
     private static final String[] IP_HEADER_CANDIDATES = {
@@ -117,5 +122,22 @@ public class HttpServletUtils {
         }
 
         return false;
+    }
+
+    public static JsonNode parseByteArrayToJsonNode(String contentType, byte[] cachedBody, ObjectMapper objectMapper) {
+        try {
+            JsonNodeFactory factory = objectMapper.getNodeFactory();
+            if (ObjectUtils.isEmpty(cachedBody)) return factory.nullNode();
+
+            if (contentType != null && contentType.contains(MediaType.APPLICATION_JSON_VALUE)) {
+                return objectMapper.readTree(cachedBody);
+            } else {
+                // if the content type is not JSON, we can try to parse it as a text node
+                var stringBody = new String(cachedBody, StandardCharsets.UTF_8);
+                return factory.textNode(stringBody);
+            }
+        } catch (IOException e) {
+            throw new AutomationEngineHttpParseException(e);
+        }
     }
 }

@@ -4,6 +4,7 @@ import com.automation.engine.core.events.IEvent;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.FieldNameConstants;
@@ -27,7 +28,7 @@ public class HttpResponseEvent implements IEvent {
     private Map<String, String> pathParams;
     private JsonNode requestBody;
 
-    private String responseBody;
+    private JsonNode responseBody;
     private HttpStatus responseStatus;
     private Map<String, Object> errorDetail;
 
@@ -38,7 +39,9 @@ public class HttpResponseEvent implements IEvent {
 
     public void addErrorDetail(@NonNull Map<String, Object> errorDetail) {
         this.errorDetail = errorDetail;
-        this.responseBody = errorDetail.getOrDefault("message", "").toString();
+        var factory = new ObjectMapper().getNodeFactory();
+        var message = errorDetail.getOrDefault("message", "").toString();
+        this.responseBody = factory.textNode(message);
     }
 
     public void addAdditionalData(@NonNull Map<String, Object> additionalData) {
