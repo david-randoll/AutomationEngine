@@ -20,6 +20,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -1972,5 +1973,255 @@ class OnHttpRequestTriggerTest {
 
         assertThat(automation.anyTriggerActivated(context)).isTrue();
         assertThat(logAppender.getLoggedMessages()).anyMatch(msg -> msg.contains("Triggered with regex-like value"));
+    }
+
+    /*
+        Path Params
+     */
+    @Test
+    void testAutomationTriggersForMatchingPathParam() {
+        var yaml = """
+                alias: Match Path Param ID
+                triggers:
+                  - trigger: onHttpRequest
+                    pathParams:
+                      id: [123]
+                actions:
+                  - action: logger
+                    message: Triggered for id=123
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = HttpRequestEvent.builder()
+                .pathParams(Map.of("id", "123"))
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isTrue();
+        assertThat(logAppender.getLoggedMessages()).anyMatch(msg -> msg.contains("Triggered for id=123"));
+    }
+
+    @Test
+    void testAutomationDoesNotTriggerForNonMatchingPathParam() {
+        var yaml = """
+                alias: Match Path Param ID
+                triggers:
+                  - trigger: onHttpRequest
+                    pathParams:
+                      id: [123]
+                actions:
+                  - action: logger
+                    message: Should not trigger for id!=123
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = HttpRequestEvent.builder()
+                .pathParams(Map.of("id", "456"))
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isFalse();
+        assertThat(logAppender.getLoggedMessages()).noneMatch(msg -> msg.contains("Should not trigger"));
+    }
+
+    @Test
+    void testAutomationTriggersForMultipleMatchingPathParams() {
+        var yaml = """
+                alias: Match Multiple Path Params
+                triggers:
+                  - trigger: onHttpRequest
+                    pathParams:
+                      userId: [99]
+                      postId: [321]
+                actions:
+                  - action: logger
+                    message: Triggered for both path params
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = HttpRequestEvent.builder()
+                .pathParams(Map.of("userId", "99", "postId", "321"))
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isTrue();
+        assertThat(logAppender.getLoggedMessages()).anyMatch(msg -> msg.contains("Triggered for both path params"));
+    }
+
+    @Test
+    void testAutomationDoesNotTriggerIfOneOfMultiplePathParamsMismatch() {
+        var yaml = """
+                alias: Match Multiple Path Params
+                triggers:
+                  - trigger: onHttpRequest
+                    pathParams:
+                      userId: [99]
+                      postId: [321]
+                actions:
+                  - action: logger
+                    message: Should not trigger due to mismatch
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = HttpRequestEvent.builder()
+                .pathParams(Map.of("userId", "99", "postId", "999"))
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isFalse();
+        assertThat(logAppender.getLoggedMessages()).noneMatch(msg -> msg.contains("Should not trigger"));
+    }
+
+    @Test
+    void testAutomationDoesNotTriggerIfPathParamMissing() {
+        var yaml = """
+                alias: Expecting Path Param ID
+                triggers:
+                  - trigger: onHttpRequest
+                    pathParams:
+                      id: [123]
+                actions:
+                  - action: logger
+                    message: Should not trigger if id missing
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = HttpRequestEvent.builder()
+                .pathParams(Map.of()) // No 'id'
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isFalse();
+        assertThat(logAppender.getLoggedMessages()).noneMatch(msg -> msg.contains("Should not trigger"));
+    }
+
+    @Test
+    void testAutomationDoesNotTriggerIfPathParamIsNull() {
+        var yaml = """
+                alias: Null Path Param Test
+                triggers:
+                  - trigger: onHttpRequest
+                    pathParams:
+                      id: [123]
+                actions:
+                  - action: logger
+                    message: Should not trigger if id is null
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var queryParams = new HashMap<String, String>();
+        queryParams.put("id", null); // Null value
+        var event = HttpRequestEvent.builder()
+                .pathParams(queryParams) // Null value
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isFalse();
+        assertThat(logAppender.getLoggedMessages()).noneMatch(msg -> msg.contains("Should not trigger"));
+    }
+
+    @Test
+    void testAutomationTriggersEvenWithExtraPathParams() {
+        var yaml = """
+                alias: Match Only Required Path Param
+                triggers:
+                  - trigger: onHttpRequest
+                    pathParams:
+                      id: [123]
+                actions:
+                  - action: logger
+                    message: Triggered with extra path param
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = HttpRequestEvent.builder()
+                .pathParams(Map.of("id", "123", "extra", "999"))
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isTrue();
+        assertThat(logAppender.getLoggedMessages()).anyMatch(msg -> msg.contains("Triggered with extra path param"));
+    }
+
+    @Test
+    void testPathParamValueMatchingIsCaseSensitive() {
+        var yaml = """
+                alias: Case Sensitive Path Param
+                triggers:
+                  - trigger: onHttpRequest
+                    pathParams:
+                      type: [Admin]
+                actions:
+                  - action: logger
+                    message: Triggered for Admin type
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = HttpRequestEvent.builder()
+                .pathParams(Map.of("type", "admin")) // lowercased
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isFalse();
+        assertThat(logAppender.getLoggedMessages()).noneMatch(msg -> msg.contains("Triggered for Admin type"));
+    }
+
+    @Test
+    void testPathParamMatchesWithRegexPattern() {
+        var yaml = """
+                alias: Regex Path Param Match
+                triggers:
+                  - trigger: onHttpRequest
+                    pathParams:
+                      slug: [".*article.*"]
+                actions:
+                  - action: logger
+                    message: Triggered for article slug
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = HttpRequestEvent.builder()
+                .pathParams(Map.of("slug", "my-article-2025"))
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isTrue();
+        assertThat(logAppender.getLoggedMessages()).anyMatch(msg -> msg.contains("Triggered for article slug"));
     }
 }
