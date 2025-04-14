@@ -1889,7 +1889,7 @@ class OnHttpRequestTriggerTest {
     }
 
     @Test
-    void testAutomationDoesNotTriggerWhenQueryParamKeyIsDifferentCase() {
+    void testAutomationDoesTriggerWhenQueryParamKeyIsDifferentCase() {
         var yaml = """
                 alias: Case Sensitive Key
                 triggers:
@@ -1898,7 +1898,7 @@ class OnHttpRequestTriggerTest {
                       category: [books]
                 actions:
                   - action: logger
-                    message: Should not trigger due to key case mismatch
+                    message: Should trigger despite case
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
@@ -1913,8 +1913,9 @@ class OnHttpRequestTriggerTest {
         var context = EventContext.of(event);
         engine.publishEvent(context);
 
-        assertThat(automation.anyTriggerActivated(context)).isFalse();
-        assertThat(logAppender.getLoggedMessages()).noneMatch(msg -> msg.contains("Should not trigger due to key case mismatch"));
+        assertThat(automation.anyTriggerActivated(context)).isTrue();
+        assertThat(logAppender.getLoggedMessages())
+                .anyMatch(msg -> msg.contains("Should trigger despite case"));
     }
 
     @Test
@@ -1927,7 +1928,7 @@ class OnHttpRequestTriggerTest {
                       category: [books]
                 actions:
                   - action: logger
-                    message: Should not trigger due to value case mismatch
+                    message: Should trigger despite case
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
@@ -1942,8 +1943,9 @@ class OnHttpRequestTriggerTest {
         var context = EventContext.of(event);
         engine.publishEvent(context);
 
-        assertThat(automation.anyTriggerActivated(context)).isFalse();
-        assertThat(logAppender.getLoggedMessages()).noneMatch(msg -> msg.contains("Should not trigger due to value case mismatch"));
+        assertThat(automation.anyTriggerActivated(context)).isTrue();
+        assertThat(logAppender.getLoggedMessages())
+                .anyMatch(msg -> msg.contains("Should trigger despite case"));
     }
 
     @Test
@@ -2194,8 +2196,9 @@ class OnHttpRequestTriggerTest {
         var context = EventContext.of(event);
         engine.publishEvent(context);
 
-        assertThat(automation.anyTriggerActivated(context)).isFalse();
-        assertThat(logAppender.getLoggedMessages()).noneMatch(msg -> msg.contains("Triggered for Admin type"));
+        assertThat(automation.anyTriggerActivated(context)).isTrue();
+        assertThat(logAppender.getLoggedMessages())
+                .anyMatch(msg -> msg.contains("Triggered for Admin type"));
     }
 
     @Test
@@ -2391,4 +2394,167 @@ class OnHttpRequestTriggerTest {
         assertThat(logAppender.getLoggedMessages()).noneMatch(msg -> msg.contains("Should not trigger"));
     }
 
+    @Test
+    void testAutomationTriggersUsingFullPathAndOtherFilters() {
+        var yaml = """
+                alias: FullPath Combo Match
+                triggers:
+                  - trigger: onHttpRequest
+                    methods: [POST]
+                    fullPaths: ["https://api.example.com/api/users/{id}"]
+                    pathParams:
+                      id: [123]
+                    headers:
+                      X-Api-Key: [abc123]
+                    queryParams:
+                      type: [premium]
+                actions:
+                  - action: logger
+                    message: Full path combo match triggered
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var headers = new HttpHeaders();
+        headers.add("X-Api-Key", "abc123");
+        var queryParams = new LinkedMultiValueMap<String, String>();
+        queryParams.add("type", "premium");
+        var event = HttpRequestEvent.builder()
+                .method(HttpMethodEnum.POST)
+                .fullUrl("https://api.example.com/api/users/123")
+                .pathParams(Map.of("id", "123"))
+                .headers(headers)
+                .queryParams(queryParams)
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isTrue();
+        assertThat(logAppender.getLoggedMessages()).anyMatch(msg -> msg.contains("Full path combo match triggered"));
+    }
+
+    @Test
+    void testAutomationFailsDueToQueryParamMismatch() {
+        var yaml = """
+                alias: Fail on QueryParam Mismatch
+                triggers:
+                  - trigger: onHttpRequest
+                    methods: [PUT]
+                    path: /api/products/{sku}
+                    pathParams:
+                      sku: [999]
+                    headers:
+                      X-Env: [prod]
+                    queryParams:
+                      mode: [edit]
+                actions:
+                  - action: logger
+                    message: This should not appear
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var headers = new HttpHeaders();
+        headers.add("X-Env", "prod");
+        var queryParams = new LinkedMultiValueMap<String, String>();
+        queryParams.add("mode", "view"); // mismatch
+        var event = HttpRequestEvent.builder()
+                .method(HttpMethodEnum.PUT)
+                .path("/api/products/999")
+                .pathParams(Map.of("sku", "999"))
+                .headers(headers)
+                .queryParams(queryParams) // wrong value
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isFalse();
+        assertThat(logAppender.getLoggedMessages()).noneMatch(msg -> msg.contains("This should not appear"));
+    }
+
+    @Test
+    void testHeaderAndQueryParamCaseInsensitiveMatch() {
+        var yaml = """
+                alias: Case Insensitive Match
+                triggers:
+                  - trigger: onHttpRequest
+                    methods: [GET]
+                    path: /api/items/{itemId}
+                    pathParams:
+                      itemId: [abc]
+                    headers:
+                      x-custom-header: [TokenValue]
+                    queryParams:
+                      sort: [ASC]
+                actions:
+                  - action: logger
+                    message: Case insensitive match triggered
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var headers = new HttpHeaders();
+        headers.add("X-CUSTOM-HEADER", "TokenValue"); // different casing
+        var queryParams = new LinkedMultiValueMap<String, String>();
+        queryParams.add("SORT", "ASC"); // different casing
+        var event = HttpRequestEvent.builder()
+                .method(HttpMethodEnum.GET)
+                .path("/api/items/abc")
+                .pathParams(Map.of("itemId", "abc"))
+                .headers(headers) // different casing
+                .queryParams(queryParams) // different casing
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isTrue();
+        assertThat(logAppender.getLoggedMessages()).anyMatch(msg -> msg.contains("Case insensitive match triggered"));
+    }
+
+    @Test
+    void testAutomationFailsWithWrongTypeInPathParam() {
+        var yaml = """
+                alias: Wrong PathParam Type
+                triggers:
+                  - trigger: onHttpRequest
+                    methods: [GET]
+                    path: /api/users/{id}
+                    pathParams:
+                      id: [42]
+                    headers:
+                      X-Client: [mobile]
+                    queryParams:
+                      detail: [yes]
+                actions:
+                  - action: logger
+                    message: Should not trigger due to type mismatch
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var headers = new HttpHeaders();
+        headers.add("X-Client", "mobile");
+        var queryParams = new LinkedMultiValueMap<String, String>();
+        queryParams.add("detail", "yes");
+        var event = HttpRequestEvent.builder()
+                .method(HttpMethodEnum.GET)
+                .path("/api/users/0042") // different string, not exact "42"
+                .pathParams(Map.of("id", "0042")) // technically a different string
+                .headers(headers)
+                .queryParams(queryParams)
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isFalse();
+        assertThat(logAppender.getLoggedMessages()).noneMatch(msg -> msg.contains("Should not trigger due to type mismatch"));
+    }
 }

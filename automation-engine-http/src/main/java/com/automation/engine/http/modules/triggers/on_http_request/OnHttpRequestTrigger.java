@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -54,24 +55,36 @@ public class OnHttpRequestTrigger extends PluggableTrigger<OnHttpRequestTriggerC
 
     private static boolean checkMap(MultiValueMap<String, String> queryParams, MultiValueMap<String, String> eventQueryParams) {
         if (queryParams == null || eventQueryParams == null) return true;
+
+        // Build a lowercased map of event query params for case-insensitive key matching
+        Map<String, List<String>> normalizedEventQueryParams = new HashMap<>();
+        for (Map.Entry<String, List<String>> entry : eventQueryParams.entrySet()) {
+            String lowerKey = entry.getKey().trim().toLowerCase();
+            List<String> values = entry.getValue().stream()
+                    .filter(Objects::nonNull)
+                    .map(String::trim)
+                    .toList();
+            normalizedEventQueryParams.put(lowerKey, values);
+        }
+
         for (var queryParam : queryParams.entrySet()) {
-            String queryParamName = queryParam.getKey().trim();
+            String expectedKey = queryParam.getKey().trim().toLowerCase();
             List<String> expectedValues = queryParam.getValue().stream()
+                    .filter(Objects::nonNull)
                     .map(String::trim)
                     .toList();
 
-            List<String> actualValues = eventQueryParams.getOrDefault(queryParamName, List.of());
+            List<String> actualValues = normalizedEventQueryParams.getOrDefault(expectedKey, List.of());
             if (actualValues == null || actualValues.isEmpty()) return true;
 
             boolean noneMatched = expectedValues.stream().noneMatch(expectedPattern ->
                     actualValues.stream()
-                            .filter(Objects::nonNull)
-                            .map(String::trim)
-                            .anyMatch(actualValue -> actualValue.matches(expectedPattern))
+                            .anyMatch(actualValue -> actualValue.matches("(?i)" + expectedPattern))
             );
 
             if (noneMatched) return true;
         }
+
         return false;
     }
 }
