@@ -1799,5 +1799,178 @@ class OnHttpRequestTriggerTest {
                 .noneMatch(msg -> msg.contains("Should not trigger"));
     }
 
+    @Test
+    void testAutomationTriggersWhenQueryParamIsEmptyString() {
+        var yaml = """
+                alias: Empty String Query Param
+                triggers:
+                  - trigger: onHttpRequest
+                    query:
+                      status: [""]
+                actions:
+                  - action: logger
+                    message: Triggered on empty query param
+                """;
 
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var queryParams = new LinkedMultiValueMap<String, String>();
+        queryParams.add("status", ""); // empty string
+        var event = HttpRequestEvent.builder()
+                .queryParams(queryParams)
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isTrue();
+        assertThat(logAppender.getLoggedMessages()).anyMatch(msg -> msg.contains("Triggered on empty query param"));
+    }
+
+    @Test
+    void testAutomationDoesNotTriggerWhenQueryParamIsEmpty() {
+        var yaml = """
+                alias: Missing Query Param
+                triggers:
+                  - trigger: onHttpRequest
+                    query:
+                      status: [active]
+                actions:
+                  - action: logger
+                    message: Should not trigger
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var queryParams = new LinkedMultiValueMap<String, String>();
+        var event = HttpRequestEvent.builder()
+                .queryParams(queryParams) // empty
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isFalse();
+        assertThat(logAppender.getLoggedMessages()).noneMatch(msg -> msg.contains("Should not trigger"));
+    }
+
+    @Test
+    void testAutomationTriggersWithExtraQueryParams() {
+        var yaml = """
+                alias: Extra Query Params Present
+                triggers:
+                  - trigger: onHttpRequest
+                    query:
+                      category: [books]
+                actions:
+                  - action: logger
+                    message: Triggered with extra params
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var queryParams = new LinkedMultiValueMap<String, String>();
+        queryParams.add("category", "books");
+        queryParams.add("page", "2");
+        queryParams.add("sort", "desc");
+        var event = HttpRequestEvent.builder()
+                .queryParams(queryParams)
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isTrue();
+        assertThat(logAppender.getLoggedMessages()).anyMatch(msg -> msg.contains("Triggered with extra params"));
+    }
+
+    @Test
+    void testAutomationDoesNotTriggerWhenQueryParamKeyIsDifferentCase() {
+        var yaml = """
+                alias: Case Sensitive Key
+                triggers:
+                  - trigger: onHttpRequest
+                    query:
+                      category: [books]
+                actions:
+                  - action: logger
+                    message: Should not trigger due to key case mismatch
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var queryParams = new LinkedMultiValueMap<String, String>();
+        queryParams.add("Category", "books"); // uppercase key
+        var event = HttpRequestEvent.builder()
+                .queryParams(queryParams) // uppercase key
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isFalse();
+        assertThat(logAppender.getLoggedMessages()).noneMatch(msg -> msg.contains("Should not trigger due to key case mismatch"));
+    }
+
+    @Test
+    void testAutomationDoesNotTriggerWhenQueryParamValueIsDifferentCase() {
+        var yaml = """
+                alias: Case Sensitive Value
+                triggers:
+                  - trigger: onHttpRequest
+                    query:
+                      category: [books]
+                actions:
+                  - action: logger
+                    message: Should not trigger due to value case mismatch
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var queryParams = new LinkedMultiValueMap<String, String>();
+        queryParams.add("category", "Books"); // capitalized value
+        var event = HttpRequestEvent.builder()
+                .queryParams(queryParams) // capitalized value
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isFalse();
+        assertThat(logAppender.getLoggedMessages()).noneMatch(msg -> msg.contains("Should not trigger due to value case mismatch"));
+    }
+
+    @Test
+    void testAutomationTriggersWhenQueryParamContainsRegexCharsLiterally() {
+        var yaml = """
+                alias: Regex-like Literal Value
+                triggers:
+                  - trigger: onHttpRequest
+                    query:
+                      search: [".*"]
+                actions:
+                  - action: logger
+                    message: Triggered with regex-like value
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var queryParams = new LinkedMultiValueMap<String, String>();
+        queryParams.add("search", ".*"); // literal value
+        var event = HttpRequestEvent.builder()
+                .queryParams(queryParams) // matches exactly ".*"
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isTrue();
+        assertThat(logAppender.getLoggedMessages()).anyMatch(msg -> msg.contains("Triggered with regex-like value"));
+    }
 }
