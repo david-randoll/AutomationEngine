@@ -4,6 +4,7 @@ import com.automation.engine.core.AutomationEngine;
 import com.automation.engine.http.event.HttpRequestEvent;
 import com.automation.engine.http.extensions.IHttpEventExtension;
 import com.automation.engine.http.utils.HttpServletUtils;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -20,10 +21,11 @@ import java.util.List;
 public class HttpRequestEventPublisher implements HandlerInterceptor {
     private final AutomationEngine engine;
     private final List<IHttpEventExtension> httpEventExtensions;
+    private final ObjectMapper objectMapper;
 
     @Override
     public boolean preHandle(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull Object handler) throws Exception {
-        CachedBodyHttpServletRequest requestWrapper = HttpServletUtils.toCachedBodyHttpServletRequest(request);
+        CachedBodyHttpServletRequest requestWrapper = HttpServletUtils.toCachedBodyHttpServletRequest(request, objectMapper);
         requestWrapper.setEndpointExists(true);
 
         HttpRequestEvent requestEvent = requestWrapper.toHttpRequestEvent();

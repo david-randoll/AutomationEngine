@@ -4,6 +4,7 @@ import com.automation.engine.http.AutomationEngineHttpApplication;
 import com.automation.engine.http.event.HttpMethodEnum;
 import com.automation.engine.http.event.HttpRequestEvent;
 import com.automation.engine.http.event.HttpResponseEvent;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -86,7 +87,7 @@ class HttpRequestEventPublisherTest {
         assertThat(requestEvent.getPath()).isEqualTo("/test/post");
         assertThat(requestEvent.getMethod()).isEqualTo(HttpMethodEnum.POST);
         // requestBody
-        var bodyJson = objectMapper.readTree(requestEvent.getRequestBody());
+        JsonNode bodyJson = requestEvent.getRequestBody();
         assertThat(bodyJson.get("key").asText()).isEqualTo("value");
         // queryParams
         assertThat(requestEvent.getQueryParams()).isEmpty();
@@ -120,7 +121,7 @@ class HttpRequestEventPublisherTest {
         assertThat(requestEvent.getPath()).isEqualTo("/test/put");
         assertThat(requestEvent.getMethod()).isEqualTo(HttpMethodEnum.PUT);
         // requestBody
-        assertThat(requestEvent.getRequestBody()).isEqualTo("Updated content");
+        assertThat(requestEvent.getRequestBody().asText()).isEqualTo("Updated content");
         // queryParams
         assertThat(requestEvent.getQueryParams()).isEmpty();
         // pathParams
@@ -236,7 +237,7 @@ class HttpRequestEventPublisherTest {
         assertThat(requestEvent.getQueryParams()).containsEntry("key", List.of("value"));
         assertThat(requestEvent.getHeaders()).containsEntry("Post-Header", List.of("HeaderValue"));
 
-        var bodyJson = objectMapper.readTree(requestEvent.getRequestBody());
+        JsonNode bodyJson = requestEvent.getRequestBody();
         assertThat(bodyJson.get("name").asText()).isEqualTo("Test");
 
         // Verify response event
@@ -308,7 +309,7 @@ class HttpRequestEventPublisherTest {
         assertThat(eventCaptureListener.getRequestEvents()).hasSize(1);
         HttpRequestEvent requestEvent = eventCaptureListener.getRequestEvents().getFirst();
         assertThat(requestEvent.getPath()).isEqualTo("/test/post");
-        var bodyJson = objectMapper.readTree(requestEvent.getRequestBody());
+        JsonNode bodyJson = requestEvent.getRequestBody();
         assertThat(bodyJson.get("unexpectedField").asText()).isEqualTo("value");
 
         // Verify response event

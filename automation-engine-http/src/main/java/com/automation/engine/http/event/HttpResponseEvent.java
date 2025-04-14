@@ -3,6 +3,7 @@ package com.automation.engine.http.event;
 import com.automation.engine.core.events.IEvent;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.FieldNameConstants;
@@ -24,7 +25,8 @@ public class HttpResponseEvent implements IEvent {
     private HttpHeaders headers;
     private MultiValueMap<String, String> queryParams;
     private Map<String, String> pathParams;
-    private String requestBody;
+    private JsonNode requestBody;
+
     private String responseBody;
     private HttpStatus responseStatus;
     private Map<String, Object> errorDetail;
