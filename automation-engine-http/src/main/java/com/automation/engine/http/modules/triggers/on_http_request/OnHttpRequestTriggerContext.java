@@ -21,11 +21,7 @@ public class OnHttpRequestTriggerContext implements ITriggerContext {
     private List<String> fullPaths;
     private List<String> paths;
     private HttpHeaders headers;
-
-    @JsonAlias({"query", "queryString", "queryParam", "queryParams"})
     private MultiValueMap<String, String> queryParams;
-
-    @JsonAlias({"pathParams", "pathParam", "path"})
     private MultiValueMap<String, String> pathParams;
 
     public boolean hasMethods() {
@@ -86,7 +82,12 @@ public class OnHttpRequestTriggerContext implements ITriggerContext {
 
     @JsonAlias({"headers", "header"})
     public void setHeaders(Object value) {
-        this.headers = switch (value) {
+        MultiValueMap<String, String> result = objectToMultiValueMap(value);
+        this.headers = new HttpHeaders(result);
+    }
+
+    private static MultiValueMap<String, String> objectToMultiValueMap(Object value) {
+        return switch (value) {
             case HttpHeaders h -> h;
             case MultiValueMap<?, ?> m -> {
                 HttpHeaders httpHeaders = new HttpHeaders();
@@ -123,7 +124,17 @@ public class OnHttpRequestTriggerContext implements ITriggerContext {
         return queryParams != null && !queryParams.isEmpty();
     }
 
+    @JsonAlias({"query", "queryString", "queryParam", "queryParams"})
+    public void setQueryParams(Object value) {
+        this.queryParams = objectToMultiValueMap(value);
+    }
+
     public boolean hasPathParams() {
         return pathParams != null && !pathParams.isEmpty();
+    }
+
+    @JsonAlias({"pathParams", "pathParam", "path"})
+    public void setPathParams(Object value) {
+        this.pathParams = objectToMultiValueMap(value);
     }
 }

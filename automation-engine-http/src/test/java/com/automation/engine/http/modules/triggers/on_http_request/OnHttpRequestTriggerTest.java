@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 import java.util.List;
@@ -1591,6 +1592,211 @@ class OnHttpRequestTriggerTest {
 
         assertThat(logAppender.getLoggedMessages())
                 .anyMatch(msg -> msg.contains("Header matched"));
+    }
+
+    /*
+        Query Params
+     */
+    @Test
+    void testAutomationTriggersForMatchingQueryParam() {
+        var yaml = """
+                alias: Match query param
+                triggers:
+                  - trigger: onHttpRequest
+                    queryParams:
+                      user: [admin]
+                actions:
+                  - action: logger
+                    message: Matched query param
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<String, String>();
+        queryParams.add("user", "admin");
+        var event = HttpRequestEvent.builder()
+                .queryParams(queryParams)
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context))
+                .as("Automation should trigger for matching query param")
+                .isTrue();
+
+        assertThat(logAppender.getLoggedMessages())
+                .anyMatch(msg -> msg.contains("Matched query param"));
+    }
+
+    @Test
+    void testAutomationDoesNotTriggerForNonMatchingQueryParam() {
+        var yaml = """
+                alias: No match query param
+                triggers:
+                  - trigger: onHttpRequest
+                    queryParams:
+                      user: [admin]
+                actions:
+                  - action: logger
+                    message: Should not match query param
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<String, String>();
+        queryParams.add("user", "guest");
+        var event = HttpRequestEvent.builder()
+                .queryParams(queryParams)
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context))
+                .as("Automation should not trigger for non-matching query param")
+                .isFalse();
+
+        assertThat(logAppender.getLoggedMessages())
+                .noneMatch(msg -> msg.contains("Should not match query param"));
+    }
+
+    @Test
+    void testAutomationTriggersWhenOneQueryParamValueMatches() {
+        var yaml = """
+                alias: Match one of multiple values
+                triggers:
+                  - trigger: onHttpRequest
+                    queryParams:
+                      role: [admin, manager]
+                actions:
+                  - action: logger
+                    message: Role matched
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var queryParams = new LinkedMultiValueMap<String, String>();
+        queryParams.add("role", "manager");
+        var event = HttpRequestEvent.builder()
+                .queryParams(queryParams)
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context))
+                .as("Automation should trigger when one of multiple query param values matches")
+                .isTrue();
+
+        assertThat(logAppender.getLoggedMessages())
+                .anyMatch(msg -> msg.contains("Role matched"));
+    }
+
+    @Test
+    void testAutomationDoesNotTriggerWhenQueryParamIsMissing() {
+        var yaml = """
+                alias: Missing query param
+                triggers:
+                  - trigger: onHttpRequest
+                    queryParams:
+                      token: [abc123]
+                actions:
+                  - action: logger
+                    message: Should not trigger when query param is missing
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var queryParams = new LinkedMultiValueMap<String, String>();
+        queryParams.add("user", "admin"); // missing the required token param
+        var event = HttpRequestEvent.builder()
+                .queryParams(queryParams)
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context))
+                .as("Automation should not trigger when required query param is missing")
+                .isFalse();
+
+        assertThat(logAppender.getLoggedMessages())
+                .noneMatch(msg -> msg.contains("Should not trigger"));
+    }
+
+    @Test
+    void testAutomationTriggersWhenAllQueryParamsMatch() {
+        var yaml = """
+                alias: All query params match
+                triggers:
+                  - trigger: onHttpRequest
+                    queryParams:
+                      user: [admin]
+                      active: [true]
+                actions:
+                  - action: logger
+                    message: All query params matched
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var queryParams = new LinkedMultiValueMap<String, String>();
+        queryParams.add("user", "admin");
+        queryParams.add("active", "true");
+        var event = HttpRequestEvent.builder()
+                .queryParams(queryParams)
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context))
+                .as("Automation should trigger when all query params match")
+                .isTrue();
+
+        assertThat(logAppender.getLoggedMessages())
+                .anyMatch(msg -> msg.contains("All query params matched"));
+    }
+
+    @Test
+    void testAutomationDoesNotTriggerWhenOneQueryParamDoesNotMatch() {
+        var yaml = """
+                alias: One query param does not match
+                triggers:
+                  - trigger: onHttpRequest
+                    queryParams:
+                      user: [admin]
+                      active: [true]
+                actions:
+                  - action: logger
+                    message: Should not trigger if one query param fails
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var queryParams = new LinkedMultiValueMap<String, String>();
+        queryParams.add("user", "admin");
+        queryParams.add("active", "false"); // mismatch here
+        var event = HttpRequestEvent.builder()
+                .queryParams(queryParams)
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context))
+                .as("Automation should not trigger when one query param value does not match")
+                .isFalse();
+
+        assertThat(logAppender.getLoggedMessages())
+                .noneMatch(msg -> msg.contains("Should not trigger"));
     }
 
 
