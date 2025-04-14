@@ -2,7 +2,7 @@ package com.automation.engine.http.extensions;
 
 import com.automation.engine.http.event.HttpRequestEvent;
 import com.automation.engine.http.event.HttpResponseEvent;
-import com.automation.engine.http.publisher.HttpServletUtils;
+import com.automation.engine.http.utils.HttpServletUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

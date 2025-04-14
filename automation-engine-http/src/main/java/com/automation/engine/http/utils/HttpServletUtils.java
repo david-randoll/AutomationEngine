@@ -1,4 +1,4 @@
-package com.automation.engine.http.publisher;
+package com.automation.engine.http.utils;
 
 import com.automation.engine.http.publisher.request.CachedBodyHttpServletRequest;
 import com.automation.engine.http.publisher.response.CachedBodyHttpServletResponse;
@@ -7,12 +7,14 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.io.IOException;
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
 @UtilityClass
@@ -67,5 +69,52 @@ public class HttpServletUtils {
         return Optional.ofNullable(ip)
                 .map(String::trim)
                 .orElse(DEFAULT_IP);
+    }
+
+    public static String normalizedUrl(String url) {
+        if (url == null) return null;
+        return url.replaceAll("/$", "");
+    }
+
+    public static boolean checkMap(MultiValueMap<String, String> queryParams, Map<String, String> eventQueryParams) {
+        if (queryParams == null || eventQueryParams == null) return true;
+        LinkedMultiValueMap<String, String> eventMultiValueMap = eventQueryParams.entrySet().stream()
+                .collect(LinkedMultiValueMap::new, (map, entry) -> map.add(entry.getKey(), entry.getValue()), LinkedMultiValueMap::addAll);
+        return checkMap(queryParams, eventMultiValueMap);
+    }
+
+    public static boolean checkMap(MultiValueMap<String, String> queryParams, MultiValueMap<String, String> eventQueryParams) {
+        if (queryParams == null || eventQueryParams == null) return true;
+
+        // Build a lowercased map of event query params for case-insensitive key matching
+        Map<String, List<String>> normalizedEventQueryParams = new HashMap<>();
+        for (Map.Entry<String, List<String>> entry : eventQueryParams.entrySet()) {
+            String lowerKey = entry.getKey().trim().toLowerCase();
+            List<String> values = entry.getValue().stream()
+                    .filter(Objects::nonNull)
+                    .map(String::trim)
+                    .toList();
+            normalizedEventQueryParams.put(lowerKey, values);
+        }
+
+        for (var queryParam : queryParams.entrySet()) {
+            String expectedKey = queryParam.getKey().trim().toLowerCase();
+            List<String> expectedValues = queryParam.getValue().stream()
+                    .filter(Objects::nonNull)
+                    .map(String::trim)
+                    .toList();
+
+            List<String> actualValues = normalizedEventQueryParams.getOrDefault(expectedKey, List.of());
+            if (actualValues == null || actualValues.isEmpty()) return true;
+
+            boolean noneMatched = expectedValues.stream().noneMatch(expectedPattern ->
+                    actualValues.stream()
+                            .anyMatch(actualValue -> actualValue.matches("(?i)" + expectedPattern))
+            );
+
+            if (noneMatched) return true;
+        }
+
+        return false;
     }
 }
