@@ -46,7 +46,7 @@ public class OnHttpRequestTriggerContext implements ITriggerContext {
     private MultiValueMap<String, String> pathParams;
 
     @JsonAlias({"body", "requestBody"})
-    private JsonNode body;
+    private JsonNode requestBody;
 
     public boolean hasMethods() {
         return methods != null && !methods.isEmpty();
@@ -73,6 +73,6 @@ public class OnHttpRequestTriggerContext implements ITriggerContext {
     }
 
     public boolean hasBody() {
-        return body != null && !body.isEmpty();
+        return requestBody != null && !requestBody.isEmpty();
     }
 }

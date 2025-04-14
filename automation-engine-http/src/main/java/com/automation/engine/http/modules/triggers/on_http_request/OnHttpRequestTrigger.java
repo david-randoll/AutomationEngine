@@ -3,6 +3,8 @@ package com.automation.engine.http.modules.triggers.on_http_request;
 import com.automation.engine.core.events.EventContext;
 import com.automation.engine.http.event.HttpRequestEvent;
 import com.automation.engine.http.utils.HttpServletUtils;
+import com.automation.engine.http.utils.JsonNodeMatcher;
+import com.automation.engine.http.utils.MultiValueMatcher;
 import com.automation.engine.spi.PluggableTrigger;
 import org.springframework.stereotype.Component;
 
@@ -23,14 +25,17 @@ public class OnHttpRequestTrigger extends PluggableTrigger<OnHttpRequestTriggerC
         var isPathTriggered = tc.hasPaths() && tc.getPaths().stream().noneMatch(pathParsed::matches);
         if (isPathTriggered) return false;
 
-        var isHeaderTriggered = tc.hasHeaders() && HttpServletUtils.checkMap(tc.getHeaders(), event.getHeaders());
+        var isHeaderTriggered = tc.hasHeaders() && MultiValueMatcher.checkMap(tc.getHeaders(), event.getHeaders());
         if (isHeaderTriggered) return false;
 
-        var isQueryParamTriggered = tc.hasQueryParams() && HttpServletUtils.checkMap(tc.getQueryParams(), event.getQueryParams());
+        var isQueryParamTriggered = tc.hasQueryParams() && MultiValueMatcher.checkMap(tc.getQueryParams(), event.getQueryParams());
         if (isQueryParamTriggered) return false;
 
-        var isPathParamTriggered = tc.hasPathParams() && HttpServletUtils.checkMap(tc.getPathParams(), event.getPathParams());
+        var isPathParamTriggered = tc.hasPathParams() && MultiValueMatcher.checkMap(tc.getPathParams(), event.getPathParams());
         if (isPathParamTriggered) return false;
+
+        var isBodyTriggered = tc.hasBody() && JsonNodeMatcher.checkJsonNode(tc.getRequestBody(), event.getRequestBody());
+        if (isBodyTriggered) return false;
 
         return true;
     }
