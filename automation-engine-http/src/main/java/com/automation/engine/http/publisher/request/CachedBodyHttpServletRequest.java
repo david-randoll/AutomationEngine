@@ -2,15 +2,21 @@ package com.automation.engine.http.publisher.request;
 
 import com.automation.engine.http.event.HttpMethodEnum;
 import com.automation.engine.http.event.HttpRequestEvent;
+import com.automation.engine.http.extensions.AutomationEngineRequestBodyParseException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import jakarta.servlet.ServletInputStream;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.lang.NonNull;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.util.ContentCachingRequestWrapper;
@@ -30,11 +36,13 @@ public class CachedBodyHttpServletRequest extends ContentCachingRequestWrapper {
     private boolean endpointExists;
 
     private HttpRequestEvent httpRequestEvent;
+    private final ObjectMapper objectMapper;
 
-    public CachedBodyHttpServletRequest(HttpServletRequest request) throws IOException {
+    public CachedBodyHttpServletRequest(HttpServletRequest request, ObjectMapper objectMapper) throws IOException {
         super(request);
         InputStream requestInputStream = request.getInputStream();
         this.cachedBody = StreamUtils.copyToByteArray(requestInputStream);
+        this.objectMapper = objectMapper;
     }
 
     @Override
@@ -51,8 +59,22 @@ public class CachedBodyHttpServletRequest extends ContentCachingRequestWrapper {
     }
 
     @SneakyThrows
-    public String getBody() {
-        return StreamUtils.copyToString(this.getInputStream(), StandardCharsets.UTF_8);
+    public JsonNode getBody() {
+        try {
+            JsonNodeFactory factory = objectMapper.getNodeFactory();
+            if (ObjectUtils.isEmpty(this.cachedBody)) return factory.nullNode();
+
+            String contentType = this.getContentType();
+            if (contentType != null && contentType.contains(MediaType.APPLICATION_JSON_VALUE)) {
+                return objectMapper.readTree(this.cachedBody);
+            } else {
+                // if the content type is not JSON, we can try to parse it as a text node
+                var stringBody = new String(this.cachedBody, StandardCharsets.UTF_8);
+                return factory.textNode(stringBody);
+            }
+        } catch (IOException e) {
+            throw new AutomationEngineRequestBodyParseException(e);
+        }
     }
 
     public MultiValueMap<String, String> getRequestParams() {

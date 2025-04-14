@@ -2,6 +2,7 @@ package com.automation.engine.http.utils;
 
 import com.automation.engine.http.publisher.request.CachedBodyHttpServletRequest;
 import com.automation.engine.http.publisher.response.CachedBodyHttpServletResponse;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.experimental.UtilityClass;
@@ -22,10 +23,10 @@ public class HttpServletUtils {
 
     public static final String DEFAULT_IP = "0.0.0.0";
 
-    public CachedBodyHttpServletRequest toCachedBodyHttpServletRequest(@NonNull HttpServletRequest request) throws IOException {
+    public CachedBodyHttpServletRequest toCachedBodyHttpServletRequest(@NonNull HttpServletRequest request, ObjectMapper mapper) throws IOException {
         if (request instanceof CachedBodyHttpServletRequest cachedBodyHttpServletRequest)
             return cachedBodyHttpServletRequest;
-        return new CachedBodyHttpServletRequest(request);
+        return new CachedBodyHttpServletRequest(request, mapper);
     }
 
     public CachedBodyHttpServletResponse toCachedBodyHttpServletResponse(@NonNull HttpServletResponse response) {

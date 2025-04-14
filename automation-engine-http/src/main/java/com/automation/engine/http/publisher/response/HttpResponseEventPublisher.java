@@ -6,6 +6,8 @@ import com.automation.engine.http.event.HttpResponseEvent;
 import com.automation.engine.http.extensions.IHttpEventExtension;
 import com.automation.engine.http.publisher.request.CachedBodyHttpServletRequest;
 import com.automation.engine.http.publisher.request.HttpRequestEventPublisher;
+import com.automation.engine.http.utils.HttpServletUtils;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -40,6 +42,7 @@ public class HttpResponseEventPublisher extends OncePerRequestFilter {
     private final AutomationEngine engine;
     private final DefaultErrorAttributes defaultErrorAttributes;
     private final List<IHttpEventExtension> httpEventExtensions;
+    private final ObjectMapper objectMapper;
 
     @Autowired
     @Qualifier("handlerExceptionResolver")
@@ -52,8 +55,8 @@ public class HttpResponseEventPublisher extends OncePerRequestFilter {
      */
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
-        var requestWrapper = new CachedBodyHttpServletRequest(request);
-        var responseWrapper = new CachedBodyHttpServletResponse(response);
+        CachedBodyHttpServletRequest requestWrapper = HttpServletUtils.toCachedBodyHttpServletRequest(request, objectMapper);
+        CachedBodyHttpServletResponse responseWrapper = HttpServletUtils.toCachedBodyHttpServletResponse(response);
 
         filterChain.doFilter(requestWrapper, responseWrapper);
 
