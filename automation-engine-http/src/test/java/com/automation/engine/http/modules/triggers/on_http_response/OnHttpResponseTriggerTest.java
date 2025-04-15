@@ -1,4 +1,4 @@
-package com.automation.engine.http.modules.triggers.on_http_request;
+package com.automation.engine.http.modules.triggers.on_http_response;
 
 import ch.qos.logback.classic.Logger;
 import com.automation.engine.core.Automation;
@@ -8,7 +8,7 @@ import com.automation.engine.creator.AutomationCreator;
 import com.automation.engine.http.AutomationEngineHttpApplication;
 import com.automation.engine.http.TestLogAppender;
 import com.automation.engine.http.event.HttpMethodEnum;
-import com.automation.engine.http.event.HttpRequestEvent;
+import com.automation.engine.http.event.HttpResponseEvent;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -29,7 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK, classes = AutomationEngineHttpApplication.class)
 @ExtendWith(SpringExtension.class)
-class OnHttpRequestTriggerTest {
+class OnHttpResponseTriggerTest {
 
     @Autowired
     private AutomationEngine engine;
@@ -50,14 +51,14 @@ class OnHttpRequestTriggerTest {
     }
 
     /*
-        Methods
-     */
+       Methods
+    */
     @Test
     void testAutomationTriggersForSingleMatchingMethod() {
         var yaml = """
                 alias: Match POST requests
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     method: POST
                 actions:
                   - action: logger
@@ -67,7 +68,7 @@ class OnHttpRequestTriggerTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .method(HttpMethodEnum.POST)
                 .build();
 
@@ -88,7 +89,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Match only POST
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     method: POST
                 actions:
                   - action: logger
@@ -98,7 +99,7 @@ class OnHttpRequestTriggerTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .method(HttpMethodEnum.GET)
                 .build();
 
@@ -118,7 +119,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Match multiple methods
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     methods: [POST, PUT, PATCH]
                 actions:
                   - action: logger
@@ -128,7 +129,7 @@ class OnHttpRequestTriggerTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .method(HttpMethodEnum.PUT)
                 .build();
 
@@ -148,7 +149,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Match selected methods
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     methods: [POST, PUT]
                 actions:
                   - action: logger
@@ -158,7 +159,7 @@ class OnHttpRequestTriggerTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .method(HttpMethodEnum.DELETE)
                 .build();
 
@@ -178,7 +179,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: No method filter
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                 actions:
                   - action: logger
                     message: Triggered with no method filter
@@ -187,7 +188,7 @@ class OnHttpRequestTriggerTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .method(HttpMethodEnum.HEAD)
                 .build();
 
@@ -207,7 +208,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Expects method to match
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     methods: [GET]
                 actions:
                   - action: logger
@@ -217,7 +218,7 @@ class OnHttpRequestTriggerTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .method(null)
                 .build();
 
@@ -240,7 +241,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Match full URL
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     fullPath: "http://localhost:8080/api/users"
                 actions:
                   - action: logger
@@ -250,7 +251,7 @@ class OnHttpRequestTriggerTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .fullUrl("http://localhost:8080/api/users")
                 .build();
 
@@ -270,7 +271,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: No match for this URL
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     fullPath: ["http://localhost:8080/api/users"]
                 actions:
                   - action: logger
@@ -280,7 +281,7 @@ class OnHttpRequestTriggerTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .fullUrl("http://localhost:8080/api/products")
                 .build();
 
@@ -300,7 +301,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Match any full URL
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     fullPaths: [
                       "http://localhost:8080/api/users",
                       "http://localhost:8080/api/products"
@@ -313,7 +314,7 @@ class OnHttpRequestTriggerTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .fullUrl("http://localhost:8080/api/products")
                 .build();
 
@@ -333,7 +334,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: No match in full path list
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     fullPath: [
                       "http://localhost:8080/api/users",
                       "http://localhost:8080/api/orders"
@@ -346,7 +347,7 @@ class OnHttpRequestTriggerTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .fullUrl("http://localhost:8080/api/unknown")
                 .build();
 
@@ -366,7 +367,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Match dynamic full path
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     fullPath: ["http://localhost:8080/api/users/{id}"]
                 actions:
                   - action: logger
@@ -376,7 +377,7 @@ class OnHttpRequestTriggerTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .fullUrl("http://localhost:8080/api/users/123")
                 .build();
 
@@ -396,7 +397,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Regex-style pattern not matched
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     fullPath: ["http://localhost:8080/api/orders/{orderId}"]
                 actions:
                   - action: logger
@@ -406,7 +407,7 @@ class OnHttpRequestTriggerTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .fullUrl("http://localhost:8080/api/products/456")
                 .build();
 
@@ -426,7 +427,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Match full path with dynamic segment in middle
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     fullPath: ["http://localhost:8080/api/users/{id}/posts"]
                 actions:
                   - action: logger
@@ -436,7 +437,7 @@ class OnHttpRequestTriggerTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .fullUrl("http://localhost:8080/api/users/42/posts")
                 .build();
 
@@ -456,7 +457,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: No match if path doesn’t match dynamic segment
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     fullPath: ["http://localhost:8080/api/users/{id}/posts"]
                 actions:
                   - action: logger
@@ -466,7 +467,7 @@ class OnHttpRequestTriggerTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .fullUrl("http://localhost:8080/api/users/42/comments")
                 .build();
 
@@ -486,7 +487,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Match with optional trailing slash
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     fullPath: ["http://localhost:8080/api/users"]
                 actions:
                   - action: logger
@@ -496,7 +497,7 @@ class OnHttpRequestTriggerTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .fullUrl("http://localhost:8080/api/users/")
                 .build();
 
@@ -512,7 +513,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Match path ignoring query string
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     fullPath: ["http://localhost:8080/api/users/42"]
                 actions:
                   - action: logger
@@ -522,7 +523,7 @@ class OnHttpRequestTriggerTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .fullUrl("http://localhost:8080/api/users/42?sort=asc")
                 .build();
 
@@ -537,7 +538,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Protocol mismatch should not trigger
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     fullPath: ["https://localhost:8080/api/users"]
                 actions:
                   - action: logger
@@ -547,7 +548,7 @@ class OnHttpRequestTriggerTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .fullUrl("http://localhost:8080/api/users")
                 .build();
 
@@ -562,7 +563,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Match without port
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     fullPath: ["http://localhost/api/users"]
                 actions:
                   - action: logger
@@ -572,7 +573,7 @@ class OnHttpRequestTriggerTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .fullUrl("http://localhost:80/api/users")
                 .build();
 
@@ -587,7 +588,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Match literal dot in path
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     fullPath: ["http://localhost:8080/api/file/config.json"]
                 actions:
                   - action: logger
@@ -597,7 +598,7 @@ class OnHttpRequestTriggerTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .fullUrl("http://localhost:8080/api/file/config.json")
                 .build();
 
@@ -612,7 +613,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Empty fullPath should trigger
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     fullPath: []
                 actions:
                   - action: logger
@@ -622,7 +623,7 @@ class OnHttpRequestTriggerTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .fullUrl("http://localhost:8080/api/users")
                 .build();
 
@@ -642,7 +643,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: No fullPath specified
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     methods: [GET]
                 actions:
                   - action: logger
@@ -652,7 +653,7 @@ class OnHttpRequestTriggerTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .method(HttpMethodEnum.GET)
                 .fullUrl("http://localhost:8080/api/users/42")
                 .build();
@@ -677,7 +678,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Match /api/users path
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     path: /api/users
                 actions:
                   - action: logger
@@ -687,7 +688,7 @@ class OnHttpRequestTriggerTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .path("/api/users")
                 .build();
 
@@ -707,7 +708,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Match /api/users path
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     path: /api/users
                 actions:
                   - action: logger
@@ -717,7 +718,7 @@ class OnHttpRequestTriggerTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .path("/api/accounts")
                 .build();
 
@@ -737,7 +738,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Match multiple paths
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     paths:
                       - /api/accounts
                       - /api/users
@@ -749,7 +750,7 @@ class OnHttpRequestTriggerTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .path("/api/users")
                 .build();
 
@@ -769,7 +770,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Match multiple paths
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     paths:
                       - /api/accounts
                       - /api/items
@@ -781,7 +782,7 @@ class OnHttpRequestTriggerTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .path("/api/users")
                 .build();
 
@@ -801,7 +802,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Match path with dynamic segment
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     path: /api/users/{id}/posts
                 actions:
                   - action: logger
@@ -811,7 +812,7 @@ class OnHttpRequestTriggerTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .path("/api/users/42/posts")
                 .build();
 
@@ -831,7 +832,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Dynamic path pattern
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     path: /api/users/{id}/posts
                 actions:
                   - action: logger
@@ -841,7 +842,7 @@ class OnHttpRequestTriggerTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .path("/api/users/posts")
                 .build(); // missing the {id} in the middle
 
@@ -861,7 +862,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: No path specified
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     methods: [GET]
                 actions:
                   - action: logger
@@ -871,7 +872,7 @@ class OnHttpRequestTriggerTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .method(HttpMethodEnum.GET)
                 .path("/some/endpoint")
                 .build();
@@ -892,7 +893,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Mismatch in static segment
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     path: /api/users/{id}/posts
                 actions:
                   - action: logger
@@ -902,7 +903,7 @@ class OnHttpRequestTriggerTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .path("/api/users/123/order") // should NOT match /api/users/{id}/posts
                 .build();
 
@@ -922,7 +923,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Path with regex
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     paths: ["/api/users/.*/posts"]
                 actions:
                   - action: logger
@@ -932,7 +933,7 @@ class OnHttpRequestTriggerTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .path("/api/users/123/posts")
                 .build();
 
@@ -952,7 +953,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Path with regex no match
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     paths: ["/api/users/.*/posts"]
                 actions:
                   - action: logger
@@ -962,7 +963,7 @@ class OnHttpRequestTriggerTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .path("/api/users/123/comments")
                 .build();
 
@@ -982,7 +983,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: FullPath regex with dynamic in middle
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     fullPaths: ["http://localhost/api/.*/posts"]
                 actions:
                   - action: logger
@@ -992,7 +993,7 @@ class OnHttpRequestTriggerTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .fullUrl("http://localhost/api/123/posts")
                 .build();
 
@@ -1012,7 +1013,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Path with trailing slash
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     paths: [/api/users/]
                 actions:
                   - action: logger
@@ -1022,7 +1023,7 @@ class OnHttpRequestTriggerTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .path("/api/users")
                 .build();
 
@@ -1038,7 +1039,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Path match ignores query string
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     paths: [/api/search]
                 actions:
                   - action: logger
@@ -1048,7 +1049,7 @@ class OnHttpRequestTriggerTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .path("/api/search")
                 .queryParams(MultiValueMap.fromMultiValue(Map.of("q", List.of("something"))))
                 .build();
@@ -1065,7 +1066,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: No match for extra segment
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     paths: [/api/users]
                 actions:
                   - action: logger
@@ -1075,7 +1076,7 @@ class OnHttpRequestTriggerTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .path("/api/users/123")
                 .build();
 
@@ -1091,7 +1092,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Match with special characters
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     paths: [/api/items/@special]
                 actions:
                   - action: logger
@@ -1101,7 +1102,7 @@ class OnHttpRequestTriggerTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .path("/api/items/@special")
                 .build();
 
@@ -1117,7 +1118,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Match dynamic segments
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     paths: ["/api/{type}/{id}/details"]
                 actions:
                   - action: logger
@@ -1127,7 +1128,7 @@ class OnHttpRequestTriggerTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .path("/api/product/42/details")
                 .build();
 
@@ -1144,7 +1145,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Match any subpath under /api/users
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     paths: [/api/users/.*]
                 actions:
                   - action: logger
@@ -1154,7 +1155,7 @@ class OnHttpRequestTriggerTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .path("/api/users/123/profile")
                 .build();
 
@@ -1178,7 +1179,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Match header X-Auth-Type
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     headers:
                       X-Auth-Type: Bearer
                 actions:
@@ -1192,7 +1193,7 @@ class OnHttpRequestTriggerTest {
         var headers = new HttpHeaders();
         headers.add("X-Auth-Type", "Bearer");
 
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .headers(headers)
                 .build();
 
@@ -1212,7 +1213,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Match header X-Auth-Type
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     headers:
                       X-Auth-Type: Bearer
                 actions:
@@ -1226,7 +1227,7 @@ class OnHttpRequestTriggerTest {
         var headers = new HttpHeaders();
         headers.add("X-Auth-Type", "Basic");
 
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .headers(headers)
                 .build();
 
@@ -1246,7 +1247,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Match multiple headers
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     headers:
                       X-Auth-Type: Bearer
                       X-Client-Version: v1
@@ -1262,7 +1263,7 @@ class OnHttpRequestTriggerTest {
         headers.add("X-Auth-Type", "Bearer");
         headers.add("X-Client-Version", "v1");
 
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .headers(headers)
                 .build();
 
@@ -1278,7 +1279,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: One header mismatched
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     headers:
                       X-Auth-Type: Bearer
                       X-Client-Version: v1
@@ -1294,7 +1295,7 @@ class OnHttpRequestTriggerTest {
         headers.add("X-Auth-Type", "Bearer");
         headers.add("X-Client-Version", "v2"); // mismatch here
 
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .headers(headers)
                 .build();
 
@@ -1310,7 +1311,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Header missing
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     headers:
                       X-Auth-Type: Bearer
                 actions:
@@ -1323,7 +1324,7 @@ class OnHttpRequestTriggerTest {
 
         var headers = new HttpHeaders(); // empty
 
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .headers(headers)
                 .build();
 
@@ -1339,7 +1340,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Header case insensitive
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     headers:
                       x-auth-type: Bearer
                 actions:
@@ -1353,7 +1354,7 @@ class OnHttpRequestTriggerTest {
         var headers = new HttpHeaders();
         headers.add("X-Auth-Type", "Bearer"); // uppercase
 
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .headers(headers)
                 .build();
 
@@ -1369,7 +1370,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: No headers in trigger
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                 actions:
                   - action: logger
                     message: Triggered with no headers specified
@@ -1381,7 +1382,7 @@ class OnHttpRequestTriggerTest {
         var headers = new HttpHeaders();
         headers.add("X-Auth-Type", "Bearer");
 
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .headers(headers)
                 .build();
 
@@ -1401,7 +1402,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Match header X-Auth-Type
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     headers:
                       X-Auth-Type: Bearer
                 actions:
@@ -1415,7 +1416,7 @@ class OnHttpRequestTriggerTest {
         var headers = new HttpHeaders();
         headers.add("X-Auth-Type", "Bearer");
         headers.add("X-Extra-Header", "SomeValue"); // extra header
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .headers(headers)
                 .build();
 
@@ -1435,7 +1436,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Match header X-Auth-Type with spaces
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     headers:
                       X-Auth-Type: Bearer
                 actions:
@@ -1448,7 +1449,7 @@ class OnHttpRequestTriggerTest {
 
         var headers = new HttpHeaders();
         headers.add("X-Auth-Type", "Bearer "); // with trailing space
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .headers(headers)
                 .build();
 
@@ -1468,7 +1469,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Match header X-Auth-Type with multiple values
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     headers:
                       X-Auth-Type: Bearer
                 actions:
@@ -1482,7 +1483,7 @@ class OnHttpRequestTriggerTest {
         var headers = new HttpHeaders();
         headers.add("X-Auth-Type", "Bearer");
         headers.add("X-Auth-Type", "Basic"); // multiple values for the same header
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .headers(headers)
                 .build();
 
@@ -1502,7 +1503,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Match empty header value
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     headers:
                       X-Auth-Type: ""
                 actions:
@@ -1515,7 +1516,7 @@ class OnHttpRequestTriggerTest {
 
         var headers = new HttpHeaders();
         headers.add("X-Auth-Type", "");  // empty value
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .headers(headers)  // empty value
                 .build();
 
@@ -1535,7 +1536,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Match null header value
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     headers:
                       X-Auth-Type: Bearer
                 actions:
@@ -1548,7 +1549,7 @@ class OnHttpRequestTriggerTest {
 
         var headers = new HttpHeaders();
         headers.add("X-Auth-Type", null);  // null value
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .headers(headers)
                 .build();
 
@@ -1568,7 +1569,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Match header X-Auth-Type using regex
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     headers:
                       X-Auth-Type: 'Bearer .*'
                 actions:
@@ -1581,7 +1582,7 @@ class OnHttpRequestTriggerTest {
 
         var headers = new HttpHeaders();
         headers.add("X-Auth-Type", "Bearer token123");  // matches regex
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .headers(headers)
                 .build();
 
@@ -1604,7 +1605,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Match query param
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     queryParams:
                       user: [admin]
                 actions:
@@ -1617,7 +1618,7 @@ class OnHttpRequestTriggerTest {
 
         MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<String, String>();
         queryParams.add("user", "admin");
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .queryParams(queryParams)
                 .build();
 
@@ -1637,7 +1638,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: No match query param
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     queryParams:
                       user: [admin]
                 actions:
@@ -1650,7 +1651,7 @@ class OnHttpRequestTriggerTest {
 
         MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<String, String>();
         queryParams.add("user", "guest");
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .queryParams(queryParams)
                 .build();
 
@@ -1670,7 +1671,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Match one of multiple values
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     queryParams:
                       role: [admin, manager]
                 actions:
@@ -1683,7 +1684,7 @@ class OnHttpRequestTriggerTest {
 
         var queryParams = new LinkedMultiValueMap<String, String>();
         queryParams.add("role", "manager");
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .queryParams(queryParams)
                 .build();
 
@@ -1703,7 +1704,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Missing query param
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     queryParams:
                       token: [abc123]
                 actions:
@@ -1716,7 +1717,7 @@ class OnHttpRequestTriggerTest {
 
         var queryParams = new LinkedMultiValueMap<String, String>();
         queryParams.add("user", "admin"); // missing the required token param
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .queryParams(queryParams)
                 .build();
 
@@ -1736,7 +1737,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: All query params match
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     queryParams:
                       user: [admin]
                       active: [true]
@@ -1751,7 +1752,7 @@ class OnHttpRequestTriggerTest {
         var queryParams = new LinkedMultiValueMap<String, String>();
         queryParams.add("user", "admin");
         queryParams.add("active", "true");
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .queryParams(queryParams)
                 .build();
 
@@ -1771,7 +1772,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: One query param does not match
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     queryParams:
                       user: [admin]
                       active: [true]
@@ -1786,7 +1787,7 @@ class OnHttpRequestTriggerTest {
         var queryParams = new LinkedMultiValueMap<String, String>();
         queryParams.add("user", "admin");
         queryParams.add("active", "false"); // mismatch here
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .queryParams(queryParams)
                 .build();
 
@@ -1806,7 +1807,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Empty String Query Param
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     query:
                       status: [""]
                 actions:
@@ -1819,7 +1820,7 @@ class OnHttpRequestTriggerTest {
 
         var queryParams = new LinkedMultiValueMap<String, String>();
         queryParams.add("status", ""); // empty string
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .queryParams(queryParams)
                 .build();
 
@@ -1835,7 +1836,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Missing Query Param
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     query:
                       status: [active]
                 actions:
@@ -1847,7 +1848,7 @@ class OnHttpRequestTriggerTest {
         engine.register(automation);
 
         var queryParams = new LinkedMultiValueMap<String, String>();
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .queryParams(queryParams) // empty
                 .build();
 
@@ -1863,7 +1864,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Extra Query Params Present
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     query:
                       category: [books]
                 actions:
@@ -1878,7 +1879,7 @@ class OnHttpRequestTriggerTest {
         queryParams.add("category", "books");
         queryParams.add("page", "2");
         queryParams.add("sort", "desc");
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .queryParams(queryParams)
                 .build();
 
@@ -1894,7 +1895,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Case Sensitive Key
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     query:
                       category: [books]
                 actions:
@@ -1907,7 +1908,7 @@ class OnHttpRequestTriggerTest {
 
         var queryParams = new LinkedMultiValueMap<String, String>();
         queryParams.add("Category", "books"); // uppercase key
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .queryParams(queryParams) // uppercase key
                 .build();
 
@@ -1924,7 +1925,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Case Sensitive Value
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     query:
                       category: [books]
                 actions:
@@ -1937,7 +1938,7 @@ class OnHttpRequestTriggerTest {
 
         var queryParams = new LinkedMultiValueMap<String, String>();
         queryParams.add("category", "Books"); // capitalized value
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .queryParams(queryParams) // capitalized value
                 .build();
 
@@ -1954,7 +1955,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Regex-like Literal Value
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     query:
                       search: [".*"]
                 actions:
@@ -1967,7 +1968,7 @@ class OnHttpRequestTriggerTest {
 
         var queryParams = new LinkedMultiValueMap<String, String>();
         queryParams.add("search", ".*"); // literal value
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .queryParams(queryParams) // matches exactly ".*"
                 .build();
 
@@ -1986,7 +1987,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Match Path Param ID
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     pathParams:
                       id: [123]
                 actions:
@@ -1997,7 +1998,7 @@ class OnHttpRequestTriggerTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .pathParams(Map.of("id", "123"))
                 .build();
 
@@ -2013,7 +2014,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Match Path Param ID
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     pathParams:
                       id: [123]
                 actions:
@@ -2024,7 +2025,7 @@ class OnHttpRequestTriggerTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .pathParams(Map.of("id", "456"))
                 .build();
 
@@ -2040,7 +2041,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Match Multiple Path Params
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     pathParams:
                       userId: [99]
                       postId: [321]
@@ -2052,7 +2053,7 @@ class OnHttpRequestTriggerTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .pathParams(Map.of("userId", "99", "postId", "321"))
                 .build();
 
@@ -2068,7 +2069,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Match Multiple Path Params
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     pathParams:
                       userId: [99]
                       postId: [321]
@@ -2080,7 +2081,7 @@ class OnHttpRequestTriggerTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .pathParams(Map.of("userId", "99", "postId", "999"))
                 .build();
 
@@ -2096,7 +2097,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Expecting Path Param ID
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     pathParams:
                       id: [123]
                 actions:
@@ -2107,7 +2108,7 @@ class OnHttpRequestTriggerTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .pathParams(Map.of()) // No 'id'
                 .build();
 
@@ -2123,7 +2124,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Null Path Param Test
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     pathParams:
                       id: [123]
                 actions:
@@ -2136,7 +2137,7 @@ class OnHttpRequestTriggerTest {
 
         var queryParams = new HashMap<String, String>();
         queryParams.put("id", null); // Null value
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .pathParams(queryParams) // Null value
                 .build();
 
@@ -2152,7 +2153,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Match Only Required Path Param
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     pathParams:
                       id: [123]
                 actions:
@@ -2163,7 +2164,7 @@ class OnHttpRequestTriggerTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .pathParams(Map.of("id", "123", "extra", "999"))
                 .build();
 
@@ -2179,7 +2180,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Case Sensitive Path Param
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     pathParams:
                       type: [Admin]
                 actions:
@@ -2190,7 +2191,7 @@ class OnHttpRequestTriggerTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .pathParams(Map.of("type", "admin")) // lowercased
                 .build();
 
@@ -2207,7 +2208,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Regex Path Param Match
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     pathParams:
                       slug: [".*article.*"]
                 actions:
@@ -2218,7 +2219,7 @@ class OnHttpRequestTriggerTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .pathParams(Map.of("slug", "my-article-2025"))
                 .build();
 
@@ -2237,7 +2238,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: All Trigger Criteria Match
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     methods: [GET]
                     path: /api/users/{id}
                     pathParams:
@@ -2258,7 +2259,7 @@ class OnHttpRequestTriggerTest {
         headers.add("X-Auth", "secret");
         var queryParams = new LinkedMultiValueMap<String, String>();
         queryParams.add("status", "active");
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .method(HttpMethodEnum.GET)
                 .path("/api/users/42")
                 .pathParams(Map.of("id", "42"))
@@ -2278,7 +2279,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Fail if Header Wrong
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     methods: [GET]
                     path: /api/users/{id}
                     pathParams:
@@ -2299,7 +2300,7 @@ class OnHttpRequestTriggerTest {
         headers.add("X-Auth", "wrong-secret"); // mismatch
         var queryParams = new LinkedMultiValueMap<String, String>();
         queryParams.add("status", "active");
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .method(HttpMethodEnum.GET)
                 .path("/api/users/42")
                 .pathParams(Map.of("id", "42"))
@@ -2319,7 +2320,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Match One of Each Field
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     methods: [GET, POST]
                     path: /api/users/{id}
                     pathParams:
@@ -2340,7 +2341,7 @@ class OnHttpRequestTriggerTest {
         headers.add("X-Role", "admin");
         var queryParams = new LinkedMultiValueMap<String, String>();
         queryParams.add("status", "pending");
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .method(HttpMethodEnum.POST)
                 .path("/api/users/43")
                 .pathParams(Map.of("id", "43"))
@@ -2360,7 +2361,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Fail On Missing Path Param
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     methods: [GET]
                     path: /api/users/{id}
                     pathParams:
@@ -2381,7 +2382,7 @@ class OnHttpRequestTriggerTest {
         headers.add("X-Auth", "secret");
         var queryParams = new LinkedMultiValueMap<String, String>();
         queryParams.add("status", "active");
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .method(HttpMethodEnum.GET)
                 .path("/api/users/42")
                 .headers(headers)
@@ -2400,7 +2401,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: FullPath Combo Match
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     methods: [POST]
                     fullPaths: ["https://api.example.com/api/users/{id}"]
                     pathParams:
@@ -2421,7 +2422,7 @@ class OnHttpRequestTriggerTest {
         headers.add("X-Api-Key", "abc123");
         var queryParams = new LinkedMultiValueMap<String, String>();
         queryParams.add("type", "premium");
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .method(HttpMethodEnum.POST)
                 .fullUrl("https://api.example.com/api/users/123")
                 .pathParams(Map.of("id", "123"))
@@ -2441,7 +2442,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Fail on QueryParam Mismatch
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     methods: [PUT]
                     path: /api/products/{sku}
                     pathParams:
@@ -2462,7 +2463,7 @@ class OnHttpRequestTriggerTest {
         headers.add("X-Env", "prod");
         var queryParams = new LinkedMultiValueMap<String, String>();
         queryParams.add("mode", "view"); // mismatch
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .method(HttpMethodEnum.PUT)
                 .path("/api/products/999")
                 .pathParams(Map.of("sku", "999"))
@@ -2482,7 +2483,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Case Insensitive Match
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     methods: [GET]
                     path: /api/items/{itemId}
                     pathParams:
@@ -2503,7 +2504,7 @@ class OnHttpRequestTriggerTest {
         headers.add("X-CUSTOM-HEADER", "TokenValue"); // different casing
         var queryParams = new LinkedMultiValueMap<String, String>();
         queryParams.add("SORT", "ASC"); // different casing
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .method(HttpMethodEnum.GET)
                 .path("/api/items/abc")
                 .pathParams(Map.of("itemId", "abc"))
@@ -2523,7 +2524,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Wrong PathParam Type
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     methods: [GET]
                     path: /api/users/{id}
                     pathParams:
@@ -2544,7 +2545,7 @@ class OnHttpRequestTriggerTest {
         headers.add("X-Client", "mobile");
         var queryParams = new LinkedMultiValueMap<String, String>();
         queryParams.add("detail", "yes");
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .method(HttpMethodEnum.GET)
                 .path("/api/users/0042") // different string, not exact "42"
                 .pathParams(Map.of("id", "0042")) // technically a different string
@@ -2564,7 +2565,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Match exact request body
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     body:
                       name: John
                       age: 30
@@ -2580,7 +2581,7 @@ class OnHttpRequestTriggerTest {
                 .put("name", "John")
                 .put("age", 30);
 
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .method(HttpMethodEnum.POST)
                 .requestBody(body)
                 .build();
@@ -2601,7 +2602,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Match exact request body
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     body:
                       name: John
                       age: 30
@@ -2617,7 +2618,7 @@ class OnHttpRequestTriggerTest {
                 .put("name", "John")
                 .put("age", 25); // Not matching age
 
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .method(HttpMethodEnum.POST)
                 .requestBody(body)
                 .build();
@@ -2638,7 +2639,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Partial body match
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     body:
                       name: Alice
                 actions:
@@ -2653,7 +2654,7 @@ class OnHttpRequestTriggerTest {
                 .put("name", "Alice")
                 .put("age", 28); // Extra field
 
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .method(HttpMethodEnum.POST)
                 .requestBody(body)
                 .build();
@@ -2674,7 +2675,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Nested body match
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     body:
                       user:
                         name: Bob
@@ -2694,7 +2695,7 @@ class OnHttpRequestTriggerTest {
         var body = new ObjectMapper().createObjectNode()
                 .set("user", userNode);
 
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .method(HttpMethodEnum.POST)
                 .requestBody(body)
                 .build();
@@ -2715,7 +2716,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Missing field test
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     body:
                       name: Charlie
                       email: test@example.com
@@ -2730,7 +2731,7 @@ class OnHttpRequestTriggerTest {
         var body = new ObjectMapper().createObjectNode()
                 .put("name", "Charlie"); // Missing email
 
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .method(HttpMethodEnum.POST)
                 .requestBody(body)
                 .build();
@@ -2751,7 +2752,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Array field match
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     body:
                       tags: ["java", "spring"]
                 actions:
@@ -2769,7 +2770,7 @@ class OnHttpRequestTriggerTest {
         var body = new ObjectMapper().createObjectNode()
                 .set("tags", array);
 
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .method(HttpMethodEnum.POST)
                 .requestBody(body)
                 .build();
@@ -2790,7 +2791,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Match with extra fields
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     body:
                       username: testuser
                 actions:
@@ -2805,7 +2806,7 @@ class OnHttpRequestTriggerTest {
                 .put("username", "testuser")
                 .put("role", "admin"); // extra field
 
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .method(HttpMethodEnum.POST)
                 .requestBody(body)
                 .build();
@@ -2826,7 +2827,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Regex match on email
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     body:
                       email: "^.+@example\\\\.com$"
                 actions:
@@ -2840,7 +2841,7 @@ class OnHttpRequestTriggerTest {
         var body = new ObjectMapper().createObjectNode()
                 .put("email", "user@example.com");
 
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .method(HttpMethodEnum.POST)
                 .requestBody(body)
                 .build();
@@ -2861,7 +2862,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Match null value
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     body:
                       status: null
                 actions:
@@ -2875,7 +2876,7 @@ class OnHttpRequestTriggerTest {
         var body = new ObjectMapper().createObjectNode()
                 .putNull("status");
 
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .method(HttpMethodEnum.POST)
                 .requestBody(body)
                 .build();
@@ -2896,7 +2897,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Deep nested match
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     body:
                       user:
                         address:
@@ -2919,7 +2920,7 @@ class OnHttpRequestTriggerTest {
         var body = new ObjectMapper().createObjectNode()
                 .set("user", user);
 
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .method(HttpMethodEnum.POST)
                 .requestBody(body)
                 .build();
@@ -2940,7 +2941,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Regex mismatch
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     body:
                       username: "~^admin_.*$"
                 actions:
@@ -2954,7 +2955,7 @@ class OnHttpRequestTriggerTest {
         var body = new ObjectMapper().createObjectNode()
                 .put("username", "user_001"); // Doesn't match ^admin_.*
 
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .method(HttpMethodEnum.POST)
                 .requestBody(body)
                 .build();
@@ -2975,7 +2976,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Nested object match
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     body:
                       user:
                         name: Alice
@@ -2995,7 +2996,7 @@ class OnHttpRequestTriggerTest {
         var body = new ObjectMapper().createObjectNode()
                 .set("user", user);
 
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .method(HttpMethodEnum.POST)
                 .requestBody(body)
                 .build();
@@ -3016,7 +3017,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Partial nested match
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     body:
                       user:
                         name: Bob
@@ -3035,7 +3036,7 @@ class OnHttpRequestTriggerTest {
         var body = new ObjectMapper().createObjectNode()
                 .set("user", user);
 
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .method(HttpMethodEnum.POST)
                 .requestBody(body)
                 .build();
@@ -3056,7 +3057,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Nested mismatch
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     body:
                       user:
                         name: Charlie
@@ -3074,7 +3075,7 @@ class OnHttpRequestTriggerTest {
         var body = new ObjectMapper().createObjectNode()
                 .set("user", user);
 
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .method(HttpMethodEnum.POST)
                 .requestBody(body)
                 .build();
@@ -3095,7 +3096,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Deeply nested object match
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     body:
                       user:
                         contact:
@@ -3121,7 +3122,7 @@ class OnHttpRequestTriggerTest {
         var body = new ObjectMapper().createObjectNode()
                 .set("user", user);
 
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .method(HttpMethodEnum.POST)
                 .requestBody(body)
                 .build();
@@ -3142,7 +3143,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Match object in array
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     body:
                       items:
                         - id: 1
@@ -3166,7 +3167,7 @@ class OnHttpRequestTriggerTest {
         var body = new ObjectMapper().createObjectNode()
                 .set("items", new ObjectMapper().createArrayNode().add(item1).add(item2));
 
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .method(HttpMethodEnum.POST)
                 .requestBody(body)
                 .build();
@@ -3187,7 +3188,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Partial array match
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     body:
                       items:
                         - id: 2
@@ -3210,7 +3211,7 @@ class OnHttpRequestTriggerTest {
         var body = new ObjectMapper().createObjectNode()
                 .set("items", new ObjectMapper().createArrayNode().add(item1).add(item2));
 
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .method(HttpMethodEnum.POST)
                 .requestBody(body)
                 .build();
@@ -3231,7 +3232,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: No match in array
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     body:
                       items:
                         - id: 99
@@ -3255,7 +3256,7 @@ class OnHttpRequestTriggerTest {
         var body = new ObjectMapper().createObjectNode()
                 .set("items", new ObjectMapper().createArrayNode().add(item1).add(item2));
 
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .method(HttpMethodEnum.POST)
                 .requestBody(body)
                 .build();
@@ -3276,7 +3277,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Match primitive array
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     body:
                       tags: [news, tech]
                 actions:
@@ -3293,7 +3294,7 @@ class OnHttpRequestTriggerTest {
                         .add("tech")
                         .add("science"));
 
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .method(HttpMethodEnum.POST)
                 .requestBody(body)
                 .build();
@@ -3314,7 +3315,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Match object in array with extra fields
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     body:
                       items:
                         - id: 2
@@ -3335,7 +3336,7 @@ class OnHttpRequestTriggerTest {
         var body = new ObjectMapper().createObjectNode()
                 .set("items", new ObjectMapper().createArrayNode().add(item));
 
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .method(HttpMethodEnum.POST)
                 .requestBody(body)
                 .build();
@@ -3356,7 +3357,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Array order shouldn't matter
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     body:
                       tags: [tech, news]
                 actions:
@@ -3372,7 +3373,7 @@ class OnHttpRequestTriggerTest {
                         .add("news") // Reversed order
                         .add("tech"));
 
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .method(HttpMethodEnum.POST)
                 .requestBody(body)
                 .build();
@@ -3393,7 +3394,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Nested array in nested object
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     body:
                       user:
                         interests: [reading, traveling]
@@ -3413,7 +3414,7 @@ class OnHttpRequestTriggerTest {
         var body = new ObjectMapper().createObjectNode()
                 .set("user", user);
 
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .method(HttpMethodEnum.POST)
                 .requestBody(body)
                 .build();
@@ -3434,7 +3435,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Combine array and non-array fields
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     body:
                       status: active
                       tags: [urgent]
@@ -3450,7 +3451,7 @@ class OnHttpRequestTriggerTest {
                 .put("status", "active")
                 .set("tags", new ObjectMapper().createArrayNode().add("urgent"));
 
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .method(HttpMethodEnum.POST)
                 .requestBody(body)
                 .build();
@@ -3471,7 +3472,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Match with regex in array
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     body:
                       tags: [".*urgent.*"]
                 actions:
@@ -3487,7 +3488,7 @@ class OnHttpRequestTriggerTest {
                         .add("very_urgent")
                         .add("low_priority"));
 
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .method(HttpMethodEnum.POST)
                 .requestBody(body)
                 .build();
@@ -3508,7 +3509,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Match body, path, query, and header
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     path: /api/orders/{orderId}
                     query:
                       type: express
@@ -3539,7 +3540,7 @@ class OnHttpRequestTriggerTest {
         queryParams.add("type", "express");
         var headers = new HttpHeaders();
         headers.add("x-request-id", "req-789");
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .method(HttpMethodEnum.POST)
                 .path("/api/orders/9999")
                 .queryParams(queryParams)
@@ -3563,7 +3564,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Complex match with body mismatch
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     path: /api/users/{id}/purchases
                     headers:
                       auth-token: secure123
@@ -3582,7 +3583,7 @@ class OnHttpRequestTriggerTest {
 
         var headers = new HttpHeaders();
         headers.add("auth-token", "secure123");
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .method(HttpMethodEnum.GET)
                 .path("/api/users/456/purchases")
                 .headers(headers)
@@ -3605,7 +3606,7 @@ class OnHttpRequestTriggerTest {
         var yaml = """
                 alias: Complex match with relaxed query and header
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     query:
                       page: 1
                     headers:
@@ -3636,7 +3637,7 @@ class OnHttpRequestTriggerTest {
         queryParams.add("extra", "ignore-me"); // Extra param, should be ignored
         var headers = new HttpHeaders();
         headers.add("content-type", "application/json"); // Different casing
-        var event = HttpRequestEvent.builder()
+        var event = HttpResponseEvent.builder()
                 .method(HttpMethodEnum.GET)
                 .queryParams(queryParams)
                 .headers(headers) // Different casing
@@ -3653,4 +3654,195 @@ class OnHttpRequestTriggerTest {
         assertThat(logAppender.getLoggedMessages())
                 .anyMatch(msg -> msg.contains("Match with nested and relaxed criteria"));
     }
+
+    /*
+        Response Status
+     */
+    @Test
+    void testAutomationTriggersWhenResponseStatusMatches() {
+        var yaml = """
+                alias: Match Response Status 200
+                triggers:
+                  - trigger: onHttpResponse
+                    responseStatus: [200]
+                actions:
+                  - action: logger
+                    message: Success status matched!
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = HttpResponseEvent.builder()
+                .method(HttpMethodEnum.GET)
+                .responseStatus(HttpStatus.OK)
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context))
+                .as("Automation should trigger for 200 OK")
+                .isTrue();
+
+        assertThat(logAppender.getLoggedMessages())
+                .anyMatch(msg -> msg.contains("Success status matched!"));
+    }
+
+    @Test
+    void testAutomationDoesNotTriggerForNonMatchingResponseStatus() {
+        var yaml = """
+                alias: Match Response Status 200
+                triggers:
+                  - trigger: onHttpRequest
+                    responseStatus: [200]
+                actions:
+                  - action: logger
+                    message: Should not log this
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = HttpResponseEvent.builder()
+                .method(HttpMethodEnum.GET)
+                .responseStatus(HttpStatus.BAD_REQUEST)
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context))
+                .as("Automation should not trigger for 400 BAD_REQUEST")
+                .isFalse();
+
+        assertThat(logAppender.getLoggedMessages())
+                .noneMatch(msg -> msg.contains("Should not log this"));
+    }
+
+    @Test
+    void testAutomationTriggersForAnyMatchingStatusCode() {
+        var yaml = """
+                alias: Match Status Codes
+                triggers:
+                  - trigger: onHttpRequest
+                    responseStatus: [400, 404, 500]
+                actions:
+                  - action: logger
+                    message: Error response matched!
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = HttpResponseEvent.builder()
+                .method(HttpMethodEnum.GET)
+                .responseStatus(HttpStatus.NOT_FOUND)
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context))
+                .as("Automation should trigger for 404 NOT_FOUND")
+                .isTrue();
+
+        assertThat(logAppender.getLoggedMessages())
+                .anyMatch(msg -> msg.contains("Error response matched!"));
+    }
+
+    @Test
+    void testAutomationTriggersForStatusNameMatch() {
+        var yaml = """
+                alias: Match Status OK
+                triggers:
+                  - trigger: onHttpRequest
+                    responseStatus: [OK]
+                actions:
+                  - action: logger
+                    message: OK status triggered!
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = HttpResponseEvent.builder()
+                .method(HttpMethodEnum.GET)
+                .responseStatus(HttpStatus.OK)
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context))
+                .as("Automation should trigger for OK")
+                .isTrue();
+
+        assertThat(logAppender.getLoggedMessages())
+                .anyMatch(msg -> msg.contains("OK status triggered!"));
+    }
+
+    @Test
+    void testAutomationTriggersForMatchingStatusNameAmongMultiple() {
+        var yaml = """
+                alias: Match Error Names
+                triggers:
+                  - trigger: onHttpRequest
+                    responseStatus: [BAD_REQUEST, INTERNAL_SERVER_ERROR]
+                actions:
+                  - action: logger
+                    message: Matched error name!
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = HttpResponseEvent.builder()
+                .method(HttpMethodEnum.GET)
+                .responseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context))
+                .as("Automation should trigger for INTERNAL_SERVER_ERROR")
+                .isTrue();
+
+        assertThat(logAppender.getLoggedMessages())
+                .anyMatch(msg -> msg.contains("Matched error name!"));
+    }
+
+    @Test
+    void testAutomationDoesNotTriggerWhenNeitherCodeNorNameMatch() {
+        var yaml = """
+                alias: Match Status NotFoundOnly
+                triggers:
+                  - trigger: onHttpRequest
+                    responseStatus: [NOT_FOUND]
+                actions:
+                  - action: logger
+                    message: Should never log this
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = HttpResponseEvent.builder()
+                .method(HttpMethodEnum.GET)
+                .responseStatus(HttpStatus.BAD_REQUEST)
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context))
+                .as("Automation should not trigger for BAD_REQUEST")
+                .isFalse();
+
+        assertThat(logAppender.getLoggedMessages())
+                .noneMatch(msg -> msg.contains("Should never log this"));
+    }
+
+
 }

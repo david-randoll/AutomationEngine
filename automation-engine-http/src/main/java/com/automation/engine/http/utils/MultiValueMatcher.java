@@ -11,6 +11,13 @@ import java.util.Objects;
 
 @UtilityClass
 public class MultiValueMatcher {
+    public static boolean checkMapObject(MultiValueMap<String, String> queryParams, Map<String, Object> eventQueryParams) {
+        if (queryParams == null || eventQueryParams == null) return true;
+        LinkedMultiValueMap<String, String> eventMultiValueMap = eventQueryParams.entrySet().stream()
+                .collect(LinkedMultiValueMap::new, (map, entry) -> map.add(entry.getKey(), entry.getValue().toString()), LinkedMultiValueMap::addAll);
+        return checkMap(queryParams, eventMultiValueMap);
+    }
+
     public static boolean checkMap(MultiValueMap<String, String> queryParams, Map<String, String> eventQueryParams) {
         if (queryParams == null || eventQueryParams == null) return true;
         LinkedMultiValueMap<String, String> eventMultiValueMap = eventQueryParams.entrySet().stream()
