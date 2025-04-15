@@ -4,12 +4,14 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 public class FlexibleHttpStatusListDeserializer extends JsonDeserializer<List<HttpStatus>> {
 
     @Override
@@ -34,17 +36,18 @@ public class FlexibleHttpStatusListDeserializer extends JsonDeserializer<List<Ht
     private HttpStatus parseStatus(JsonNode node) {
         if (node.isInt()) {
             return HttpStatus.valueOf(node.asInt());
-        } else if (node.isTextual()) {
-            String text = node.asText().trim();
-            try {
-                return HttpStatus.valueOf(Integer.parseInt(text));
-            } catch (NumberFormatException e) {
-                // Normalize text to upper snake case (e.g. "ok" -> "OK", "not_found" -> "NOT_FOUND")
-                String normalized = text.toUpperCase().replace('-', '_').replace(' ', '_');
-                return HttpStatus.valueOf(normalized);
-            }
-        } else {
-            throw new IllegalArgumentException("Invalid HTTP status value: " + node);
         }
+
+        if (node.isTextual()) {
+            String text = node.asText().trim();
+            String normalized = text.toUpperCase().replace('-', '_').replace(' ', '_');
+            for (HttpStatus status : HttpStatus.values()) {
+                if (status.name().equalsIgnoreCase(normalized) || String.valueOf(status.value()).equalsIgnoreCase(normalized)) {
+                    return status;
+                }
+            }
+        }
+
+        throw new IllegalArgumentException("Invalid HTTP status value: " + node);
     }
 }

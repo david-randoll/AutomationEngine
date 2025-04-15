@@ -3844,5 +3844,136 @@ class OnHttpResponseTriggerTest {
                 .noneMatch(msg -> msg.contains("Should never log this"));
     }
 
+    @Test
+    void testDoesNotTriggerWhenResponseStatusIsNull() {
+        var yaml = """
+                alias: Status Null Should Not Trigger
+                triggers:
+                  - trigger: onHttpResponse
+                    responseStatus: [200]
+                actions:
+                  - action: logger
+                    message: Should not run
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = HttpResponseEvent.builder()
+                .method(HttpMethodEnum.GET)
+                .responseStatus(null)
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isFalse();
+        assertThat(logAppender.getLoggedMessages()).noneMatch(msg -> msg.contains("Should not run"));
+    }
+
+    @Test
+    void testTriggerWithMixedIntAndNameStatusMatch() {
+        var yaml = """
+                alias: Mixed Status Match
+                triggers:
+                  - trigger: onHttpResponse
+                    responseStatus: [200, INTERNAL_SERVER_ERROR]
+                actions:
+                  - action: logger
+                    message: Mixed match success
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = HttpResponseEvent.builder()
+                .responseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isTrue();
+        assertThat(logAppender.getLoggedMessages()).anyMatch(msg -> msg.contains("Mixed match success"));
+    }
+
+    @Test
+    void testCaseInsensitiveStatusNameMatch() {
+        var yaml = """
+                alias: Case Insensitive Match
+                triggers:
+                  - trigger: onHttpResponse
+                    responseStatus: [ok]
+                actions:
+                  - action: logger
+                    message: Case-insensitive OK matched
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = HttpResponseEvent.builder()
+                .responseStatus(HttpStatus.OK)
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isTrue();
+        assertThat(logAppender.getLoggedMessages()).anyMatch(msg -> msg.contains("Case-insensitive OK matched"));
+    }
+
+    @Test
+    void testInvalidStatusNameInYamlShouldNotMatch() {
+        var yaml = """
+                alias: Invalid Status Name
+                triggers:
+                  - trigger: onHttpResponse
+                    responseStatus: [RANDOM_STATUS]
+                actions:
+                  - action: logger
+                    message: Should not match invalid
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = HttpResponseEvent.builder()
+                .responseStatus(HttpStatus.OK)
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isFalse();
+        assertThat(logAppender.getLoggedMessages()).noneMatch(msg -> msg.contains("Should not match invalid"));
+    }
+
+    @Test
+    void testMatchByStatusCodeStringInYaml() {
+        var yaml = """
+                alias: String Status Code Match
+                triggers:
+                  - trigger: onHttpResponse
+                    responseStatus: ["200"]
+                actions:
+                  - action: logger
+                    message: String code match worked
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = HttpResponseEvent.builder()
+                .responseStatus(HttpStatus.OK)
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isTrue();
+        assertThat(logAppender.getLoggedMessages()).anyMatch(msg -> msg.contains("String code match worked"));
+    }
+
 
 }
