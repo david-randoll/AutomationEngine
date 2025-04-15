@@ -2828,7 +2828,7 @@ class OnHttpRequestTriggerTest {
                 triggers:
                   - trigger: onHttpRequest
                     body:
-                      email: "~^.+@example\\\\.com$"
+                      email: "^.+@example\\\\.com$"
                 actions:
                   - action: logger
                     message: Regex email matched
@@ -3502,6 +3502,4 @@ class OnHttpRequestTriggerTest {
         assertThat(logAppender.getLoggedMessages())
                 .anyMatch(msg -> msg.contains("Regex in array match"));
     }
-
-
 }

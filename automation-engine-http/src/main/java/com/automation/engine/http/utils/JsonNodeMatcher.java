@@ -5,6 +5,7 @@ import lombok.experimental.UtilityClass;
 
 import java.util.Iterator;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 @UtilityClass
 public class JsonNodeMatcher {
@@ -47,18 +48,9 @@ public class JsonNodeMatcher {
             return true;
         }
 
-        // Primitive types: support regex if starts with "~"
-        if (expected.isTextual()) {
-            String expectedText = expected.asText();
-            String actualText = actual.asText("");
-            if (expectedText.startsWith("~")) {
-                String regex = expectedText.substring(1);
-                return actualText.matches(regex);
-            } else {
-                return expectedText.equals(actualText);
-            }
-        }
-
-        return expected.equals(actual);
+        String expectedText = expected.asText();
+        String actualText = actual.asText("");
+        var pattern = Pattern.compile(expectedText);
+        return pattern.matcher(actualText).matches();
     }
 }
