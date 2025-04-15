@@ -3502,4 +3502,157 @@ class OnHttpRequestTriggerTest {
         assertThat(logAppender.getLoggedMessages())
                 .anyMatch(msg -> msg.contains("Regex in array match"));
     }
+
+    @Test
+    void testAutomationTriggersOnBodyPathQueryHeaderCombined() {
+        var yaml = """
+                alias: Match body, path, query, and header
+                triggers:
+                  - trigger: onHttpRequest
+                    path: /api/orders/{orderId}
+                    query:
+                      type: express
+                    headers:
+                      x-request-id: req-789
+                    body:
+                      userId: 1001
+                      items:
+                        - id: 201
+                          name: Widget
+                actions:
+                  - action: logger
+                    message: All combined match
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var item = new ObjectMapper().createObjectNode()
+                .put("id", 201)
+                .put("name", "Widget");
+
+        var body = new ObjectMapper().createObjectNode()
+                .put("userId", 1001)
+                .set("items", new ObjectMapper().createArrayNode().add(item));
+
+        var queryParams = new LinkedMultiValueMap<String, String>();
+        queryParams.add("type", "express");
+        var headers = new HttpHeaders();
+        headers.add("x-request-id", "req-789");
+        var event = HttpRequestEvent.builder()
+                .method(HttpMethodEnum.POST)
+                .path("/api/orders/9999")
+                .queryParams(queryParams)
+                .headers(headers)
+                .requestBody(body)
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context))
+                .as("Should trigger when all path, query, headers, and body match")
+                .isTrue();
+
+        assertThat(logAppender.getLoggedMessages())
+                .anyMatch(msg -> msg.contains("All combined match"));
+    }
+
+    @Test
+    void testAutomationDoesNotTriggerIfBodyDoesNotMatch() {
+        var yaml = """
+                alias: Complex match with body mismatch
+                triggers:
+                  - trigger: onHttpRequest
+                    path: /api/users/{id}/purchases
+                    headers:
+                      auth-token: secure123
+                    body:
+                      verified: true
+                actions:
+                  - action: logger
+                    message: Should not trigger due to body mismatch
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var body = new ObjectMapper().createObjectNode()
+                .put("verified", false); // Does not match
+
+        var headers = new HttpHeaders();
+        headers.add("auth-token", "secure123");
+        var event = HttpRequestEvent.builder()
+                .method(HttpMethodEnum.GET)
+                .path("/api/users/456/purchases")
+                .headers(headers)
+                .requestBody(body)
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context))
+                .as("Should not trigger due to body mismatch")
+                .isFalse();
+
+        assertThat(logAppender.getLoggedMessages())
+                .noneMatch(msg -> msg.contains("Should not trigger due to body mismatch"));
+    }
+
+    @Test
+    void testAutomationTriggersWithNestedBodyAndLooseQueryAndCaseInsensitiveHeader() {
+        var yaml = """
+                alias: Complex match with relaxed query and header
+                triggers:
+                  - trigger: onHttpRequest
+                    query:
+                      page: 1
+                    headers:
+                      Content-Type: application/json
+                    body:
+                      user:
+                        info:
+                          active: true
+                actions:
+                  - action: logger
+                    message: Match with nested and relaxed criteria
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var info = new ObjectMapper().createObjectNode()
+                .put("active", true);
+
+        var user = new ObjectMapper().createObjectNode()
+                .set("info", info);
+
+        var body = new ObjectMapper().createObjectNode()
+                .set("user", user);
+
+        var queryParams = new LinkedMultiValueMap<String, String>();
+        queryParams.add("page", "1"); // Should match
+        queryParams.add("extra", "ignore-me"); // Extra param, should be ignored
+        var headers = new HttpHeaders();
+        headers.add("content-type", "application/json"); // Different casing
+        var event = HttpRequestEvent.builder()
+                .method(HttpMethodEnum.GET)
+                .queryParams(queryParams)
+                .headers(headers) // Different casing
+                .requestBody(body)
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context))
+                .as("Should trigger with nested body, extra query param, and case-insensitive header")
+                .isTrue();
+
+        assertThat(logAppender.getLoggedMessages())
+                .anyMatch(msg -> msg.contains("Match with nested and relaxed criteria"));
+    }
+
+
 }
