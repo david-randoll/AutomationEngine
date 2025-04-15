@@ -2970,5 +2970,170 @@ class OnHttpRequestTriggerTest {
                 .noneMatch(msg -> msg.contains("Should not trigger"));
     }
 
+    @Test
+    void testAutomationTriggersOnNestedObjectMatch() {
+        var yaml = """
+                alias: Nested object match
+                triggers:
+                  - trigger: onHttpRequest
+                    body:
+                      user:
+                        name: Alice
+                        age: 30
+                actions:
+                  - action: logger
+                    message: Nested object matched
+                """;
 
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var user = new ObjectMapper().createObjectNode()
+                .put("name", "Alice")
+                .put("age", 30);
+
+        var body = new ObjectMapper().createObjectNode()
+                .set("user", user);
+
+        var event = HttpRequestEvent.builder()
+                .method(HttpMethodEnum.POST)
+                .requestBody(body)
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context))
+                .as("Should trigger with exact nested object match")
+                .isTrue();
+
+        assertThat(logAppender.getLoggedMessages())
+                .anyMatch(msg -> msg.contains("Nested object matched"));
+    }
+
+    @Test
+    void testAutomationTriggersOnPartialNestedObjectMatch() {
+        var yaml = """
+                alias: Partial nested match
+                triggers:
+                  - trigger: onHttpRequest
+                    body:
+                      user:
+                        name: Bob
+                actions:
+                  - action: logger
+                    message: Partial nested match success
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var user = new ObjectMapper().createObjectNode()
+                .put("name", "Bob")
+                .put("age", 25);
+
+        var body = new ObjectMapper().createObjectNode()
+                .set("user", user);
+
+        var event = HttpRequestEvent.builder()
+                .method(HttpMethodEnum.POST)
+                .requestBody(body)
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context))
+                .as("Should trigger with partial nested object match")
+                .isTrue();
+
+        assertThat(logAppender.getLoggedMessages())
+                .anyMatch(msg -> msg.contains("Partial nested match success"));
+    }
+
+    @Test
+    void testAutomationDoesNotTriggerOnNestedObjectMismatch() {
+        var yaml = """
+                alias: Nested mismatch
+                triggers:
+                  - trigger: onHttpRequest
+                    body:
+                      user:
+                        name: Charlie
+                actions:
+                  - action: logger
+                    message: Should not trigger mismatch
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var user = new ObjectMapper().createObjectNode()
+                .put("name", "Eve");
+
+        var body = new ObjectMapper().createObjectNode()
+                .set("user", user);
+
+        var event = HttpRequestEvent.builder()
+                .method(HttpMethodEnum.POST)
+                .requestBody(body)
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context))
+                .as("Should not trigger when nested object value mismatches")
+                .isFalse();
+
+        assertThat(logAppender.getLoggedMessages())
+                .noneMatch(msg -> msg.contains("Should not trigger mismatch"));
+    }
+
+    @Test
+    void testAutomationTriggersOnDeeplyNestedObject() {
+        var yaml = """
+                alias: Deeply nested object match
+                triggers:
+                  - trigger: onHttpRequest
+                    body:
+                      user:
+                        contact:
+                          address:
+                            city: Toronto
+                actions:
+                  - action: logger
+                    message: Deep match success
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var address = new ObjectMapper().createObjectNode()
+                .put("city", "Toronto");
+
+        var contact = new ObjectMapper().createObjectNode()
+                .set("address", address);
+
+        var user = new ObjectMapper().createObjectNode()
+                .set("contact", contact);
+
+        var body = new ObjectMapper().createObjectNode()
+                .set("user", user);
+
+        var event = HttpRequestEvent.builder()
+                .method(HttpMethodEnum.POST)
+                .requestBody(body)
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context))
+                .as("Should trigger on 3-level deep nested match")
+                .isTrue();
+
+        assertThat(logAppender.getLoggedMessages())
+                .anyMatch(msg -> msg.contains("Deep match success"));
+    }
 }
