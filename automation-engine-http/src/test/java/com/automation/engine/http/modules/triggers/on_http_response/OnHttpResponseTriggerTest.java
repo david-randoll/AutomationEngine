@@ -3694,7 +3694,7 @@ class OnHttpResponseTriggerTest {
         var yaml = """
                 alias: Match Response Status 200
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     responseStatus: [200]
                 actions:
                   - action: logger
@@ -3725,7 +3725,7 @@ class OnHttpResponseTriggerTest {
         var yaml = """
                 alias: Match Status Codes
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     responseStatus: [400, 404, 500]
                 actions:
                   - action: logger
@@ -3756,7 +3756,7 @@ class OnHttpResponseTriggerTest {
         var yaml = """
                 alias: Match Status OK
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     responseStatus: [OK]
                 actions:
                   - action: logger
@@ -3787,7 +3787,7 @@ class OnHttpResponseTriggerTest {
         var yaml = """
                 alias: Match Error Names
                 triggers:
-                  - trigger: onHttpRequest
+                  - trigger: onHttpResponse
                     responseStatus: [BAD_REQUEST, INTERNAL_SERVER_ERROR]
                 actions:
                   - action: logger
@@ -3818,8 +3818,8 @@ class OnHttpResponseTriggerTest {
         var yaml = """
                 alias: Match Status NotFoundOnly
                 triggers:
-                  - trigger: onHttpRequest
-                    responseStatus: [NOT_FOUND]
+                  - trigger: onHttpResponse
+                    status: NOT_FOUND
                 actions:
                   - action: logger
                     message: Should never log this

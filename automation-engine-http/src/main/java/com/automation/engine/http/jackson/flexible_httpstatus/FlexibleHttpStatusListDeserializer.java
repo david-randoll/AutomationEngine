@@ -16,25 +16,35 @@ public class FlexibleHttpStatusListDeserializer extends JsonDeserializer<List<Ht
     public List<HttpStatus> deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
         JsonNode node = p.readValueAsTree();
 
-        if (node.isInt()) {
-            HttpStatus status = HttpStatus.valueOf(node.asInt());
-            return List.of(status);
-        }
-
-        if (node.isTextual()) {
-            HttpStatus status = HttpStatus.valueOf(node.asText());
-            return List.of(status);
+        if (node.isInt() || node.isTextual()) {
+            return List.of(parseStatus(node));
         }
 
         if (node.isArray()) {
             List<HttpStatus> statuses = new ArrayList<>();
             for (JsonNode statusNode : node) {
-                HttpStatus status = HttpStatus.valueOf(statusNode.asText());
-                statuses.add(status);
+                statuses.add(parseStatus(statusNode));
             }
             return statuses;
         }
 
-        throw new IllegalArgumentException("Unsupported value type for methods: " + node.getNodeType());
+        throw new IllegalArgumentException("Unsupported value type for HTTP status: " + node.getNodeType());
+    }
+
+    private HttpStatus parseStatus(JsonNode node) {
+        if (node.isInt()) {
+            return HttpStatus.valueOf(node.asInt());
+        } else if (node.isTextual()) {
+            String text = node.asText().trim();
+            try {
+                return HttpStatus.valueOf(Integer.parseInt(text));
+            } catch (NumberFormatException e) {
+                // Normalize text to upper snake case (e.g. "ok" -> "OK", "not_found" -> "NOT_FOUND")
+                String normalized = text.toUpperCase().replace('-', '_').replace(' ', '_');
+                return HttpStatus.valueOf(normalized);
+            }
+        } else {
+            throw new IllegalArgumentException("Invalid HTTP status value: " + node);
+        }
     }
 }
