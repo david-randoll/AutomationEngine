@@ -9,6 +9,7 @@ import com.automation.engine.http.AutomationEngineHttpApplication;
 import com.automation.engine.http.TestLogAppender;
 import com.automation.engine.http.event.HttpMethodEnum;
 import com.automation.engine.http.event.HttpRequestEvent;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -2557,4 +2558,417 @@ class OnHttpRequestTriggerTest {
         assertThat(automation.anyTriggerActivated(context)).isFalse();
         assertThat(logAppender.getLoggedMessages()).noneMatch(msg -> msg.contains("Should not trigger due to type mismatch"));
     }
+
+    @Test
+    void testAutomationTriggersOnExactJsonBodyMatch() {
+        var yaml = """
+                alias: Match exact request body
+                triggers:
+                  - trigger: onHttpRequest
+                    body:
+                      name: John
+                      age: 30
+                actions:
+                  - action: logger
+                    message: Exact body matched
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var body = new ObjectMapper().createObjectNode()
+                .put("name", "John")
+                .put("age", 30);
+
+        var event = HttpRequestEvent.builder()
+                .method(HttpMethodEnum.POST)
+                .requestBody(body)
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context))
+                .as("Automation should trigger for matching JSON body")
+                .isTrue();
+
+        assertThat(logAppender.getLoggedMessages())
+                .anyMatch(msg -> msg.contains("Exact body matched"));
+    }
+
+    @Test
+    void testAutomationDoesNotTriggerWhenBodyValueDiffers() {
+        var yaml = """
+                alias: Match exact request body
+                triggers:
+                  - trigger: onHttpRequest
+                    body:
+                      name: John
+                      age: 30
+                actions:
+                  - action: logger
+                    message: Should not trigger
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var body = new ObjectMapper().createObjectNode()
+                .put("name", "John")
+                .put("age", 25); // Not matching age
+
+        var event = HttpRequestEvent.builder()
+                .method(HttpMethodEnum.POST)
+                .requestBody(body)
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context))
+                .as("Automation should not trigger when body differs")
+                .isFalse();
+
+        assertThat(logAppender.getLoggedMessages())
+                .noneMatch(msg -> msg.contains("Should not trigger"));
+    }
+
+    @Test
+    void testAutomationTriggersOnPartialBodyMatch() {
+        var yaml = """
+                alias: Partial body match
+                triggers:
+                  - trigger: onHttpRequest
+                    body:
+                      name: Alice
+                actions:
+                  - action: logger
+                    message: Partial match success
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var body = new ObjectMapper().createObjectNode()
+                .put("name", "Alice")
+                .put("age", 28); // Extra field
+
+        var event = HttpRequestEvent.builder()
+                .method(HttpMethodEnum.POST)
+                .requestBody(body)
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context))
+                .as("Automation should trigger with partial match")
+                .isTrue();
+
+        assertThat(logAppender.getLoggedMessages())
+                .anyMatch(msg -> msg.contains("Partial match success"));
+    }
+
+    @Test
+    void testAutomationTriggersOnNestedJsonMatch() {
+        var yaml = """
+                alias: Nested body match
+                triggers:
+                  - trigger: onHttpRequest
+                    body:
+                      user:
+                        name: Bob
+                        active: true
+                actions:
+                  - action: logger
+                    message: Nested match success
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var userNode = new ObjectMapper().createObjectNode()
+                .put("name", "Bob")
+                .put("active", true);
+
+        var body = new ObjectMapper().createObjectNode()
+                .set("user", userNode);
+
+        var event = HttpRequestEvent.builder()
+                .method(HttpMethodEnum.POST)
+                .requestBody(body)
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context))
+                .as("Automation should trigger for nested JSON match")
+                .isTrue();
+
+        assertThat(logAppender.getLoggedMessages())
+                .anyMatch(msg -> msg.contains("Nested match success"));
+    }
+
+    @Test
+    void testAutomationDoesNotTriggerIfRequiredFieldMissing() {
+        var yaml = """
+                alias: Missing field test
+                triggers:
+                  - trigger: onHttpRequest
+                    body:
+                      name: Charlie
+                      email: test@example.com
+                actions:
+                  - action: logger
+                    message: Should not trigger
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var body = new ObjectMapper().createObjectNode()
+                .put("name", "Charlie"); // Missing email
+
+        var event = HttpRequestEvent.builder()
+                .method(HttpMethodEnum.POST)
+                .requestBody(body)
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context))
+                .as("Automation should not trigger if a required field is missing")
+                .isFalse();
+
+        assertThat(logAppender.getLoggedMessages())
+                .noneMatch(msg -> msg.contains("Should not trigger"));
+    }
+
+    @Test
+    void testAutomationTriggersOnArrayFieldMatch() {
+        var yaml = """
+                alias: Array field match
+                triggers:
+                  - trigger: onHttpRequest
+                    body:
+                      tags: ["java", "spring"]
+                actions:
+                  - action: logger
+                    message: Array matched
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var array = new ObjectMapper().createArrayNode()
+                .add("java")
+                .add("spring");
+
+        var body = new ObjectMapper().createObjectNode()
+                .set("tags", array);
+
+        var event = HttpRequestEvent.builder()
+                .method(HttpMethodEnum.POST)
+                .requestBody(body)
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context))
+                .as("Automation should trigger when array field matches")
+                .isTrue();
+
+        assertThat(logAppender.getLoggedMessages())
+                .anyMatch(msg -> msg.contains("Array matched"));
+    }
+
+    @Test
+    void testAutomationTriggersEvenWithExtraFields() {
+        var yaml = """
+                alias: Match with extra fields
+                triggers:
+                  - trigger: onHttpRequest
+                    body:
+                      username: testuser
+                actions:
+                  - action: logger
+                    message: Triggered with extra field
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var body = new ObjectMapper().createObjectNode()
+                .put("username", "testuser")
+                .put("role", "admin"); // extra field
+
+        var event = HttpRequestEvent.builder()
+                .method(HttpMethodEnum.POST)
+                .requestBody(body)
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context))
+                .as("Automation should still trigger with extra fields")
+                .isTrue();
+
+        assertThat(logAppender.getLoggedMessages())
+                .anyMatch(msg -> msg.contains("Triggered with extra field"));
+    }
+
+    @Test
+    void testAutomationTriggersOnRegexBodyFieldMatch() {
+        var yaml = """
+                alias: Regex match on email
+                triggers:
+                  - trigger: onHttpRequest
+                    body:
+                      email: "~^.+@example\\\\.com$"
+                actions:
+                  - action: logger
+                    message: Regex email matched
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var body = new ObjectMapper().createObjectNode()
+                .put("email", "user@example.com");
+
+        var event = HttpRequestEvent.builder()
+                .method(HttpMethodEnum.POST)
+                .requestBody(body)
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context))
+                .as("Should trigger with regex matching email")
+                .isTrue();
+
+        assertThat(logAppender.getLoggedMessages())
+                .anyMatch(msg -> msg.contains("Regex email matched"));
+    }
+
+    @Test
+    void testAutomationTriggersOnNullFieldValue() {
+        var yaml = """
+                alias: Match null value
+                triggers:
+                  - trigger: onHttpRequest
+                    body:
+                      status: null
+                actions:
+                  - action: logger
+                    message: Null value match
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var body = new ObjectMapper().createObjectNode()
+                .putNull("status");
+
+        var event = HttpRequestEvent.builder()
+                .method(HttpMethodEnum.POST)
+                .requestBody(body)
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context))
+                .as("Should trigger when status is null")
+                .isTrue();
+
+        assertThat(logAppender.getLoggedMessages())
+                .anyMatch(msg -> msg.contains("Null value match"));
+    }
+
+    @Test
+    void testAutomationTriggersOnDeepNestedMatch() {
+        var yaml = """
+                alias: Deep nested match
+                triggers:
+                  - trigger: onHttpRequest
+                    body:
+                      user:
+                        address:
+                          city: Brooklyn
+                actions:
+                  - action: logger
+                    message: Deep nested match success
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var address = new ObjectMapper().createObjectNode()
+                .put("city", "Brooklyn")
+                .put("zip", "11201");
+
+        var user = new ObjectMapper().createObjectNode()
+                .set("address", address);
+
+        var body = new ObjectMapper().createObjectNode()
+                .set("user", user);
+
+        var event = HttpRequestEvent.builder()
+                .method(HttpMethodEnum.POST)
+                .requestBody(body)
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context))
+                .as("Should trigger on deep nested JSON")
+                .isTrue();
+
+        assertThat(logAppender.getLoggedMessages())
+                .anyMatch(msg -> msg.contains("Deep nested match success"));
+    }
+
+    @Test
+    void testAutomationDoesNotTriggerOnRegexMismatch() {
+        var yaml = """
+                alias: Regex mismatch
+                triggers:
+                  - trigger: onHttpRequest
+                    body:
+                      username: "~^admin_.*$"
+                actions:
+                  - action: logger
+                    message: Should not trigger
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var body = new ObjectMapper().createObjectNode()
+                .put("username", "user_001"); // Doesn't match ^admin_.*
+
+        var event = HttpRequestEvent.builder()
+                .method(HttpMethodEnum.POST)
+                .requestBody(body)
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context))
+                .as("Should not trigger on regex mismatch")
+                .isFalse();
+
+        assertThat(logAppender.getLoggedMessages())
+                .noneMatch(msg -> msg.contains("Should not trigger"));
+    }
+
+
 }

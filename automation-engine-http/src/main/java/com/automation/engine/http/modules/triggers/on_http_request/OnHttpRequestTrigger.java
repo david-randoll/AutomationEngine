@@ -34,7 +34,7 @@ public class OnHttpRequestTrigger extends PluggableTrigger<OnHttpRequestTriggerC
         var isPathParamTriggered = tc.hasPathParams() && MultiValueMatcher.checkMap(tc.getPathParams(), event.getPathParams());
         if (isPathParamTriggered) return false;
 
-        var isBodyTriggered = tc.hasBody() && JsonNodeMatcher.checkJsonNode(tc.getRequestBody(), event.getRequestBody());
+        var isBodyTriggered = tc.hasBody() && !JsonNodeMatcher.checkJsonNode(tc.getRequestBody(), event.getRequestBody());
         if (isBodyTriggered) return false;
 
         return true;
