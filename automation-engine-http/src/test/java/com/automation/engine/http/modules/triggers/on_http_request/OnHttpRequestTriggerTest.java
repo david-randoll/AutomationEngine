@@ -3309,5 +3309,199 @@ class OnHttpRequestTriggerTest {
                 .anyMatch(msg -> msg.contains("Primitive array matched"));
     }
 
+    @Test
+    void testAutomationTriggersIfArrayObjectHasExtraFields() {
+        var yaml = """
+                alias: Match object in array with extra fields
+                triggers:
+                  - trigger: onHttpRequest
+                    body:
+                      items:
+                        - id: 2
+                          name: Pen
+                actions:
+                  - action: logger
+                    message: Match with extra fields
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var item = new ObjectMapper().createObjectNode()
+                .put("id", 2)
+                .put("name", "Pen")
+                .put("price", 5.99); // Extra field
+
+        var body = new ObjectMapper().createObjectNode()
+                .set("items", new ObjectMapper().createArrayNode().add(item));
+
+        var event = HttpRequestEvent.builder()
+                .method(HttpMethodEnum.POST)
+                .requestBody(body)
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context))
+                .as("Should trigger even with extra fields in array object")
+                .isTrue();
+
+        assertThat(logAppender.getLoggedMessages())
+                .anyMatch(msg -> msg.contains("Match with extra fields"));
+    }
+
+    @Test
+    void testAutomationTriggersOnArrayOrderDifference() {
+        var yaml = """
+                alias: Array order shouldn't matter
+                triggers:
+                  - trigger: onHttpRequest
+                    body:
+                      tags: [tech, news]
+                actions:
+                  - action: logger
+                    message: Array order match
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var body = new ObjectMapper().createObjectNode()
+                .set("tags", new ObjectMapper().createArrayNode()
+                        .add("news") // Reversed order
+                        .add("tech"));
+
+        var event = HttpRequestEvent.builder()
+                .method(HttpMethodEnum.POST)
+                .requestBody(body)
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context))
+                .as("Should still trigger despite array order")
+                .isTrue();
+
+        assertThat(logAppender.getLoggedMessages())
+                .anyMatch(msg -> msg.contains("Array order match"));
+    }
+
+    @Test
+    void testAutomationTriggersOnNestedArrayInsideObject() {
+        var yaml = """
+                alias: Nested array in nested object
+                triggers:
+                  - trigger: onHttpRequest
+                    body:
+                      user:
+                        interests: [reading, traveling]
+                actions:
+                  - action: logger
+                    message: Nested array matched
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var interests = new ObjectMapper().createArrayNode().add("traveling").add("reading");
+
+        var user = new ObjectMapper().createObjectNode()
+                .set("interests", interests);
+
+        var body = new ObjectMapper().createObjectNode()
+                .set("user", user);
+
+        var event = HttpRequestEvent.builder()
+                .method(HttpMethodEnum.POST)
+                .requestBody(body)
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context))
+                .as("Should trigger with nested array match")
+                .isTrue();
+
+        assertThat(logAppender.getLoggedMessages())
+                .anyMatch(msg -> msg.contains("Nested array matched"));
+    }
+
+    @Test
+    void testAutomationTriggersWithArrayAndNonArrayFields() {
+        var yaml = """
+                alias: Combine array and non-array fields
+                triggers:
+                  - trigger: onHttpRequest
+                    body:
+                      status: active
+                      tags: [urgent]
+                actions:
+                  - action: logger
+                    message: Combined match
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var body = new ObjectMapper().createObjectNode()
+                .put("status", "active")
+                .set("tags", new ObjectMapper().createArrayNode().add("urgent"));
+
+        var event = HttpRequestEvent.builder()
+                .method(HttpMethodEnum.POST)
+                .requestBody(body)
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context))
+                .as("Should trigger with array and scalar fields")
+                .isTrue();
+
+        assertThat(logAppender.getLoggedMessages())
+                .anyMatch(msg -> msg.contains("Combined match"));
+    }
+
+    @Test
+    void testAutomationTriggersWithRegexInArrayValue() {
+        var yaml = """
+                alias: Match with regex in array
+                triggers:
+                  - trigger: onHttpRequest
+                    body:
+                      tags: [".*urgent.*"]
+                actions:
+                  - action: logger
+                    message: Regex in array match
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var body = new ObjectMapper().createObjectNode()
+                .set("tags", new ObjectMapper().createArrayNode()
+                        .add("very_urgent")
+                        .add("low_priority"));
+
+        var event = HttpRequestEvent.builder()
+                .method(HttpMethodEnum.POST)
+                .requestBody(body)
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context))
+                .as("Should trigger with regex value in array")
+                .isTrue();
+
+        assertThat(logAppender.getLoggedMessages())
+                .anyMatch(msg -> msg.contains("Regex in array match"));
+    }
+
 
 }
