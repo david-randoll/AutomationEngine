@@ -3136,4 +3136,178 @@ class OnHttpRequestTriggerTest {
         assertThat(logAppender.getLoggedMessages())
                 .anyMatch(msg -> msg.contains("Deep match success"));
     }
+
+    @Test
+    void testAutomationTriggersOnArrayContainingMatchingObject() {
+        var yaml = """
+                alias: Match object in array
+                triggers:
+                  - trigger: onHttpRequest
+                    body:
+                      items:
+                        - id: 1
+                          name: Book
+                actions:
+                  - action: logger
+                    message: Array object match
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var item1 = new ObjectMapper().createObjectNode()
+                .put("id", 1)
+                .put("name", "Book");
+
+        var item2 = new ObjectMapper().createObjectNode()
+                .put("id", 2)
+                .put("name", "Pen");
+
+        var body = new ObjectMapper().createObjectNode()
+                .set("items", new ObjectMapper().createArrayNode().add(item1).add(item2));
+
+        var event = HttpRequestEvent.builder()
+                .method(HttpMethodEnum.POST)
+                .requestBody(body)
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context))
+                .as("Should trigger if array contains matching object")
+                .isTrue();
+
+        assertThat(logAppender.getLoggedMessages())
+                .anyMatch(msg -> msg.contains("Array object match"));
+    }
+
+    @Test
+    void testAutomationTriggersOnPartialMatchInArrayObject() {
+        var yaml = """
+                alias: Partial array match
+                triggers:
+                  - trigger: onHttpRequest
+                    body:
+                      items:
+                        - id: 2
+                actions:
+                  - action: logger
+                    message: Partial array match
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var item1 = new ObjectMapper().createObjectNode()
+                .put("id", 1)
+                .put("name", "Book");
+
+        var item2 = new ObjectMapper().createObjectNode()
+                .put("id", 2)
+                .put("name", "Pen");
+
+        var body = new ObjectMapper().createObjectNode()
+                .set("items", new ObjectMapper().createArrayNode().add(item1).add(item2));
+
+        var event = HttpRequestEvent.builder()
+                .method(HttpMethodEnum.POST)
+                .requestBody(body)
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context))
+                .as("Should trigger on partial object in array")
+                .isTrue();
+
+        assertThat(logAppender.getLoggedMessages())
+                .anyMatch(msg -> msg.contains("Partial array match"));
+    }
+
+    @Test
+    void testAutomationDoesNotTriggerWhenArrayObjectDoesNotMatch() {
+        var yaml = """
+                alias: No match in array
+                triggers:
+                  - trigger: onHttpRequest
+                    body:
+                      items:
+                        - id: 99
+                          name: Unknown
+                actions:
+                  - action: logger
+                    message: Should not trigger
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var item1 = new ObjectMapper().createObjectNode()
+                .put("id", 1)
+                .put("name", "Book");
+
+        var item2 = new ObjectMapper().createObjectNode()
+                .put("id", 2)
+                .put("name", "Pen");
+
+        var body = new ObjectMapper().createObjectNode()
+                .set("items", new ObjectMapper().createArrayNode().add(item1).add(item2));
+
+        var event = HttpRequestEvent.builder()
+                .method(HttpMethodEnum.POST)
+                .requestBody(body)
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context))
+                .as("Should not trigger if array does not contain expected object")
+                .isFalse();
+
+        assertThat(logAppender.getLoggedMessages())
+                .noneMatch(msg -> msg.contains("Should not trigger"));
+    }
+
+    @Test
+    void testAutomationTriggersOnArrayOfPrimitives() {
+        var yaml = """
+                alias: Match primitive array
+                triggers:
+                  - trigger: onHttpRequest
+                    body:
+                      tags: [news, tech]
+                actions:
+                  - action: logger
+                    message: Primitive array matched
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var body = new ObjectMapper().createObjectNode()
+                .set("tags", new ObjectMapper().createArrayNode()
+                        .add("news")
+                        .add("tech")
+                        .add("science"));
+
+        var event = HttpRequestEvent.builder()
+                .method(HttpMethodEnum.POST)
+                .requestBody(body)
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context))
+                .as("Should trigger when primitive array contains all expected values")
+                .isTrue();
+
+        assertThat(logAppender.getLoggedMessages())
+                .anyMatch(msg -> msg.contains("Primitive array matched"));
+    }
+
+
 }
