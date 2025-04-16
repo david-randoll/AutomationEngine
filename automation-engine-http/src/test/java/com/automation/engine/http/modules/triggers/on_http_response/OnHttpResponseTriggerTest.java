@@ -9,6 +9,7 @@ import com.automation.engine.http.AutomationEngineHttpApplication;
 import com.automation.engine.http.TestLogAppender;
 import com.automation.engine.http.event.HttpMethodEnum;
 import com.automation.engine.http.event.HttpResponseEvent;
+import com.automation.engine.http.utils.JsonTestUtils;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -3974,6 +3975,619 @@ class OnHttpResponseTriggerTest {
 
         assertThat(automation.anyTriggerActivated(context)).isTrue();
         assertThat(logAppender.getLoggedMessages()).anyMatch(msg -> msg.contains("String code match worked"));
+    }
+
+    /*
+        Response Body
+     */
+    @Test
+    void testTriggerOnExactResponseBodyMatch() {
+        var yaml = """
+                alias: Exact Match Response Body
+                triggers:
+                  - trigger: onHttpResponse
+                    responseBody:
+                      success: true
+                      message: "Data saved successfully"
+                actions:
+                  - action: logger
+                    message: Response body matched
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var responseJson = """
+                {
+                  "success": true,
+                  "message": "Data saved successfully"
+                }
+                """;
+
+        var event = HttpResponseEvent.builder()
+                .responseBody(JsonTestUtils.json(responseJson))
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isTrue();
+        assertThat(logAppender.getLoggedMessages())
+                .anyMatch(msg -> msg.contains("Response body matched"));
+    }
+
+    @Test
+    void testTriggerOnPartialResponseBodyMatch() {
+        var yaml = """
+                alias: Partial Match Response Body
+                triggers:
+                  - trigger: onHttpResponse
+                    responseBody:
+                      status: "ok"
+                actions:
+                  - action: logger
+                    message: Partial match triggered
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var responseJson = """
+                {
+                  "status": "ok",
+                  "message": "User created",
+                  "data": { "id": 123 }
+                }
+                """;
+
+        var event = HttpResponseEvent.builder()
+                .responseBody(JsonTestUtils.json(responseJson))
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isTrue();
+        assertThat(logAppender.getLoggedMessages())
+                .anyMatch(msg -> msg.contains("Partial match triggered"));
+    }
+
+    @Test
+    void testTriggerNotActivatedWhenResponseBodyDoesNotMatch() {
+        var yaml = """
+                alias: Mismatch Response Body
+                triggers:
+                  - trigger: onHttpResponse
+                    responseBody:
+                      success: true
+                actions:
+                  - action: logger
+                    message: Should not match
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var responseJson = """
+                {
+                  "success": false,
+                  "message": "Operation failed"
+                }
+                """;
+
+        var event = HttpResponseEvent.builder()
+                .responseBody(JsonTestUtils.json(responseJson))
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isFalse();
+        assertThat(logAppender.getLoggedMessages())
+                .noneMatch(msg -> msg.contains("Should not match"));
+    }
+
+    @Test
+    void testTriggerOnNestedResponseBodyMatch() {
+        var yaml = """
+                alias: Nested Match Response Body
+                triggers:
+                  - trigger: onHttpResponse
+                    responseBody:
+                      user:
+                        role: "admin"
+                actions:
+                  - action: logger
+                    message: Nested match success
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var responseJson = """
+                {
+                  "user": {
+                    "id": 101,
+                    "role": "admin",
+                    "email": "admin@example.com"
+                  },
+                  "status": "ok"
+                }
+                """;
+
+        var event = HttpResponseEvent.builder()
+                .responseBody(JsonTestUtils.json(responseJson))
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isTrue();
+        assertThat(logAppender.getLoggedMessages())
+                .anyMatch(msg -> msg.contains("Nested match success"));
+    }
+
+    @Test
+    void testTriggerNotActivatedWhenFieldMissingInResponseBody() {
+        var yaml = """
+                alias: Missing Field Response Body
+                triggers:
+                  - trigger: onHttpResponse
+                    responseBody:
+                      token: "xyz"
+                actions:
+                  - action: logger
+                    message: This should not trigger
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var responseJson = """
+                {
+                  "message": "Logged in successfully"
+                }
+                """;
+
+        var event = HttpResponseEvent.builder()
+                .responseBody(JsonTestUtils.json(responseJson))
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isFalse();
+        assertThat(logAppender.getLoggedMessages())
+                .noneMatch(msg -> msg.contains("This should not trigger"));
+    }
+
+    @Test
+    void testTriggerWhenResponseBodyFieldValueContainsPattern() {
+        var yaml = """
+                alias: Regex Value Match in Response Body
+                triggers:
+                  - trigger: onHttpResponse
+                    responseBody:
+                      message: ".*success.*"
+                actions:
+                  - action: logger
+                    message: Regex-ish message matched
+                """;
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var responseJson = """
+                {
+                  "message": "Data saved successfully"
+                }
+                """;
+
+        var event = HttpResponseEvent.builder()
+                .responseBody(JsonTestUtils.json(responseJson))
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        // This will only work if you added regex support to body field values
+        assertThat(automation.anyTriggerActivated(context)).isTrue();
+        assertThat(logAppender.getLoggedMessages())
+                .anyMatch(msg -> msg.contains("Regex-ish message matched"));
+    }
+
+    @Test
+    void testTriggerOnExactArrayMatchInResponseBody() {
+        var yaml = """
+                alias: Exact Array Match
+                triggers:
+                  - trigger: onHttpResponse
+                    responseBody:
+                      roles: ["admin", "user"]
+                actions:
+                  - action: logger
+                    message: Exact array matched
+                """;
+
+        var responseJson = """
+                {
+                  "roles": ["admin", "user"]
+                }
+                """;
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = HttpResponseEvent.builder()
+                .responseBody(JsonTestUtils.json(responseJson))
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isTrue();
+    }
+
+    @Test
+    void testTriggerPassOnArrayOrderMismatch() {
+        var yaml = """
+                alias: Array Order Matters
+                triggers:
+                  - trigger: onHttpResponse
+                    responseBody:
+                      roles: ["admin", "user"]
+                actions:
+                  - action: logger
+                    message: Should not match
+                """;
+
+        var responseJson = """
+                {
+                  "roles": ["user", "admin"]
+                }
+                """;
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = HttpResponseEvent.builder()
+                .responseBody(JsonTestUtils.json(responseJson))
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isTrue();
+    }
+
+    @Test
+    void testTriggerOnObjectInsideArrayMatch() {
+        var yaml = """
+                alias: Object Inside Array Match
+                triggers:
+                  - trigger: onHttpResponse
+                    responseBody:
+                      users:
+                        - id: 1
+                          name: "Alice"
+                actions:
+                  - action: logger
+                    message: Found Alice
+                """;
+
+        var responseJson = """
+                {
+                  "users": [
+                    { "id": 1, "name": "Alice" },
+                    { "id": 2, "name": "Bob" }
+                  ]
+                }
+                """;
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = HttpResponseEvent.builder()
+                .responseBody(JsonTestUtils.json(responseJson))
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isTrue();
+    }
+
+    @Test
+    void testTriggerOnNestedArrayObjectFieldMatch() {
+        var yaml = """
+                alias: Deep Nested Match
+                triggers:
+                  - trigger: onHttpResponse
+                    responseBody:
+                      data:
+                        items:
+                          - meta:
+                              version: "v2"
+                actions:
+                  - action: logger
+                    message: Deep match success
+                """;
+
+        var responseJson = """
+                {
+                  "data": {
+                    "items": [
+                      { "id": 101, "meta": { "version": "v2", "source": "api" }},
+                      { "id": 102, "meta": { "version": "v1" }}
+                    ]
+                  }
+                }
+                """;
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = HttpResponseEvent.builder()
+                .responseBody(JsonTestUtils.json(responseJson))
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isTrue();
+    }
+
+    @Test
+    void testTriggerFailsWhenArrayItemDoesNotMatch() {
+        var yaml = """
+                alias: Array Object Not Found
+                triggers:
+                  - trigger: onHttpResponse
+                    responseBody:
+                      users:
+                        - id: 99
+                          name: "Ghost"
+                actions:
+                  - action: logger
+                    message: This should not trigger
+                """;
+
+        var responseJson = """
+                {
+                  "users": [
+                    { "id": 1, "name": "Alice" },
+                    { "id": 2, "name": "Bob" }
+                  ]
+                }
+                """;
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = HttpResponseEvent.builder()
+                .responseBody(JsonTestUtils.json(responseJson))
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isFalse();
+    }
+
+    @Test
+    void testTriggerMatchesEvenWithExtraFields() {
+        var yaml = """
+                alias: Partial Object Match
+                triggers:
+                  - trigger: onHttpResponse
+                    responseBody:
+                      user:
+                        id: 1
+                        name: "Alice"
+                actions:
+                  - action: logger
+                    message: Matched user with extra fields
+                """;
+
+        var responseJson = """
+                {
+                  "user": {
+                    "id": 1,
+                    "name": "Alice",
+                    "email": "alice@example.com"
+                  }
+                }
+                """;
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = HttpResponseEvent.builder()
+                .responseBody(JsonTestUtils.json(responseJson))
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isTrue();
+    }
+
+    @Test
+    void testTriggerOnNumericMatch() {
+        var yaml = """
+                alias: Numeric Match
+                triggers:
+                  - trigger: onHttpResponse
+                    responseBody:
+                      total: 99.99
+                actions:
+                  - action: logger
+                    message: Matched total
+                """;
+
+        var responseJson = """
+                {
+                  "total": 99.99
+                }
+                """;
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = HttpResponseEvent.builder()
+                .responseBody(JsonTestUtils.json(responseJson))
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isTrue();
+    }
+
+    @Test
+    void testTriggerOnBooleanResponseField() {
+        var yaml = """
+                alias: Boolean Match
+                triggers:
+                  - trigger: onHttpResponse
+                    responseBody:
+                      active: true
+                actions:
+                  - action: logger
+                    message: Matched boolean
+                """;
+
+        var responseJson = """
+                {
+                  "active": true
+                }
+                """;
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = HttpResponseEvent.builder()
+                .responseBody(JsonTestUtils.json(responseJson))
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isTrue();
+    }
+
+    @Test
+    void testTriggerOnMixedTypeArray() {
+        var yaml = """
+                alias: Mixed Array Match
+                triggers:
+                  - trigger: onHttpResponse
+                    responseBody:
+                      data: ["ok", {"id": 1}]
+                actions:
+                  - action: logger
+                    message: Matched mixed array
+                """;
+
+        var responseJson = """
+                {
+                  "data": ["ok", {"id": 1}]
+                }
+                """;
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = HttpResponseEvent.builder()
+                .responseBody(JsonTestUtils.json(responseJson))
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isTrue();
+    }
+
+    @Test
+    void testTriggerFailsWhenKeyMissing() {
+        var yaml = """
+                alias: Missing Key
+                triggers:
+                  - trigger: onHttpResponse
+                    responseBody:
+                      user:
+                        id: 1
+                        name: "Alice"
+                actions:
+                  - action: logger
+                    message: Should not match
+                """;
+
+        var responseJson = """
+                {
+                  "user": {
+                    "id": 1
+                  }
+                }
+                """;
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = HttpResponseEvent.builder()
+                .responseBody(JsonTestUtils.json(responseJson))
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isFalse();
+    }
+
+    @Test
+    void testTriggerOnNestedFieldInsideArray() {
+        var yaml = """
+                alias: Nested Match in Array
+                triggers:
+                  - trigger: onHttpResponse
+                    responseBody:
+                      results:
+                        - status:
+                            code: 200
+                actions:
+                  - action: logger
+                    message: Found matching code
+                """;
+
+        var responseJson = """
+                {
+                  "results": [
+                    {
+                      "status": {
+                        "code": 200,
+                        "text": "OK"
+                      }
+                    },
+                    {
+                      "status": {
+                        "code": 404
+                      }
+                    }
+                  ]
+                }
+                """;
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = HttpResponseEvent.builder()
+                .responseBody(JsonTestUtils.json(responseJson))
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isTrue();
     }
 
 
