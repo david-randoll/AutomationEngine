@@ -28,10 +28,10 @@ public class JsonNodeMatcher {
         if (expected.isObject()) {
             // Must match all fields in the expected object
             for (Iterator<Map.Entry<String, JsonNode>> it = expected.fields(); it.hasNext(); ) {
-                Map.Entry<String, JsonNode> field = it.next();
-                String key = field.getKey();
-                JsonNode expectedValue = field.getValue();
-                JsonNode actualValue = actual.get(key);
+                Map.Entry<String, JsonNode> expectedField = it.next();
+                String expectedKey = expectedField.getKey();
+                JsonNode expectedValue = expectedField.getValue();
+                JsonNode actualValue = getJsonNodeCaseInsensitive(actual, expectedKey);
                 if (!checkJsonNode(expectedValue, actualValue)) {
                     return false;
                 }
@@ -63,9 +63,19 @@ public class JsonNodeMatcher {
             return true;
         }
 
-        String expectedText = expected.asText();
-        String actualText = actual.asText("");
+        String expectedText = expected.asText().trim();
+        String actualText = actual.asText().trim();
         var pattern = Pattern.compile(expectedText);
         return pattern.matcher(actualText).matches();
+    }
+
+    public JsonNode getJsonNodeCaseInsensitive(JsonNode actual, String key) {
+        for (Iterator<Map.Entry<String, JsonNode>> it = actual.fields(); it.hasNext(); ) {
+            Map.Entry<String, JsonNode> actualField = it.next();
+            if (actualField.getKey().equalsIgnoreCase(key)) {
+                return actualField.getValue();
+            }
+        }
+        return null;
     }
 }
