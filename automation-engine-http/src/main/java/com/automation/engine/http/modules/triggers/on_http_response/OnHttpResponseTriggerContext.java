@@ -3,6 +3,7 @@ package com.automation.engine.http.modules.triggers.on_http_response;
 import com.automation.engine.core.triggers.ITriggerContext;
 import com.automation.engine.http.event.HttpMethodEnum;
 import com.automation.engine.http.jackson.flexible_httpstatus.FlexibleHttpStatusList;
+import com.automation.engine.http.jackson.flexible_map_object.FlexibleMapObject;
 import com.automation.engine.http.jackson.flexible_method.FlexibleHttpMethodList;
 import com.automation.engine.http.jackson.flexible_multi_value_map.FlexibleMultiValueMap;
 import com.automation.engine.http.jackson.flexible_string_list.FlexibleStringList;
@@ -16,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.util.MultiValueMap;
 
 import java.util.List;
+import java.util.Map;
 
 @Data
 @AllArgsConstructor
@@ -58,8 +60,8 @@ public class OnHttpResponseTriggerContext implements ITriggerContext {
     private List<HttpStatus> responseStatuses;
 
     @JsonAlias({"error", "errorDetail"})
-    @FlexibleMultiValueMap
-    private MultiValueMap<String, String> errorDetail;
+    @FlexibleMapObject
+    private Map<String, Object> errorDetail;
 
     public boolean hasMethods() {
         return methods != null && !methods.isEmpty();
