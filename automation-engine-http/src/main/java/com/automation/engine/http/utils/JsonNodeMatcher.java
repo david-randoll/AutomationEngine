@@ -41,7 +41,15 @@ public class JsonNodeMatcher {
 
         if (expected.isArray()) {
             // All expected elements must be present in actual array
-            if (!actual.isArray()) return false;
+            if (!actual.isArray()) {
+                // actual is a single value, check if any expected element matches it
+                for (JsonNode expectedElement : expected) {
+                    if (checkJsonNode(expectedElement, actual)) {
+                        return false;
+                    }
+                }
+                return true;
+            }
             for (JsonNode expectedElement : expected) {
                 boolean matched = false;
                 for (JsonNode actualElement : actual) {
