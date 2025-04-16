@@ -43,7 +43,7 @@ public class OnHttpResponseTrigger extends PluggableTrigger<OnHttpResponseTrigge
         var isResponseStatusTriggered = tc.hasResponseStatuses() && !tc.getResponseStatuses().contains(event.getResponseStatus());
         if (isResponseStatusTriggered) return false;
 
-        var errorDetailTriggered = tc.hasErrorDetail() && MultiValueMatcher.checkMapObject(tc.getErrorDetail(), event.getErrorDetail());
+        var errorDetailTriggered = tc.hasErrorDetail() && MultiValueMatcher.checkObject(tc.getErrorDetail(), event.getErrorDetail());
         if (errorDetailTriggered) return false;
 
         return true;

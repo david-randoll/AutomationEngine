@@ -4590,5 +4590,314 @@ class OnHttpResponseTriggerTest {
         assertThat(automation.anyTriggerActivated(context)).isTrue();
     }
 
+    @Test
+    void testTriggerOnResponseBodyAndStatusTogether() {
+        var yaml = """
+                alias: Match Body and Status
+                triggers:
+                  - trigger: onHttpResponse
+                    responseStatus: OK
+                    responseBody:
+                      message: "success"
+                actions:
+                  - action: logger
+                    message: Matched both body and status
+                """;
+
+        var responseJson = """
+                {
+                  "message": "success"
+                }
+                """;
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = HttpResponseEvent.builder()
+                .responseStatus(HttpStatus.OK)
+                .responseBody(JsonTestUtils.json(responseJson))
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isTrue();
+    }
+
+    @Test
+    void testTriggerOnNullFieldMatch() {
+        var yaml = """
+                alias: Match Null Field
+                triggers:
+                  - trigger: onHttpResponse
+                    responseBody:
+                      comment: null
+                actions:
+                  - action: logger
+                    message: Field is null
+                """;
+
+        var responseJson = """
+                {
+                  "comment": null
+                }
+                """;
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = HttpResponseEvent.builder()
+                .responseBody(JsonTestUtils.json(responseJson))
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isTrue();
+    }
+
+    @Test
+    void testTriggerPartialDeepNestedMatch() {
+        var yaml = """
+                alias: Deep Partial Match
+                triggers:
+                  - trigger: onHttpResponse
+                    responseBody:
+                      data:
+                        user:
+                          id: 42
+                actions:
+                  - action: logger
+                    message: Deep nested match
+                """;
+
+        var responseJson = """
+                {
+                  "data": {
+                    "user": {
+                      "id": 42,
+                      "name": "Zara"
+                    }
+                  }
+                }
+                """;
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = HttpResponseEvent.builder()
+                .responseBody(JsonTestUtils.json(responseJson))
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isTrue();
+    }
+
+    @Test
+    void testTriggerFailsOnMismatchedFieldValue() {
+        var yaml = """
+                alias: Mismatch Body Field
+                triggers:
+                  - trigger: onHttpResponse
+                    responseBody:
+                      success: true
+                actions:
+                  - action: logger
+                    message: Should not run
+                """;
+
+        var responseJson = """
+                {
+                  "success": false
+                }
+                """;
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = HttpResponseEvent.builder()
+                .responseBody(JsonTestUtils.json(responseJson))
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isFalse();
+    }
+
+    /*
+        Error Detail
+     */
+    @Test
+    void testTriggerOnSimpleErrorDetailMatch() {
+        var yaml = """
+                alias: Match errorDetail message
+                triggers:
+                  - trigger: onHttpResponse
+                    errorDetail:
+                      message: "Token expired"
+                actions:
+                  - action: logger
+                    message: Matched errorDetail
+                """;
+
+        var event = HttpResponseEvent.builder()
+                .responseStatus(HttpStatus.UNAUTHORIZED)
+                .build();
+
+        event.addErrorDetail(Map.of("message", "Token expired"));
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isTrue();
+    }
+
+    @Test
+    void testTriggerOnPartialErrorDetailMatch() {
+        var yaml = """
+                alias: Partial errorDetail match
+                triggers:
+                  - trigger: onHttpResponse
+                    errorDetail:
+                      code: "E403"
+                actions:
+                  - action: logger
+                    message: Found code match
+                """;
+
+        var event = HttpResponseEvent.builder()
+                .responseStatus(HttpStatus.FORBIDDEN)
+                .build();
+
+        event.addErrorDetail(Map.of(
+                "code", "E403",
+                "message", "Forbidden access",
+                "traceId", "xyz-456"
+        ));
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isTrue();
+    }
+
+    @Test
+    void testTriggerOnNestedErrorDetailMatch() {
+        var yaml = """
+                alias: Nested errorDetail
+                triggers:
+                  - trigger: onHttpResponse
+                    errorDetail:
+                      detail: 
+                        reason: "Session expired"
+                actions:
+                  - action: logger
+                    message: Nested match success
+                """;
+
+        Map<String, Object> nestedDetail = Map.of("detail", Map.of("reason", "Session expired"));
+
+        var event = HttpResponseEvent.builder()
+                .errorDetail(nestedDetail)
+                .build();
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isTrue();
+    }
+
+    @Test
+    void testTriggerFailsOnErrorDetailValueMismatch() {
+        var yaml = """
+                alias: errorDetail mismatch
+                triggers:
+                  - trigger: onHttpResponse
+                    errorDetail:
+                      message: "Access denied"
+                actions:
+                  - action: logger
+                    message: Should not run
+                """;
+
+        var event = HttpResponseEvent.builder().build();
+        event.addErrorDetail(Map.of("message", "Token expired"));
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isFalse();
+    }
+
+    @Test
+    void testTriggerOnErrorDetailWithNullField() {
+        var yaml = """
+                alias: errorDetail null field
+                triggers:
+                  - trigger: onHttpResponse
+                    errorDetail:
+                      info: null
+                actions:
+                  - action: logger
+                    message: Null info present
+                """;
+
+        var errorDetail = new HashMap<String, Object>();
+        errorDetail.put("info", null);
+        var event = HttpResponseEvent.builder().build();
+        event.addErrorDetail(errorDetail);
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isTrue();
+    }
+
+    @Test
+    void testTriggerOnErrorDetailWithArray() {
+        var yaml = """
+                alias: errorDetail array
+                triggers:
+                  - trigger: onHttpResponse
+                    errorDetail:
+                      errors:
+                        - "Field X is required"
+                actions:
+                  - action: logger
+                    message: Array match success
+                """;
+
+        Map<String, Object> errorDetail = Map.of("errors", List.of("Field X is required", "Field Y must be numeric"));
+
+        var event = HttpResponseEvent.builder().build();
+        event.addErrorDetail(errorDetail);
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isTrue();
+    }
+
 
 }
