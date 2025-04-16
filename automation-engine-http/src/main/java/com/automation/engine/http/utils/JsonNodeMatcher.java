@@ -72,7 +72,7 @@ public class JsonNodeMatcher {
     public JsonNode getJsonNodeCaseInsensitive(JsonNode actual, String key) {
         for (Iterator<Map.Entry<String, JsonNode>> it = actual.fields(); it.hasNext(); ) {
             Map.Entry<String, JsonNode> actualField = it.next();
-            if (actualField.getKey().equalsIgnoreCase(key)) {
+            if (actualField.getKey().trim().equalsIgnoreCase(key.trim())) {
                 return actualField.getValue();
             }
         }
