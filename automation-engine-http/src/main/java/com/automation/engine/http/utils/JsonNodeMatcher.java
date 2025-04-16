@@ -40,27 +40,25 @@ public class JsonNodeMatcher {
         }
 
         if (expected.isArray()) {
-            // All expected elements must be present in actual array
             if (!actual.isArray()) {
                 // actual is a single value, check if any expected element matches it
                 for (JsonNode expectedElement : expected) {
-                    if (!checkJsonNode(expectedElement, actual)) {
-                        return false;
+                    if (checkJsonNode(expectedElement, actual)) {
+                        return true;
                     }
                 }
-                return true;
+                return false;
             }
+
+            // actual is an array — return true if ANY expected element matches ANY actual element
             for (JsonNode expectedElement : expected) {
-                boolean matched = false;
                 for (JsonNode actualElement : actual) {
                     if (checkJsonNode(expectedElement, actualElement)) {
-                        matched = true;
-                        break;
+                        return true;
                     }
                 }
-                if (!matched) return false;
             }
-            return true;
+            return false;
         }
 
         String expectedText = expected.asText().trim();
@@ -69,7 +67,7 @@ public class JsonNodeMatcher {
         return pattern.matcher(actualText).matches();
     }
 
-    public JsonNode getJsonNodeCaseInsensitive(JsonNode actual, String key) {
+    private JsonNode getJsonNodeCaseInsensitive(JsonNode actual, String key) {
         for (Iterator<Map.Entry<String, JsonNode>> it = actual.fields(); it.hasNext(); ) {
             Map.Entry<String, JsonNode> actualField = it.next();
             if (actualField.getKey().trim().equalsIgnoreCase(key.trim())) {
