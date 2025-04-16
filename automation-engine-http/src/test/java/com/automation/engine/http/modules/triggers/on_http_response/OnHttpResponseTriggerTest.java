@@ -9,6 +9,7 @@ import com.automation.engine.http.AutomationEngineHttpApplication;
 import com.automation.engine.http.TestLogAppender;
 import com.automation.engine.http.event.HttpMethodEnum;
 import com.automation.engine.http.event.HttpResponseEvent;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK, classes = AutomationEngineHttpApplication.class)
 @ExtendWith(SpringExtension.class)
@@ -3943,10 +3945,9 @@ class OnHttpResponseTriggerTest {
                 .build();
 
         var context = EventContext.of(event);
-        engine.publishEvent(context);
-
-        assertThat(automation.anyTriggerActivated(context)).isFalse();
-        assertThat(logAppender.getLoggedMessages()).noneMatch(msg -> msg.contains("Should not match invalid"));
+        assertThatThrownBy(() -> engine.publishEvent(context))
+                .isInstanceOf(JsonMappingException.class)
+                .hasMessageContaining("Invalid HTTP status value");
     }
 
     @Test
