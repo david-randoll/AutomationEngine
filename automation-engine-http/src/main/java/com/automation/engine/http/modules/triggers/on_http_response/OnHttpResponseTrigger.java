@@ -6,10 +6,16 @@ import com.automation.engine.http.utils.HttpServletUtils;
 import com.automation.engine.http.utils.JsonNodeMatcher;
 import com.automation.engine.http.utils.MultiValueMatcher;
 import com.automation.engine.spi.PluggableTrigger;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component("onHttpResponseTrigger")
+@RequiredArgsConstructor
 public class OnHttpResponseTrigger extends PluggableTrigger<OnHttpResponseTriggerContext> {
+    private final ObjectMapper objectMapper;
+
     @Override
     public boolean isTriggered(EventContext ec, OnHttpResponseTriggerContext tc) {
         if (!(ec.getEvent() instanceof HttpResponseEvent event)) return false;
@@ -43,7 +49,9 @@ public class OnHttpResponseTrigger extends PluggableTrigger<OnHttpResponseTrigge
         var isResponseStatusTriggered = tc.hasResponseStatuses() && !tc.getResponseStatuses().contains(event.getResponseStatus());
         if (isResponseStatusTriggered) return false;
 
-        var errorDetailTriggered = tc.hasErrorDetail() && MultiValueMatcher.checkObject(tc.getErrorDetail(), event.getErrorDetail());
+        var errorDetail = objectMapper.convertValue(tc.getErrorDetail(), JsonNode.class);
+        var eventErrorDetail = objectMapper.convertValue(event.getErrorDetail(), JsonNode.class);
+        var errorDetailTriggered = tc.hasErrorDetail() && !JsonNodeMatcher.checkJsonNode(errorDetail, eventErrorDetail);
         if (errorDetailTriggered) return false;
 
         return true;

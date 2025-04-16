@@ -76,7 +76,7 @@ public class MultiValueMatcher {
                 String key = entry.getKey().toString();
                 Object expectedValue = entry.getValue();
                 Object actualValue = actualMap.get(key);
-                if (!checkObject(expectedValue, actualValue)) {
+                if (checkObject(expectedValue, actualValue)) {
                     return false;
                 }
             }
@@ -95,14 +95,14 @@ public class MultiValueMatcher {
             }
 
             for (Object expectedElement : expectedList) {
-                boolean matched = false;
+                boolean matched = true;
                 for (Object actualElement : actualList) {
                     if (checkObject(expectedElement, actualElement)) {
-                        matched = true;
+                        matched = false;
                         break;
                     }
                 }
-                if (!matched) return false;
+                if (matched) return true;
             }
             return true;
         }
