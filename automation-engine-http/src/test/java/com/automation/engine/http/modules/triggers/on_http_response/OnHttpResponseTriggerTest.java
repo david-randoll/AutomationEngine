@@ -4826,7 +4826,7 @@ class OnHttpResponseTriggerTest {
                 triggers:
                   - trigger: onHttpResponse
                     errorDetail:
-                      message: "Access denied"
+                      message: ["Access denied"]
                 actions:
                   - action: logger
                     message: Should not run

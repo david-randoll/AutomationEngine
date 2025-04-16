@@ -44,7 +44,7 @@ public class JsonNodeMatcher {
             if (!actual.isArray()) {
                 // actual is a single value, check if any expected element matches it
                 for (JsonNode expectedElement : expected) {
-                    if (checkJsonNode(expectedElement, actual)) {
+                    if (!checkJsonNode(expectedElement, actual)) {
                         return false;
                     }
                 }
