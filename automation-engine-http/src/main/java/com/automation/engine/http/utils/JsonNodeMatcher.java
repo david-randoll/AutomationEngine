@@ -1,6 +1,7 @@
 package com.automation.engine.http.utils;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.experimental.UtilityClass;
 
 import java.util.Iterator;
@@ -9,6 +10,12 @@ import java.util.regex.Pattern;
 
 @UtilityClass
 public class JsonNodeMatcher {
+
+    public static boolean checkObject(Object expected, Object actual, ObjectMapper mapper) {
+        JsonNode expectedNode = mapper.convertValue(expected, JsonNode.class);
+        JsonNode actualNode = mapper.convertValue(actual, JsonNode.class);
+        return checkJsonNode(expectedNode, actualNode);
+    }
 
     public static boolean checkJsonNode(JsonNode expected, JsonNode actual) {
         if (expected == null || expected.isNull()) {

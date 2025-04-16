@@ -6,7 +6,6 @@ import com.automation.engine.http.utils.HttpServletUtils;
 import com.automation.engine.http.utils.JsonNodeMatcher;
 import com.automation.engine.http.utils.MultiValueMatcher;
 import com.automation.engine.spi.PluggableTrigger;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -49,9 +48,7 @@ public class OnHttpResponseTrigger extends PluggableTrigger<OnHttpResponseTrigge
         var isResponseStatusTriggered = tc.hasResponseStatuses() && !tc.getResponseStatuses().contains(event.getResponseStatus());
         if (isResponseStatusTriggered) return false;
 
-        var errorDetail = objectMapper.convertValue(tc.getErrorDetail(), JsonNode.class);
-        var eventErrorDetail = objectMapper.convertValue(event.getErrorDetail(), JsonNode.class);
-        var errorDetailTriggered = tc.hasErrorDetail() && !JsonNodeMatcher.checkJsonNode(errorDetail, eventErrorDetail);
+        var errorDetailTriggered = tc.hasErrorDetail() && !JsonNodeMatcher.checkObject(tc.getErrorDetail(), event.getErrorDetail(), objectMapper);
         if (errorDetailTriggered) return false;
 
         return true;
