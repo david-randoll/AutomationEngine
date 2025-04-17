@@ -4,7 +4,6 @@ import com.automation.engine.core.events.EventContext;
 import com.automation.engine.http.event.HttpResponseEvent;
 import com.automation.engine.http.utils.HttpServletUtils;
 import com.automation.engine.http.utils.JsonNodeMatcher;
-import com.automation.engine.http.utils.MultiValueMatcher;
 import com.automation.engine.spi.PluggableTrigger;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -30,10 +29,10 @@ public class OnHttpResponseTrigger extends PluggableTrigger<OnHttpResponseTrigge
         var isPathTriggered = tc.hasPaths() && tc.getPaths().stream().noneMatch(pathParsed::matches);
         if (isPathTriggered) return false;
 
-        var isHeaderTriggered = tc.hasHeaders() && MultiValueMatcher.checkMap(tc.getHeaders(), event.getHeaders());
+        var isHeaderTriggered = tc.hasHeaders() && !JsonNodeMatcher.checkObject(tc.getHeaders(), event.getHeaders(), objectMapper);
         if (isHeaderTriggered) return false;
 
-        var isQueryParamTriggered = tc.hasQueryParams() && MultiValueMatcher.checkMap(tc.getQueryParams(), event.getQueryParams());
+        var isQueryParamTriggered = tc.hasQueryParams() && !JsonNodeMatcher.checkObject(tc.getQueryParams(), event.getQueryParams(), objectMapper);
         if (isQueryParamTriggered) return false;
 
         var isPathParamTriggered = tc.hasPathParams() && !JsonNodeMatcher.checkObject(tc.getPathParams(), event.getPathParams(), objectMapper);

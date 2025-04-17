@@ -12,6 +12,9 @@ import java.util.regex.Pattern;
 public class JsonNodeMatcher {
 
     public static boolean checkObject(Object expected, Object actual, ObjectMapper mapper) {
+        if (expected instanceof JsonNode expectedNode && actual instanceof JsonNode actualNode) {
+            return checkJsonNode(expectedNode, actualNode);
+        }
         JsonNode expectedNode = mapper.convertValue(expected, JsonNode.class);
         JsonNode actualNode = mapper.convertValue(actual, JsonNode.class);
         return checkJsonNode(expectedNode, actualNode);
