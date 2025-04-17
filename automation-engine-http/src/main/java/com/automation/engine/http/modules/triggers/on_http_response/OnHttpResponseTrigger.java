@@ -36,7 +36,7 @@ public class OnHttpResponseTrigger extends PluggableTrigger<OnHttpResponseTrigge
         var isQueryParamTriggered = tc.hasQueryParams() && MultiValueMatcher.checkMap(tc.getQueryParams(), event.getQueryParams());
         if (isQueryParamTriggered) return false;
 
-        var isPathParamTriggered = tc.hasPathParams() && MultiValueMatcher.checkMap(tc.getPathParams(), event.getPathParams());
+        var isPathParamTriggered = tc.hasPathParams() && !JsonNodeMatcher.checkObject(tc.getPathParams(), event.getPathParams(), objectMapper);
         if (isPathParamTriggered) return false;
 
         var isRequestBodyTriggered = tc.hasRequestBody() && !JsonNodeMatcher.checkJsonNode(tc.getRequestBody(), event.getRequestBody());

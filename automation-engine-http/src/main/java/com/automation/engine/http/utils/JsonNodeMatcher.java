@@ -61,8 +61,8 @@ public class JsonNodeMatcher {
             return false;
         }
 
-        String expectedText = expected.asText().trim();
-        String actualText = actual.asText().trim();
+        String expectedText = expected.asText().toLowerCase().trim();
+        String actualText = actual.asText().toLowerCase().trim();
         var pattern = Pattern.compile(expectedText);
         return pattern.matcher(actualText).matches();
     }
