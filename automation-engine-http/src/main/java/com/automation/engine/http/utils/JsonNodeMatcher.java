@@ -13,14 +13,14 @@ public class JsonNodeMatcher {
 
     public static boolean checkObject(Object expected, Object actual, ObjectMapper mapper) {
         if (expected instanceof JsonNode expectedNode && actual instanceof JsonNode actualNode) {
-            return checkJsonNode(expectedNode, actualNode);
+            return !checkJsonNode(expectedNode, actualNode);
         }
         JsonNode expectedNode = mapper.convertValue(expected, JsonNode.class);
         JsonNode actualNode = mapper.convertValue(actual, JsonNode.class);
-        return checkJsonNode(expectedNode, actualNode);
+        return !checkJsonNode(expectedNode, actualNode);
     }
 
-    public static boolean checkJsonNode(JsonNode expected, JsonNode actual) {
+    private static boolean checkJsonNode(JsonNode expected, JsonNode actual) {
         if (expected == null || expected.isNull()) {
             return true; // null expected = wildcard
         }

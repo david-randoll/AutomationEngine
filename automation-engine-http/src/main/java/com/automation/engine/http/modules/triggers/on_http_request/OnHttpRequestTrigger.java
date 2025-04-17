@@ -29,16 +29,16 @@ public class OnHttpRequestTrigger extends PluggableTrigger<OnHttpRequestTriggerC
         var isPathTriggered = tc.hasPaths() && tc.getPaths().stream().noneMatch(pathParsed::matches);
         if (isPathTriggered) return false;
 
-        var isHeaderTriggered = tc.hasHeaders() && !JsonNodeMatcher.checkObject(tc.getHeaders(), event.getHeaders(), objectMapper);
+        var isHeaderTriggered = tc.hasHeaders() && JsonNodeMatcher.checkObject(tc.getHeaders(), event.getHeaders(), objectMapper);
         if (isHeaderTriggered) return false;
 
-        var isQueryParamTriggered = tc.hasQueryParams() && !JsonNodeMatcher.checkObject(tc.getQueryParams(), event.getQueryParams(), objectMapper);
+        var isQueryParamTriggered = tc.hasQueryParams() && JsonNodeMatcher.checkObject(tc.getQueryParams(), event.getQueryParams(), objectMapper);
         if (isQueryParamTriggered) return false;
 
-        var isPathParamTriggered = tc.hasPathParams() && !JsonNodeMatcher.checkObject(tc.getPathParams(), event.getPathParams(), objectMapper);
+        var isPathParamTriggered = tc.hasPathParams() && JsonNodeMatcher.checkObject(tc.getPathParams(), event.getPathParams(), objectMapper);
         if (isPathParamTriggered) return false;
 
-        var isRequestBodyTriggered = tc.hasBody() && !JsonNodeMatcher.checkJsonNode(tc.getRequestBody(), event.getRequestBody());
+        var isRequestBodyTriggered = tc.hasBody() && JsonNodeMatcher.checkObject(tc.getRequestBody(), event.getRequestBody(), objectMapper);
         if (isRequestBodyTriggered) return false;
 
         return true;
