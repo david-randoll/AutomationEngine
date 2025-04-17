@@ -5400,5 +5400,182 @@ class OnHttpResponseTriggerTest {
         assertThat(automation.anyTriggerActivated(context)).isFalse();
     }
 
+    @Test
+    void testErrorDetailMismatchedTypesShouldMatch() {
+        var yaml = """
+                alias: Mismatched types
+                triggers:
+                  - trigger: onHttpResponse
+                    errorDetail:
+                      isRetryable: true
+                actions:
+                  - action: logger
+                    message: Should not match mismatched types
+                """;
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = HttpResponseEvent.builder()
+                .errorDetail(Map.of("isRetryable", "true")) // string, not boolean
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isTrue();
+        assertThat(logAppender.getLoggedMessages())
+                .anyMatch(msg -> msg.contains("Should not match mismatched types"));
+    }
+
+    @Test
+    void testErrorDetailNullValueShouldMatch() {
+        var yaml = """
+                alias: Match null value
+                triggers:
+                  - trigger: onHttpResponse
+                    errorDetail:
+                      errorCode: null
+                actions:
+                  - action: logger
+                    message: Null field matched
+                """;
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var errorDetail = new HashMap<String, Object>();
+        errorDetail.put("errorCode", null); // null value
+        var event = HttpResponseEvent.builder()
+                .errorDetail(errorDetail)
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isTrue();
+        assertThat(logAppender.getLoggedMessages()).anyMatch(msg -> msg.contains("Null field matched"));
+    }
+
+    @Test
+    void testErrorDetailCaseSensitivity() {
+        var yaml = """
+                alias: Case-sensitive error message
+                triggers:
+                  - trigger: onHttpResponse
+                    errorDetail:
+                      message: Unauthorized
+                actions:
+                  - action: logger
+                    message: Case-sensitive match
+                """;
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = HttpResponseEvent.builder()
+                .errorDetail(Map.of("message", "unauthorized")) // lower case
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isTrue();
+        assertThat(logAppender.getLoggedMessages())
+                .anyMatch(msg -> msg.contains("Case-sensitive match"));
+    }
+
+    @Test
+    void testErrorDetailConflictingKeysDifferentPaths() {
+        var yaml = """
+                alias: Match top level message
+                triggers:
+                  - trigger: onHttpResponse
+                    errorDetail:
+                      message: "Top level"
+                actions:
+                  - action: logger
+                    message: Conflicting keys matched
+                """;
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var nested = Map.of("user", Map.of("message", "Nested level"));
+        var errorDetail = new HashMap<String, Object>();
+        errorDetail.put("message", "Top level");
+        errorDetail.put("details", nested);
+
+        var event = HttpResponseEvent.builder()
+                .errorDetail(errorDetail)
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isTrue();
+        assertThat(logAppender.getLoggedMessages()).anyMatch(msg -> msg.contains("Conflicting keys matched"));
+    }
+
+    @Test
+    void testErrorDetailExtraFieldsShouldStillMatch() {
+        var yaml = """
+                alias: Match even with extra fields
+                triggers:
+                  - trigger: onHttpResponse
+                    errorDetail:
+                      message: "Extra test"
+                actions:
+                  - action: logger
+                    message: Matched with extras
+                """;
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = HttpResponseEvent.builder()
+                .errorDetail(Map.of(
+                        "message", "Extra test",
+                        "code", 403,
+                        "debug", "info"
+                ))
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isTrue();
+        assertThat(logAppender.getLoggedMessages()).anyMatch(msg -> msg.contains("Matched with extras"));
+    }
+
+    @Test
+    void testErrorDetailIncompleteNestedFieldShouldNotMatch() {
+        var yaml = """
+                alias: Missing nested field
+                triggers:
+                  - trigger: onHttpResponse
+                    errorDetail:
+                      user.details.message: "Missing"
+                actions:
+                  - action: logger
+                    message: Should not match if nested field missing
+                """;
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        Map<String, Object> errorDetail = Map.of("user", Map.of("name", "Alice")); // missing `details.message`
+
+        var event = HttpResponseEvent.builder()
+                .errorDetail(errorDetail)
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isFalse();
+        assertThat(logAppender.getLoggedMessages()).noneMatch(msg -> msg.contains("Should not match if nested field missing"));
+    }
+
 
 }
