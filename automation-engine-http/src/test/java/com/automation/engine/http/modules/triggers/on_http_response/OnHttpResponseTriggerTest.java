@@ -5022,5 +5022,383 @@ class OnHttpResponseTriggerTest {
         assertThat(automation.anyTriggerActivated(context)).isFalse();
     }
 
+    @Test
+    void testTriggerOnDeepNestedErrorDetailMatch() {
+        var yaml = """
+                alias: Deep nested errorDetail
+                triggers:
+                  - trigger: onHttpResponse
+                    errorDetail:
+                      meta:
+                        info:
+                          reason: "Invalid signature"
+                actions:
+                  - action: logger
+                    message: Deep nested match
+                """;
+
+        Map<String, Object> errorDetail = Map.of(
+                "meta", Map.of(
+                        "info", Map.of(
+                                "reason", "Invalid signature"
+                        )
+                )
+        );
+
+        var event = HttpResponseEvent.builder().build();
+        event.addErrorDetail(errorDetail);
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isTrue();
+    }
+
+    @Test
+    void testTriggerOnErrorDetailWithArrayInsideNestedObject() {
+        var yaml = """
+                alias: Deep with array
+                triggers:
+                  - trigger: onHttpResponse
+                    errorDetail:
+                      meta:
+                        issues:
+                          - type: "auth"
+                            message: "Invalid credentials"
+                actions:
+                  - action: logger
+                    message: Matched nested list inside errorDetail
+                """;
+
+        Map<String, Object> errorDetail = Map.of(
+                "meta", Map.of(
+                        "issues", List.of(
+                                Map.of("type", "auth", "message", "Invalid credentials"),
+                                Map.of("type", "data", "message", "Missing field")
+                        )
+                )
+        );
+
+        var event = HttpResponseEvent.builder().build();
+        event.addErrorDetail(errorDetail);
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isTrue();
+    }
+
+    @Test
+    void testTriggerOnDeepNestedErrorDetailWithExtraFields() {
+        var yaml = """
+                alias: Deep nested match with noise
+                triggers:
+                  - trigger: onHttpResponse
+                    errorDetail:
+                      envelope:
+                        payload:
+                          message: "Something went wrong"
+                actions:
+                  - action: logger
+                    message: Deep nested match despite noise
+                """;
+
+        Map<String, Object> errorDetail = Map.of(
+                "envelope", Map.of(
+                        "payload", Map.of(
+                                "message", "Something went wrong",
+                                "timestamp", "2025-04-13T12:34:56"
+                        ),
+                        "extra", "noise"
+                )
+        );
+
+        var event = HttpResponseEvent.builder().build();
+        event.addErrorDetail(errorDetail);
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isTrue();
+    }
+
+    @Test
+    void testTriggerOnDeepNestedErrorDetailFailsOnMismatch() {
+        var yaml = """
+                alias: Deep nested mismatch
+                triggers:
+                  - trigger: onHttpResponse
+                    errorDetail:
+                      meta:
+                        info:
+                          reason: "Authorization required"
+                actions:
+                  - action: logger
+                    message: Should not match
+                """;
+
+        Map<String, Object> errorDetail = Map.of(
+                "meta", Map.of(
+                        "info", Map.of(
+                                "reason", "Invalid token"
+                        )
+                )
+        );
+
+        var event = HttpResponseEvent.builder().build();
+        event.addErrorDetail(errorDetail);
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isFalse();
+    }
+
+    @Test
+    void testTriggerOnErrorDetailWithTopLevelAndDeepMatch() {
+        var yaml = """
+                alias: Match multiple fields in errorDetail
+                triggers:
+                  - trigger: onHttpResponse
+                    errorDetail:
+                      code: "401"
+                      meta:
+                        detail:
+                          reason: "Invalid token"
+                actions:
+                  - action: logger
+                    message: All matched (top-level and deep)
+                """;
+
+        Map<String, Object> errorDetail = Map.of(
+                "code", "401",
+                "meta", Map.of(
+                        "detail", Map.of(
+                                "reason", "Invalid token"
+                        )
+                )
+        );
+
+        var event = HttpResponseEvent.builder().build();
+        event.addErrorDetail(errorDetail);
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isTrue();
+    }
+
+    @Test
+    void testTriggerFailsIfOneFieldDoesNotMatch() {
+        var yaml = """
+                alias: One mismatch in multi-field match
+                triggers:
+                  - trigger: onHttpResponse
+                    errorDetail:
+                      code: "403"
+                      meta:
+                        detail:
+                          reason: "Invalid token"
+                actions:
+                  - action: logger
+                    message: Should not match
+                """;
+
+        Map<String, Object> errorDetail = Map.of(
+                "code", "401", // <--- mismatch
+                "meta", Map.of(
+                        "detail", Map.of(
+                                "reason", "Invalid token"
+                        )
+                )
+        );
+
+        var event = HttpResponseEvent.builder().build();
+        event.addErrorDetail(errorDetail);
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isFalse();
+    }
+
+    @Test
+    void testTriggerOnErrorDetailTopAndThreeLevelDeepMatch() {
+        var yaml = """
+                alias: Top + 3-level deep match
+                triggers:
+                  - trigger: onHttpResponse
+                    errorDetail:
+                      status: "fail"
+                      error:
+                        context:
+                          user:
+                            message: "Access denied"
+                actions:
+                  - action: logger
+                    message: Top + deep match success
+                """;
+
+        Map<String, Object> errorDetail = Map.of(
+                "status", "fail",
+                "error", Map.of(
+                        "context", Map.of(
+                                "user", Map.of(
+                                        "message", "Access denied"
+                                )
+                        )
+                )
+        );
+
+        var event = HttpResponseEvent.builder().build();
+        event.addErrorDetail(errorDetail);
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isTrue();
+    }
+
+    @Test
+    void testTriggerFailsIfDeepFieldMissing() {
+        var yaml = """
+                alias: Deep field missing
+                triggers:
+                  - trigger: onHttpResponse
+                    errorDetail:
+                      status: "fail"
+                      error:
+                        context:
+                          user:
+                            message: "Access denied"
+                actions:
+                  - action: logger
+                    message: Should not match
+                """;
+
+        Map<String, Object> errorDetail = Map.of(
+                "status", "fail",
+                "error", Map.of(
+                        "context", Map.of(
+                                "user", Map.of(
+                                        "msg", "Access denied" // wrong key
+                                )
+                        )
+                )
+        );
+
+        var event = HttpResponseEvent.builder().build();
+        event.addErrorDetail(errorDetail);
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isFalse();
+    }
+
+    @Test
+    void testTriggerOnTwoDeepErrorDetailFieldsMatching() {
+        var yaml = """
+                alias: Two deep errorDetail fields match
+                triggers:
+                  - trigger: onHttpResponse
+                    errorDetail:
+                      error:
+                        user:
+                          message: "Unauthorized"
+                        session:
+                          expired: true
+                actions:
+                  - action: logger
+                    message: Both deep fields matched
+                """;
+
+        Map<String, Object> errorDetail = Map.of(
+                "error", Map.of(
+                        "user", Map.of(
+                                "message", "Unauthorized"
+                        ),
+                        "session", Map.of(
+                                "expired", true
+                        )
+                )
+        );
+
+        var event = HttpResponseEvent.builder().build();
+        event.addErrorDetail(errorDetail);
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isTrue();
+    }
+
+    @Test
+    void testTriggerFailsIfOnlyOneDeepFieldMatches() {
+        var yaml = """
+                alias: Only one deep errorDetail field matches
+                triggers:
+                  - trigger: onHttpResponse
+                    errorDetail:
+                      error:
+                        user:
+                          message: "Unauthorized"
+                        session:
+                          expired: true
+                actions:
+                  - action: logger
+                    message: Should not trigger
+                """;
+
+        Map<String, Object> errorDetail = Map.of(
+                "error", Map.of(
+                        "user", Map.of(
+                                "message", "Unauthorized"
+                        ),
+                        "session", Map.of(
+                                "expired", false // mismatch here
+                        )
+                )
+        );
+
+        var event = HttpResponseEvent.builder().build();
+        event.addErrorDetail(errorDetail);
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isFalse();
+    }
+
 
 }
