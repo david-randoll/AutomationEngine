@@ -4899,5 +4899,128 @@ class OnHttpResponseTriggerTest {
         assertThat(automation.anyTriggerActivated(context)).isTrue();
     }
 
+    @Test
+    void testTriggerMatchesWhenErrorDetailStatusInList() {
+        var yaml = """
+                alias: Match when status is 200 or 201
+                triggers:
+                  - trigger: onHttpResponse
+                    errorDetail:
+                      status: [200, 201]
+                      message: "Operation successful"
+                actions:
+                  - action: logger
+                    message: Status matched
+                """;
+
+        var event = HttpResponseEvent.builder()
+                .responseStatus(HttpStatus.CREATED) // 201
+                .build();
+        event.addErrorDetail(Map.of(
+                "status", 201,
+                "message", "Operation successful"
+        ));
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isTrue();
+    }
+
+    @Test
+    void testTriggerDoesNotMatchWhenErrorDetailStatusOutsideList() {
+        var yaml = """
+                alias: No match if status not in list
+                triggers:
+                  - trigger: onHttpResponse
+                    errorDetail:
+                      status: [200, 201]
+                      message: "Operation successful"
+                actions:
+                  - action: logger
+                    message: Should not activate
+                """;
+
+        var event = HttpResponseEvent.builder()
+                .responseStatus(HttpStatus.NON_AUTHORITATIVE_INFORMATION) // 203
+                .build();
+        event.addErrorDetail(Map.of(
+                "status", 203,
+                "message", "Operation successful"
+        ));
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isFalse();
+    }
+
+    @Test
+    void testTriggerMatchesWhenErrorDetailStatusArrayContainsMatchingValue() {
+        var yaml = """
+                alias: Match status array with expected values
+                triggers:
+                  - trigger: onHttpResponse
+                    errorDetail:
+                      status: [200, 201]
+                      message: "Created successfully"
+                actions:
+                  - action: logger
+                    message: Triggered on successful creation
+                """;
+
+        var event = HttpResponseEvent.builder()
+                .responseStatus(HttpStatus.CREATED) // 201
+                .build();
+        event.addErrorDetail(Map.of(
+                "status", List.of(201), // status as array
+                "message", "Created successfully"
+        ));
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isTrue();
+        assertThat(logAppender.getLoggedMessages())
+                .anyMatch(msg -> msg.contains("Triggered on successful creation"));
+    }
+
+
+    @Test
+    void testTriggerDoesNotMatchWhenErrorDetailStatusArrayNotMatching() {
+        var yaml = """
+                alias: Error detail status does not match array value
+                triggers:
+                  - trigger: onHttpResponse
+                    errorDetail:
+                      status: [200, 201]
+                      message: "Operation unsuccessful"
+                actions:
+                  - action: logger
+                    message: Should not trigger due to unmatched status
+                """;
+
+        var event = HttpResponseEvent.builder()
+                .responseStatus(HttpStatus.NON_AUTHORITATIVE_INFORMATION) // 203
+                .build();
+        event.addErrorDetail(Map.of(
+                "status", List.of(203), // status is an array in errorDetail
+                "message", "Operation unsuccessful"
+        ));
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isFalse();
+    }
+
 
 }
