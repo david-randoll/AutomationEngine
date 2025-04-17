@@ -29,25 +29,25 @@ public class OnHttpResponseTrigger extends PluggableTrigger<OnHttpResponseTrigge
         var isPathTriggered = tc.hasPaths() && tc.getPaths().stream().noneMatch(pathParsed::matches);
         if (isPathTriggered) return false;
 
-        var isHeaderTriggered = tc.hasHeaders() && JsonNodeMatcher.checkObject(tc.getHeaders(), event.getHeaders(), objectMapper);
+        var isHeaderTriggered = tc.hasHeaders() && JsonNodeMatcher.matches(tc.getHeaders(), event.getHeaders(), objectMapper);
         if (isHeaderTriggered) return false;
 
-        var isQueryParamTriggered = tc.hasQueryParams() && JsonNodeMatcher.checkObject(tc.getQueryParams(), event.getQueryParams(), objectMapper);
+        var isQueryParamTriggered = tc.hasQueryParams() && JsonNodeMatcher.matches(tc.getQueryParams(), event.getQueryParams(), objectMapper);
         if (isQueryParamTriggered) return false;
 
-        var isPathParamTriggered = tc.hasPathParams() && JsonNodeMatcher.checkObject(tc.getPathParams(), event.getPathParams(), objectMapper);
+        var isPathParamTriggered = tc.hasPathParams() && JsonNodeMatcher.matches(tc.getPathParams(), event.getPathParams(), objectMapper);
         if (isPathParamTriggered) return false;
 
-        var isRequestBodyTriggered = tc.hasRequestBody() && JsonNodeMatcher.checkObject(tc.getRequestBody(), event.getRequestBody(), objectMapper);
+        var isRequestBodyTriggered = tc.hasRequestBody() && JsonNodeMatcher.matches(tc.getRequestBody(), event.getRequestBody(), objectMapper);
         if (isRequestBodyTriggered) return false;
 
-        var isResponseBodyTriggered = tc.hasResponseBody() && JsonNodeMatcher.checkObject(tc.getResponseBody(), event.getResponseBody(), objectMapper);
+        var isResponseBodyTriggered = tc.hasResponseBody() && JsonNodeMatcher.matches(tc.getResponseBody(), event.getResponseBody(), objectMapper);
         if (isResponseBodyTriggered) return false;
 
         var isResponseStatusTriggered = tc.hasResponseStatuses() && !tc.getResponseStatuses().contains(event.getResponseStatus());
         if (isResponseStatusTriggered) return false;
 
-        var errorDetailTriggered = tc.hasErrorDetail() && JsonNodeMatcher.checkObject(tc.getErrorDetail(), event.getErrorDetail(), objectMapper);
+        var errorDetailTriggered = tc.hasErrorDetail() && JsonNodeMatcher.matches(tc.getErrorDetail(), event.getErrorDetail(), objectMapper);
         if (errorDetailTriggered) return false;
 
         return true;

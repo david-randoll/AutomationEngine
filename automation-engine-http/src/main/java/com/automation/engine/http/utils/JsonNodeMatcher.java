@@ -11,72 +11,73 @@ import java.util.regex.Pattern;
 @UtilityClass
 public class JsonNodeMatcher {
 
-    public static boolean checkObject(Object expected, Object actual, ObjectMapper mapper) {
-        if (expected instanceof JsonNode expectedNode && actual instanceof JsonNode actualNode) {
-            return !checkJsonNode(expectedNode, actualNode);
-        }
-        JsonNode expectedNode = mapper.convertValue(expected, JsonNode.class);
-        JsonNode actualNode = mapper.convertValue(actual, JsonNode.class);
-        return !checkJsonNode(expectedNode, actualNode);
+    public static boolean matches(Object expectedObj, Object actualObj, ObjectMapper mapper) {
+        JsonNode expectedNode = toJsonNode(expectedObj, mapper);
+        JsonNode actualNode = toJsonNode(actualObj, mapper);
+        return !matchesNode(expectedNode, actualNode);
     }
 
-    private static boolean checkJsonNode(JsonNode expected, JsonNode actual) {
-        if (expected == null || expected.isNull()) {
-            return true; // null expected = wildcard
-        }
-        if (actual == null || actual.isNull()) {
-            return false;
-        }
+    private static JsonNode toJsonNode(Object obj, ObjectMapper mapper) {
+        return obj instanceof JsonNode node ? node : mapper.convertValue(obj, JsonNode.class);
+    }
+
+    private static boolean matchesNode(JsonNode expected, JsonNode actual) {
+        if (isNull(expected)) return true;
+        if (isNull(actual)) return false;
 
         if (expected.isObject()) {
-            // Must match all fields in the expected object
-            for (Iterator<Map.Entry<String, JsonNode>> it = expected.fields(); it.hasNext(); ) {
-                Map.Entry<String, JsonNode> expectedField = it.next();
-                String expectedKey = expectedField.getKey();
-                JsonNode expectedValue = expectedField.getValue();
-                JsonNode actualValue = getJsonNodeCaseInsensitive(actual, expectedKey);
-                if (!checkJsonNode(expectedValue, actualValue)) {
-                    return false;
-                }
-            }
-            return true;
+            return matchesObject(expected, actual);
         }
 
         if (expected.isArray()) {
-            if (!actual.isArray()) {
-                // actual is a single value, check if any expected element matches it
-                for (JsonNode expectedElement : expected) {
-                    if (checkJsonNode(expectedElement, actual)) {
-                        return true;
-                    }
-                }
-                return false;
-            }
-
-            // actual is an array — return true if ANY expected element matches ANY actual element
-            for (JsonNode expectedElement : expected) {
-                for (JsonNode actualElement : actual) {
-                    if (checkJsonNode(expectedElement, actualElement)) {
-                        return true;
-                    }
-                }
-            }
-            return false;
+            return matchesArray(expected, actual);
         }
 
         String expectedText = expected.asText().toLowerCase().trim();
         String actualText = actual.asText().toLowerCase().trim();
-        var pattern = Pattern.compile(expectedText);
-        return pattern.matcher(actualText).matches();
+        return Pattern.compile(expectedText).matcher(actualText).matches();
     }
 
-    private JsonNode getJsonNodeCaseInsensitive(JsonNode actual, String key) {
-        for (Iterator<Map.Entry<String, JsonNode>> it = actual.fields(); it.hasNext(); ) {
-            Map.Entry<String, JsonNode> actualField = it.next();
-            if (actualField.getKey().trim().equalsIgnoreCase(key.trim())) {
-                return actualField.getValue();
+    private static boolean matchesObject(JsonNode expected, JsonNode actual) {
+        for (Map.Entry<String, JsonNode> expectedField : iterable(expected.fields())) {
+            JsonNode actualValue = getFieldIgnoreCase(actual, expectedField.getKey());
+            if (!matchesNode(expectedField.getValue(), actualValue)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static boolean matchesArray(JsonNode expected, JsonNode actual) {
+        if (!actual.isArray()) {
+            for (JsonNode expectedElement : expected) {
+                if (matchesNode(expectedElement, actual)) return true;
+            }
+            return false;
+        }
+
+        for (JsonNode expectedElement : expected) {
+            for (JsonNode actualElement : actual) {
+                if (matchesNode(expectedElement, actualElement)) return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean isNull(JsonNode node) {
+        return node == null || node.isNull();
+    }
+
+    private static JsonNode getFieldIgnoreCase(JsonNode node, String key) {
+        for (Map.Entry<String, JsonNode> field : iterable(node.fields())) {
+            if (field.getKey().trim().equalsIgnoreCase(key.trim())) {
+                return field.getValue();
             }
         }
         return null;
+    }
+
+    private static <T> Iterable<T> iterable(Iterator<T> iterator) {
+        return () -> iterator;
     }
 }
