@@ -9,7 +9,7 @@ import com.automation.engine.http.AutomationEngineHttpApplication;
 import com.automation.engine.http.TestLogAppender;
 import com.automation.engine.http.event.HttpMethodEnum;
 import com.automation.engine.http.event.HttpResponseEvent;
-import com.automation.engine.http.utils.JsonTestUtils;
+import com.automation.engine.http.JsonTestUtils;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;

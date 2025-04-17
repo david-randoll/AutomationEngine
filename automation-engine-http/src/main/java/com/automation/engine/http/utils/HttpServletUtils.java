@@ -1,6 +1,6 @@
 package com.automation.engine.http.utils;
 
-import com.automation.engine.http.extensions.AutomationEngineHttpParseException;
+import com.automation.engine.http.exceptions.AutomationEngineHttpParseException;
 import com.automation.engine.http.publisher.request.CachedBodyHttpServletRequest;
 import com.automation.engine.http.publisher.response.CachedBodyHttpServletResponse;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -12,8 +12,6 @@ import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.lang.NonNull;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;

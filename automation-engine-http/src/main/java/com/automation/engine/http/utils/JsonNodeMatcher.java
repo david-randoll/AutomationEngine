@@ -1,5 +1,6 @@
 package com.automation.engine.http.utils;
 
+import com.automation.engine.http.exceptions.AutomationEngineInvalidRegexException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.experimental.UtilityClass;
@@ -7,6 +8,7 @@ import lombok.experimental.UtilityClass;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 @UtilityClass
 public class JsonNodeMatcher {
@@ -35,7 +37,11 @@ public class JsonNodeMatcher {
 
         String expectedText = expected.asText().toLowerCase().trim();
         String actualText = actual.asText().toLowerCase().trim();
-        return Pattern.compile(expectedText).matcher(actualText).matches();
+        try {
+            return Pattern.compile(expectedText).matcher(actualText).matches();
+        } catch (PatternSyntaxException e) {
+            throw new AutomationEngineInvalidRegexException(expectedText, e);
+        }
     }
 
     private static boolean matchesObject(JsonNode expected, JsonNode actual) {
@@ -49,6 +55,7 @@ public class JsonNodeMatcher {
     }
 
     private static boolean matchesArray(JsonNode expected, JsonNode actual) {
+        if (expected.isEmpty() && actual.isEmpty()) return true;
         if (!actual.isArray()) {
             for (JsonNode expectedElement : expected) {
                 if (matchesNode(expectedElement, actual)) return true;
