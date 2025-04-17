@@ -5577,5 +5577,165 @@ class OnHttpResponseTriggerTest {
         assertThat(logAppender.getLoggedMessages()).noneMatch(msg -> msg.contains("Should not match if nested field missing"));
     }
 
+    @Test
+    void testErrorDetailDeepPathAlmostThereShouldNotMatch() {
+        var yaml = """
+                alias: Off-by-one nested path
+                triggers:
+                  - trigger: onHttpResponse
+                    errorDetail:
+                      user.details.profile.message: "NotFound"
+                actions:
+                  - action: logger
+                    message: Should not match, missing level
+                """;
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        // Missing `profile` level
+        Map<String, Object> errorDetail = Map.of("user", Map.of("details", Map.of("message", "NotFound")));
+
+        var event = HttpResponseEvent.builder().errorDetail(errorDetail).build();
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isFalse();
+    }
+
+    @Test
+    void testErrorDetailFieldIsObjectNotStringShouldNotMatch() {
+        var yaml = """
+                alias: Type mismatch object vs string
+                triggers:
+                  - trigger: onHttpResponse
+                    errorDetail:
+                      error.message: "Access denied"
+                actions:
+                  - action: logger
+                    message: Should not match
+                """;
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        Map<String, Object> errorDetail = Map.of("error", Map.of("message", Map.of("actual", "Access denied"))); // message is an object
+
+        var event = HttpResponseEvent.builder().errorDetail(errorDetail).build();
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isFalse();
+    }
+
+    @Test
+    void testErrorDetailMatchingFieldInsideArrayShouldNotMatch() {
+        var yaml = """
+                alias: Inside array
+                triggers:
+                  - trigger: onHttpResponse
+                    errorDetail:
+                      errors.message: "Invalid input"
+                actions:
+                  - action: logger
+                    message: Should not match in array
+                """;
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        Map<String, Object> errorDetail = Map.of("errors", List.of(Map.of("message", "Invalid input"))); // inside array
+
+        var event = HttpResponseEvent.builder().errorDetail(errorDetail).build();
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isFalse();
+    }
+
+    @Test
+    void testErrorDetailFieldIsNullShouldNotMatchIfExpectedValue() {
+        var yaml = """
+                alias: Null value mismatch
+                triggers:
+                  - trigger: onHttpResponse
+                    errorDetail:
+                      message: "Error occurred"
+                actions:
+                  - action: logger
+                    message: Should not match if null
+                """;
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        Map<String, Object> errorDetail = new HashMap<>();
+        errorDetail.put("message", null); // null value
+
+        var event = HttpResponseEvent.builder().errorDetail(errorDetail).build();
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isFalse();
+    }
+
+    @Test
+    void testErrorDetailTriggerWithTrailingDotShouldNotMatch() {
+        var yaml = """
+                alias: Trailing dot in path
+                triggers:
+                  - trigger: onHttpResponse
+                    errorDetail:
+                      user.details.: "oops"
+                actions:
+                  - action: logger
+                    message: Should not match malformed path
+                """;
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        Map<String, Object> errorDetail = Map.of("user", Map.of("details", "oops"));
+
+        var event = HttpResponseEvent.builder().errorDetail(errorDetail).build();
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isFalse();
+    }
+
+    @Test
+    void testErrorDetailDeepRandomJunkStructureShouldNotAccidentallyMatch() {
+        var yaml = """
+                alias: Deep unrelated junk
+                triggers:
+                  - trigger: onHttpResponse
+                    errorDetail:
+                      system.logs.auth.token.expired: true
+                actions:
+                  - action: logger
+                    message: Should not match junk structure
+                """;
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        Map<String, Object> errorDetail = Map.of("system", Map.of(
+                "logs", Map.of(
+                        "auth", Map.of(
+                                "token", Map.of(
+                                        "value", "abc123"
+                                )
+                        )
+                )
+        ));
+
+        var event = HttpResponseEvent.builder().errorDetail(errorDetail).build();
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.anyTriggerActivated(context)).isFalse();
+    }
+
 
 }
