@@ -48,4 +48,20 @@ public class HttpResponseEvent implements IEvent {
         if (this.additionalData == null) this.additionalData = new HashMap<>();
         this.additionalData.putAll(additionalData);
     }
+
+    public boolean isErrorResponse() {
+        return responseStatus != null && (isClientErrorResponse() || isServerErrorResponse());
+    }
+
+    public boolean isServerErrorResponse() {
+        return responseStatus != null && responseStatus.is5xxServerError();
+    }
+
+    public boolean isClientErrorResponse() {
+        return responseStatus != null && responseStatus.is4xxClientError();
+    }
+
+    public boolean isSuccessResponse() {
+        return responseStatus != null && responseStatus.is2xxSuccessful();
+    }
 }

@@ -7,7 +7,6 @@ import com.automation.engine.http.jackson.flexible_multi_value_map.FlexibleMulti
 import com.automation.engine.http.jackson.flexible_string_list.FlexibleStringList;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.databind.JsonNode;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -16,7 +15,6 @@ import org.springframework.util.MultiValueMap;
 import java.util.List;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
 public class OnHttpRequestTriggerContext implements ITriggerContext {
     private String alias;
@@ -72,7 +70,7 @@ public class OnHttpRequestTriggerContext implements ITriggerContext {
         return pathParams != null && !pathParams.isEmpty();
     }
 
-    public boolean hasBody() {
+    public boolean hasRequestBody() {
         return requestBody != null && !requestBody.isEmpty();
     }
 }
