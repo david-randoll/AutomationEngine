@@ -45,7 +45,7 @@ public class OnHttpResponseTriggerContext implements ITriggerContext {
     @FlexibleMultiValueMap
     private MultiValueMap<String, String> queryParams;
 
-    @JsonAlias({"pathParams", "pathParam", "path"})
+    @JsonAlias({"pathParams", "pathParam"})
     @FlexibleMultiValueMap
     private MultiValueMap<String, String> pathParams;
 
