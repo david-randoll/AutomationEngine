@@ -13,7 +13,9 @@ public interface IHttpEventExtension {
      * For example, anything from spring security (username, roles, etc). Or tenantId if in a multi-tenant environment.
      * </p>
      */
-    Map<String, Object> extendRequestEvent(HttpRequestEvent requestEvent);
+    default Map<String, Object> extendRequestEvent(HttpRequestEvent requestEvent) {
+        return Map.of();
+    }
 
     /**
      * This method is called before the {@link HttpResponseEvent} is published.
@@ -22,5 +24,7 @@ public interface IHttpEventExtension {
      * For example, anything from spring security (username, roles, etc). Or tenantId if in a multi-tenant environment.
      * </p>
      */
-    Map<String, Object> extendResponseEvent(HttpResponseEvent responseEvent);
+    default Map<String, Object> extendResponseEvent(HttpRequestEvent requestEvent, HttpResponseEvent responseEvent) {
+        return Map.of();
+    }
 }

@@ -38,7 +38,7 @@ import java.util.concurrent.CompletionStage;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-@Order(Ordered.HIGHEST_PRECEDENCE)
+@Order(Ordered.HIGHEST_PRECEDENCE + 1)
 public class HttpResponseEventPublisher extends OncePerRequestFilter {
     private final AutomationEngine engine;
     private final DefaultErrorAttributes defaultErrorAttributes;
@@ -75,27 +75,27 @@ public class HttpResponseEventPublisher extends OncePerRequestFilter {
     private void buildAndPublishResponseEvent(HttpServletRequest request, CachedBodyHttpServletRequest requestWrapper, CachedBodyHttpServletResponse responseWrapper) throws IOException {
         if (!requestWrapper.isEndpointExists()) return;
 
-        HttpStatus responseStatus = HttpStatus.valueOf(responseWrapper.getStatus());
-        HttpRequestEvent requestEvent = requestWrapper.toHttpRequestEvent();
-        HttpResponseEvent responseEvent = toHttpResponseEvent(requestEvent, responseStatus);
+        final HttpStatus responseStatus = HttpStatus.valueOf(responseWrapper.getStatus());
+        final HttpRequestEvent requestEvent = requestWrapper.toHttpRequestEvent();
+        final HttpResponseEvent responseEvent = toHttpResponseEvent(requestEvent, responseStatus);
 
         if (responseStatus.is2xxSuccessful()) {
             CompletionStage<JsonNode> responseBody = responseWrapper.getResponseBody(requestWrapper);
 
             responseBody.thenAccept(body -> {
                 responseEvent.setResponseBody(body);
-                publishResponseEvent(responseEvent);
+                publishResponseEvent(requestEvent, responseEvent);
             });
         } else {
             var errorAttributes = getErrorAttributes(request);
             responseEvent.addErrorDetail(errorAttributes);
-            publishResponseEvent(responseEvent);
+            publishResponseEvent(requestEvent, responseEvent);
         }
     }
 
-    private void publishResponseEvent(HttpResponseEvent responseEvent) {
+    private void publishResponseEvent(HttpRequestEvent requestEvent, HttpResponseEvent responseEvent) {
         for (IHttpEventExtension extension : httpEventExtensions) {
-            var additionalData = extension.extendResponseEvent(responseEvent);
+            var additionalData = extension.extendResponseEvent(requestEvent, responseEvent);
             responseEvent.addAdditionalData(additionalData);
         }
         engine.publishEvent(responseEvent);

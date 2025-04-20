@@ -14,7 +14,7 @@ import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.io.IOException;
-import java.util.Map;
+import java.util.HashMap;
 
 @Component
 @RequiredArgsConstructor
@@ -28,13 +28,12 @@ public class RuntimeExceptionResolver implements HandlerExceptionResolver {
             try {
                 response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
                 response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-                Map<String, Object> body = Map.of(
-                        "error", HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
-                        "message", ex.getMessage(),
-                        "status", HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                        "path", request.getRequestURI(),
-                        "timestamp", System.currentTimeMillis()
-                );
+                var body = new HashMap<String, Object>();
+                body.put("error", HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
+                body.put("message", ex.getMessage());
+                body.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+                body.put("path", request.getRequestURI());
+                body.put("timestamp", System.currentTimeMillis());
                 mapper.writeValue(response.getWriter(), body);
                 return new ModelAndView(); // marks it resolved
             } catch (IOException e) {

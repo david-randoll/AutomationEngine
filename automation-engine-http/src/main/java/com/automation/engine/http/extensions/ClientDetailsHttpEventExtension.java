@@ -21,7 +21,7 @@ public class ClientDetailsHttpEventExtension implements IHttpEventExtension {
     }
 
     @Override
-    public Map<String, Object> extendResponseEvent(HttpResponseEvent responseEvent) {
+    public Map<String, Object> extendResponseEvent(HttpRequestEvent requestEvent, HttpResponseEvent responseEvent) {
         return getClientDetails();
     }
 
