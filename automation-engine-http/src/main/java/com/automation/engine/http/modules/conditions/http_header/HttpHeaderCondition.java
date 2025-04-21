@@ -17,17 +17,5 @@ public class HttpHeaderCondition extends PluggableCondition<HttpHeaderContext> {
     public boolean isSatisfied(EventContext ec, HttpHeaderContext cc) {
         if (!(ec.getEvent() instanceof HttpRequestEvent event)) return false;
         return StringMatcher.matchesCondition(cc.getHeaders(), event.getHeaders(), objectMapper);
-
-//        for (Map.Entry<String, StringMatchContext> entry : cc.getHeaders().entrySet()) {
-//            StringMatchContext operation = entry.getValue();
-//            List<String> headerValue = Optional.ofNullable(event.getHeaders().get(entry.getKey())).orElse(List.of());
-//            // check if the config has an exists condition
-//            if (ObjectUtils.isEmpty(headerValue)) {
-//                return !Boolean.TRUE.equals(operation.getExists());
-//            }
-//            var satisfied = headerValue.stream().anyMatch(operation::matches);
-//            if (!satisfied) return false;
-//        }
-//        return true;
     }
 }
