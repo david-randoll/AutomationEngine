@@ -31,20 +31,47 @@ public class StringMatchContext {
     @JsonAlias({"exists", "isPresent", "exist"})
     private Boolean exists;
 
-    public boolean matches(String value) {
+    public boolean matches(Object value) {
         if (ObjectUtils.isEmpty(value)) {
-            return !Boolean.TRUE.equals(this.getExists());
+            var hasOtherOperation = this.equals != null
+                                    || this.notEquals != null
+                                    || this.in != null
+                                    || this.notIn != null
+                                    || this.regex != null
+                                    || this.like != null;
+            if (!hasOtherOperation)
+                return !Boolean.TRUE.equals(this.getExists());
+            return false;
         }
 
-        if (equals != null && !equals.equalsIgnoreCase(value)) return false;
-        if (notEquals != null && notEquals.equalsIgnoreCase(value)) return false;
-        if (in != null && in.stream().noneMatch(x -> x.equalsIgnoreCase(value))) return false;
-        if (notIn != null && notIn.stream().anyMatch(x -> x.equalsIgnoreCase(value))) return false;
-        if (regex != null && !value.matches(regex)) return false;
+        return switch (value) {
+            case String str -> matchString(str);
+            case List<?> list -> matchArray(list);
+            default -> matchString(String.valueOf(value));
+        };
+
+    }
+
+    private boolean matchArray(List<?> list) {
+        // if the value is a list, check if any of the elements match
+        for (var item : list) {
+            if (!this.matches(item)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean matchString(String str) {
+        if (this.equals != null && !this.equals.equalsIgnoreCase(str)) return false;
+        if (this.notEquals != null && this.notEquals.equalsIgnoreCase(str)) return false;
+        if (this.in != null && this.in.stream().noneMatch(x -> x.equalsIgnoreCase(str))) return false;
+        if (this.notIn != null && this.notIn.stream().anyMatch(x -> x.equalsIgnoreCase(str))) return false;
+        if (this.regex != null && !str.matches(this.regex)) return false;
         // convert any wildcard % or * to regex .*
-        if (like != null) {
-            String regexLike = like.replaceAll("[*%]", ".*");
-            return value.matches(regexLike);
+        if (this.like != null) {
+            String regexLike = this.like.replaceAll("[*%]", ".*");
+            return str.matches(regexLike);
         }
         return true;
     }

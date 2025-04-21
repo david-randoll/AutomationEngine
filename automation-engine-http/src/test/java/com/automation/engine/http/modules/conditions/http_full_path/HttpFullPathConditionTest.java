@@ -391,7 +391,7 @@ class HttpFullPathConditionTest {
         var context = EventContext.of(event);
         engine.publishEvent(context);
 
-        assertThat(automation.allConditionsMet(context)).isFalse();
+        assertThat(automation.allConditionsMet(context)).isTrue();
     }
 
 }

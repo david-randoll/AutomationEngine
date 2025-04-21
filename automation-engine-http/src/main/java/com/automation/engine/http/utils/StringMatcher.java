@@ -14,33 +14,16 @@ import static com.automation.engine.http.utils.JsonNodeMatcher.toJsonNode;
 @UtilityClass
 public class StringMatcher {
     public static boolean matchesCondition(Object condition, Object actual, ObjectMapper mapper) {
-        if (condition == null) return true;
-        if (actual == null) return false;
-
         if (condition instanceof StringMatchContext ctx) {
-            return ctx.matches(String.valueOf(actual));
+            return ctx.matches(actual);
         }
 
         if (condition instanceof Map<?, ?> map) {
             if (actual instanceof Map<?, ?> actualMap) {
-                for (Object key : map.keySet()) {
-                    Object expectedSub = map.get(key);
-                    Object actualSub = actualMap.get(key);
-                    if (!matchesCondition(expectedSub, actualSub, mapper)) {
-                        return false;
-                    }
-                }
-                return true;
+                return matchesMap(mapper, map, actualMap);
             }
             if (actual instanceof JsonNode actualNode) {
-                for (Object key : map.keySet()) {
-                    Object expectedSub = map.get(key);
-                    JsonNode actualSub = actualNode.get(String.valueOf(key));
-                    if (!matchesCondition(expectedSub, actualSub, mapper)) {
-                        return false;
-                    }
-                }
-                return true;
+                return matchesJsonNode(mapper, map, actualNode);
             }
         }
 
@@ -54,6 +37,30 @@ public class StringMatcher {
         }
 
         return matchesNode(expectedNode, actualNode);
+    }
+
+    private static boolean matchesJsonNode(ObjectMapper mapper, Map<?, ?> map, JsonNode actualNode) {
+        for (Map.Entry<?, ?> entry : map.entrySet()) {
+            Object key = entry.getKey();
+            Object expectedSub = entry.getValue();
+            JsonNode actualSub = actualNode.get(String.valueOf(key));
+            if (!matchesCondition(expectedSub, actualSub, mapper)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static boolean matchesMap(ObjectMapper mapper, Map<?, ?> map, Map<?, ?> actualMap) {
+        for (Map.Entry<?, ?> entry : map.entrySet()) {
+            Object key = entry.getKey();
+            Object expectedSub = entry.getValue();
+            Object actualSub = actualMap.get(key);
+            if (!matchesCondition(expectedSub, actualSub, mapper)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private static boolean isLikelyMatchContext(JsonNode node) {
