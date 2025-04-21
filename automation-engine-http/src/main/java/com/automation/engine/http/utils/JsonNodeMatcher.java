@@ -19,11 +19,11 @@ public class JsonNodeMatcher {
         return !matchesNode(expectedNode, actualNode);
     }
 
-    private static JsonNode toJsonNode(Object obj, ObjectMapper mapper) {
+    static JsonNode toJsonNode(Object obj, ObjectMapper mapper) {
         return obj instanceof JsonNode node ? node : mapper.convertValue(obj, JsonNode.class);
     }
 
-    private static boolean matchesNode(JsonNode expected, JsonNode actual) {
+    static boolean matchesNode(JsonNode expected, JsonNode actual) {
         if (isNull(expected)) return true;
         if (isNull(actual)) return false;
 

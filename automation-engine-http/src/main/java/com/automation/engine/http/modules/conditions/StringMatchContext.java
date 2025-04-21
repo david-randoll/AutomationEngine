@@ -3,6 +3,7 @@ package com.automation.engine.http.modules.conditions;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.util.ObjectUtils;
 
 import java.util.List;
 
@@ -15,7 +16,7 @@ public class StringMatchContext {
     @JsonAlias({"notEqual", "!=", "notEquals"})
     private String notEquals;
 
-    @JsonAlias({"in", "contains", "includes", "anyOf", "hasAnyOf", "anyMatch"})
+    @JsonAlias({"in", "contains", "includes", "anyOf", "hasAnyOf", "anyMatch", "equalsAny"})
     private List<String> in;
 
     @JsonAlias({"notIn", "notContains", "notIncludes", "noneOf", "hasNoneOf"})
@@ -31,6 +32,8 @@ public class StringMatchContext {
     private Boolean exists;
 
     public boolean matches(String value) {
+        if (ObjectUtils.isEmpty(value) && exists != null && exists) return false;
+
         if (equals != null && !equals.equalsIgnoreCase(value)) return false;
         if (notEquals != null && notEquals.equalsIgnoreCase(value)) return false;
         if (in != null && in.stream().noneMatch(x -> x.equalsIgnoreCase(value))) return false;

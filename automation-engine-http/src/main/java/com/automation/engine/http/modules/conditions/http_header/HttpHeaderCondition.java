@@ -6,6 +6,7 @@ import com.automation.engine.http.modules.conditions.StringMatchContext;
 import com.automation.engine.spi.PluggableCondition;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ObjectUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -21,7 +22,9 @@ public class HttpHeaderCondition extends PluggableCondition<HttpHeaderContext> {
             StringMatchContext operation = entry.getValue();
             List<String> headerValue = Optional.ofNullable(event.getHeaders().get(entry.getKey())).orElse(List.of());
             // check if the config has an exists condition
-            if (operation.getExists() && headerValue.isEmpty()) return false;
+            if (ObjectUtils.isEmpty(headerValue)) {
+                return !Boolean.TRUE.equals(operation.getExists());
+            }
             var satisfied = headerValue.stream().anyMatch(operation::matches);
             if (!satisfied) return false;
         }
