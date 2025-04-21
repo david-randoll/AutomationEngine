@@ -32,7 +32,9 @@ public class StringMatchContext {
     private Boolean exists;
 
     public boolean matches(String value) {
-        if (ObjectUtils.isEmpty(value) && exists != null && exists) return false;
+        if (ObjectUtils.isEmpty(value)) {
+            return !Boolean.TRUE.equals(this.getExists());
+        }
 
         if (equals != null && !equals.equalsIgnoreCase(value)) return false;
         if (notEquals != null && notEquals.equalsIgnoreCase(value)) return false;
