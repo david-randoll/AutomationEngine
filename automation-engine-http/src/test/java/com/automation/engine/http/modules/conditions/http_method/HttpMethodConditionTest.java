@@ -3,11 +3,13 @@ package com.automation.engine.http.modules.conditions.http_method;
 import ch.qos.logback.classic.Logger;
 import com.automation.engine.core.AutomationEngine;
 import com.automation.engine.core.events.EventContext;
+import com.automation.engine.core.events.IEvent;
 import com.automation.engine.creator.AutomationCreator;
 import com.automation.engine.http.AutomationEngineHttpApplication;
 import com.automation.engine.http.TestLogAppender;
 import com.automation.engine.http.event.HttpMethodEnum;
 import com.automation.engine.http.event.HttpRequestEvent;
+import com.automation.engine.http.event.HttpResponseEvent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK, classes = AutomationEngineHttpApplication.class)
 @ExtendWith(SpringExtension.class)
-class httpMethodTest {
+class HttpMethodConditionTest {
     @Autowired
     private AutomationEngine engine;
 
@@ -64,6 +66,13 @@ class httpMethodTest {
         engine.publishEvent(context);
 
         assertThat(automation.allConditionsMet(context)).isTrue();
+
+        var responseEvent = HttpResponseEvent.builder()
+                .method(HttpMethodEnum.GET)
+                .build();
+        var responseContext = EventContext.of(responseEvent);
+        engine.publishEvent(responseContext);
+        assertThat(automation.allConditionsMet(responseContext)).isTrue();
     }
 
     @Test
@@ -91,6 +100,13 @@ class httpMethodTest {
         engine.publishEvent(context);
 
         assertThat(automation.allConditionsMet(context)).isFalse();
+
+        var responseEvent = HttpResponseEvent.builder()
+                .method(HttpMethodEnum.GET)
+                .build();
+        var responseContext = EventContext.of(responseEvent);
+        engine.publishEvent(responseContext);
+        assertThat(automation.allConditionsMet(responseContext)).isFalse();
     }
 
     @Test
@@ -118,6 +134,13 @@ class httpMethodTest {
         engine.publishEvent(context);
 
         assertThat(automation.allConditionsMet(context)).isFalse();
+
+        var responseEvent = HttpResponseEvent.builder()
+                .method(null)
+                .build();
+        var responseContext = EventContext.of(responseEvent);
+        engine.publishEvent(responseContext);
+        assertThat(automation.allConditionsMet(responseContext)).isFalse();
     }
 
     @Test
@@ -139,6 +162,13 @@ class httpMethodTest {
                 .build();
 
         assertSatisfied(yaml, event);
+
+        var responseEvent = HttpResponseEvent.builder()
+                .method(HttpMethodEnum.GET)
+                .build();
+
+        assertSatisfied(yaml, responseEvent);
+
     }
 
     @Test
@@ -160,6 +190,11 @@ class httpMethodTest {
                 .build();
 
         assertSatisfied(yaml, event);
+
+        var responseEvent = HttpResponseEvent.builder()
+                .method(HttpMethodEnum.GET)
+                .build();
+        assertSatisfied(yaml, responseEvent);
     }
 
     @Test
@@ -181,6 +216,11 @@ class httpMethodTest {
                 .build();
 
         assertSatisfied(yaml, event);
+
+        var responseEvent = HttpResponseEvent.builder()
+                .method(HttpMethodEnum.POST)
+                .build();
+        assertSatisfied(yaml, responseEvent);
     }
 
     @Test
@@ -202,6 +242,11 @@ class httpMethodTest {
                 .build();
 
         assertSatisfied(yaml, event);
+
+        var responseEvent = HttpResponseEvent.builder()
+                .method(HttpMethodEnum.GET)
+                .build();
+        assertSatisfied(yaml, responseEvent);
     }
 
     @Test
@@ -223,6 +268,11 @@ class httpMethodTest {
                 .build();
 
         assertSatisfied(yaml, event);
+
+        var responseEvent = HttpResponseEvent.builder()
+                .method(HttpMethodEnum.GET)
+                .build();
+        assertSatisfied(yaml, responseEvent);
     }
 
     @Test
@@ -244,6 +294,11 @@ class httpMethodTest {
                 .build();
 
         assertSatisfied(yaml, event);
+
+        var responseEvent = HttpResponseEvent.builder()
+                .method(HttpMethodEnum.GET)
+                .build();
+        assertSatisfied(yaml, responseEvent);
     }
 
     @Test
@@ -265,6 +320,11 @@ class httpMethodTest {
                 .build();
 
         assertSatisfied(yaml, event);
+
+        var responseEvent = HttpResponseEvent.builder()
+                .method(HttpMethodEnum.GET)
+                .build();
+        assertSatisfied(yaml, responseEvent);
     }
 
     @Test
@@ -285,11 +345,16 @@ class httpMethodTest {
                 .method(null)
                 .build();
 
-        assertNotSatisified(yaml, event);
+        assertNotSatisfied(yaml, event);
+
+        var responseEvent = HttpResponseEvent.builder()
+                .method(null)
+                .build();
+        assertNotSatisfied(yaml, responseEvent);
     }
 
 
-    private void assertSatisfied(String yaml, HttpRequestEvent event) {
+    private void assertSatisfied(String yaml, IEvent event) {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
         var context = EventContext.of(event);
@@ -297,7 +362,7 @@ class httpMethodTest {
         assertThat(automation.allConditionsMet(context)).isTrue();
     }
 
-    private void assertNotSatisified(String yaml, HttpRequestEvent event) {
+    private void assertNotSatisfied(String yaml, IEvent event) {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
         var context = EventContext.of(event);

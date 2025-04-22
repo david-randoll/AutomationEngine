@@ -7,6 +7,7 @@ import com.automation.engine.creator.AutomationCreator;
 import com.automation.engine.http.AutomationEngineHttpApplication;
 import com.automation.engine.http.TestLogAppender;
 import com.automation.engine.http.event.HttpRequestEvent;
+import com.automation.engine.http.event.HttpResponseEvent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -68,6 +69,13 @@ class HttpHeaderConditionTest {
         engine.publishEvent(context);
 
         assertThat(automation.allConditionsMet(context)).isTrue();
+
+        var responseEvent = HttpResponseEvent.builder()
+                .headers(headers)
+                .build();
+        var responseContext = EventContext.of(responseEvent);
+        engine.publishEvent(responseContext);
+        assertThat(automation.allConditionsMet(responseContext)).isTrue();
     }
 
     @Test
@@ -99,6 +107,13 @@ class HttpHeaderConditionTest {
         engine.publishEvent(context);
 
         assertThat(automation.allConditionsMet(context)).isFalse();
+
+        var responseEvent = HttpResponseEvent.builder()
+                .headers(headers)
+                .build();
+        var responseContext = EventContext.of(responseEvent);
+        engine.publishEvent(responseContext);
+        assertThat(automation.allConditionsMet(responseContext)).isFalse();
     }
 
     @Test
@@ -132,6 +147,13 @@ class HttpHeaderConditionTest {
         engine.publishEvent(context);
 
         assertThat(automation.allConditionsMet(context)).isTrue();
+
+        var responseEvent = HttpResponseEvent.builder()
+                .headers(headers)
+                .build();
+        var responseContext = EventContext.of(responseEvent);
+        engine.publishEvent(responseContext);
+        assertThat(automation.allConditionsMet(responseContext)).isTrue();
     }
 
     @Test
@@ -165,6 +187,13 @@ class HttpHeaderConditionTest {
         engine.publishEvent(context);
 
         assertThat(automation.allConditionsMet(context)).isFalse();
+
+        var responseEvent = HttpResponseEvent.builder()
+                .headers(headers)
+                .build();
+        var responseContext = EventContext.of(responseEvent);
+        engine.publishEvent(responseContext);
+        assertThat(automation.allConditionsMet(responseContext)).isFalse();
     }
 
     @Test
@@ -196,6 +225,13 @@ class HttpHeaderConditionTest {
         engine.publishEvent(context);
 
         assertThat(automation.allConditionsMet(context)).isTrue();
+
+        var responseEvent = HttpResponseEvent.builder()
+                .headers(headers)
+                .build();
+        var responseContext = EventContext.of(responseEvent);
+        engine.publishEvent(responseContext);
+        assertThat(automation.allConditionsMet(responseContext)).isTrue();
     }
 
     @Test
@@ -227,6 +263,13 @@ class HttpHeaderConditionTest {
         engine.publishEvent(context);
 
         assertThat(automation.allConditionsMet(context)).isTrue();
+
+        var responseEvent = HttpResponseEvent.builder()
+                .headers(headers)
+                .build();
+        var responseContext = EventContext.of(responseEvent);
+        engine.publishEvent(responseContext);
+        assertThat(automation.allConditionsMet(responseContext)).isTrue();
     }
 
     @Test
@@ -258,6 +301,13 @@ class HttpHeaderConditionTest {
         engine.publishEvent(context);
 
         assertThat(automation.allConditionsMet(context)).isTrue();
+
+        var responseEvent = HttpResponseEvent.builder()
+                .headers(headers)
+                .build();
+        var responseContext = EventContext.of(responseEvent);
+        engine.publishEvent(responseContext);
+        assertThat(automation.allConditionsMet(responseContext)).isTrue();
     }
 
     @Test
@@ -288,6 +338,13 @@ class HttpHeaderConditionTest {
         engine.publishEvent(context);
 
         assertThat(automation.allConditionsMet(context)).isFalse();
+
+        var responseEvent = HttpResponseEvent.builder()
+                .headers(headers)
+                .build();
+        var responseContext = EventContext.of(responseEvent);
+        engine.publishEvent(responseContext);
+        assertThat(automation.allConditionsMet(responseContext)).isFalse();
     }
 
     @Test
@@ -318,6 +375,13 @@ class HttpHeaderConditionTest {
         engine.publishEvent(context);
 
         assertThat(automation.allConditionsMet(context)).isTrue();
+
+        var responseEvent = HttpResponseEvent.builder()
+                .headers(headers)
+                .build();
+        var responseContext = EventContext.of(responseEvent);
+        engine.publishEvent(responseContext);
+        assertThat(automation.allConditionsMet(responseContext)).isTrue();
     }
 
     @Test
@@ -350,6 +414,13 @@ class HttpHeaderConditionTest {
         engine.publishEvent(context);
 
         assertThat(automation.allConditionsMet(context)).isTrue();
+
+        var responseEvent = HttpResponseEvent.builder()
+                .headers(headers)
+                .build();
+        var responseContext = EventContext.of(responseEvent);
+        engine.publishEvent(responseContext);
+        assertThat(automation.allConditionsMet(responseContext)).isTrue();
     }
 
     @Test
@@ -381,6 +452,13 @@ class HttpHeaderConditionTest {
         engine.publishEvent(context);
 
         assertThat(automation.allConditionsMet(context)).isFalse();
+
+        var responseEvent = HttpResponseEvent.builder()
+                .headers(headers)
+                .build();
+        var responseContext = EventContext.of(responseEvent);
+        engine.publishEvent(responseContext);
+        assertThat(automation.allConditionsMet(responseContext)).isFalse();
     }
 
     @Test
@@ -413,6 +491,13 @@ class HttpHeaderConditionTest {
         engine.publishEvent(context);
 
         assertThat(automation.allConditionsMet(context)).isTrue();
+
+        var responseEvent = HttpResponseEvent.builder()
+                .headers(headers)
+                .build();
+        var responseContext = EventContext.of(responseEvent);
+        engine.publishEvent(responseContext);
+        assertThat(automation.allConditionsMet(responseContext)).isTrue();
     }
 
     @Test
@@ -445,6 +530,13 @@ class HttpHeaderConditionTest {
         engine.publishEvent(context);
 
         assertThat(automation.allConditionsMet(context)).isFalse();
+
+        var responseEvent = HttpResponseEvent.builder()
+                .headers(headers)
+                .build();
+        var responseContext = EventContext.of(responseEvent);
+        engine.publishEvent(responseContext);
+        assertThat(automation.allConditionsMet(responseContext)).isFalse();
     }
 
     @Test
@@ -479,6 +571,13 @@ class HttpHeaderConditionTest {
         engine.publishEvent(context);
 
         assertThat(automation.allConditionsMet(context)).isTrue();
+
+        var responseEvent = HttpResponseEvent.builder()
+                .headers(headers)
+                .build();
+        var responseContext = EventContext.of(responseEvent);
+        engine.publishEvent(responseContext);
+        assertThat(automation.allConditionsMet(responseContext)).isTrue();
     }
 
     @Test
@@ -513,6 +612,13 @@ class HttpHeaderConditionTest {
         engine.publishEvent(context);
 
         assertThat(automation.allConditionsMet(context)).isFalse();
+
+        var responseEvent = HttpResponseEvent.builder()
+                .headers(headers)
+                .build();
+        var responseContext = EventContext.of(responseEvent);
+        engine.publishEvent(responseContext);
+        assertThat(automation.allConditionsMet(responseContext)).isFalse();
     }
 
     @Test
@@ -545,6 +651,13 @@ class HttpHeaderConditionTest {
         engine.publishEvent(context);
 
         assertThat(automation.allConditionsMet(context)).isTrue();
+
+        var responseEvent = HttpResponseEvent.builder()
+                .headers(headers)
+                .build();
+        var responseContext = EventContext.of(responseEvent);
+        engine.publishEvent(responseContext);
+        assertThat(automation.allConditionsMet(responseContext)).isTrue();
     }
 
     @Test
@@ -577,6 +690,13 @@ class HttpHeaderConditionTest {
         engine.publishEvent(context);
 
         assertThat(automation.allConditionsMet(context)).isFalse();
+
+        var responseEvent = HttpResponseEvent.builder()
+                .headers(headers)
+                .build();
+        var responseContext = EventContext.of(responseEvent);
+        engine.publishEvent(responseContext);
+        assertThat(automation.allConditionsMet(responseContext)).isFalse();
     }
 
 }

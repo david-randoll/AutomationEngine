@@ -7,6 +7,7 @@ import com.automation.engine.creator.AutomationCreator;
 import com.automation.engine.http.AutomationEngineHttpApplication;
 import com.automation.engine.http.TestLogAppender;
 import com.automation.engine.http.event.HttpRequestEvent;
+import com.automation.engine.http.event.HttpResponseEvent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -63,6 +64,14 @@ class HttpFullPathConditionTest {
         engine.publishEvent(context);
 
         assertThat(automation.allConditionsMet(context)).isTrue();
+
+        var responseEvent = HttpResponseEvent.builder()
+                .fullUrl("https://example.com/api/users")
+                .build();
+        var responseContext = EventContext.of(responseEvent);
+        engine.publishEvent(responseContext);
+
+        assertThat(automation.allConditionsMet(responseContext)).isTrue();
     }
 
     @Test
@@ -90,6 +99,13 @@ class HttpFullPathConditionTest {
         engine.publishEvent(context);
 
         assertThat(automation.allConditionsMet(context)).isFalse();
+
+        var responseEvent = HttpResponseEvent.builder()
+                .fullUrl("https://example.com/api/users?active=true")
+                .build();
+        var responseContext = EventContext.of(responseEvent);
+        engine.publishEvent(responseContext);
+        assertThat(automation.allConditionsMet(responseContext)).isFalse();
     }
 
     @Test
@@ -117,6 +133,13 @@ class HttpFullPathConditionTest {
         engine.publishEvent(context);
 
         assertThat(automation.allConditionsMet(context)).isTrue();
+
+        var responseEvent = HttpResponseEvent.builder()
+                .fullUrl("https://example.com/api/users")
+                .build();
+        var responseContext = EventContext.of(responseEvent);
+        engine.publishEvent(responseContext);
+        assertThat(automation.allConditionsMet(responseContext)).isTrue();
     }
 
     @Test
@@ -144,6 +167,13 @@ class HttpFullPathConditionTest {
         engine.publishEvent(context);
 
         assertThat(automation.allConditionsMet(context)).isFalse();
+
+        var responseEvent = HttpResponseEvent.builder()
+                .fullUrl("https://example.com/api/users/")
+                .build();
+        var responseContext = EventContext.of(responseEvent);
+        engine.publishEvent(responseContext);
+        assertThat(automation.allConditionsMet(responseContext)).isFalse();
     }
 
     @Test
@@ -171,6 +201,13 @@ class HttpFullPathConditionTest {
         engine.publishEvent(context);
 
         assertThat(automation.allConditionsMet(context)).isTrue();
+
+        var responseEvent = HttpResponseEvent.builder()
+                .fullUrl("https://example.com/api/products/123")
+                .build();
+        var responseContext = EventContext.of(responseEvent);
+        engine.publishEvent(responseContext);
+        assertThat(automation.allConditionsMet(responseContext)).isTrue();
     }
 
     @Test
@@ -198,6 +235,13 @@ class HttpFullPathConditionTest {
         engine.publishEvent(context);
 
         assertThat(automation.allConditionsMet(context)).isTrue();
+
+        var responseEvent = HttpResponseEvent.builder()
+                .fullUrl("https://example.com/api/orders/789")
+                .build();
+        var responseContext = EventContext.of(responseEvent);
+        engine.publishEvent(responseContext);
+        assertThat(automation.allConditionsMet(responseContext)).isTrue();
     }
 
     @Test
@@ -225,6 +269,13 @@ class HttpFullPathConditionTest {
         engine.publishEvent(context);
 
         assertThat(automation.allConditionsMet(context)).isFalse(); // Should not crash
+
+        var responseEvent = HttpResponseEvent.builder()
+                .fullUrl(null)
+                .build();
+        var responseContext = EventContext.of(responseEvent);
+        engine.publishEvent(responseContext);
+        assertThat(automation.allConditionsMet(responseContext)).isFalse(); // Should not crash
     }
 
     @Test
@@ -254,6 +305,13 @@ class HttpFullPathConditionTest {
         engine.publishEvent(context);
 
         assertThat(automation.allConditionsMet(context)).isTrue();
+
+        var responseEvent = HttpResponseEvent.builder()
+                .fullUrl("https://example.com/api/two")
+                .build();
+        var responseContext = EventContext.of(responseEvent);
+        engine.publishEvent(responseContext);
+        assertThat(automation.allConditionsMet(responseContext)).isTrue();
     }
 
     @Test
@@ -283,6 +341,13 @@ class HttpFullPathConditionTest {
         engine.publishEvent(context);
 
         assertThat(automation.allConditionsMet(context)).isFalse();
+
+        var responseEvent = HttpResponseEvent.builder()
+                .fullUrl("https://example.com/api/block")
+                .build();
+        var responseContext = EventContext.of(responseEvent);
+        engine.publishEvent(responseContext);
+        assertThat(automation.allConditionsMet(responseContext)).isFalse();
     }
 
 
@@ -311,6 +376,13 @@ class HttpFullPathConditionTest {
         engine.publishEvent(context);
 
         assertThat(automation.allConditionsMet(context)).isFalse();
+
+        var responseEvent = HttpResponseEvent.builder()
+                .fullUrl("https://example.com/api/deny")
+                .build();
+        var responseContext = EventContext.of(responseEvent);
+        engine.publishEvent(responseContext);
+        assertThat(automation.allConditionsMet(responseContext)).isFalse();
     }
 
     @Test
@@ -338,6 +410,13 @@ class HttpFullPathConditionTest {
         engine.publishEvent(context);
 
         assertThat(automation.allConditionsMet(context)).isTrue();
+
+        var responseEvent = HttpResponseEvent.builder()
+                .fullUrl("https://example.com/api/ping")
+                .build();
+        var responseContext = EventContext.of(responseEvent);
+        engine.publishEvent(responseContext);
+        assertThat(automation.allConditionsMet(responseContext)).isTrue();
     }
 
     @Test
@@ -365,6 +444,13 @@ class HttpFullPathConditionTest {
         engine.publishEvent(context);
 
         assertThat(automation.allConditionsMet(context)).isFalse();
+
+        var responseEvent = HttpResponseEvent.builder()
+                .fullUrl(null)
+                .build();
+        var responseContext = EventContext.of(responseEvent);
+        engine.publishEvent(responseContext);
+        assertThat(automation.allConditionsMet(responseContext)).isFalse();
     }
 
     @Test
@@ -392,6 +478,13 @@ class HttpFullPathConditionTest {
         engine.publishEvent(context);
 
         assertThat(automation.allConditionsMet(context)).isTrue();
+
+        var responseEvent = HttpResponseEvent.builder()
+                .fullUrl(null)
+                .build();
+        var responseContext = EventContext.of(responseEvent);
+        engine.publishEvent(responseContext);
+        assertThat(automation.allConditionsMet(responseContext)).isTrue();
     }
 
 }
