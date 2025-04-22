@@ -41,7 +41,7 @@ public class StringMatchContext {
                                     || this.like != null;
             if (!hasOtherOperation)
                 return !Boolean.TRUE.equals(this.getExists());
-            return false;
+            if (value == null) return false;
         }
 
         return switch (value) {
@@ -55,14 +55,15 @@ public class StringMatchContext {
     private boolean matchArray(List<?> list) {
         // if the value is a list, check if any of the elements match
         for (var item : list) {
-            if (!this.matches(item)) {
-                return false;
+            if (this.matches(item)) {
+                return true;
             }
         }
-        return true;
+        return false;
     }
 
     private boolean matchString(String str) {
+        if (this.exists != null && !this.exists) return false;
         if (this.equals != null && !this.equals.equalsIgnoreCase(str)) return false;
         if (this.notEquals != null && this.notEquals.equalsIgnoreCase(str)) return false;
         if (this.in != null && this.in.stream().noneMatch(x -> x.equalsIgnoreCase(str))) return false;

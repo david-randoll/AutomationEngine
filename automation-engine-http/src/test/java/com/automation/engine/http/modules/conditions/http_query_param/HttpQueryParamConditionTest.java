@@ -364,7 +364,7 @@ class HttpQueryParamConditionTest {
     }
 
     @Test
-    void testShouldNotMatchUnexpectedQueryParamKey() {
+    void testShouldMatchUnexpectedQueryParamKey() {
         var yaml = """
                 alias: query-unexpected-key
                 triggers:
@@ -391,7 +391,7 @@ class HttpQueryParamConditionTest {
         var context = EventContext.of(event);
         engine.publishEvent(context);
 
-        assertThat(automation.allConditionsMet(context)).isFalse();
+        assertThat(automation.allConditionsMet(context)).isTrue();
     }
 
     @Test
