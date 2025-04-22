@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class HttpMethodContext extends StringMatchContext implements IConditionContext {
+public class HttpMethodConditionContext extends StringMatchContext implements IConditionContext {
     private String alias;
 }

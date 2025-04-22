@@ -11,7 +11,7 @@ import java.util.Map;
 
 @Data
 @NoArgsConstructor
-public class HttpHeaderContext implements IConditionContext {
+public class HttpHeaderConditionContext implements IConditionContext {
     private String alias;
 
     @JsonAnySetter

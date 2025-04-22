@@ -19,11 +19,7 @@ public class JsonNodeMatcher {
         return !matchesNode(expectedNode, actualNode);
     }
 
-    static JsonNode toJsonNode(Object obj, ObjectMapper mapper) {
-        return obj instanceof JsonNode node ? node : mapper.convertValue(obj, JsonNode.class);
-    }
-
-    static boolean matchesNode(JsonNode expected, JsonNode actual) {
+    private static boolean matchesNode(JsonNode expected, JsonNode actual) {
         if (isNull(expected)) return true;
         if (isNull(actual)) return false;
 
@@ -71,11 +67,15 @@ public class JsonNodeMatcher {
         return false;
     }
 
-    private static boolean isNull(JsonNode node) {
+    static JsonNode toJsonNode(Object obj, ObjectMapper mapper) {
+        return obj instanceof JsonNode node ? node : mapper.convertValue(obj, JsonNode.class);
+    }
+
+    static boolean isNull(JsonNode node) {
         return node == null || node.isNull();
     }
 
-    private static JsonNode getFieldIgnoreCase(JsonNode node, String key) {
+    static JsonNode getFieldIgnoreCase(JsonNode node, String key) {
         for (Map.Entry<String, JsonNode> field : iterable(node.fields())) {
             if (field.getKey().trim().equalsIgnoreCase(key.trim())) {
                 return field.getValue();
@@ -84,7 +84,7 @@ public class JsonNodeMatcher {
         return null;
     }
 
-    private static <T> Iterable<T> iterable(Iterator<T> iterator) {
+    static <T> Iterable<T> iterable(Iterator<T> iterator) {
         return () -> iterator;
     }
 }

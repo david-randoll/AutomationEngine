@@ -11,11 +11,11 @@ import org.springframework.stereotype.Component;
 
 @Component("httpMethodCondition")
 @RequiredArgsConstructor
-public class HttpMethodCondition extends PluggableCondition<HttpMethodContext> {
+public class HttpMethodCondition extends PluggableCondition<HttpMethodConditionContext> {
     private final ObjectMapper objectMapper;
 
     @Override
-    public boolean isSatisfied(EventContext ec, HttpMethodContext cc) {
+    public boolean isSatisfied(EventContext ec, HttpMethodConditionContext cc) {
         if (ec.getEvent() instanceof HttpRequestEvent event) {
             return StringMatcher.matchesCondition(cc, event.getMethod(), objectMapper);
         } else if (ec.getEvent() instanceof HttpResponseEvent event) {

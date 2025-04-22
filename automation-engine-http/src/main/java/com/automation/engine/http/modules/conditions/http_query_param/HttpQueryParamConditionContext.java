@@ -1,4 +1,4 @@
-package com.automation.engine.http.modules.conditions.http_path_param;
+package com.automation.engine.http.modules.conditions.http_query_param;
 
 import com.automation.engine.core.conditions.IConditionContext;
 import com.automation.engine.http.modules.conditions.StringMatchContext;
@@ -11,10 +11,10 @@ import java.util.Map;
 
 @Data
 @NoArgsConstructor
-public class HttpPathParamContext implements IConditionContext {
+public class HttpQueryParamConditionContext implements IConditionContext {
     private String alias;
 
     @JsonAnySetter
     @JsonAnyGetter
-    private Map<String, StringMatchContext> pathParams;
+    private Map<String, StringMatchContext> queryParams;
 }

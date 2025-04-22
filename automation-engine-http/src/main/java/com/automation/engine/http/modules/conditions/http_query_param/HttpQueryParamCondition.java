@@ -11,11 +11,11 @@ import org.springframework.stereotype.Component;
 
 @Component("httpQueryParamCondition")
 @RequiredArgsConstructor
-public class HttpQueryParamCondition extends PluggableCondition<HttpQueryParamContext> {
+public class HttpQueryParamCondition extends PluggableCondition<HttpQueryParamConditionContext> {
     private final ObjectMapper objectMapper;
 
     @Override
-    public boolean isSatisfied(EventContext ec, HttpQueryParamContext cc) {
+    public boolean isSatisfied(EventContext ec, HttpQueryParamConditionContext cc) {
         if (ec.getEvent() instanceof HttpRequestEvent event) {
             return StringMatcher.matchesCondition(cc.getQueryParams(), event.getQueryParams(), objectMapper);
         } else if (ec.getEvent() instanceof HttpResponseEvent event) {

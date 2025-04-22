@@ -1,4 +1,4 @@
-package com.automation.engine.http.modules.conditions.http_header;
+package com.automation.engine.http.modules.conditions.http_request_body;
 
 import com.automation.engine.core.events.EventContext;
 import com.automation.engine.http.event.HttpRequestEvent;
@@ -9,17 +9,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-@Component("httpHeaderCondition")
+@Component("httpRequestBodyCondition")
 @RequiredArgsConstructor
-public class HttpHeaderCondition extends PluggableCondition<HttpHeaderConditionContext> {
+public class HttpRequestBodyCondition extends PluggableCondition<HttpRequestBodyConditionContext> {
     private final ObjectMapper objectMapper;
 
     @Override
-    public boolean isSatisfied(EventContext ec, HttpHeaderConditionContext cc) {
+    public boolean isSatisfied(EventContext ec, HttpRequestBodyConditionContext cc) {
         if (ec.getEvent() instanceof HttpRequestEvent event) {
-            return StringMatcher.matchesCondition(cc.getHeaders(), event.getHeaders(), objectMapper);
+            return StringMatcher.matchesCondition(cc.getRequestBody(), event.getRequestBody(), objectMapper);
         } else if (ec.getEvent() instanceof HttpResponseEvent event) {
-            return StringMatcher.matchesCondition(cc.getHeaders(), event.getHeaders(), objectMapper);
+            return StringMatcher.matchesCondition(cc.getRequestBody(), event.getRequestBody(), objectMapper);
         }
         return false;
     }

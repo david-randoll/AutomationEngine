@@ -11,11 +11,11 @@ import org.springframework.stereotype.Component;
 
 @Component("httpFullPathCondition")
 @RequiredArgsConstructor
-public class HttpFullPathCondition extends PluggableCondition<HttpFullPathContext> {
+public class HttpFullPathCondition extends PluggableCondition<HttpFullPathConditionContext> {
     private final ObjectMapper objectMapper;
 
     @Override
-    public boolean isSatisfied(EventContext ec, HttpFullPathContext cc) {
+    public boolean isSatisfied(EventContext ec, HttpFullPathConditionContext cc) {
         if (ec.getEvent() instanceof HttpRequestEvent event) {
             return StringMatcher.matchesCondition(cc, event.getFullUrl(), objectMapper);
         } else if (ec.getEvent() instanceof HttpResponseEvent event) {

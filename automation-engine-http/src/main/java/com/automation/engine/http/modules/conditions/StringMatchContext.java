@@ -33,12 +33,7 @@ public class StringMatchContext {
 
     public boolean matches(Object value) {
         if (ObjectUtils.isEmpty(value)) {
-            var hasOtherOperation = this.equals != null
-                                    || this.notEquals != null
-                                    || this.in != null
-                                    || this.notIn != null
-                                    || this.regex != null
-                                    || this.like != null;
+            var hasOtherOperation = hasOtherOperations();
             if (!hasOtherOperation)
                 return !Boolean.TRUE.equals(this.getExists());
             if (value == null) return false;
@@ -50,6 +45,20 @@ public class StringMatchContext {
             default -> matchString(String.valueOf(value));
         };
 
+    }
+
+    private boolean hasOtherOperations() {
+        return this.equals != null
+               || this.notEquals != null
+               || this.in != null
+               || this.notIn != null
+               || this.regex != null
+               || this.like != null;
+    }
+
+    public boolean hasAnyOperations() {
+        return hasOtherOperations()
+               || this.exists != null;
     }
 
     private boolean matchArray(List<?> list) {

@@ -11,11 +11,11 @@ import org.springframework.stereotype.Component;
 
 @Component("httpPathCondition")
 @RequiredArgsConstructor
-public class HttpPathCondition extends PluggableCondition<HttpPathContext> {
+public class HttpPathCondition extends PluggableCondition<HttpPathConditionContext> {
     private final ObjectMapper objectMapper;
 
     @Override
-    public boolean isSatisfied(EventContext ec, HttpPathContext cc) {
+    public boolean isSatisfied(EventContext ec, HttpPathConditionContext cc) {
         if (ec.getEvent() instanceof HttpRequestEvent event) {
             return StringMatcher.matchesCondition(cc, event.getPath(), objectMapper);
         } else if (ec.getEvent() instanceof HttpResponseEvent event) {

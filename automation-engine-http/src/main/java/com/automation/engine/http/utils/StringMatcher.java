@@ -5,11 +5,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.experimental.UtilityClass;
 
+import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
-import static com.automation.engine.http.utils.JsonNodeMatcher.matchesNode;
-import static com.automation.engine.http.utils.JsonNodeMatcher.toJsonNode;
+import static com.automation.engine.http.utils.JsonNodeMatcher.*;
 
 @UtilityClass
 public class StringMatcher {
@@ -31,12 +30,62 @@ public class StringMatcher {
         JsonNode expectedNode = toJsonNode(condition, mapper);
         JsonNode actualNode = toJsonNode(actual, mapper);
 
-        if (isLikelyMatchContext(expectedNode)) {
-            StringMatchContext ctx = mapper.convertValue(expectedNode, StringMatchContext.class);
-            return ctx.matches(actualNode.asText());
+        return matchesNode(expectedNode, actualNode, mapper);
+    }
+
+    private static boolean matchesNode(JsonNode expected, JsonNode actual, ObjectMapper mapper) {
+        if (isLikelyMatchContext(mapper, expected)) {
+            StringMatchContext ctx = mapper.convertValue(expected, StringMatchContext.class);
+            if (isNull(actual))
+                return matchesCondition(ctx, null, mapper);
+            if (actual.isArray()) {
+                var list = mapper.convertValue(actual, List.class);
+                return matchesCondition(ctx, list, mapper);
+            } else if (actual.isObject()) {
+                var map = mapper.convertValue(actual, Map.class);
+                return matchesCondition(ctx, map, mapper);
+            }
+            return matchesCondition(ctx, actual.asText(), mapper);
         }
 
-        return matchesNode(expectedNode, actualNode);
+        if (isNull(expected)) return true;
+        if (isNull(actual)) return false;
+
+        if (expected.isObject()) {
+            return matchesJsonObject(expected, actual, mapper);
+        }
+
+        if (expected.isArray()) {
+            return matchesJsonArray(expected, actual, mapper);
+        }
+
+        return false;
+    }
+
+    private static boolean matchesJsonObject(JsonNode expected, JsonNode actual, ObjectMapper mapper) {
+        for (Map.Entry<String, JsonNode> expectedField : iterable(expected.fields())) {
+            JsonNode actualValue = getFieldIgnoreCase(actual, expectedField.getKey());
+            if (!matchesNode(expectedField.getValue(), actualValue, mapper)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static boolean matchesJsonArray(JsonNode expected, JsonNode actual, ObjectMapper mapper) {
+        if (expected.isEmpty() && actual.isEmpty()) return true;
+        if (!actual.isArray()) {
+            for (JsonNode expectedElement : expected) {
+                if (matchesNode(expectedElement, actual, mapper)) return true;
+            }
+            return false;
+        }
+        for (JsonNode expectedElement : expected) {
+            for (JsonNode actualElement : actual) {
+                if (matchesNode(expectedElement, actualElement, mapper)) return true;
+            }
+        }
+        return false;
     }
 
     private static boolean matchesJsonNode(ObjectMapper mapper, Map<?, ?> map, JsonNode actualNode) {
@@ -63,9 +112,9 @@ public class StringMatcher {
         return true;
     }
 
-    private static boolean isLikelyMatchContext(JsonNode node) {
+    private static boolean isLikelyMatchContext(ObjectMapper mapper, JsonNode node) {
         if (!node.isObject()) return false;
-        return Stream.of("equals", "notEquals", "in", "regex", "like", "match")
-                .anyMatch(node::has);
+        var ctx = mapper.convertValue(node, StringMatchContext.class);
+        return ctx.hasAnyOperations();
     }
 }
