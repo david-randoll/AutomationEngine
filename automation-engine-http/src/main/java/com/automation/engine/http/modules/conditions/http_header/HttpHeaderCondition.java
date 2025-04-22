@@ -2,6 +2,7 @@ package com.automation.engine.http.modules.conditions.http_header;
 
 import com.automation.engine.core.events.EventContext;
 import com.automation.engine.http.event.HttpRequestEvent;
+import com.automation.engine.http.event.HttpResponseEvent;
 import com.automation.engine.http.utils.StringMatcher;
 import com.automation.engine.spi.PluggableCondition;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,7 +16,11 @@ public class HttpHeaderCondition extends PluggableCondition<HttpHeaderContext> {
 
     @Override
     public boolean isSatisfied(EventContext ec, HttpHeaderContext cc) {
-        if (!(ec.getEvent() instanceof HttpRequestEvent event)) return false;
-        return StringMatcher.matchesCondition(cc.getHeaders(), event.getHeaders(), objectMapper);
+        if (ec.getEvent() instanceof HttpRequestEvent event) {
+            return StringMatcher.matchesCondition(cc.getHeaders(), event.getHeaders(), objectMapper);
+        } else if (ec.getEvent() instanceof HttpResponseEvent event) {
+            return StringMatcher.matchesCondition(cc.getHeaders(), event.getHeaders(), objectMapper);
+        }
+        return false;
     }
 }

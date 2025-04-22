@@ -2,6 +2,7 @@ package com.automation.engine.http.modules.conditions.http_method;
 
 import com.automation.engine.core.events.EventContext;
 import com.automation.engine.http.event.HttpRequestEvent;
+import com.automation.engine.http.event.HttpResponseEvent;
 import com.automation.engine.http.utils.StringMatcher;
 import com.automation.engine.spi.PluggableCondition;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,7 +16,11 @@ public class HttpMethodCondition extends PluggableCondition<HttpMethodContext> {
 
     @Override
     public boolean isSatisfied(EventContext ec, HttpMethodContext cc) {
-        if (!(ec.getEvent() instanceof HttpRequestEvent event)) return false;
-        return StringMatcher.matchesCondition(cc, event.getMethod(), objectMapper);
+        if (ec.getEvent() instanceof HttpRequestEvent event) {
+            return StringMatcher.matchesCondition(cc, event.getMethod(), objectMapper);
+        } else if (ec.getEvent() instanceof HttpResponseEvent event) {
+            return StringMatcher.matchesCondition(cc, event.getMethod(), objectMapper);
+        }
+        return false;
     }
 }
