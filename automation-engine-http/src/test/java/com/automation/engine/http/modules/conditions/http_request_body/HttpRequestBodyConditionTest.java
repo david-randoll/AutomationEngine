@@ -641,9 +641,7 @@ class HttpRequestBodyConditionTest {
                 conditions:
                   - condition: httpRequestBody
                     requestBody:
-                      user:
-                        profile:
-                          role:
+                      user.profile.role:
                             in: [admin, manager]
                 actions:
                   - action: logger
@@ -678,9 +676,7 @@ class HttpRequestBodyConditionTest {
                 conditions:
                   - condition: httpRequestBody
                     requestBody:
-                      user:
-                        profile:
-                          age:
+                      user.profile.age:
                             exists: false
                 actions:
                   - action: logger
@@ -776,5 +772,75 @@ class HttpRequestBodyConditionTest {
 
         // profile.name is a string, so accessing .first should fail
         assertThat(automation.allConditionsMet(context)).isFalse();
+    }
+
+    @Test
+    void testWildcardPathKey() {
+        var yaml = """
+                alias: body-wildcard-path
+                triggers:
+                  - trigger: alwaysTrue
+                conditions:
+                  - condition: httpRequestBody
+                    requestBody:
+                      user.*.name:
+                        equals: David
+                actions:
+                  - action: logger
+                    message: should match any level between user and name
+                """;
+
+        var automation = factory.createAutomation("yaml", yaml);
+
+        var requestBody = JsonTestUtils.json("""
+                {
+                  "user": {
+                    "profile": {
+                      "name": "David"
+                    }
+                  }
+                }
+                """);
+
+        var event = HttpRequestEvent.builder().requestBody(requestBody).build();
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.allConditionsMet(context)).isTrue();
+    }
+
+    @Test
+    void testRegexPathKey() {
+        var yaml = """
+                alias: body-regex-path-key
+                triggers:
+                  - trigger: alwaysTrue
+                conditions:
+                  - condition: httpRequestBody
+                    requestBody:
+                      user.(profile|account).name:
+                        equals: David
+                actions:
+                  - action: logger
+                    message: should match name under profile or account
+                """;
+
+        var automation = factory.createAutomation("yaml", yaml);
+
+        var requestBody = JsonTestUtils.json("""
+                {
+                  "user": {
+                    "account": {
+                      "name": "David"
+                    }
+                  }
+                }
+                """);
+
+        var event = HttpRequestEvent.builder().requestBody(requestBody).build();
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.allConditionsMet(context)).isTrue();
     }
 }

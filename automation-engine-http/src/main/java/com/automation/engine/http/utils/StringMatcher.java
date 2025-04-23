@@ -64,7 +64,7 @@ public class StringMatcher {
 
     private static boolean matchesJsonObject(JsonNode expected, JsonNode actual, ObjectMapper mapper) {
         for (Map.Entry<String, JsonNode> expectedField : iterable(expected.fields())) {
-            JsonNode actualValue = getFieldIgnoreCase(actual, expectedField.getKey());
+            JsonNode actualValue = JsonNodeMatcher.getPathWithWildcards(actual, expectedField.getKey());
             if (!matchesNode(expectedField.getValue(), actualValue, mapper)) {
                 return false;
             }

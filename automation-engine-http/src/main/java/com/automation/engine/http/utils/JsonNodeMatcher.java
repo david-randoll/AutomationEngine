@@ -42,7 +42,7 @@ public class JsonNodeMatcher {
 
     private static boolean matchesObject(JsonNode expected, JsonNode actual) {
         for (Map.Entry<String, JsonNode> expectedField : iterable(expected.fields())) {
-            JsonNode actualValue = getFieldIgnoreCase(actual, expectedField.getKey());
+            JsonNode actualValue = getPathWithWildcards(actual, expectedField.getKey());
             if (!matchesNode(expectedField.getValue(), actualValue)) {
                 return false;
             }
@@ -75,14 +75,48 @@ public class JsonNodeMatcher {
         return node == null || node.isNull();
     }
 
-    static JsonNode getFieldIgnoreCase(JsonNode node, String key) {
-        for (Map.Entry<String, JsonNode> field : iterable(node.fields())) {
-            if (field.getKey().trim().equalsIgnoreCase(key.trim())) {
-                return field.getValue();
+    static JsonNode getPathWithWildcards(JsonNode root, String path) {
+        String[] parts = path.split("\\.", -1);
+        return findRecursive(root, parts, 0);
+    }
+
+    private static JsonNode findRecursive(JsonNode current, String[] parts, int index) {
+        if (current == null || index >= parts.length) return current;
+
+        String key = parts[index].trim();
+
+        if ("*".equals(key)) {
+            for (Map.Entry<String, JsonNode> entry : iterable(current.fields())) {
+                JsonNode result = findRecursive(entry.getValue(), parts, index + 1);
+                if (result != null) return result;
             }
+            return null;
+        } else {
+            JsonNode next = getFieldRegexAndCaseInsensitive(current, key);
+            return findRecursive(next, parts, index + 1);
         }
+    }
+
+    private static JsonNode getFieldRegexAndCaseInsensitive(JsonNode node, String key) {
+        // First, try exact (case-insensitive)
+        for (Map.Entry<String, JsonNode> field : iterable(node.fields())) {
+            if (field.getKey().equalsIgnoreCase(key))
+                return field.getValue();
+        }
+
+        // Try regex match
+        try {
+            Pattern pattern = Pattern.compile(key, Pattern.CASE_INSENSITIVE);
+            for (Map.Entry<String, JsonNode> field : iterable(node.fields())) {
+                if (pattern.matcher(field.getKey()).matches()) return field.getValue();
+            }
+        } catch (PatternSyntaxException e) {
+            throw new AutomationEngineInvalidRegexException(key, e);
+        }
+
         return null;
     }
+
 
     static <T> Iterable<T> iterable(Iterator<T> iterator) {
         return () -> iterator;
