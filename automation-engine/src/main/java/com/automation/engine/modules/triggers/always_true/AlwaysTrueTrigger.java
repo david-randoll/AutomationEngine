@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 public class AlwaysTrueTrigger extends PluggableTrigger<AlwaysTrueTriggerContext> {
 
     @Override
-    public boolean isTriggered(EventContext eventContext, AlwaysTrueTriggerContext triggerContext) {
+    public boolean isTriggered(EventContext ec, AlwaysTrueTriggerContext tc) {
         return true;
     }
 }

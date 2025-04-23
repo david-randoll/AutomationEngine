@@ -11,11 +11,11 @@ import java.time.LocalTime;
 public class TimeBasedTrigger extends PluggableTrigger<TimeBasedTriggerContext> {
 
     @Override
-    public boolean isTriggered(EventContext eventContext, TimeBasedTriggerContext triggerContext) {
-        if (!(eventContext.getEvent() instanceof TimeBasedEvent timeBasedEvent)) return false;
+    public boolean isTriggered(EventContext ec, TimeBasedTriggerContext tc) {
+        if (!(ec.getEvent() instanceof TimeBasedEvent timeBasedEvent)) return false;
 
         LocalTime eventTime = timeBasedEvent.getTime();
-        LocalTime atTime = triggerContext.getAt();
+        LocalTime atTime = tc.getAt();
 
         if (atTime == null) return false;
 

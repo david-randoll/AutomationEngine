@@ -106,6 +106,7 @@ public class CachedBodyHttpServletRequest extends ContentCachingRequestWrapper {
             return this.httpRequestEvent;
         }
         this.httpRequestEvent = HttpRequestEvent.builder()
+                .endpointExists(this.endpointExists)
                 .fullUrl(this.getFullUrl())
                 .path(this.getPath())
                 .method(HttpMethodEnum.fromValue(this.getMethod()))

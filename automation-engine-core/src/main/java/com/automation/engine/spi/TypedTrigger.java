@@ -20,5 +20,5 @@ public interface TypedTrigger<T extends ITriggerContext> extends ITrigger {
         return isTriggered(eventContext, data);
     }
 
-    boolean isTriggered(EventContext eventContext, T triggerContext);
+    boolean isTriggered(EventContext ec, T tc);
 }

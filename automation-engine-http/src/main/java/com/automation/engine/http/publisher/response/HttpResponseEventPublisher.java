@@ -62,6 +62,7 @@ public class HttpResponseEventPublisher extends OncePerRequestFilter {
         filterChain.doFilter(requestWrapper, responseWrapper);
 
         try {
+            if (!requestWrapper.isEndpointExists()) return;
             buildAndPublishResponseEvent(request, requestWrapper, responseWrapper);
         } catch (Exception ex) {
             responseWrapper.resetBuffer();
@@ -73,8 +74,6 @@ public class HttpResponseEventPublisher extends OncePerRequestFilter {
     }
 
     private void buildAndPublishResponseEvent(HttpServletRequest request, CachedBodyHttpServletRequest requestWrapper, CachedBodyHttpServletResponse responseWrapper) throws IOException {
-        if (!requestWrapper.isEndpointExists()) return;
-
         final HttpStatus responseStatus = HttpStatus.valueOf(responseWrapper.getStatus());
         final HttpRequestEvent requestEvent = requestWrapper.toHttpRequestEvent();
         final HttpResponseEvent responseEvent = toHttpResponseEvent(requestEvent, responseStatus);
@@ -103,6 +102,7 @@ public class HttpResponseEventPublisher extends OncePerRequestFilter {
 
     private static HttpResponseEvent toHttpResponseEvent(HttpRequestEvent requestEvent, HttpStatus responseStatus) {
         return HttpResponseEvent.builder()
+                .endpointExists(requestEvent.isEndpointExists())
                 .fullUrl(requestEvent.getFullUrl())
                 .path(requestEvent.getPath())
                 .method(requestEvent.getMethod())

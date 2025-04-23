@@ -21,6 +21,7 @@ import java.util.Map;
 @FieldNameConstants
 @Builder
 public class HttpResponseEvent implements IEvent {
+    private boolean endpointExists;
     private String fullUrl;
     private String path;
     private HttpMethodEnum method;
