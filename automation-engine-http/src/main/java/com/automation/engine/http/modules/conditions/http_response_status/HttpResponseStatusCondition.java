@@ -19,11 +19,20 @@ public class HttpResponseStatusCondition extends PluggableCondition<HttpResponse
     public boolean isSatisfied(EventContext ec, HttpResponseStatusConditionContext cc) {
         if (!(ec.getEvent() instanceof HttpResponseEvent event)) return false;
         if (event.getResponseStatus() != null) {
+            var statusFamily = switch (event.getResponseStatus().series()) {
+                case INFORMATIONAL -> "1xx";
+                case SUCCESSFUL -> "2xx";
+                case REDIRECTION -> "3xx";
+                case CLIENT_ERROR -> "4xx";
+                case SERVER_ERROR -> "5xx";
+            };
+
             var statuses = List.of(
                     event.getResponseStatus().getReasonPhrase(),
                     event.getResponseStatus().name(),
                     event.getResponseStatus().toString(),
-                    String.valueOf(event.getResponseStatus().value())
+                    String.valueOf(event.getResponseStatus().value()),
+                    statusFamily
             );
             return StringMatcher.matchesCondition(cc, statuses, objectMapper);
         }

@@ -547,5 +547,503 @@ class HttpResponseStatusConditionTest {
         assertThat(automation.allConditionsMet(context)).isTrue();
     }
 
+    @Test
+    void testShouldMatchStatusFamily2xx() {
+        var yaml = """
+                alias: status-family-2xx
+                triggers:
+                  - trigger: alwaysTrue
+                conditions:
+                  - condition: httpResponseStatus
+                    equals: 2xx
+                actions:
+                  - action: logger
+                    message: matched 2xx family
+                """;
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = HttpResponseEvent.builder()
+                .responseStatus(HttpStatus.OK)
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.allConditionsMet(context)).isTrue();
+    }
+
+    @Test
+    void testShouldMatchStatusFamily5xx() {
+        var yaml = """
+                alias: status-family-5xx
+                triggers:
+                  - trigger: alwaysTrue
+                conditions:
+                  - condition: httpResponseStatus
+                    equals: 5xx
+                actions:
+                  - action: logger
+                    message: matched 5xx family
+                """;
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = HttpResponseEvent.builder()
+                .responseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.allConditionsMet(context)).isTrue();
+    }
+
+    @Test
+    void testShouldNotMatchStatusFamily2xx() {
+        var yaml = """
+                alias: status-family-not-2xx
+                triggers:
+                  - trigger: alwaysTrue
+                conditions:
+                  - condition: httpResponseStatus
+                    equals: 2xx
+                actions:
+                  - action: logger
+                    message: should not match
+                """;
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = HttpResponseEvent.builder()
+                .responseStatus(HttpStatus.NOT_FOUND)
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.allConditionsMet(context)).isFalse();
+    }
+
+    @Test
+    void testShouldMatchStatusFamilyInList() {
+        var yaml = """
+                alias: status-family-in
+                triggers:
+                  - trigger: alwaysTrue
+                conditions:
+                  - condition: httpResponseStatus
+                    in: [2xx, 4xx]
+                actions:
+                  - action: logger
+                    message: matched 4xx family from list
+                """;
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = HttpResponseEvent.builder()
+                .responseStatus(HttpStatus.BAD_REQUEST)
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.allConditionsMet(context)).isTrue();
+    }
+
+    @Test
+    void testShouldMatchStatusFamilyRegex() {
+        var yaml = """
+                alias: status-family-regex
+                triggers:
+                  - trigger: alwaysTrue
+                conditions:
+                  - condition: httpResponseStatus
+                    regex: "^[45]xx$"
+                actions:
+                  - action: logger
+                    message: matched 4xx or 5xx family
+                """;
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = HttpResponseEvent.builder()
+                .responseStatus(HttpStatus.FORBIDDEN)
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.allConditionsMet(context)).isTrue();
+    }
+
+    @Test
+    void testShouldMatchStatusReasonPhrase() {
+        var yaml = """
+                alias: status-reason-phrase
+                triggers:
+                  - trigger: alwaysTrue
+                conditions:
+                  - condition: httpResponseStatus
+                    equals: Not Found
+                actions:
+                  - action: logger
+                    message: matched reason phrase
+                """;
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = HttpResponseEvent.builder()
+                .responseStatus(HttpStatus.NOT_FOUND)
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.allConditionsMet(context)).isTrue();
+    }
+
+    @Test
+    void testShouldMatchStatusName() {
+        var yaml = """
+                alias: status-name
+                triggers:
+                  - trigger: alwaysTrue
+                conditions:
+                  - condition: httpResponseStatus
+                    equals: NOT_FOUND
+                actions:
+                  - action: logger
+                    message: matched status name
+                """;
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = HttpResponseEvent.builder()
+                .responseStatus(HttpStatus.NOT_FOUND)
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.allConditionsMet(context)).isTrue();
+    }
+
+    @Test
+    void testShouldMatchStatusToString() {
+        var yaml = """
+                alias: status-to-string
+                triggers:
+                  - trigger: alwaysTrue
+                conditions:
+                  - condition: httpResponseStatus
+                    equals: 404 NOT_FOUND
+                actions:
+                  - action: logger
+                    message: matched status string
+                """;
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = HttpResponseEvent.builder()
+                .responseStatus(HttpStatus.NOT_FOUND)
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.allConditionsMet(context)).isTrue();
+    }
+
+    @Test
+    void testShouldMatchStatusNumericCode() {
+        var yaml = """
+                alias: status-code
+                triggers:
+                  - trigger: alwaysTrue
+                conditions:
+                  - condition: httpResponseStatus
+                    equals: "404"
+                actions:
+                  - action: logger
+                    message: matched status code
+                """;
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = HttpResponseEvent.builder()
+                .responseStatus(HttpStatus.NOT_FOUND)
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.allConditionsMet(context)).isTrue();
+    }
+
+    @Test
+    void testShouldMatchStatusInMultipleFormats() {
+        var yaml = """
+                alias: status-multiple-formats
+                triggers:
+                  - trigger: alwaysTrue
+                conditions:
+                  - condition: httpResponseStatus
+                    in: ["404", "NOT_FOUND", "4xx", "Not Found"]
+                actions:
+                  - action: logger
+                    message: matched one of the formats
+                """;
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = HttpResponseEvent.builder()
+                .responseStatus(HttpStatus.NOT_FOUND)
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.allConditionsMet(context)).isTrue();
+    }
+
+    @Test
+    void testShouldPassNotEquals() {
+        var yaml = """
+                alias: status-not-equals
+                triggers:
+                  - trigger: alwaysTrue
+                conditions:
+                  - condition: httpResponseStatus
+                    notEquals: OK
+                actions:
+                  - action: logger
+                    message: not OK response
+                """;
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = HttpResponseEvent.builder()
+                .responseStatus(HttpStatus.NOT_FOUND) // 404
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.allConditionsMet(context)).isTrue();
+    }
+
+    @Test
+    void testShouldPassNotIn() {
+        var yaml = """
+                alias: status-not-in
+                triggers:
+                  - trigger: alwaysTrue
+                conditions:
+                  - condition: httpResponseStatus
+                    notIn: ["200", "201", "202"]
+                actions:
+                  - action: logger
+                    message: not in 2xx group
+                """;
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = HttpResponseEvent.builder()
+                .responseStatus(HttpStatus.INTERNAL_SERVER_ERROR) // 500
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.allConditionsMet(context)).isTrue();
+    }
+
+    @Test
+    void testShouldMatchStatusFamilyWithRegex() {
+        var yaml = """
+                alias: status-family-regex
+                triggers:
+                  - trigger: alwaysTrue
+                conditions:
+                  - condition: httpResponseStatus
+                    regex: ^4..$
+                actions:
+                  - action: logger
+                    message: client error
+                """;
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = HttpResponseEvent.builder()
+                .responseStatus(HttpStatus.BAD_REQUEST) // 400
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.allConditionsMet(context)).isTrue();
+    }
+
+    @Test
+    void testShouldFailOnWrongEquals() {
+        var yaml = """
+                alias: status-fail-equals
+                triggers:
+                  - trigger: alwaysTrue
+                conditions:
+                  - condition: httpResponseStatus
+                    equals: OK
+                actions:
+                  - action: logger
+                    message: should not match
+                """;
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = HttpResponseEvent.builder()
+                .responseStatus(HttpStatus.INTERNAL_SERVER_ERROR) // 500
+                .build();
+
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.allConditionsMet(context)).isFalse();
+    }
+
+    @Test
+    void testShouldHandleNullStatus() {
+        var yaml = """
+                alias: status-null
+                triggers:
+                  - trigger: alwaysTrue
+                conditions:
+                  - condition: httpResponseStatus
+                    equals: OK
+                actions:
+                  - action: logger
+                    message: should not match
+                """;
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = HttpResponseEvent.builder().responseStatus(null).build();
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.allConditionsMet(context)).isFalse();
+    }
+
+    @Test
+    void testShouldPassWhenStatusExists() {
+        var yaml = """
+                alias: status-exists-true
+                triggers:
+                  - trigger: alwaysTrue
+                conditions:
+                  - condition: httpResponseStatus
+                    exists: true
+                actions:
+                  - action: logger
+                    message: status is present
+                """;
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = HttpResponseEvent.builder().responseStatus(HttpStatus.NO_CONTENT).build();
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.allConditionsMet(context)).isTrue();
+    }
+
+    @Test
+    void testShouldPassWhenStatusDoesNotExist() {
+        var yaml = """
+                alias: status-exists-false
+                triggers:
+                  - trigger: alwaysTrue
+                conditions:
+                  - condition: httpResponseStatus
+                    exists: false
+                actions:
+                  - action: logger
+                    message: no status present
+                """;
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = HttpResponseEvent.builder().responseStatus(null).build();
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.allConditionsMet(context)).isTrue();
+    }
+
+    @Test
+    void testShouldMatch5xxFamily() {
+        var yaml = """
+                alias: status-family-5xx
+                triggers:
+                  - trigger: alwaysTrue
+                conditions:
+                  - condition: httpResponseStatus
+                    equals: 5xx
+                actions:
+                  - action: logger
+                    message: server error occurred
+                """;
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = HttpResponseEvent.builder().responseStatus(HttpStatus.GATEWAY_TIMEOUT).build(); // 504
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.allConditionsMet(context)).isTrue();
+    }
+
+    @Test
+    void testShouldFailWrongFamilyMatch() {
+        var yaml = """
+                alias: status-wrong-family
+                triggers:
+                  - trigger: alwaysTrue
+                conditions:
+                  - condition: httpResponseStatus
+                    equals: 4xx
+                actions:
+                  - action: logger
+                    message: should not log
+                """;
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = HttpResponseEvent.builder().responseStatus(HttpStatus.OK).build(); // 200
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.allConditionsMet(context)).isFalse();
+    }
+
 
 }
