@@ -1,7 +1,7 @@
 package com.automation.engine.http.modules.conditions.http_header;
 
 import com.automation.engine.core.conditions.IConditionContext;
-import com.automation.engine.http.modules.conditions.StringMatchContext;
+import com.automation.engine.http.modules.conditions.MatchContext;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import lombok.Data;
@@ -16,5 +16,5 @@ public class HttpHeaderConditionContext implements IConditionContext {
 
     @JsonAnySetter
     @JsonAnyGetter
-    private Map<String, StringMatchContext> headers;
+    private Map<String, MatchContext> headers;
 }

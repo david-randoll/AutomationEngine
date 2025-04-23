@@ -11,6 +11,13 @@ public class LoggerAction extends PluggableAction<LoggerActionContext> {
 
     @Override
     public void execute(EventContext eventContext, LoggerActionContext actionContext) {
-        log.info("{}", actionContext.getMessage());
+        switch (actionContext.getLevel().toUpperCase()) {
+            case "TRACE" -> log.trace("{}", actionContext.getMessage());
+            case "DEBUG" -> log.debug("{}", actionContext.getMessage());
+            case "INFO" -> log.info("{}", actionContext.getMessage());
+            case "WARN" -> log.warn("{}", actionContext.getMessage());
+            case "ERROR" -> log.error("{}", actionContext.getMessage());
+            default -> log.info("{}", actionContext.getMessage());
+        }
     }
 }

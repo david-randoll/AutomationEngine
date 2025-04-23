@@ -1,6 +1,6 @@
 package com.automation.engine.http.utils;
 
-import com.automation.engine.http.modules.conditions.StringMatchContext;
+import com.automation.engine.http.modules.conditions.MatchContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.experimental.UtilityClass;
@@ -13,7 +13,7 @@ import static com.automation.engine.http.utils.JsonNodeMatcher.*;
 @UtilityClass
 public class StringMatcher {
     public static boolean matchesCondition(Object condition, Object actual, ObjectMapper mapper) {
-        if (condition instanceof StringMatchContext ctx) {
+        if (condition instanceof MatchContext ctx) {
             return ctx.matches(actual);
         }
 
@@ -35,7 +35,7 @@ public class StringMatcher {
 
     private static boolean matchesNode(JsonNode expected, JsonNode actual, ObjectMapper mapper) {
         if (isLikelyMatchContext(mapper, expected)) {
-            StringMatchContext ctx = mapper.convertValue(expected, StringMatchContext.class);
+            MatchContext ctx = mapper.convertValue(expected, MatchContext.class);
             if (isNull(actual))
                 return matchesCondition(ctx, null, mapper);
             if (actual.isArray()) {
@@ -114,7 +114,7 @@ public class StringMatcher {
 
     private static boolean isLikelyMatchContext(ObjectMapper mapper, JsonNode node) {
         if (!node.isObject()) return false;
-        var ctx = mapper.convertValue(node, StringMatchContext.class);
+        var ctx = mapper.convertValue(node, MatchContext.class);
         return ctx.hasAnyOperations();
     }
 }

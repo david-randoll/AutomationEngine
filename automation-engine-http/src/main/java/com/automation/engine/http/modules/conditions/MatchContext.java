@@ -9,7 +9,7 @@ import java.util.List;
 
 @Data
 @NoArgsConstructor
-public class StringMatchContext {
+public class MatchContext {
     @JsonAlias({"equal", "==", "equals"})
     private String equals;
 
