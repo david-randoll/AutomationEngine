@@ -1,20 +1,10 @@
 package com.automation.engine.http.modules.conditions.http_latency;
 
-import ch.qos.logback.classic.Logger;
-import com.automation.engine.core.AutomationEngine;
 import com.automation.engine.core.events.EventContext;
-import com.automation.engine.creator.AutomationCreator;
-import com.automation.engine.http.AutomationEngineHttpApplication;
-import com.automation.engine.http.TestLogAppender;
+import com.automation.engine.http.AutomationEngineTest;
 import com.automation.engine.http.event.HttpResponseEvent;
 import com.automation.engine.http.modules.triggers.on_slow_http_request.OnSlowHttpRequestException;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.Duration;
 import java.util.HashMap;
@@ -23,26 +13,9 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK, classes = AutomationEngineHttpApplication.class)
-@ExtendWith(SpringExtension.class)
-class HttpLatencyConditionTest {
-    @Autowired
-    private AutomationEngine engine;
 
-    @Autowired
-    private AutomationCreator factory;
+class HttpLatencyConditionTest extends AutomationEngineTest {
 
-    private TestLogAppender logAppender;
-
-    @BeforeEach
-    void setUp() {
-        Logger logger = (Logger) LoggerFactory.getLogger("com.automation.engine");
-        logAppender = new TestLogAppender();
-        logger.addAppender(logAppender);
-        logAppender.start();
-
-        engine.removeAll();
-    }
 
     @Test
     void testLatencyExceedsThresholdShouldPass() {
