@@ -1,44 +1,15 @@
 package com.automation.engine.http.modules.conditions.http_header;
 
-import ch.qos.logback.classic.Logger;
-import com.automation.engine.core.AutomationEngine;
 import com.automation.engine.core.events.EventContext;
-import com.automation.engine.creator.AutomationCreator;
-import com.automation.engine.http.AutomationEngineHttpApplication;
-import com.automation.engine.http.TestLogAppender;
+import com.automation.engine.http.AutomationEngineTest;
 import com.automation.engine.http.event.HttpRequestEvent;
 import com.automation.engine.http.event.HttpResponseEvent;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK, classes = AutomationEngineHttpApplication.class)
-@ExtendWith(SpringExtension.class)
-class HttpHeaderConditionTest {
-    @Autowired
-    private AutomationEngine engine;
-
-    @Autowired
-    private AutomationCreator factory;
-
-    private TestLogAppender logAppender;
-
-    @BeforeEach
-    void setUp() {
-        Logger logger = (Logger) LoggerFactory.getLogger("com.automation.engine");
-        logAppender = new TestLogAppender();
-        logger.addAppender(logAppender);
-        logAppender.start();
-
-        engine.removeAll();
-    }
+class HttpHeaderConditionTest extends AutomationEngineTest {
 
     @Test
     void testShouldMatchHeaderUsingEqualsCondition() {
