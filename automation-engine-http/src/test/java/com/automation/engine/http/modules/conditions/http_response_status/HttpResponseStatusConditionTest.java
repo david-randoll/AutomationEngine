@@ -370,6 +370,84 @@ class HttpResponseStatusConditionTest {
     }
 
     @Test
+    void testShouldMatchNotInSuccess() {
+        var yaml = """
+                alias: status-not-in-fail
+                triggers:
+                  - trigger: alwaysTrue
+                conditions:
+                  - condition: httpResponseStatus
+                    notIn: [OK]
+                actions:
+                  - action: logger
+                    message: should not match
+                """;
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = HttpResponseEvent.builder()
+                .responseStatus(HttpStatus.CREATED)
+                .build();
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.allConditionsMet(context)).isTrue();
+    }
+
+    @Test
+    void testShouldNotMatchNotInCreated() {
+        var yaml = """
+                alias: status-not-in-fail
+                triggers:
+                  - trigger: alwaysTrue
+                conditions:
+                  - condition: httpResponseStatus
+                    notIn: [Created]
+                actions:
+                  - action: logger
+                    message: should not match
+                """;
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = HttpResponseEvent.builder()
+                .responseStatus(HttpStatus.CREATED)
+                .build();
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.allConditionsMet(context)).isFalse();
+    }
+
+    @Test
+    void testShouldNotMatchInCreated() {
+        var yaml = """
+                alias: status-not-in-fail
+                triggers:
+                  - trigger: alwaysTrue
+                conditions:
+                  - condition: httpResponseStatus
+                    in: [Created]
+                actions:
+                  - action: logger
+                    message: should not match
+                """;
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = HttpResponseEvent.builder()
+                .responseStatus(HttpStatus.CREATED)
+                .build();
+        var context = EventContext.of(event);
+        engine.publishEvent(context);
+
+        assertThat(automation.allConditionsMet(context)).isTrue();
+    }
+
+    @Test
     void testShouldMatchRegexNotFound() {
         var yaml = """
                 alias: status-regex-not

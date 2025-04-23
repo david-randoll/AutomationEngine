@@ -63,6 +63,15 @@ public class StringMatchContext {
 
     private boolean matchArray(List<?> list) {
         // if the value is a list, check if any of the elements match
+        if (this.notEquals != null || this.notIn != null) {
+            for (var item : list) {
+                if (!this.matches(item)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
         for (var item : list) {
             if (this.matches(item)) {
                 return true;
