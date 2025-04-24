@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class AlwaysTrueCondition extends PluggableCondition<AlwaysTrueConditionContext> {
     @Override
-    public boolean isSatisfied(EventContext eventContext, AlwaysTrueConditionContext conditionContext) {
+    public boolean isSatisfied(EventContext ec, AlwaysTrueConditionContext cc) {
         return true;
     }
 }

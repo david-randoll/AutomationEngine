@@ -11,8 +11,8 @@ import org.springframework.util.ObjectUtils;
 public class NotCondition extends PluggableCondition<NotConditionContext> {
 
     @Override
-    public boolean isSatisfied(EventContext eventContext, NotConditionContext conditionContext) {
-        if (ObjectUtils.isEmpty(conditionContext.getConditions())) return true;
-        return processor.noneConditionSatisfied(eventContext, conditionContext.getConditions());
+    public boolean isSatisfied(EventContext ec, NotConditionContext cc) {
+        if (ObjectUtils.isEmpty(cc.getConditions())) return true;
+        return processor.noneConditionSatisfied(ec, cc.getConditions());
     }
 }

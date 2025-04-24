@@ -11,8 +11,8 @@ import org.springframework.util.ObjectUtils;
 public class OrCondition extends PluggableCondition<OrConditionContext> {
 
     @Override
-    public boolean isSatisfied(EventContext eventContext, OrConditionContext conditionContext) {
-        if (ObjectUtils.isEmpty(conditionContext.getConditions())) return true;
-        return processor.anyConditionSatisfied(eventContext, conditionContext.getConditions());
+    public boolean isSatisfied(EventContext ec, OrConditionContext cc) {
+        if (ObjectUtils.isEmpty(cc.getConditions())) return true;
+        return processor.anyConditionSatisfied(ec, cc.getConditions());
     }
 }

@@ -20,5 +20,5 @@ public interface TypedCondition<T extends IConditionContext> extends ICondition 
         return isSatisfied(eventContext, data);
     }
 
-    boolean isSatisfied(EventContext eventContext, T conditionContext);
+    boolean isSatisfied(EventContext ec, T cc);
 }

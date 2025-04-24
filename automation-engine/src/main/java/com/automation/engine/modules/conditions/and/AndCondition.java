@@ -11,8 +11,8 @@ import org.springframework.util.ObjectUtils;
 public class AndCondition extends PluggableCondition<AndConditionContext> {
 
     @Override
-    public boolean isSatisfied(EventContext eventContext, AndConditionContext conditionContext) {
-        if (ObjectUtils.isEmpty(conditionContext.getConditions())) return true;
-        return processor.allConditionsSatisfied(eventContext, conditionContext.getConditions());
+    public boolean isSatisfied(EventContext ec, AndConditionContext cc) {
+        if (ObjectUtils.isEmpty(cc.getConditions())) return true;
+        return processor.allConditionsSatisfied(ec, cc.getConditions());
     }
 }

@@ -11,17 +11,17 @@ import java.time.LocalTime;
 public class TimeBasedCondition extends PluggableCondition<TimeBasedConditionContext> {
 
     @Override
-    public boolean isSatisfied(EventContext eventContext, TimeBasedConditionContext conditionContext) {
-        if (!(eventContext.getEvent() instanceof TimeBasedEvent timeBasedEvent)) return false;
+    public boolean isSatisfied(EventContext ec, TimeBasedConditionContext cc) {
+        if (!(ec.getEvent() instanceof TimeBasedEvent timeBasedEvent)) return false;
 
         LocalTime eventTime = timeBasedEvent.getTime();
-        LocalTime beforeTime = conditionContext.getBefore();
-        LocalTime afterTime = conditionContext.getAfter();
+        LocalTime beforeTime = cc.getBefore();
+        LocalTime afterTime = cc.getAfter();
 
         if (beforeTime == null && afterTime == null) return false;
         boolean isBeforeConditionMet;
         boolean isAfterConditionMet;
-        if (conditionContext.isInclusive()) {
+        if (cc.isInclusive()) {
             isBeforeConditionMet = (beforeTime == null || !eventTime.isAfter(beforeTime));
             isAfterConditionMet = (afterTime == null || !eventTime.isBefore(afterTime));
         } else {
