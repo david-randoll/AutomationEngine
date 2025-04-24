@@ -15,17 +15,17 @@ import java.util.List;
 public class StopAction extends PluggableAction<StopActionContext> {
 
     @Override
-    public void execute(EventContext eventContext, StopActionContext actionContext) {
-        if (ObjectUtils.isEmpty(actionContext.getCondition())) return;
-        var isSatisfied = processor.allConditionsSatisfied(eventContext, List.of(actionContext.getCondition()));
+    public void execute(EventContext ec, StopActionContext ac) {
+        if (ObjectUtils.isEmpty(ac.getCondition())) return;
+        var isSatisfied = processor.allConditionsSatisfied(ec, List.of(ac.getCondition()));
         if (!isSatisfied) return;
-        if (actionContext.hasStopMessage()) {
-            if (actionContext.isStopAutomation()) throw new StopAutomationException(actionContext.getStopMessage());
-            if (actionContext.isStopActionSequence())
-                throw new StopActionSequenceException(actionContext.getStopMessage());
+        if (ac.hasStopMessage()) {
+            if (ac.isStopAutomation()) throw new StopAutomationException(ac.getStopMessage());
+            if (ac.isStopActionSequence())
+                throw new StopActionSequenceException(ac.getStopMessage());
         } else {
-            if (actionContext.isStopAutomation()) throw new StopAutomationException();
-            if (actionContext.isStopActionSequence()) throw new StopActionSequenceException();
+            if (ac.isStopAutomation()) throw new StopAutomationException();
+            if (ac.isStopActionSequence()) throw new StopActionSequenceException();
         }
     }
 }

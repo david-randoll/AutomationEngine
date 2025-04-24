@@ -13,29 +13,29 @@ import org.springframework.util.ObjectUtils;
 public class RepeatAction extends PluggableAction<RepeatActionContext> {
 
     @Override
-    public void execute(EventContext eventContext, RepeatActionContext actionContext) {
-        if (ObjectUtils.isEmpty(actionContext.getActions())) return;
-        for (int i = 0; i < actionContext.getCount(); i++) {
-            processor.executeActions(eventContext, actionContext.getActions());
+    public void execute(EventContext ec, RepeatActionContext ac) {
+        if (ObjectUtils.isEmpty(ac.getActions())) return;
+        for (int i = 0; i < ac.getCount(); i++) {
+            processor.executeActions(ec, ac.getActions());
         }
 
-        if (actionContext.hasWhileConditions()) {
-            while (processor.allConditionsSatisfied(eventContext, actionContext.getWhileConditions())) {
-                processor.executeActions(eventContext, actionContext.getActions());
+        if (ac.hasWhileConditions()) {
+            while (processor.allConditionsSatisfied(ec, ac.getWhileConditions())) {
+                processor.executeActions(ec, ac.getActions());
             }
         }
 
-        if (actionContext.hasUntilConditions()) {
-            while (!processor.allConditionsSatisfied(eventContext, actionContext.getUntilConditions())) {
-                processor.executeActions(eventContext, actionContext.getActions());
+        if (ac.hasUntilConditions()) {
+            while (!processor.allConditionsSatisfied(ec, ac.getUntilConditions())) {
+                processor.executeActions(ec, ac.getActions());
             }
         }
 
-        if (actionContext.hasForEach()) {
-            for (Object item : actionContext.getForEach()) {
-                eventContext.addMetadata("item", item);
-                processor.executeActions(eventContext, actionContext.getActions());
-                eventContext.removeMetadata("item");
+        if (ac.hasForEach()) {
+            for (Object item : ac.getForEach()) {
+                ec.addMetadata("item", item);
+                processor.executeActions(ec, ac.getActions());
+                ec.removeMetadata("item");
             }
         }
     }

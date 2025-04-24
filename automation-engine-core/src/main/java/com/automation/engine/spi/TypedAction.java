@@ -20,5 +20,5 @@ public interface TypedAction<T extends IActionContext> extends IAction {
         execute(eventContext, data);
     }
 
-    void execute(EventContext eventContext, T actionContext);
+    void execute(EventContext ec, T ac);
 }

@@ -11,27 +11,27 @@ import org.springframework.util.ObjectUtils;
 public class IfThenElseAction extends PluggableAction<IfThenElseActionContext> {
 
     @Override
-    public void execute(EventContext eventContext, IfThenElseActionContext actionContext) {
-        if (!ObjectUtils.isEmpty(actionContext.getIfConditions())) {
-            boolean isSatisfied = allConditionsSatisfied(eventContext, actionContext.getIfConditions());
+    public void execute(EventContext ec, IfThenElseActionContext ac) {
+        if (!ObjectUtils.isEmpty(ac.getIfConditions())) {
+            boolean isSatisfied = allConditionsSatisfied(ec, ac.getIfConditions());
             if (isSatisfied) {
-                executeActions(eventContext, actionContext.getThenActions());
+                executeActions(ec, ac.getThenActions());
                 return;
             }
         }
 
         // check the ifs conditions
-        if (!ObjectUtils.isEmpty(actionContext.getIfThenBlocks())) {
-            for (var ifBlock : actionContext.getIfThenBlocks()) {
-                var isIfsSatisfied = allConditionsSatisfied(eventContext, ifBlock.getIfConditions());
+        if (!ObjectUtils.isEmpty(ac.getIfThenBlocks())) {
+            for (var ifBlock : ac.getIfThenBlocks()) {
+                var isIfsSatisfied = allConditionsSatisfied(ec, ifBlock.getIfConditions());
                 if (isIfsSatisfied) {
-                    executeActions(eventContext, ifBlock.getThenActions());
+                    executeActions(ec, ifBlock.getThenActions());
                     return;
                 }
             }
         }
 
         // execute else actions
-        executeActions(eventContext, actionContext.getElseActions());
+        executeActions(ec, ac.getElseActions());
     }
 }

@@ -14,9 +14,9 @@ import org.springframework.util.ObjectUtils;
 public class VariableAction extends PluggableAction<VariableActionContext> {
 
     @Override
-    public void execute(EventContext eventContext, VariableActionContext actionContext) {
+    public void execute(EventContext ec, VariableActionContext ac) {
         log.info("Executing variable action");
-        if (ObjectUtils.isEmpty(actionContext.getVariables())) return;
-        eventContext.addMetadata(actionContext.getVariables());
+        if (ObjectUtils.isEmpty(ac.getVariables())) return;
+        ec.addMetadata(ac.getVariables());
     }
 }

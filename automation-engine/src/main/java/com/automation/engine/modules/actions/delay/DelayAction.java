@@ -12,8 +12,8 @@ import java.time.Duration;
 public class DelayAction extends PluggableAction<DelayActionContext> {
 
     @Override
-    public void execute(EventContext eventContext, DelayActionContext actionContext) {
-        Duration duration = actionContext.getDuration();
+    public void execute(EventContext ec, DelayActionContext ac) {
+        Duration duration = ac.getDuration();
         try {
             Thread.sleep(duration.toMillis());
         } catch (InterruptedException e) {

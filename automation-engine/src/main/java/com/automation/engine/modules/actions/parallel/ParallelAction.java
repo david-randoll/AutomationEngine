@@ -18,16 +18,16 @@ public class ParallelAction extends PluggableAction<ParallelActionContext> {
     private AutomationEngineConfigProvider provider;
 
     @Override
-    public void execute(EventContext eventContext, ParallelActionContext actionContext) {
-        if (ObjectUtils.isEmpty(actionContext.getActions())) return;
+    public void execute(EventContext ec, ParallelActionContext ac) {
+        if (ObjectUtils.isEmpty(ac.getActions())) return;
 
         var executor = provider != null ? provider.getExecutor() : null;
         if (executor != null) {
             log.debug("Executor provider found, using provided executor");
-            processor.executeActionsAsync(eventContext, actionContext.getActions(), executor);
+            processor.executeActionsAsync(ec, ac.getActions(), executor);
         } else {
             log.debug("No executor provider found, using default executor");
-            processor.executeActionsAsync(eventContext, actionContext.getActions());
+            processor.executeActionsAsync(ec, ac.getActions());
         }
     }
 }

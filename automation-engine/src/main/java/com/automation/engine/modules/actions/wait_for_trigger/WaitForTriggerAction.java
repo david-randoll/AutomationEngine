@@ -27,20 +27,20 @@ public class WaitForTriggerAction extends PluggableAction<WaitForTriggerActionCo
     private AutomationEngineConfigProvider provider;
 
     @Override
-    public void execute(EventContext eventContext, WaitForTriggerActionContext actionContext) {
-        if (ObjectUtils.isEmpty(actionContext.getTriggers())) return;
+    public void execute(EventContext ec, WaitForTriggerActionContext ac) {
+        if (ObjectUtils.isEmpty(ac.getTriggers())) return;
 
-        long timeout = Optional.ofNullable(actionContext.getTimeout())
+        long timeout = Optional.ofNullable(ac.getTimeout())
                 .orElse(provider.getDefaultTimeout()).toMillis();
 
         CompletableFuture<Boolean> future = new CompletableFuture<>();
-        waitingActions.add(new WaitingAction(actionContext.getTriggers(), future));
+        waitingActions.add(new WaitingAction(ac.getTriggers(), future));
 
         ScheduledFuture<?> pollingTask = null;
         ScheduledExecutorService scheduler = provider != null ? provider.getScheduledExecutorService() : null;
         if (scheduler != null) {
             pollingTask = scheduler.scheduleAtFixedRate(() -> {
-                if (!future.isDone() && processor.anyTriggersTriggered(eventContext, actionContext.getTriggers())) {
+                if (!future.isDone() && processor.anyTriggersTriggered(ec, ac.getTriggers())) {
                     future.complete(true);
                 }
             }, 0, 1, TimeUnit.SECONDS);

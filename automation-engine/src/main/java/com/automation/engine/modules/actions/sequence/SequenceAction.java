@@ -13,8 +13,8 @@ import org.springframework.util.ObjectUtils;
 public class SequenceAction extends PluggableAction<SequenceActionContext> {
 
     @Override
-    public void execute(EventContext eventContext, SequenceActionContext actionContext) {
-        if (ObjectUtils.isEmpty(actionContext.getActions())) return;
-        processor.executeActions(eventContext, actionContext.getActions());
+    public void execute(EventContext ec, SequenceActionContext ac) {
+        if (ObjectUtils.isEmpty(ac.getActions())) return;
+        processor.executeActions(ec, ac.getActions());
     }
 }
