@@ -5,3 +5,6 @@ server:
     include-stacktrace: always
     include-exception: true
   forward-headers-strategy: framework
+logging:
+  level:
+    com.automation.engine: DEBUG

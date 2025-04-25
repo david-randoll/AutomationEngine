@@ -1,4 +1,4 @@
-package com.automation.engine.http.modules.actions;
+package com.automation.engine.http.modules.actions.send_http_request;
 
 import com.automation.engine.core.actions.IActionContext;
 import lombok.Data;

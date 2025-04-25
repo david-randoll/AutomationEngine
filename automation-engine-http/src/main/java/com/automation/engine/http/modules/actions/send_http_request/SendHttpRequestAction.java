@@ -1,28 +1,37 @@
-package com.automation.engine.http.modules.actions;
+package com.automation.engine.http.modules.actions.send_http_request;
 
 import com.automation.engine.core.events.EventContext;
 import com.automation.engine.spi.PluggableAction;
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatusCode;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.reactive.function.client.WebClient;
 
+@Slf4j
 @Component("sendHttpRequestAction")
 @RequiredArgsConstructor
 public class SendHttpRequestAction extends PluggableAction<SendHttpRequestActionContext> {
     @Override
+    @Async
     public void execute(EventContext ec, SendHttpRequestActionContext ac) {
+        log.debug("Executing SendHttpRequestAction: {}", ac.getAlias());
         var webClient = WebClient.builder()
                 .baseUrl(ac.getUrl())
-                .defaultHeaders(headers -> headers.putAll(ac.getHeaders()))
+                .defaultHeaders(headers -> {
+                    if (ObjectUtils.isEmpty(ac.getHeaders())) return;
+                    headers.putAll(ac.getHeaders());
+                })
                 .build();
 
+        var requestBody = ac.getBodyByContentType();
         WebClient.ResponseSpec responseSpec = webClient
                 .method(ac.getMethod())
                 .contentType(ac.getContentType())
-                .bodyValue(ac.getBodyByContentType())
+                .bodyValue(requestBody)
                 .retrieve();
 
         var response = responseSpec

@@ -1,4 +1,4 @@
-package com.automation.engine.http.modules.actions;
+package com.automation.engine.http.modules.actions.send_http_request;
 
 import com.automation.engine.core.events.EventContext;
 import com.automation.engine.http.AutomationEngineTest;
@@ -21,15 +21,16 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
                   - trigger: alwaysTrue
                 actions:
                   - action: sendHttpRequest
-                    url: http://localhost:8080/echo
+                    url: http://localhost:%s/sendHttpRequest/echo
                     method: POST
                     contentType: application/json
                     body:
                       hello: world
                     storeToVariable: response
-                """;
+                """.formatted(port);
 
         var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
 
         var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
         engine.publishEvent(event);
@@ -46,16 +47,18 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
                   - trigger: alwaysTrue
                 actions:
                   - action: sendHttpRequest
-                    url: http://localhost:8080/echo
+                    url: http://localhost:%s/sendHttpRequest/echo
                     method: POST
                     contentType: application/x-www-form-urlencoded
                     body:
                       name: Alice
                       age: 30
                     storeToVariable: formResponse
-                """;
+                """.formatted(port);
 
         var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
         var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
         engine.publishEvent(event);
 
@@ -72,7 +75,7 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
                   - trigger: alwaysTrue
                 actions:
                   - action: sendHttpRequest
-                    url: http://localhost:8080/echo
+                    url: http://localhost:13245/sendHttpRequest/echo
                     method: POST
                     contentType: multipart/form-data
                     body:
@@ -84,6 +87,8 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
                 """;
 
         var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
         var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
         engine.publishEvent(event);
 
@@ -101,7 +106,7 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
                   - trigger: alwaysTrue
                 actions:
                   - action: sendHttpRequest
-                    url: http://localhost:8080/echo
+                    url: http://localhost:13245/sendHttpRequest/echo
                     method: POST
                     contentType: application/json
                     body:
@@ -109,6 +114,8 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
                 """;
 
         var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
         var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
         engine.publishEvent(event);
 
@@ -123,12 +130,14 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
                   - trigger: alwaysTrue
                 actions:
                   - action: sendHttpRequest
-                    url: http://localhost:8080/not-found
+                    url: http://localhost:13245/sendHttpRequest/not-found
                     method: GET
                     storeToVariable: errorResponse
                 """;
 
         var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
         var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
 
         assertThatThrownBy(() -> engine.publishEvent(event))
@@ -143,16 +152,17 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
                   - trigger: alwaysTrue
                 actions:
                   - action: sendHttpRequest
-                    url: http://localhost:8080/error
+                    url: http://localhost:13245/sendHttpRequest/error
                     method: GET
                     storeToVariable: errorVar
                 """;
 
         var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
         var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
 
         assertThatThrownBy(() -> engine.publishEvent(event))
                 .hasMessageContaining("Server error: 500");
     }
-
 }
