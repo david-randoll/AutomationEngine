@@ -59,7 +59,7 @@ public class CachedBodyHttpServletRequest extends ContentCachingRequestWrapper {
     @SneakyThrows
     public JsonNode getBody() {
         if (this.cachedBody == null) {
-            getInputStream();
+            getInputStream(); // Ensure the body is cached
         }
         return HttpServletUtils.parseByteArrayToJsonNode(this.getContentType(), this.cachedBody, objectMapper);
     }
