@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import java.time.LocalTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class SendHttpRequestActionTest extends AutomationEngineTest {
 
@@ -75,7 +74,7 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
                   - trigger: alwaysTrue
                 actions:
                   - action: sendHttpRequest
-                    url: http://localhost:13245/sendHttpRequest/echo
+                    url: http://localhost:%s/sendHttpRequest/echo
                     method: POST
                     contentType: multipart/form-data
                     body:
@@ -84,7 +83,7 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
                         - banana
                       note: test
                     storeToVariable: multiResponse
-                """;
+                """.formatted(port);
 
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
@@ -106,12 +105,12 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
                   - trigger: alwaysTrue
                 actions:
                   - action: sendHttpRequest
-                    url: http://localhost:13245/sendHttpRequest/echo
+                    url: http://localhost:%s/sendHttpRequest/echo
                     method: POST
                     contentType: application/json
                     body:
                       key: value
-                """;
+                """.formatted(port);
 
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
@@ -130,18 +129,20 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
                   - trigger: alwaysTrue
                 actions:
                   - action: sendHttpRequest
-                    url: http://localhost:13245/sendHttpRequest/not-found
+                    url: http://localhost:%s/sendHttpRequest/not-found
                     method: GET
                     storeToVariable: errorResponse
-                """;
+                """.formatted(port);
 
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
         var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
 
-        assertThatThrownBy(() -> engine.publishEvent(event))
-                .hasMessageContaining("Client error: 404");
+        engine.publishEvent(event);
+
+        JsonNode errorResponse = (JsonNode) event.getMetadata("errorResponse");
+        assertThat(errorResponse.asText()).isEqualTo("Not found");
     }
 
     @Test
@@ -152,17 +153,19 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
                   - trigger: alwaysTrue
                 actions:
                   - action: sendHttpRequest
-                    url: http://localhost:13245/sendHttpRequest/error
+                    url: http://localhost:%s/sendHttpRequest/error
                     method: GET
                     storeToVariable: errorVar
-                """;
+                """.formatted(port);
 
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
         var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
 
-        assertThatThrownBy(() -> engine.publishEvent(event))
-                .hasMessageContaining("Server error: 500");
+        engine.publishEvent(event);
+
+        var errorResponse = (JsonNode) event.getMetadata("errorVar");
+        assertThat(errorResponse.asText()).isEqualTo("Internal error");
     }
 }

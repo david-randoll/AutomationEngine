@@ -22,7 +22,7 @@ public class SendHttpRequestActionContext implements IActionContext {
     private String url;
     private HttpMethod method;
     private HttpHeaders headers;
-    private MediaType contentType;
+    private MediaType contentType = MediaType.APPLICATION_JSON;
     private Object body;
 
     private String storeToVariable;

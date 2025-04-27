@@ -18,8 +18,8 @@ public class SendHttpRequestController {
     }
 
     @PostMapping(value = "/echo", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> echoForm(@RequestParam MultiValueMap<String, String> form) {
-        return new HashMap<>(form.toSingleValueMap());
+    public Map<String, Object> echoForm(@RequestParam Map<String, String> form) {
+        return new HashMap<>(form);
     }
 
     @PostMapping(value = "/echo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -37,11 +37,15 @@ public class SendHttpRequestController {
 
     @GetMapping("/not-found")
     public ResponseEntity<String> notFound() {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not found");
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body("Not found");
     }
 
     @GetMapping("/error")
     public ResponseEntity<String> error() {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal error");
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Internal error");
     }
 }
