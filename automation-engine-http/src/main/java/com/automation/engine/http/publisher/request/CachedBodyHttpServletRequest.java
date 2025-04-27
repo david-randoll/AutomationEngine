@@ -18,10 +18,7 @@ import org.springframework.util.StreamUtils;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.util.ContentCachingRequestWrapper;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -29,7 +26,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class CachedBodyHttpServletRequest extends ContentCachingRequestWrapper {
-    private final byte[] cachedBody;
+    private byte[] cachedBody;
     @Getter
     @Setter
     private boolean endpointExists;
@@ -39,25 +36,40 @@ public class CachedBodyHttpServletRequest extends ContentCachingRequestWrapper {
 
     public CachedBodyHttpServletRequest(HttpServletRequest request, ObjectMapper objectMapper) throws IOException {
         super(request);
-        this.cachedBody = StreamUtils.copyToByteArray(super.getInputStream());
         this.objectMapper = objectMapper;
+        String contentType = request.getContentType();
+        if (contentType != null && !contentType.contains("form")) {
+            InputStream requestInputStream = super.getInputStream();
+            this.cachedBody = StreamUtils.copyToByteArray(requestInputStream);
+        }
     }
 
     @Override
     @NonNull
     public ServletInputStream getInputStream() throws IOException {
-        return new CachedBodyServletInputStream(this.cachedBody);
+        if (this.cachedBody != null) {
+            return new CachedBodyServletInputStream(this.cachedBody);
+        } else {
+            return super.getInputStream();
+        }
     }
 
     @Override
     @NonNull
     public BufferedReader getReader() throws IOException {
-        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(this.cachedBody);
-        return new BufferedReader(new InputStreamReader(byteArrayInputStream));
+        if (this.cachedBody != null) {
+            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(this.cachedBody);
+            return new BufferedReader(new InputStreamReader(byteArrayInputStream));
+        } else {
+            return super.getReader();
+        }
     }
 
     @SneakyThrows
     public JsonNode getBody() {
+        if (this.cachedBody == null) {
+            this.cachedBody = super.getContentAsByteArray();
+        }
         return HttpServletUtils.parseByteArrayToJsonNode(this.getContentType(), this.cachedBody, objectMapper);
     }
 
