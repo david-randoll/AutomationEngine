@@ -18,7 +18,10 @@ import org.springframework.util.StreamUtils;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.util.ContentCachingRequestWrapper;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -36,8 +39,7 @@ public class CachedBodyHttpServletRequest extends ContentCachingRequestWrapper {
 
     public CachedBodyHttpServletRequest(HttpServletRequest request, ObjectMapper objectMapper) throws IOException {
         super(request);
-        InputStream requestInputStream = request.getInputStream();
-        this.cachedBody = StreamUtils.copyToByteArray(requestInputStream);
+        this.cachedBody = StreamUtils.copyToByteArray(super.getInputStream());
         this.objectMapper = objectMapper;
     }
 
