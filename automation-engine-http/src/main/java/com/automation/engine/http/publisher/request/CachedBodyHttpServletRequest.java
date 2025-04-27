@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class CachedBodyHttpServletRequest extends ContentCachingRequestWrapper {
-    private byte[] cachedBody;
+    private final byte[] cachedBody;
     @Getter
     @Setter
     private boolean endpointExists;
@@ -41,35 +41,26 @@ public class CachedBodyHttpServletRequest extends ContentCachingRequestWrapper {
         if (contentType != null && !contentType.contains("form")) {
             InputStream requestInputStream = super.getInputStream();
             this.cachedBody = StreamUtils.copyToByteArray(requestInputStream);
+        } else {
+            this.cachedBody = super.getContentAsByteArray();
         }
     }
 
     @Override
     @NonNull
     public ServletInputStream getInputStream() throws IOException {
-        if (this.cachedBody != null) {
-            return new CachedBodyServletInputStream(this.cachedBody);
-        } else {
-            return super.getInputStream();
-        }
+        return new CachedBodyServletInputStream(this.cachedBody);
     }
 
     @Override
     @NonNull
     public BufferedReader getReader() throws IOException {
-        if (this.cachedBody != null) {
-            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(this.cachedBody);
-            return new BufferedReader(new InputStreamReader(byteArrayInputStream));
-        } else {
-            return super.getReader();
-        }
+        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(this.cachedBody);
+        return new BufferedReader(new InputStreamReader(byteArrayInputStream));
     }
 
     @SneakyThrows
     public JsonNode getBody() {
-        if (this.cachedBody == null) {
-            this.cachedBody = super.getContentAsByteArray();
-        }
         return HttpServletUtils.parseByteArrayToJsonNode(this.getContentType(), this.cachedBody, objectMapper);
     }
 
