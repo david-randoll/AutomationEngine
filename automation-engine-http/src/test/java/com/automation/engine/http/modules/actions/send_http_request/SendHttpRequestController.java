@@ -48,4 +48,30 @@ public class SendHttpRequestController {
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body("Internal error");
     }
+
+    @GetMapping("/basic")
+    public Map<String, Object> basicGet() {
+        return Map.of("message", "Basic GET success");
+    }
+
+    @GetMapping("/query")
+    public Map<String, Object> getWithQuery(@RequestParam Map<String, String> params) {
+        return Map.of("query", params);
+    }
+
+    @GetMapping("/path/{id}")
+    public Map<String, Object> getWithPath(@PathVariable("id") int id) {
+        return Map.of("id", id);
+    }
+
+    @GetMapping("/headers")
+    public Map<String, Object> getWithHeaders(@RequestHeader Map<String, String> headers) {
+        return Map.of("headers", headers);
+    }
+
+    @GetMapping("/body")
+    public Map<String, Object> getWithBody(@RequestBody(required = false) Map<String, Object> body) {
+        // GET with body is rare, but we allow it for testing
+        return Map.of("body", body != null ? body : Map.of());
+    }
 }

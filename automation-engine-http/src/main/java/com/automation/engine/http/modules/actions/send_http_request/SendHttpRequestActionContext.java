@@ -1,6 +1,8 @@
 package com.automation.engine.http.modules.actions.send_http_request;
 
 import com.automation.engine.core.actions.IActionContext;
+import com.automation.engine.http.jackson.flexible_multi_value_map.FlexibleMultiValueMap;
+import com.fasterxml.jackson.annotation.JsonAlias;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -21,7 +23,11 @@ public class SendHttpRequestActionContext implements IActionContext {
     private String alias;
     private String url;
     private HttpMethod method;
+
+    @JsonAlias({"headers", "header"})
+    @FlexibleMultiValueMap
     private HttpHeaders headers;
+
     private MediaType contentType = MediaType.APPLICATION_JSON;
     private Object body;
 

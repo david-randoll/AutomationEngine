@@ -75,7 +75,7 @@ public class JsonNodeMatcher {
         return node == null || node.isNull();
     }
 
-    static JsonNode getPathWithWildcards(JsonNode root, String path) {
+    public static JsonNode getPathWithWildcards(JsonNode root, String path) {
         String[] parts = path.split("\\.", -1);
         return findRecursive(root, parts, 0);
     }
