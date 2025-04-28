@@ -297,4 +297,149 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
         assertThat(response.get("body").get("key").asText()).isEqualTo("value");
     }
 
+    @Test
+    void testEmptyQueryParams() {
+        var yaml = """
+                alias: get-with-empty-query-params
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: sendHttpRequest
+                    url: http://localhost:%s/sendHttpRequest/emptyQuery?key=&anotherKey=
+                    method: GET
+                    storeToVariable: emptyQueryVar
+                """.formatted(port);
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        engine.publishEvent(event);
+
+        var emptyQueryResponse = (JsonNode) event.getMetadata("emptyQueryVar");
+        assertThat(emptyQueryResponse.get("key").asText()).isEmpty();
+        assertThat(emptyQueryResponse.get("anotherKey").asText()).isEmpty();
+    }
+
+    @Test
+    void testSpecialCharacters() {
+        var yaml = """
+                alias: get-with-special-characters
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: sendHttpRequest
+                    url: http://localhost:%s/sendHttpRequest/special/üñîçødê?q=hello+world%%20test
+                    method: GET
+                    storeToVariable: specialCharVar
+                """.formatted(port);
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        engine.publishEvent(event);
+
+        var specialCharResponse = (JsonNode) event.getMetadata("specialCharVar");
+        assertThat(specialCharResponse.get("path").asText()).isEqualTo("üñîçødê");
+        assertThat(specialCharResponse.get("query").asText()).isEqualTo("hello world%20test");
+    }
+
+    @Test
+    void testMissingPathVariable() {
+        var yaml = """
+                alias: get-missing-path-variable
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: sendHttpRequest
+                    url: http://localhost:%s/sendHttpRequest/path/
+                    method: GET
+                    storeToVariable: missingPathVar
+                """.formatted(port);
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        engine.publishEvent(event);
+
+        var missingPathResponse = (JsonNode) event.getMetadata("missingPathVar");
+        assertThat(missingPathResponse.get("status").asInt()).isEqualTo(404);
+    }
+
+    @Test
+    void testUnexpectedHeader() {
+        var yaml = """
+                alias: get-with-random-header
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: sendHttpRequest
+                    url: http://localhost:%s/sendHttpRequest/headers
+                    method: GET
+                    headers:
+                      X-Random-Header: 12345
+                    storeToVariable: randomHeaderVar
+                """.formatted(port);
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        engine.publishEvent(event);
+
+        var headerResponse = (JsonNode) event.getMetadata("randomHeaderVar");
+        var headers = headerResponse.get("headers");
+        assertThat(headers.get("x-random-header").asText()).isEqualTo("12345");
+    }
+
+    @Test
+    void testLargeQueryString() {
+        String bigQ = "a".repeat(3000);
+        var yaml = """
+                alias: get-large-query-string
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: sendHttpRequest
+                    url: http://localhost:%s/sendHttpRequest/largeQuery?q=%s
+                    method: GET
+                    storeToVariable: largeQueryVar
+                """.formatted(port, bigQ);
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        engine.publishEvent(event);
+
+        var largeQueryResponse = (JsonNode) event.getMetadata("largeQueryVar");
+        assertThat(largeQueryResponse.get("length").asInt()).isEqualTo(3000);
+    }
+
+    @Test
+    void testContentTypeHeaderNoBody() {
+        var yaml = """
+                alias: get-content-type-no-body
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: sendHttpRequest
+                    url: http://localhost:%s/sendHttpRequest/contentTypeOnly
+                    method: GET
+                    contentType: application/json
+                    storeToVariable: contentTypeVar
+                """.formatted(port);
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        engine.publishEvent(event);
+
+        var contentTypeResponse = (JsonNode) event.getMetadata("contentTypeVar");
+        assertThat(contentTypeResponse.get("contentType").asText()).isEqualTo("application/json");
+    }
+
 }

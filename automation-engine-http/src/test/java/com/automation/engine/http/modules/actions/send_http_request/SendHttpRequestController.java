@@ -74,4 +74,24 @@ public class SendHttpRequestController {
         // GET with body is rare, but we allow it for testing
         return Map.of("body", body != null ? body : Map.of());
     }
+
+    @GetMapping("/emptyQuery")
+    public Map<String, String> handleEmptyQueryParams(@RequestParam Map<String, String> params) {
+        return params;
+    }
+
+    @GetMapping("/special/{value}")
+    public Map<String, String> handleSpecialChars(@PathVariable String value, @RequestParam String q) {
+        return Map.of("path", value, "query", q);
+    }
+
+    @GetMapping("/largeQuery")
+    public Map<String, Object> handleLargeQuery(@RequestParam String q) {
+        return Map.of("length", q.length());
+    }
+
+    @GetMapping("/contentTypeOnly")
+    public Map<String, Object> handleContentTypeOnly(@RequestHeader("Content-Type") String contentType) {
+        return Map.of("contentType", contentType);
+    }
 }
