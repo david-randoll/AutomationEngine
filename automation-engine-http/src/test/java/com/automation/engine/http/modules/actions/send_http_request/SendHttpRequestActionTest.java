@@ -442,4 +442,190 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
         assertThat(contentTypeResponse.get("contentType").asText()).isEqualTo("application/json");
     }
 
+    @Test
+    void testSendHttpRequest_postJsonBody() {
+        var yaml = """
+            alias: send-post-json
+            triggers:
+              - trigger: alwaysTrue
+            actions:
+              - action: sendHttpRequest
+                url: http://localhost:%s/sendHttpRequest/post/json
+                method: POST
+                contentType: application/json
+                body:
+                  name: David
+                  age: 30
+                storeToVariable: jsonResponse
+            """.formatted(port);
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        engine.publishEvent(event);
+
+        var response = (JsonNode) event.getMetadata("jsonResponse");
+        assertThat(response.get("message").asText()).isEqualTo("Received David aged 30");
+    }
+
+    @Test
+    void testSendHttpRequest_postFormUrlencoded() {
+        var yaml = """
+            alias: send-post-form
+            triggers:
+              - trigger: alwaysTrue
+            actions:
+              - action: sendHttpRequest
+                url: http://localhost:%s/sendHttpRequest/post/form
+                method: POST
+                contentType: application/x-www-form-urlencoded
+                body:
+                  username: david
+                  password: secret
+                storeToVariable: formResponse
+            """.formatted(port);
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        engine.publishEvent(event);
+
+        var response = (JsonNode) event.getMetadata("formResponse");
+        assertThat(response.get("status").asText()).isEqualTo("Form received");
+    }
+
+    @Test
+    void testSendHttpRequest_postMultipartForm() {
+        var yaml = """
+            alias: send-post-multipart
+            triggers:
+              - trigger: alwaysTrue
+            actions:
+              - action: sendHttpRequest
+                url: http://localhost:%s/sendHttpRequest/post/multipart
+                method: POST
+                contentType: multipart/form-data
+                body:
+                  description: "Test file upload"
+                  fileContent: "FakeFileContentHere"
+                storeToVariable: multipartResponse
+            """.formatted(port);
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        engine.publishEvent(event);
+
+        var response = (JsonNode) event.getMetadata("multipartResponse");
+        assertThat(response.get("result").asText()).isEqualTo("Multipart received");
+    }
+
+    @Test
+    void testSendHttpRequest_postMissingBody() {
+        var yaml = """
+            alias: send-post-missing-body
+            triggers:
+              - trigger: alwaysTrue
+            actions:
+              - action: sendHttpRequest
+                url: http://localhost:%s/sendHttpRequest/post/missing
+                method: POST
+                contentType: application/json
+                storeToVariable: missingBodyResponse
+            """.formatted(port);
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        engine.publishEvent(event);
+
+        var response = (JsonNode) event.getMetadata("missingBodyResponse");
+        assertThat(response.get("error").asText()).isEqualTo("Missing body");
+    }
+
+    @Test
+    void testSendHttpRequest_postCustomHeaders() {
+        var yaml = """
+            alias: send-post-headers
+            triggers:
+              - trigger: alwaysTrue
+            actions:
+              - action: sendHttpRequest
+                url: http://localhost:%s/sendHttpRequest/post/headers
+                method: POST
+                headers:
+                  X-Custom-Header: "my-header-value"
+                  Authorization: "Bearer token123"
+                body:
+                  dummy: test
+                storeToVariable: headerResponse
+            """.formatted(port);
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        engine.publishEvent(event);
+
+        var response = (JsonNode) event.getMetadata("headerResponse");
+        assertThat(response.get("customHeader").asText()).isEqualTo("my-header-value");
+        assertThat(response.get("authorization").asText()).isEqualTo("Bearer token123");
+    }
+
+    @Test
+    void testSendHttpRequest_postLargeBody() {
+        var yaml = """
+            alias: send-post-large
+            triggers:
+              - trigger: alwaysTrue
+            actions:
+              - action: sendHttpRequest
+                url: http://localhost:%s/sendHttpRequest/post/large
+                method: POST
+                contentType: application/json
+                body:
+                  largeText: "%s"
+                storeToVariable: largeResponse
+            """.formatted(port, "A".repeat(10_000)); // 10KB of 'A'
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        engine.publishEvent(event);
+
+        var response = (JsonNode) event.getMetadata("largeResponse");
+        assertThat(response.get("receivedLength").asInt()).isEqualTo(10_000);
+    }
+
+    @Test
+    void testSendHttpRequest_postWrongContentType() {
+        var yaml = """
+            alias: send-post-wrong-content-type
+            triggers:
+              - trigger: alwaysTrue
+            actions:
+              - action: sendHttpRequest
+                url: http://localhost:%s/sendHttpRequest/post/wrongContentType
+                method: POST
+                contentType: text/plain
+                body: "This should fail"
+                storeToVariable: wrongContentTypeResponse
+            """.formatted(port);
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        engine.publishEvent(event);
+
+        var response = (JsonNode) event.getMetadata("wrongContentTypeResponse");
+        assertThat(response.get("error").asText()).isEqualTo("Unsupported content type");
+    }
+
+
 }

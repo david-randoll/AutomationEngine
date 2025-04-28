@@ -94,4 +94,53 @@ public class SendHttpRequestController {
     public Map<String, Object> handleContentTypeOnly(@RequestHeader("Content-Type") String contentType) {
         return Map.of("contentType", contentType);
     }
+
+    @PostMapping("/post/json")
+    public Map<String, Object> postJson(@RequestBody Map<String, Object> body) {
+        String name = (String) body.get("name");
+        Integer age = (Integer) body.get("age");
+        return Map.of("message", "Received " + name + " aged " + age);
+    }
+
+    @PostMapping("/post/form")
+    public Map<String, Object> postForm(@RequestParam Map<String, String> params) {
+        return Map.of("status", "Form received");
+    }
+
+    @PostMapping("/post/multipart")
+    public Map<String, Object> postMultipart(@RequestParam Map<String, String> params) {
+        return Map.of("result", "Multipart received");
+    }
+
+    @PostMapping("/post/missing")
+    public ResponseEntity<Map<String, Object>> postMissing(@RequestBody(required = false) Map<String, Object> body) {
+        if (body == null) {
+            return ResponseEntity.ok(Map.of("error", "Missing body"));
+        }
+        return ResponseEntity.ok(Map.of("received", body));
+    }
+
+    @PostMapping("/post/headers")
+    public Map<String, Object> postHeaders(@RequestHeader("X-Custom-Header") String customHeader,
+                                           @RequestHeader("Authorization") String authorization) {
+        return Map.of(
+                "customHeader", customHeader,
+                "authorization", authorization
+        );
+    }
+
+    @PostMapping("/post/large")
+    public Map<String, Object> postLarge(@RequestBody Map<String, Object> body) {
+        String largeText = (String) body.get("largeText");
+        return Map.of("receivedLength", largeText.length());
+    }
+
+    @PostMapping("/post/wrongContentType")
+    public ResponseEntity<Map<String, Object>> postWrongContentType(@RequestBody(required = false) String body,
+                                                                    @RequestHeader(value = "Content-Type", required = false) String contentType) {
+        if (!"application/json".equals(contentType)) {
+            return ResponseEntity.ok(Map.of("error", "Unsupported content type"));
+        }
+        return ResponseEntity.ok(Map.of("received", body));
+    }
 }
