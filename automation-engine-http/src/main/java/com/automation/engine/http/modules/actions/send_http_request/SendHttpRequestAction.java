@@ -42,7 +42,7 @@ public class SendHttpRequestAction extends PluggableAction<SendHttpRequestAction
                 .contentType(ac.getContentType());
 
         WebClient.RequestHeadersSpec<?> headersSpec = requestBodySpec;
-        if (!ObjectUtils.isEmpty(requestBody)) {
+        if (requestBody != null) {
             headersSpec = requestBodySpec.bodyValue(requestBody);
         }
 

@@ -143,4 +143,39 @@ public class SendHttpRequestController {
         }
         return ResponseEntity.ok(Map.of("received", body));
     }
+
+    @PostMapping("/post/emptyJson")
+    public Map<String, Object> postEmptyJson(@RequestBody Map<String, Object> body) {
+        if (body.isEmpty()) {
+            return Map.of("status", "Empty JSON received");
+        }
+        return Map.of("received", body);
+    }
+
+    @PostMapping("/post/invalidJson")
+    public ResponseEntity<Map<String, Object>> postInvalidJson() {
+        return ResponseEntity.ok(Map.of("error", "Invalid JSON"));
+    }
+
+    @PostMapping("/post/extraFields")
+    public Map<String, Object> postExtraFields(@RequestBody Map<String, Object> body) {
+        String name = (String) body.get("name");
+        Integer age = (Integer) body.get("age");
+        return Map.of("message", "Received " + name + " aged " + age);
+    }
+
+    @PostMapping("/post/largeMultipart")
+    public Map<String, Object> postLargeMultipart(@RequestParam("fileContent") String fileContent) {
+        return Map.of("receivedLength", fileContent.length());
+    }
+
+    @PostMapping("/post/noContentType")
+    public Map<String, Object> postNoContentType(@RequestBody Map<String, Object> body) {
+        return Map.of("status", "Default content-type handled");
+    }
+
+    @PostMapping("/post/headersNoBody")
+    public Map<String, Object> postHeadersNoBody(@RequestHeader("X-Special-Header") String header) {
+        return Map.of("header", header);
+    }
 }
