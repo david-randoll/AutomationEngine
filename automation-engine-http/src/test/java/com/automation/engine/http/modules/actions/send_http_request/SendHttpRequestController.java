@@ -278,4 +278,48 @@ public class SendHttpRequestController {
     public Map<String, Object> putNestedJson(@RequestBody Map<String, Object> body) {
         return body;
     }
+
+    @PatchMapping("/patchMalformedHeaders")
+    public ResponseEntity<String> patchMalformedHeaders(@RequestHeader(value = "X-Custom-Header", required = false) String header) {
+        if (header == null || header.contains("\u0000")) {
+            return ResponseEntity.badRequest().body("Bad Request: Invalid Header");
+        }
+        return ResponseEntity.ok("Header OK");
+    }
+
+    @PatchMapping("/patch/emptyPath")
+    public ResponseEntity<String> patchEmptyPath() {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not Found");
+    }
+
+    @PatchMapping("/patchNoBody")
+    public Map<String, String> patchNoBody(@RequestBody(required = false) Map<String, Object> body) {
+        if (body == null || body.isEmpty()) {
+            return Map.of("status", "no body received");
+        }
+        return Map.of("status", "body received");
+    }
+
+    @PatchMapping("/patchPartial")
+    public ResponseEntity<Map<String, String>> patchPartial(@RequestBody Map<String, String> body) {
+        var response = new HashMap<String, String>();
+        response.put("name", body.getOrDefault("name", "default-name"));
+        response.put("otherField", "default");
+        return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping(value = "/patchText", consumes = MediaType.TEXT_PLAIN_VALUE)
+    public ResponseEntity<String> patchText(@RequestBody String body) {
+        return ResponseEntity.ok("Received " + body);
+    }
+
+    @PatchMapping("/patchUnicode")
+    public Map<String, String> patchUnicode(@RequestBody Map<String, String> body) {
+        return Map.of("echo", body.get("message"));
+    }
+
+    @PatchMapping("/patchDeepJson")
+    public Map<String, Object> patchDeepJson(@RequestBody Map<String, Object> body) {
+        return body;
+    }
 }

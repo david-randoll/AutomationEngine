@@ -1338,6 +1338,328 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
         assertThat(response.at("/level1/level2/level3/level4/level5").asText()).isEqualTo("deep value");
     }
 
+    @Test
+    void testPatch_missingPathVariable() {
+        var yaml = """
+            alias: patch-missing-path-variable
+            triggers:
+              - trigger: alwaysTrue
+            actions:
+              - action: sendHttpRequest
+                url: http://localhost:%s/sendHttpRequest/patchWithoutId
+                method: PATCH
+                storeToVariable: missingPathVar
+            """.formatted(port);
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        engine.publishEvent(event);
+
+        var response = (JsonNode) event.getMetadata("missingPathVar");
+        assertThat(response.asText()).contains("Missing id");
+    }
+
+    @Test
+    void testPatch_extraQueryParams() {
+        var yaml = """
+            alias: patch-extra-query
+            triggers:
+              - trigger: alwaysTrue
+            actions:
+              - action: sendHttpRequest
+                url: http://localhost:%s/sendHttpRequest/patchWithQuery?id=123&extra=unexpected
+                method: PATCH
+                storeToVariable: extraQuery
+            """.formatted(port);
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        engine.publishEvent(event);
+
+        var response = (JsonNode) event.getMetadata("extraQuery");
+        assertThat(response.get("id").asText()).isEqualTo("123");
+    }
+
+    @Test
+    void testPatch_nonExistingEndpoint() {
+        var yaml = """
+            alias: patch-non-existing
+            triggers:
+              - trigger: alwaysTrue
+            actions:
+              - action: sendHttpRequest
+                url: http://localhost:%s/sendHttpRequest/notFoundEndpoint
+                method: PATCH
+                storeToVariable: nonExisting
+            """.formatted(port);
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        engine.publishEvent(event);
+
+        var response = (JsonNode) event.getMetadata("nonExisting");
+        assertThat(response.asText()).contains("Not Found");
+    }
+
+    @Test
+    void testPatch_wrongMethod() {
+        var yaml = """
+            alias: patch-wrong-method
+            triggers:
+              - trigger: alwaysTrue
+            actions:
+              - action: sendHttpRequest
+                url: http://localhost:%s/sendHttpRequest/patchWithQuery?id=1
+                method: POST
+                storeToVariable: wrongMethod
+            """.formatted(port);
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        engine.publishEvent(event);
+
+        var response = (JsonNode) event.getMetadata("wrongMethod");
+        assertThat(response.asText()).contains("Method Not Allowed");
+    }
+
+    @Test
+    void testPatch_largeBody() {
+        var largeBody = "B".repeat(5_000_000); // 5MB
+
+        var yaml = """
+            alias: patch-large-body
+            triggers:
+              - trigger: alwaysTrue
+            actions:
+              - action: sendHttpRequest
+                url: http://localhost:%s/sendHttpRequest/patchLargeBody
+                method: PATCH
+                contentType: application/json
+                body:
+                  largeField: "%s"
+                storeToVariable: largeBody
+            """.formatted(port, largeBody);
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        engine.publishEvent(event);
+
+        var response = (JsonNode) event.getMetadata("largeBody");
+        assertThat(response.get("status").asText()).isEqualTo("received large body");
+    }
+
+    @Test
+    void testPatch_timeout() {
+        var yaml = """
+            alias: patch-timeout
+            triggers:
+              - trigger: alwaysTrue
+            actions:
+              - action: sendHttpRequest
+                url: http://localhost:%s/sendHttpRequest/patchTimeout
+                method: PATCH
+                storeToVariable: timeoutResponse
+            """.formatted(port);
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        engine.publishEvent(event);
+
+        var response = (JsonNode) event.getMetadata("timeoutResponse");
+        assertThat(response.asText()).contains("Request timeout");
+    }
+
+    @Test
+    void testPatch_malformedHeaders() {
+        var yaml = """
+            alias: patch-malformed-headers
+            triggers:
+              - trigger: alwaysTrue
+            actions:
+              - action: sendHttpRequest
+                url: http://localhost:%s/sendHttpRequest/patchMalformedHeaders
+                method: PATCH
+                headers:
+                  X-Custom-Header: "\\u0000InvalidHeader"
+                storeToVariable: malformedHeaderResponse
+            """.formatted(port);
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        engine.publishEvent(event);
+
+        var response = (JsonNode) event.getMetadata("malformedHeaderResponse");
+        assertThat(response.asText()).contains("Bad Request");
+    }
+
+    @Test
+    void testPatch_emptyPath() {
+        var yaml = """
+            alias: patch-empty-path
+            triggers:
+              - trigger: alwaysTrue
+            actions:
+              - action: sendHttpRequest
+                url: http://localhost:%s/patch/emptyPath
+                method: PATCH
+                storeToVariable: emptyPathResponse
+            """.formatted(port);
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        engine.publishEvent(event);
+
+        var response = (JsonNode) event.getMetadata("emptyPathResponse");
+        assertThat(response.asText()).contains("Not Found");
+    }
+
+    @Test
+    void testPatch_noBodyNoContentLength() {
+        var yaml = """
+            alias: patch-no-body
+            triggers:
+              - trigger: alwaysTrue
+            actions:
+              - action: sendHttpRequest
+                url: http://localhost:%s/sendHttpRequest/patchNoBody
+                method: PATCH
+                storeToVariable: noBodyResponse
+            """.formatted(port);
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        engine.publishEvent(event);
+
+        var response = (JsonNode) event.getMetadata("noBodyResponse");
+        assertThat(response.get("status").asText()).isEqualTo("no body received");
+    }
+
+    @Test
+    void testPatch_partialUpdate() {
+        var yaml = """
+            alias: patch-partial-update
+            triggers:
+              - trigger: alwaysTrue
+            actions:
+              - action: sendHttpRequest
+                url: http://localhost:%s/sendHttpRequest/patchPartial
+                method: PATCH
+                contentType: application/json
+                body:
+                  name: "updated-name"
+                storeToVariable: partialUpdateResponse
+            """.formatted(port);
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        engine.publishEvent(event);
+
+        var response = (JsonNode) event.getMetadata("partialUpdateResponse");
+        assertThat(response.get("name").asText()).isEqualTo("updated-name");
+        assertThat(response.get("otherField").asText()).isEqualTo("default");
+    }
+
+    @Test
+    void testPatch_nonJsonContentType() {
+        var yaml = """
+            alias: patch-non-json
+            triggers:
+              - trigger: alwaysTrue
+            actions:
+              - action: sendHttpRequest
+                url: http://localhost:%s/sendHttpRequest/patchText
+                method: PATCH
+                contentType: text/plain
+                body: "plain text patch"
+                storeToVariable: nonJsonResponse
+            """.formatted(port);
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        engine.publishEvent(event);
+
+        var response = (JsonNode) event.getMetadata("nonJsonResponse");
+        assertThat(response.asText()).isEqualTo("Received plain text patch");
+    }
+
+    @Test
+    void testPatch_unicodeEmojiInBody() {
+        var yaml = """
+            alias: patch-unicode-emoji
+            triggers:
+              - trigger: alwaysTrue
+            actions:
+              - action: sendHttpRequest
+                url: http://localhost:%s/sendHttpRequest/patchUnicode
+                method: PATCH
+                contentType: application/json
+                body:
+                  message: "Hello 👋🌍"
+                storeToVariable: unicodeResponse
+            """.formatted(port);
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        engine.publishEvent(event);
+
+        var response = (JsonNode) event.getMetadata("unicodeResponse");
+        assertThat(response.get("echo").asText()).isEqualTo("Hello 👋🌍");
+    }
+
+    @Test
+    void testPatch_deepNestedJson() {
+        var yaml = """
+            alias: patch-deep-nested
+            triggers:
+              - trigger: alwaysTrue
+            actions:
+              - action: sendHttpRequest
+                url: http://localhost:%s/sendHttpRequest/patchDeepJson
+                method: PATCH
+                contentType: application/json
+                body:
+                  level1:
+                    level2:
+                      level3:
+                        level4:
+                          key: "value"
+                storeToVariable: deepNestedResponse
+            """.formatted(port);
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        engine.publishEvent(event);
+
+        var response = (JsonNode) event.getMetadata("deepNestedResponse");
+        assertThat(response.at("/level1/level2/level3/level4/key").asText()).isEqualTo("value");
+    }
+
 
 
 
