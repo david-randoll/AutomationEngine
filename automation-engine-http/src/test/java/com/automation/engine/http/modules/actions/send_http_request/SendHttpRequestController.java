@@ -322,4 +322,98 @@ public class SendHttpRequestController {
     public Map<String, Object> patchDeepJson(@RequestBody Map<String, Object> body) {
         return body;
     }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> deleteWithPathVariable(@PathVariable String id) {
+        return ResponseEntity.ok("Item " + id + " deleted");
+    }
+
+    @DeleteMapping("/deleteNoBody")
+    public ResponseEntity<String> deleteNoBody() {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not Found");
+    }
+
+    @DeleteMapping("/deleteWithQuery")
+    public ResponseEntity<String> deleteWithQuery(@RequestParam("id") String id) {
+        return ResponseEntity.ok("Query param id " + id + " deleted");
+    }
+
+    @DeleteMapping("/deleteWithHeaders")
+    public ResponseEntity<String> deleteWithHeaders(@RequestHeader("X-Custom-Header") String header) {
+        if ("some-header-value".equals(header)) {
+            return ResponseEntity.ok("Headers received");
+        }
+        return ResponseEntity.badRequest().body("Bad Header");
+    }
+
+    @DeleteMapping("/deleteInvalid")
+    public ResponseEntity<String> deleteInvalid() {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not Found");
+    }
+
+    @DeleteMapping("/deleteWithBody")
+    public ResponseEntity<String> deleteWithBody(@RequestBody Map<String, Object> body) {
+        return ResponseEntity.ok("Item " + body.get("id") + " deleted with body");
+    }
+
+
+    @DeleteMapping("/deleteNoPath")
+    public ResponseEntity<String> deleteNoPath() {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not Found");
+    }
+
+    @DeleteMapping("/deleteInvalidPath")
+    public ResponseEntity<String> deleteInvalidPath() {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not Found");
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> deleteWithInvalidPathVariable(@PathVariable("id") String id) {
+        if ("invalid-id".equals(id)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Item invalid-id not found");
+        }
+        return ResponseEntity.status(HttpStatus.OK).body("Item " + id + " deleted");
+    }
+
+    @DeleteMapping("/deleteWithQuery")
+    public ResponseEntity<String> deleteWithInvalidQuery(@RequestParam(value = "param", required = false) String param) {
+        if ("invalid".equals(param)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid query parameter");
+        }
+        return ResponseEntity.status(HttpStatus.OK).body("Item deleted with param: " + param);
+    }
+
+    @DeleteMapping("/deleteWithHeaders")
+    public ResponseEntity<String> deleteWithInvalidHeaders(@RequestHeader(value = "X-Invalid-Header", required = false) String invalidHeader) {
+        if (invalidHeader != null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid Header");
+        }
+        return ResponseEntity.status(HttpStatus.OK).body("Item deleted with valid headers");
+    }
+
+
+    @DeleteMapping("/deleteMalformedJson")
+    public ResponseEntity<String> deleteMalformedJson(@RequestBody String malformedJson) {
+        if (malformedJson.contains("abc")) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Malformed JSON");
+        }
+        return ResponseEntity.status(HttpStatus.OK).body("Item deleted with valid JSON");
+    }
+
+    @DeleteMapping("/deleteWithExtraQuery")
+    public ResponseEntity<String> deleteWithExtraQuery(@RequestParam(value = "extra", required = false) String extra,
+                                                       @RequestParam(value = "param", required = false) String param) {
+        if (extra != null && param != null) {
+            return ResponseEntity.status(HttpStatus.OK).body("Item " + param + " deleted with extra params");
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Missing query parameters");
+    }
+
+    @DeleteMapping("/deleteEmptyBody")
+    public ResponseEntity<String> deleteEmptyBody(@RequestBody Map<String, Object> body) {
+        if (body.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.OK).body("Empty body received");
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Body is not empty");
+    }
 }

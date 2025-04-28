@@ -445,19 +445,19 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
     @Test
     void testSendHttpRequest_postJsonBody() {
         var yaml = """
-            alias: send-post-json
-            triggers:
-              - trigger: alwaysTrue
-            actions:
-              - action: sendHttpRequest
-                url: http://localhost:%s/sendHttpRequest/post/json
-                method: POST
-                contentType: application/json
-                body:
-                  name: David
-                  age: 30
-                storeToVariable: jsonResponse
-            """.formatted(port);
+                alias: send-post-json
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: sendHttpRequest
+                    url: http://localhost:%s/sendHttpRequest/post/json
+                    method: POST
+                    contentType: application/json
+                    body:
+                      name: David
+                      age: 30
+                    storeToVariable: jsonResponse
+                """.formatted(port);
 
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
@@ -472,19 +472,19 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
     @Test
     void testSendHttpRequest_postFormUrlencoded() {
         var yaml = """
-            alias: send-post-form
-            triggers:
-              - trigger: alwaysTrue
-            actions:
-              - action: sendHttpRequest
-                url: http://localhost:%s/sendHttpRequest/post/form
-                method: POST
-                contentType: application/x-www-form-urlencoded
-                body:
-                  username: david
-                  password: secret
-                storeToVariable: formResponse
-            """.formatted(port);
+                alias: send-post-form
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: sendHttpRequest
+                    url: http://localhost:%s/sendHttpRequest/post/form
+                    method: POST
+                    contentType: application/x-www-form-urlencoded
+                    body:
+                      username: david
+                      password: secret
+                    storeToVariable: formResponse
+                """.formatted(port);
 
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
@@ -499,19 +499,19 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
     @Test
     void testSendHttpRequest_postMultipartForm() {
         var yaml = """
-            alias: send-post-multipart
-            triggers:
-              - trigger: alwaysTrue
-            actions:
-              - action: sendHttpRequest
-                url: http://localhost:%s/sendHttpRequest/post/multipart
-                method: POST
-                contentType: multipart/form-data
-                body:
-                  description: "Test file upload"
-                  fileContent: "FakeFileContentHere"
-                storeToVariable: multipartResponse
-            """.formatted(port);
+                alias: send-post-multipart
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: sendHttpRequest
+                    url: http://localhost:%s/sendHttpRequest/post/multipart
+                    method: POST
+                    contentType: multipart/form-data
+                    body:
+                      description: "Test file upload"
+                      fileContent: "FakeFileContentHere"
+                    storeToVariable: multipartResponse
+                """.formatted(port);
 
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
@@ -526,16 +526,16 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
     @Test
     void testSendHttpRequest_postMissingBody() {
         var yaml = """
-            alias: send-post-missing-body
-            triggers:
-              - trigger: alwaysTrue
-            actions:
-              - action: sendHttpRequest
-                url: http://localhost:%s/sendHttpRequest/post/missing
-                method: POST
-                contentType: application/json
-                storeToVariable: missingBodyResponse
-            """.formatted(port);
+                alias: send-post-missing-body
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: sendHttpRequest
+                    url: http://localhost:%s/sendHttpRequest/post/missing
+                    method: POST
+                    contentType: application/json
+                    storeToVariable: missingBodyResponse
+                """.formatted(port);
 
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
@@ -550,20 +550,20 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
     @Test
     void testSendHttpRequest_postCustomHeaders() {
         var yaml = """
-            alias: send-post-headers
-            triggers:
-              - trigger: alwaysTrue
-            actions:
-              - action: sendHttpRequest
-                url: http://localhost:%s/sendHttpRequest/post/headers
-                method: POST
-                headers:
-                  X-Custom-Header: "my-header-value"
-                  Authorization: "Bearer token123"
-                body:
-                  dummy: test
-                storeToVariable: headerResponse
-            """.formatted(port);
+                alias: send-post-headers
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: sendHttpRequest
+                    url: http://localhost:%s/sendHttpRequest/post/headers
+                    method: POST
+                    headers:
+                      X-Custom-Header: "my-header-value"
+                      Authorization: "Bearer token123"
+                    body:
+                      dummy: test
+                    storeToVariable: headerResponse
+                """.formatted(port);
 
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
@@ -579,18 +579,18 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
     @Test
     void testSendHttpRequest_postLargeBody() {
         var yaml = """
-            alias: send-post-large
-            triggers:
-              - trigger: alwaysTrue
-            actions:
-              - action: sendHttpRequest
-                url: http://localhost:%s/sendHttpRequest/post/large
-                method: POST
-                contentType: application/json
-                body:
-                  largeText: "%s"
-                storeToVariable: largeResponse
-            """.formatted(port, "A".repeat(10_000)); // 10KB of 'A'
+                alias: send-post-large
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: sendHttpRequest
+                    url: http://localhost:%s/sendHttpRequest/post/large
+                    method: POST
+                    contentType: application/json
+                    body:
+                      largeText: "%s"
+                    storeToVariable: largeResponse
+                """.formatted(port, "A".repeat(10_000)); // 10KB of 'A'
 
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
@@ -605,17 +605,17 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
     @Test
     void testSendHttpRequest_postWrongContentType() {
         var yaml = """
-            alias: send-post-wrong-content-type
-            triggers:
-              - trigger: alwaysTrue
-            actions:
-              - action: sendHttpRequest
-                url: http://localhost:%s/sendHttpRequest/post/wrongContentType
-                method: POST
-                contentType: text/plain
-                body: "This should fail"
-                storeToVariable: wrongContentTypeResponse
-            """.formatted(port);
+                alias: send-post-wrong-content-type
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: sendHttpRequest
+                    url: http://localhost:%s/sendHttpRequest/post/wrongContentType
+                    method: POST
+                    contentType: text/plain
+                    body: "This should fail"
+                    storeToVariable: wrongContentTypeResponse
+                """.formatted(port);
 
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
@@ -630,17 +630,17 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
     @Test
     void testSendHttpRequest_postEmptyJson() {
         var yaml = """
-            alias: send-post-empty-json
-            triggers:
-              - trigger: alwaysTrue
-            actions:
-              - action: sendHttpRequest
-                url: http://localhost:%s/sendHttpRequest/post/emptyJson
-                method: POST
-                contentType: application/json
-                body: {}
-                storeToVariable: emptyJsonResponse
-            """.formatted(port);
+                alias: send-post-empty-json
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: sendHttpRequest
+                    url: http://localhost:%s/sendHttpRequest/post/emptyJson
+                    method: POST
+                    contentType: application/json
+                    body: {}
+                    storeToVariable: emptyJsonResponse
+                """.formatted(port);
 
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
@@ -655,17 +655,17 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
     @Test
     void testSendHttpRequest_postInvalidJson() {
         var yaml = """
-            alias: send-post-invalid-json
-            triggers:
-              - trigger: alwaysTrue
-            actions:
-              - action: sendHttpRequest
-                url: http://localhost:%s/sendHttpRequest/post/invalidJson
-                method: POST
-                contentType: application/json
-                rawBody: "{ invalid: json "
-                storeToVariable: invalidJsonResponse
-            """.formatted(port);
+                alias: send-post-invalid-json
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: sendHttpRequest
+                    url: http://localhost:%s/sendHttpRequest/post/invalidJson
+                    method: POST
+                    contentType: application/json
+                    rawBody: "{ invalid: json "
+                    storeToVariable: invalidJsonResponse
+                """.formatted(port);
 
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
@@ -680,20 +680,20 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
     @Test
     void testSendHttpRequest_postExtraFields() {
         var yaml = """
-            alias: send-post-extra-fields
-            triggers:
-              - trigger: alwaysTrue
-            actions:
-              - action: sendHttpRequest
-                url: http://localhost:%s/sendHttpRequest/post/extraFields
-                method: POST
-                contentType: application/json
-                body:
-                  name: "John"
-                  age: 25
-                  extra: "thisShouldBeIgnored"
-                storeToVariable: extraFieldsResponse
-            """.formatted(port);
+                alias: send-post-extra-fields
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: sendHttpRequest
+                    url: http://localhost:%s/sendHttpRequest/post/extraFields
+                    method: POST
+                    contentType: application/json
+                    body:
+                      name: "John"
+                      age: 25
+                      extra: "thisShouldBeIgnored"
+                    storeToVariable: extraFieldsResponse
+                """.formatted(port);
 
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
@@ -708,18 +708,18 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
     @Test
     void testSendHttpRequest_postLargeMultipart() {
         var yaml = """
-            alias: send-post-large-multipart
-            triggers:
-              - trigger: alwaysTrue
-            actions:
-              - action: sendHttpRequest
-                url: http://localhost:%s/sendHttpRequest/post/largeMultipart
-                method: POST
-                contentType: multipart/form-data
-                body:
-                  fileContent: "%s"
-                storeToVariable: largeMultipartResponse
-            """.formatted(port, "B".repeat(20_000)); // 20KB
+                alias: send-post-large-multipart
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: sendHttpRequest
+                    url: http://localhost:%s/sendHttpRequest/post/largeMultipart
+                    method: POST
+                    contentType: multipart/form-data
+                    body:
+                      fileContent: "%s"
+                    storeToVariable: largeMultipartResponse
+                """.formatted(port, "B".repeat(20_000)); // 20KB
 
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
@@ -734,17 +734,17 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
     @Test
     void testSendHttpRequest_postNoContentType() {
         var yaml = """
-            alias: send-post-no-content-type
-            triggers:
-              - trigger: alwaysTrue
-            actions:
-              - action: sendHttpRequest
-                url: http://localhost:%s/sendHttpRequest/post/noContentType
-                method: POST
-                body:
-                  someKey: someValue
-                storeToVariable: noContentTypeResponse
-            """.formatted(port);
+                alias: send-post-no-content-type
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: sendHttpRequest
+                    url: http://localhost:%s/sendHttpRequest/post/noContentType
+                    method: POST
+                    body:
+                      someKey: someValue
+                    storeToVariable: noContentTypeResponse
+                """.formatted(port);
 
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
@@ -759,17 +759,17 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
     @Test
     void testSendHttpRequest_postHeadersNoBody() {
         var yaml = """
-            alias: send-post-headers-no-body
-            triggers:
-              - trigger: alwaysTrue
-            actions:
-              - action: sendHttpRequest
-                url: http://localhost:%s/sendHttpRequest/post/headersNoBody
-                method: POST
-                headers:
-                  X-Special-Header: "specialValue"
-                storeToVariable: headersNoBodyResponse
-            """.formatted(port);
+                alias: send-post-headers-no-body
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: sendHttpRequest
+                    url: http://localhost:%s/sendHttpRequest/post/headersNoBody
+                    method: POST
+                    headers:
+                      X-Special-Header: "specialValue"
+                    storeToVariable: headersNoBodyResponse
+                """.formatted(port);
 
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
@@ -784,19 +784,19 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
     @Test
     void testSendHttpRequest_putSimpleJson() {
         var yaml = """
-            alias: send-put-simple
-            triggers:
-              - trigger: alwaysTrue
-            actions:
-              - action: sendHttpRequest
-                url: http://localhost:%s/sendHttpRequest/put/simple
-                method: PUT
-                contentType: application/json
-                body:
-                  name: "David"
-                  role: "admin"
-                storeToVariable: putSimpleResponse
-            """.formatted(port);
+                alias: send-put-simple
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: sendHttpRequest
+                    url: http://localhost:%s/sendHttpRequest/put/simple
+                    method: PUT
+                    contentType: application/json
+                    body:
+                      name: "David"
+                      role: "admin"
+                    storeToVariable: putSimpleResponse
+                """.formatted(port);
 
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
@@ -811,18 +811,18 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
     @Test
     void testSendHttpRequest_putWithPathVariable() {
         var yaml = """
-            alias: send-put-path-variable
-            triggers:
-              - trigger: alwaysTrue
-            actions:
-              - action: sendHttpRequest
-                url: http://localhost:%s/sendHttpRequest/put/user/42
-                method: PUT
-                contentType: application/json
-                body:
-                  email: "david@example.com"
-                storeToVariable: putPathVariableResponse
-            """.formatted(port);
+                alias: send-put-path-variable
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: sendHttpRequest
+                    url: http://localhost:%s/sendHttpRequest/put/user/42
+                    method: PUT
+                    contentType: application/json
+                    body:
+                      email: "david@example.com"
+                    storeToVariable: putPathVariableResponse
+                """.formatted(port);
 
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
@@ -837,18 +837,18 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
     @Test
     void testSendHttpRequest_putWithQueryParams() {
         var yaml = """
-            alias: send-put-query-params
-            triggers:
-              - trigger: alwaysTrue
-            actions:
-              - action: sendHttpRequest
-                url: http://localhost:%s/sendHttpRequest/put/query?active=true
-                method: PUT
-                contentType: application/json
-                body:
-                  username: "david"
-                storeToVariable: putQueryResponse
-            """.formatted(port);
+                alias: send-put-query-params
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: sendHttpRequest
+                    url: http://localhost:%s/sendHttpRequest/put/query?active=true
+                    method: PUT
+                    contentType: application/json
+                    body:
+                      username: "david"
+                    storeToVariable: putQueryResponse
+                """.formatted(port);
 
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
@@ -863,20 +863,20 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
     @Test
     void testSendHttpRequest_putWithHeaders() {
         var yaml = """
-            alias: send-put-with-headers
-            triggers:
-              - trigger: alwaysTrue
-            actions:
-              - action: sendHttpRequest
-                url: http://localhost:%s/sendHttpRequest/put/headers
-                method: PUT
-                contentType: application/json
-                headers:
-                  X-Update-Mode: "force"
-                body:
-                  username: "david"
-                storeToVariable: putHeaderResponse
-            """.formatted(port);
+                alias: send-put-with-headers
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: sendHttpRequest
+                    url: http://localhost:%s/sendHttpRequest/put/headers
+                    method: PUT
+                    contentType: application/json
+                    headers:
+                      X-Update-Mode: "force"
+                    body:
+                      username: "david"
+                    storeToVariable: putHeaderResponse
+                """.formatted(port);
 
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
@@ -891,17 +891,17 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
     @Test
     void testSendHttpRequest_putEmptyBody() {
         var yaml = """
-            alias: send-put-empty-body
-            triggers:
-              - trigger: alwaysTrue
-            actions:
-              - action: sendHttpRequest
-                url: http://localhost:%s/sendHttpRequest/put/emptyBody
-                method: PUT
-                contentType: application/json
-                body: {}
-                storeToVariable: putEmptyBodyResponse
-            """.formatted(port);
+                alias: send-put-empty-body
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: sendHttpRequest
+                    url: http://localhost:%s/sendHttpRequest/put/emptyBody
+                    method: PUT
+                    contentType: application/json
+                    body: {}
+                    storeToVariable: putEmptyBodyResponse
+                """.formatted(port);
 
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
@@ -916,17 +916,17 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
     @Test
     void testSendHttpRequest_putInvalidJson() {
         var yaml = """
-            alias: send-put-invalid-json
-            triggers:
-              - trigger: alwaysTrue
-            actions:
-              - action: sendHttpRequest
-                url: http://localhost:%s/sendHttpRequest/put/invalidJson
-                method: PUT
-                contentType: application/json
-                rawBody: "{ broken: json "
-                storeToVariable: putInvalidJsonResponse
-            """.formatted(port);
+                alias: send-put-invalid-json
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: sendHttpRequest
+                    url: http://localhost:%s/sendHttpRequest/put/invalidJson
+                    method: PUT
+                    contentType: application/json
+                    rawBody: "{ broken: json "
+                    storeToVariable: putInvalidJsonResponse
+                """.formatted(port);
 
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
@@ -941,18 +941,18 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
     @Test
     void testSendHttpRequest_putLargePayload() {
         var yaml = """
-            alias: send-put-large-payload
-            triggers:
-              - trigger: alwaysTrue
-            actions:
-              - action: sendHttpRequest
-                url: http://localhost:%s/sendHttpRequest/put/large
-                method: PUT
-                contentType: application/json
-                body:
-                  bigText: "%s"
-                storeToVariable: putLargeResponse
-            """.formatted(port, "X".repeat(30_000)); // 30KB payload
+                alias: send-put-large-payload
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: sendHttpRequest
+                    url: http://localhost:%s/sendHttpRequest/put/large
+                    method: PUT
+                    contentType: application/json
+                    body:
+                      bigText: "%s"
+                    storeToVariable: putLargeResponse
+                """.formatted(port, "X".repeat(30_000)); // 30KB payload
 
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
@@ -967,18 +967,18 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
     @Test
     void testSendHttpRequest_putMultipartForm() {
         var yaml = """
-            alias: send-put-multipart
-            triggers:
-              - trigger: alwaysTrue
-            actions:
-              - action: sendHttpRequest
-                url: http://localhost:%s/sendHttpRequest/put/multipart
-                method: PUT
-                contentType: multipart/form-data
-                body:
-                  description: "Test upload"
-                storeToVariable: putMultipartResponse
-            """.formatted(port);
+                alias: send-put-multipart
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: sendHttpRequest
+                    url: http://localhost:%s/sendHttpRequest/put/multipart
+                    method: PUT
+                    contentType: multipart/form-data
+                    body:
+                      description: "Test upload"
+                    storeToVariable: putMultipartResponse
+                """.formatted(port);
 
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
@@ -993,17 +993,17 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
     @Test
     void testSendHttpRequest_putNoContentType() {
         var yaml = """
-            alias: send-put-no-content-type
-            triggers:
-              - trigger: alwaysTrue
-            actions:
-              - action: sendHttpRequest
-                url: http://localhost:%s/sendHttpRequest/put/noContentType
-                method: PUT
-                body:
-                  info: "noContentType"
-                storeToVariable: putNoContentTypeResponse
-            """.formatted(port);
+                alias: send-put-no-content-type
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: sendHttpRequest
+                    url: http://localhost:%s/sendHttpRequest/put/noContentType
+                    method: PUT
+                    body:
+                      info: "noContentType"
+                    storeToVariable: putNoContentTypeResponse
+                """.formatted(port);
 
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
@@ -1018,15 +1018,15 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
     @Test
     void testPut_missingPathVariable() {
         var yaml = """
-            alias: put-missing-path-variable
-            triggers:
-              - trigger: alwaysTrue
-            actions:
-              - action: sendHttpRequest
-                url: http://localhost:%s/sendHttpRequest/putWithoutId
-                method: PUT
-                storeToVariable: missingPathVar
-            """.formatted(port);
+                alias: put-missing-path-variable
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: sendHttpRequest
+                    url: http://localhost:%s/sendHttpRequest/putWithoutId
+                    method: PUT
+                    storeToVariable: missingPathVar
+                """.formatted(port);
 
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
@@ -1041,15 +1041,15 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
     @Test
     void testPut_extraQueryParams() {
         var yaml = """
-            alias: put-extra-query
-            triggers:
-              - trigger: alwaysTrue
-            actions:
-              - action: sendHttpRequest
-                url: http://localhost:%s/sendHttpRequest/putWithQuery?id=123&extra=unexpected
-                method: PUT
-                storeToVariable: extraQuery
-            """.formatted(port);
+                alias: put-extra-query
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: sendHttpRequest
+                    url: http://localhost:%s/sendHttpRequest/putWithQuery?id=123&extra=unexpected
+                    method: PUT
+                    storeToVariable: extraQuery
+                """.formatted(port);
 
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
@@ -1064,15 +1064,15 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
     @Test
     void testPut_nonExistingEndpoint() {
         var yaml = """
-            alias: put-non-existing
-            triggers:
-              - trigger: alwaysTrue
-            actions:
-              - action: sendHttpRequest
-                url: http://localhost:%s/sendHttpRequest/notFoundEndpoint
-                method: PUT
-                storeToVariable: nonExisting
-            """.formatted(port);
+                alias: put-non-existing
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: sendHttpRequest
+                    url: http://localhost:%s/sendHttpRequest/notFoundEndpoint
+                    method: PUT
+                    storeToVariable: nonExisting
+                """.formatted(port);
 
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
@@ -1087,15 +1087,15 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
     @Test
     void testPut_wrongMethod() {
         var yaml = """
-            alias: put-wrong-method
-            triggers:
-              - trigger: alwaysTrue
-            actions:
-              - action: sendHttpRequest
-                url: http://localhost:%s/sendHttpRequest/putWithQuery?id=1
-                method: GET
-                storeToVariable: wrongMethod
-            """.formatted(port);
+                alias: put-wrong-method
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: sendHttpRequest
+                    url: http://localhost:%s/sendHttpRequest/putWithQuery?id=1
+                    method: GET
+                    storeToVariable: wrongMethod
+                """.formatted(port);
 
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
@@ -1106,23 +1106,24 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
         var response = (JsonNode) event.getMetadata("wrongMethod");
         assertThat(response.asText()).contains("Method Not Allowed");
     }
+
     @Test
     void testPut_largeBody() {
         var largeBody = "A".repeat(5_000_000); // 5MB
 
         var yaml = """
-            alias: put-large-body
-            triggers:
-              - trigger: alwaysTrue
-            actions:
-              - action: sendHttpRequest
-                url: http://localhost:%s/sendHttpRequest/putLargeBody
-                method: PUT
-                contentType: application/json
-                body:
-                  largeField: "%s"
-                storeToVariable: largeBody
-            """.formatted(port, largeBody);
+                alias: put-large-body
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: sendHttpRequest
+                    url: http://localhost:%s/sendHttpRequest/putLargeBody
+                    method: PUT
+                    contentType: application/json
+                    body:
+                      largeField: "%s"
+                    storeToVariable: largeBody
+                """.formatted(port, largeBody);
 
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
@@ -1137,15 +1138,15 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
     @Test
     void testPut_timeout() {
         var yaml = """
-            alias: put-timeout
-            triggers:
-              - trigger: alwaysTrue
-            actions:
-              - action: sendHttpRequest
-                url: http://localhost:%s/sendHttpRequest/putTimeout
-                method: PUT
-                storeToVariable: timeoutResponse
-            """.formatted(port);
+                alias: put-timeout
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: sendHttpRequest
+                    url: http://localhost:%s/sendHttpRequest/putTimeout
+                    method: PUT
+                    storeToVariable: timeoutResponse
+                """.formatted(port);
 
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
@@ -1160,17 +1161,17 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
     @Test
     void testPut_malformedHeaders() {
         var yaml = """
-            alias: put-malformed-headers
-            triggers:
-              - trigger: alwaysTrue
-            actions:
-              - action: sendHttpRequest
-                url: http://localhost:%s/sendHttpRequest/putMalformedHeaders
-                method: PUT
-                headers:
-                  X-Custom-Header: "invalid header \u0000"
-                storeToVariable: malformedHeaders
-            """.formatted(port);
+                alias: put-malformed-headers
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: sendHttpRequest
+                    url: http://localhost:%s/sendHttpRequest/putMalformedHeaders
+                    method: PUT
+                    headers:
+                      X-Custom-Header: "invalid header \u0000"
+                    storeToVariable: malformedHeaders
+                """.formatted(port);
 
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
@@ -1185,15 +1186,15 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
     @Test
     void testPut_emptyPath() {
         var yaml = """
-            alias: put-empty-path
-            triggers:
-              - trigger: alwaysTrue
-            actions:
-              - action: sendHttpRequest
-                url: http://localhost:%s/
-                method: PUT
-                storeToVariable: emptyPath
-            """.formatted(port);
+                alias: put-empty-path
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: sendHttpRequest
+                    url: http://localhost:%s/
+                    method: PUT
+                    storeToVariable: emptyPath
+                """.formatted(port);
 
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
@@ -1208,15 +1209,15 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
     @Test
     void testPut_noBody() {
         var yaml = """
-            alias: put-no-body
-            triggers:
-              - trigger: alwaysTrue
-            actions:
-              - action: sendHttpRequest
-                url: http://localhost:%s/sendHttpRequest/putNoBody
-                method: PUT
-                storeToVariable: noBodyResponse
-            """.formatted(port);
+                alias: put-no-body
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: sendHttpRequest
+                    url: http://localhost:%s/sendHttpRequest/putNoBody
+                    method: PUT
+                    storeToVariable: noBodyResponse
+                """.formatted(port);
 
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
@@ -1231,23 +1232,23 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
     @Test
     void testPut_overwriteBehavior() {
         var yaml = """
-            alias: put-overwrite
-            triggers:
-              - trigger: alwaysTrue
-            actions:
-              - action: sendHttpRequest
-                url: http://localhost:%s/sendHttpRequest/putOverwrite?id=123
-                method: PUT
-                body:
-                  field: "initial"
-                storeToVariable: firstPut
-              - action: sendHttpRequest
-                url: http://localhost:%s/sendHttpRequest/putOverwrite?id=123
-                method: PUT
-                body:
-                  field: "updated"
-                storeToVariable: secondPut
-            """.formatted(port, port);
+                alias: put-overwrite
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: sendHttpRequest
+                    url: http://localhost:%s/sendHttpRequest/putOverwrite?id=123
+                    method: PUT
+                    body:
+                      field: "initial"
+                    storeToVariable: firstPut
+                  - action: sendHttpRequest
+                    url: http://localhost:%s/sendHttpRequest/putOverwrite?id=123
+                    method: PUT
+                    body:
+                      field: "updated"
+                    storeToVariable: secondPut
+                """.formatted(port, port);
 
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
@@ -1262,17 +1263,17 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
     @Test
     void testPut_nonJsonContentType() {
         var yaml = """
-            alias: put-non-json
-            triggers:
-              - trigger: alwaysTrue
-            actions:
-              - action: sendHttpRequest
-                url: http://localhost:%s/sendHttpRequest/putPlainText
-                method: PUT
-                contentType: text/plain
-                body: "plain text body"
-                storeToVariable: plainTextResponse
-            """.formatted(port);
+                alias: put-non-json
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: sendHttpRequest
+                    url: http://localhost:%s/sendHttpRequest/putPlainText
+                    method: PUT
+                    contentType: text/plain
+                    body: "plain text body"
+                    storeToVariable: plainTextResponse
+                """.formatted(port);
 
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
@@ -1287,17 +1288,17 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
     @Test
     void testPut_unicodeInBody() {
         var yaml = """
-            alias: put-unicode
-            triggers:
-              - trigger: alwaysTrue
-            actions:
-              - action: sendHttpRequest
-                url: http://localhost:%s/sendHttpRequest/putUnicode
-                method: PUT
-                body:
-                  message: "Hello 🌎🚀"
-                storeToVariable: unicodeResponse
-            """.formatted(port);
+                alias: put-unicode
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: sendHttpRequest
+                    url: http://localhost:%s/sendHttpRequest/putUnicode
+                    method: PUT
+                    body:
+                      message: "Hello 🌎🚀"
+                    storeToVariable: unicodeResponse
+                """.formatted(port);
 
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
@@ -1312,21 +1313,21 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
     @Test
     void testPut_deeplyNestedJson() {
         var yaml = """
-            alias: put-nested-json
-            triggers:
-              - trigger: alwaysTrue
-            actions:
-              - action: sendHttpRequest
-                url: http://localhost:%s/sendHttpRequest/putNestedJson
-                method: PUT
-                body:
-                  level1:
-                    level2:
-                      level3:
-                        level4:
-                          level5: "deep value"
-                storeToVariable: nestedJsonResponse
-            """.formatted(port);
+                alias: put-nested-json
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: sendHttpRequest
+                    url: http://localhost:%s/sendHttpRequest/putNestedJson
+                    method: PUT
+                    body:
+                      level1:
+                        level2:
+                          level3:
+                            level4:
+                              level5: "deep value"
+                    storeToVariable: nestedJsonResponse
+                """.formatted(port);
 
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
@@ -1341,15 +1342,15 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
     @Test
     void testPatch_missingPathVariable() {
         var yaml = """
-            alias: patch-missing-path-variable
-            triggers:
-              - trigger: alwaysTrue
-            actions:
-              - action: sendHttpRequest
-                url: http://localhost:%s/sendHttpRequest/patchWithoutId
-                method: PATCH
-                storeToVariable: missingPathVar
-            """.formatted(port);
+                alias: patch-missing-path-variable
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: sendHttpRequest
+                    url: http://localhost:%s/sendHttpRequest/patchWithoutId
+                    method: PATCH
+                    storeToVariable: missingPathVar
+                """.formatted(port);
 
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
@@ -1364,15 +1365,15 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
     @Test
     void testPatch_extraQueryParams() {
         var yaml = """
-            alias: patch-extra-query
-            triggers:
-              - trigger: alwaysTrue
-            actions:
-              - action: sendHttpRequest
-                url: http://localhost:%s/sendHttpRequest/patchWithQuery?id=123&extra=unexpected
-                method: PATCH
-                storeToVariable: extraQuery
-            """.formatted(port);
+                alias: patch-extra-query
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: sendHttpRequest
+                    url: http://localhost:%s/sendHttpRequest/patchWithQuery?id=123&extra=unexpected
+                    method: PATCH
+                    storeToVariable: extraQuery
+                """.formatted(port);
 
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
@@ -1387,15 +1388,15 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
     @Test
     void testPatch_nonExistingEndpoint() {
         var yaml = """
-            alias: patch-non-existing
-            triggers:
-              - trigger: alwaysTrue
-            actions:
-              - action: sendHttpRequest
-                url: http://localhost:%s/sendHttpRequest/notFoundEndpoint
-                method: PATCH
-                storeToVariable: nonExisting
-            """.formatted(port);
+                alias: patch-non-existing
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: sendHttpRequest
+                    url: http://localhost:%s/sendHttpRequest/notFoundEndpoint
+                    method: PATCH
+                    storeToVariable: nonExisting
+                """.formatted(port);
 
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
@@ -1410,15 +1411,15 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
     @Test
     void testPatch_wrongMethod() {
         var yaml = """
-            alias: patch-wrong-method
-            triggers:
-              - trigger: alwaysTrue
-            actions:
-              - action: sendHttpRequest
-                url: http://localhost:%s/sendHttpRequest/patchWithQuery?id=1
-                method: POST
-                storeToVariable: wrongMethod
-            """.formatted(port);
+                alias: patch-wrong-method
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: sendHttpRequest
+                    url: http://localhost:%s/sendHttpRequest/patchWithQuery?id=1
+                    method: POST
+                    storeToVariable: wrongMethod
+                """.formatted(port);
 
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
@@ -1435,18 +1436,18 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
         var largeBody = "B".repeat(5_000_000); // 5MB
 
         var yaml = """
-            alias: patch-large-body
-            triggers:
-              - trigger: alwaysTrue
-            actions:
-              - action: sendHttpRequest
-                url: http://localhost:%s/sendHttpRequest/patchLargeBody
-                method: PATCH
-                contentType: application/json
-                body:
-                  largeField: "%s"
-                storeToVariable: largeBody
-            """.formatted(port, largeBody);
+                alias: patch-large-body
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: sendHttpRequest
+                    url: http://localhost:%s/sendHttpRequest/patchLargeBody
+                    method: PATCH
+                    contentType: application/json
+                    body:
+                      largeField: "%s"
+                    storeToVariable: largeBody
+                """.formatted(port, largeBody);
 
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
@@ -1461,15 +1462,15 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
     @Test
     void testPatch_timeout() {
         var yaml = """
-            alias: patch-timeout
-            triggers:
-              - trigger: alwaysTrue
-            actions:
-              - action: sendHttpRequest
-                url: http://localhost:%s/sendHttpRequest/patchTimeout
-                method: PATCH
-                storeToVariable: timeoutResponse
-            """.formatted(port);
+                alias: patch-timeout
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: sendHttpRequest
+                    url: http://localhost:%s/sendHttpRequest/patchTimeout
+                    method: PATCH
+                    storeToVariable: timeoutResponse
+                """.formatted(port);
 
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
@@ -1484,17 +1485,17 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
     @Test
     void testPatch_malformedHeaders() {
         var yaml = """
-            alias: patch-malformed-headers
-            triggers:
-              - trigger: alwaysTrue
-            actions:
-              - action: sendHttpRequest
-                url: http://localhost:%s/sendHttpRequest/patchMalformedHeaders
-                method: PATCH
-                headers:
-                  X-Custom-Header: "\\u0000InvalidHeader"
-                storeToVariable: malformedHeaderResponse
-            """.formatted(port);
+                alias: patch-malformed-headers
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: sendHttpRequest
+                    url: http://localhost:%s/sendHttpRequest/patchMalformedHeaders
+                    method: PATCH
+                    headers:
+                      X-Custom-Header: "\\u0000InvalidHeader"
+                    storeToVariable: malformedHeaderResponse
+                """.formatted(port);
 
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
@@ -1509,15 +1510,15 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
     @Test
     void testPatch_emptyPath() {
         var yaml = """
-            alias: patch-empty-path
-            triggers:
-              - trigger: alwaysTrue
-            actions:
-              - action: sendHttpRequest
-                url: http://localhost:%s/patch/emptyPath
-                method: PATCH
-                storeToVariable: emptyPathResponse
-            """.formatted(port);
+                alias: patch-empty-path
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: sendHttpRequest
+                    url: http://localhost:%s/patch/emptyPath
+                    method: PATCH
+                    storeToVariable: emptyPathResponse
+                """.formatted(port);
 
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
@@ -1532,15 +1533,15 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
     @Test
     void testPatch_noBodyNoContentLength() {
         var yaml = """
-            alias: patch-no-body
-            triggers:
-              - trigger: alwaysTrue
-            actions:
-              - action: sendHttpRequest
-                url: http://localhost:%s/sendHttpRequest/patchNoBody
-                method: PATCH
-                storeToVariable: noBodyResponse
-            """.formatted(port);
+                alias: patch-no-body
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: sendHttpRequest
+                    url: http://localhost:%s/sendHttpRequest/patchNoBody
+                    method: PATCH
+                    storeToVariable: noBodyResponse
+                """.formatted(port);
 
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
@@ -1555,18 +1556,18 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
     @Test
     void testPatch_partialUpdate() {
         var yaml = """
-            alias: patch-partial-update
-            triggers:
-              - trigger: alwaysTrue
-            actions:
-              - action: sendHttpRequest
-                url: http://localhost:%s/sendHttpRequest/patchPartial
-                method: PATCH
-                contentType: application/json
-                body:
-                  name: "updated-name"
-                storeToVariable: partialUpdateResponse
-            """.formatted(port);
+                alias: patch-partial-update
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: sendHttpRequest
+                    url: http://localhost:%s/sendHttpRequest/patchPartial
+                    method: PATCH
+                    contentType: application/json
+                    body:
+                      name: "updated-name"
+                    storeToVariable: partialUpdateResponse
+                """.formatted(port);
 
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
@@ -1582,17 +1583,17 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
     @Test
     void testPatch_nonJsonContentType() {
         var yaml = """
-            alias: patch-non-json
-            triggers:
-              - trigger: alwaysTrue
-            actions:
-              - action: sendHttpRequest
-                url: http://localhost:%s/sendHttpRequest/patchText
-                method: PATCH
-                contentType: text/plain
-                body: "plain text patch"
-                storeToVariable: nonJsonResponse
-            """.formatted(port);
+                alias: patch-non-json
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: sendHttpRequest
+                    url: http://localhost:%s/sendHttpRequest/patchText
+                    method: PATCH
+                    contentType: text/plain
+                    body: "plain text patch"
+                    storeToVariable: nonJsonResponse
+                """.formatted(port);
 
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
@@ -1607,18 +1608,18 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
     @Test
     void testPatch_unicodeEmojiInBody() {
         var yaml = """
-            alias: patch-unicode-emoji
-            triggers:
-              - trigger: alwaysTrue
-            actions:
-              - action: sendHttpRequest
-                url: http://localhost:%s/sendHttpRequest/patchUnicode
-                method: PATCH
-                contentType: application/json
-                body:
-                  message: "Hello 👋🌍"
-                storeToVariable: unicodeResponse
-            """.formatted(port);
+                alias: patch-unicode-emoji
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: sendHttpRequest
+                    url: http://localhost:%s/sendHttpRequest/patchUnicode
+                    method: PATCH
+                    contentType: application/json
+                    body:
+                      message: "Hello 👋🌍"
+                    storeToVariable: unicodeResponse
+                """.formatted(port);
 
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
@@ -1633,22 +1634,22 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
     @Test
     void testPatch_deepNestedJson() {
         var yaml = """
-            alias: patch-deep-nested
-            triggers:
-              - trigger: alwaysTrue
-            actions:
-              - action: sendHttpRequest
-                url: http://localhost:%s/sendHttpRequest/patchDeepJson
-                method: PATCH
-                contentType: application/json
-                body:
-                  level1:
-                    level2:
-                      level3:
-                        level4:
-                          key: "value"
-                storeToVariable: deepNestedResponse
-            """.formatted(port);
+                alias: patch-deep-nested
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: sendHttpRequest
+                    url: http://localhost:%s/sendHttpRequest/patchDeepJson
+                    method: PATCH
+                    contentType: application/json
+                    body:
+                      level1:
+                        level2:
+                          level3:
+                            level4:
+                              key: "value"
+                    storeToVariable: deepNestedResponse
+                """.formatted(port);
 
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
@@ -1660,7 +1661,318 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
         assertThat(response.at("/level1/level2/level3/level4/key").asText()).isEqualTo("value");
     }
 
+    @Test
+    void testDeleteNoPath() {
+        var yaml = """
+                alias: delete-no-path
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: sendHttpRequest
+                    url: http://localhost:%s/sendHttpRequest/
+                    method: DELETE
+                    storeToVariable: deleteResponse
+                """.formatted(port);
 
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        engine.publishEvent(event);
+
+        var deleteResponse = (String) event.getMetadata("deleteResponse");
+        assertThat(deleteResponse).isEqualTo("Not Found");
+    }
+
+    @Test
+    void testDeleteWithPathVariables() {
+        var yaml = """
+                alias: delete-path-variable
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: sendHttpRequest
+                    url: http://localhost:%s/sendHttpRequest/delete/{id}
+                    method: DELETE
+                    storeToVariable: deleteResponse
+                    pathVariables:
+                      - id: "12345"
+                """.formatted(port);
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        engine.publishEvent(event);
+
+        var deleteResponse = (String) event.getMetadata("deleteResponse");
+        assertThat(deleteResponse).isEqualTo("Item 12345 deleted");
+    }
+
+    @Test
+    void testDeleteNoBody() {
+        var yaml = """
+                alias: delete-no-body
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: sendHttpRequest
+                    url: http://localhost:%s/sendHttpRequest/deleteNoBody
+                    method: DELETE
+                    storeToVariable: deleteResponse
+                """.formatted(port);
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        engine.publishEvent(event);
+
+        var deleteResponse = (String) event.getMetadata("deleteResponse");
+        assertThat(deleteResponse).isEqualTo("Not Found");
+    }
+
+    @Test
+    void testDeleteWithQueryParams() {
+        var yaml = """
+                alias: delete-with-query-params
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: sendHttpRequest
+                    url: http://localhost:%s/sendHttpRequest/deleteWithQuery?id=12345
+                    method: DELETE
+                    storeToVariable: deleteResponse
+                """.formatted(port);
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        engine.publishEvent(event);
+
+        var deleteResponse = (String) event.getMetadata("deleteResponse");
+        assertThat(deleteResponse).isEqualTo("Query param id 12345 deleted");
+    }
+
+    @Test
+    void testDeleteWithHeaders() {
+        var yaml = """
+                alias: delete-with-headers
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: sendHttpRequest
+                    url: http://localhost:%s/sendHttpRequest/deleteWithHeaders
+                    method: DELETE
+                    headers:
+                      X-Custom-Header: "some-header-value"
+                    storeToVariable: deleteResponse
+                """.formatted(port);
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        engine.publishEvent(event);
+
+        var deleteResponse = (String) event.getMetadata("deleteResponse");
+        assertThat(deleteResponse).isEqualTo("Headers received");
+    }
+
+    @Test
+    void testDeleteInvalidPath() {
+        var yaml = """
+                alias: delete-invalid-path
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: sendHttpRequest
+                    url: http://localhost:%s/sendHttpRequest/deleteInvalid
+                    method: DELETE
+                    storeToVariable: deleteResponse
+                """.formatted(port);
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        engine.publishEvent(event);
+
+        var deleteResponse = (String) event.getMetadata("deleteResponse");
+        assertThat(deleteResponse).isEqualTo("Not Found");
+    }
+
+    @Test
+    void testDeleteWithBody() {
+        var yaml = """
+                alias: delete-with-body
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: sendHttpRequest
+                    url: http://localhost:%s/sendHttpRequest/deleteWithBody
+                    method: DELETE
+                    body:
+                      id: 12345
+                    storeToVariable: deleteResponse
+                """.formatted(port);
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        engine.publishEvent(event);
+
+        var deleteResponse = (String) event.getMetadata("deleteResponse");
+        assertThat(deleteResponse).isEqualTo("Item 12345 deleted with body");
+    }
+
+    @Test
+    void testDeleteInvalidPathVariable() {
+        var yaml = """
+                alias: delete-invalid-path-variable
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: sendHttpRequest
+                    url: http://localhost:%s/sendHttpRequest/delete/{id}
+                    method: DELETE
+                    storeToVariable: deleteResponse
+                    pathVariables:
+                      - id: "invalid-id"
+                """.formatted(port);
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        engine.publishEvent(event);
+
+        var deleteResponse = (String) event.getMetadata("deleteResponse");
+        assertThat(deleteResponse).isEqualTo("Item invalid-id not found");
+    }
+
+    @Test
+    void testDeleteWithInvalidQueryParam() {
+        var yaml = """
+                alias: delete-with-invalid-query-param
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: sendHttpRequest
+                    url: http://localhost:%s/sendHttpRequest/deleteWithQuery?param=invalid
+                    method: DELETE
+                    storeToVariable: deleteResponse
+                """.formatted(port);
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        engine.publishEvent(event);
+
+        var deleteResponse = (String) event.getMetadata("deleteResponse");
+        assertThat(deleteResponse).isEqualTo("Invalid query parameter");
+    }
+
+    @Test
+    void testDeleteWithInvalidHeaders() {
+        var yaml = """
+                alias: delete-with-invalid-headers
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: sendHttpRequest
+                    url: http://localhost:%s/sendHttpRequest/deleteWithHeaders
+                    method: DELETE
+                    headers:
+                      X-Invalid-Header: "invalid-value"
+                    storeToVariable: deleteResponse
+                """.formatted(port);
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        engine.publishEvent(event);
+
+        var deleteResponse = (String) event.getMetadata("deleteResponse");
+        assertThat(deleteResponse).isEqualTo("Invalid Header");
+    }
+
+
+    @Test
+    void testDeleteMalformedJsonBody() {
+        var yaml = """
+                alias: delete-malformed-json
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: sendHttpRequest
+                    url: http://localhost:%s/sendHttpRequest/deleteMalformedJson
+                    method: DELETE
+                    body: 
+                      { "id": "abc, }  // Malformed JSON
+                    storeToVariable: deleteResponse
+                """.formatted(port);
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        engine.publishEvent(event);
+
+        var deleteResponse = (String) event.getMetadata("deleteResponse");
+        assertThat(deleteResponse).isEqualTo("Malformed JSON");
+    }
+
+    @Test
+    void testDeleteWithExtraQueryParams() {
+        var yaml = """
+                alias: delete-with-extra-query
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: sendHttpRequest
+                    url: http://localhost:%s/sendHttpRequest/deleteWithExtraQuery?extra=param&param=12345
+                    method: DELETE
+                    storeToVariable: deleteResponse
+                """.formatted(port);
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        engine.publishEvent(event);
+
+        var deleteResponse = (String) event.getMetadata("deleteResponse");
+        assertThat(deleteResponse).isEqualTo("Item 12345 deleted with extra params");
+    }
+
+    @Test
+    void testDeleteEmptyBody() {
+        var yaml = """
+                alias: delete-empty-body
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: sendHttpRequest
+                    url: http://localhost:%s/sendHttpRequest/deleteEmptyBody
+                    method: DELETE
+                    body: {}
+                    storeToVariable: deleteResponse
+                """.formatted(port);
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        engine.publishEvent(event);
+
+        var deleteResponse = (String) event.getMetadata("deleteResponse");
+        assertThat(deleteResponse).isEqualTo("Empty body received");
+    }
 
 
 }
