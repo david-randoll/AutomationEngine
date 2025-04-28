@@ -178,4 +178,104 @@ public class SendHttpRequestController {
     public Map<String, Object> postHeadersNoBody(@RequestHeader("X-Special-Header") String header) {
         return Map.of("header", header);
     }
+
+    @PutMapping("/put/simple")
+    public Map<String, Object> putSimple(@RequestBody Map<String, Object> body) {
+        return Map.of("message", "Updated " + body.get("name") + " as " + body.get("role"));
+    }
+
+    @PutMapping("/put/user/{id}")
+    public Map<String, Object> putWithPathVariable(@PathVariable int id, @RequestBody Map<String, Object> body) {
+        return Map.of("userId", id, "email", body.get("email"));
+    }
+
+    @PutMapping("/put/query")
+    public Map<String, Object> putWithQuery(@RequestParam boolean active, @RequestBody Map<String, Object> body) {
+        return Map.of("active", active, "user", body.get("username"));
+    }
+
+    @PutMapping("/put/headers")
+    public Map<String, Object> putWithHeaders(@RequestHeader("X-Update-Mode") String mode, @RequestBody Map<String, Object> body) {
+        return Map.of("mode", mode);
+    }
+
+    @PutMapping("/put/emptyBody")
+    public Map<String, Object> putEmptyBody(@RequestBody Map<String, Object> body) {
+        if (body.isEmpty()) {
+            return Map.of("status", "Empty body received");
+        }
+        return Map.of("body", body);
+    }
+
+    @PutMapping("/put/invalidJson")
+    public Map<String, Object> putInvalidJson() {
+        return Map.of("error", "Invalid JSON");
+    }
+
+    @PutMapping("/put/large")
+    public Map<String, Object> putLargePayload(@RequestBody Map<String, Object> body) {
+        String text = (String) body.get("bigText");
+        return Map.of("length", text.length());
+    }
+
+    @PutMapping("/put/multipart")
+    public Map<String, Object> putMultipart(@RequestParam("description") String description) {
+        return Map.of("description", description);
+    }
+
+    @PutMapping("/put/noContentType")
+    public Map<String, Object> putNoContentType(@RequestBody Map<String, Object> body) {
+        return Map.of("result", "Handled without content-type");
+    }
+
+    @PutMapping("/putWithoutId")
+    public ResponseEntity<String> putWithoutId() {
+        return ResponseEntity.badRequest().body("Missing id");
+    }
+
+    @PutMapping("/putWithQuery")
+    public Map<String, Object> putWithQuery(@RequestParam String id) {
+        return Map.of("id", id);
+    }
+
+    @PutMapping("/putLargeBody")
+    public Map<String, Object> putLargeBody(@RequestBody Map<String, Object> body) {
+        return Map.of("status", "received large body");
+    }
+
+    @PutMapping("/putTimeout")
+    public String putTimeout() throws InterruptedException {
+        Thread.sleep(5000); // simulate slow server
+        return "Request timeout";
+    }
+
+    @PutMapping("/putMalformedHeaders")
+    public String putMalformedHeaders() {
+        return "Bad Request";
+    }
+
+    @PutMapping("/putNoBody")
+    public String putNoBody() {
+        return "No body provided";
+    }
+
+    @PutMapping("/putOverwrite")
+    public Map<String, Object> putOverwrite(@RequestParam String id, @RequestBody Map<String, Object> body) {
+        return body;
+    }
+
+    @PutMapping("/putPlainText")
+    public String putPlainText(@RequestBody String body) {
+        return body;
+    }
+
+    @PutMapping("/putUnicode")
+    public Map<String, String> putUnicode(@RequestBody Map<String, String> body) {
+        return body;
+    }
+
+    @PutMapping("/putNestedJson")
+    public Map<String, Object> putNestedJson(@RequestBody Map<String, Object> body) {
+        return body;
+    }
 }

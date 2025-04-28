@@ -781,6 +781,563 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
         assertThat(response.get("header").asText()).isEqualTo("specialValue");
     }
 
+    @Test
+    void testSendHttpRequest_putSimpleJson() {
+        var yaml = """
+            alias: send-put-simple
+            triggers:
+              - trigger: alwaysTrue
+            actions:
+              - action: sendHttpRequest
+                url: http://localhost:%s/sendHttpRequest/put/simple
+                method: PUT
+                contentType: application/json
+                body:
+                  name: "David"
+                  role: "admin"
+                storeToVariable: putSimpleResponse
+            """.formatted(port);
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        engine.publishEvent(event);
+
+        var response = (JsonNode) event.getMetadata("putSimpleResponse");
+        assertThat(response.get("message").asText()).isEqualTo("Updated David as admin");
+    }
+
+    @Test
+    void testSendHttpRequest_putWithPathVariable() {
+        var yaml = """
+            alias: send-put-path-variable
+            triggers:
+              - trigger: alwaysTrue
+            actions:
+              - action: sendHttpRequest
+                url: http://localhost:%s/sendHttpRequest/put/user/42
+                method: PUT
+                contentType: application/json
+                body:
+                  email: "david@example.com"
+                storeToVariable: putPathVariableResponse
+            """.formatted(port);
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        engine.publishEvent(event);
+
+        var response = (JsonNode) event.getMetadata("putPathVariableResponse");
+        assertThat(response.get("userId").asInt()).isEqualTo(42);
+    }
+
+    @Test
+    void testSendHttpRequest_putWithQueryParams() {
+        var yaml = """
+            alias: send-put-query-params
+            triggers:
+              - trigger: alwaysTrue
+            actions:
+              - action: sendHttpRequest
+                url: http://localhost:%s/sendHttpRequest/put/query?active=true
+                method: PUT
+                contentType: application/json
+                body:
+                  username: "david"
+                storeToVariable: putQueryResponse
+            """.formatted(port);
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        engine.publishEvent(event);
+
+        var response = (JsonNode) event.getMetadata("putQueryResponse");
+        assertThat(response.get("active").asBoolean()).isTrue();
+    }
+
+    @Test
+    void testSendHttpRequest_putWithHeaders() {
+        var yaml = """
+            alias: send-put-with-headers
+            triggers:
+              - trigger: alwaysTrue
+            actions:
+              - action: sendHttpRequest
+                url: http://localhost:%s/sendHttpRequest/put/headers
+                method: PUT
+                contentType: application/json
+                headers:
+                  X-Update-Mode: "force"
+                body:
+                  username: "david"
+                storeToVariable: putHeaderResponse
+            """.formatted(port);
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        engine.publishEvent(event);
+
+        var response = (JsonNode) event.getMetadata("putHeaderResponse");
+        assertThat(response.get("mode").asText()).isEqualTo("force");
+    }
+
+    @Test
+    void testSendHttpRequest_putEmptyBody() {
+        var yaml = """
+            alias: send-put-empty-body
+            triggers:
+              - trigger: alwaysTrue
+            actions:
+              - action: sendHttpRequest
+                url: http://localhost:%s/sendHttpRequest/put/emptyBody
+                method: PUT
+                contentType: application/json
+                body: {}
+                storeToVariable: putEmptyBodyResponse
+            """.formatted(port);
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        engine.publishEvent(event);
+
+        var response = (JsonNode) event.getMetadata("putEmptyBodyResponse");
+        assertThat(response.get("status").asText()).isEqualTo("Empty body received");
+    }
+
+    @Test
+    void testSendHttpRequest_putInvalidJson() {
+        var yaml = """
+            alias: send-put-invalid-json
+            triggers:
+              - trigger: alwaysTrue
+            actions:
+              - action: sendHttpRequest
+                url: http://localhost:%s/sendHttpRequest/put/invalidJson
+                method: PUT
+                contentType: application/json
+                rawBody: "{ broken: json "
+                storeToVariable: putInvalidJsonResponse
+            """.formatted(port);
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        engine.publishEvent(event);
+
+        var response = (JsonNode) event.getMetadata("putInvalidJsonResponse");
+        assertThat(response.get("error").asText()).isEqualTo("Invalid JSON");
+    }
+
+    @Test
+    void testSendHttpRequest_putLargePayload() {
+        var yaml = """
+            alias: send-put-large-payload
+            triggers:
+              - trigger: alwaysTrue
+            actions:
+              - action: sendHttpRequest
+                url: http://localhost:%s/sendHttpRequest/put/large
+                method: PUT
+                contentType: application/json
+                body:
+                  bigText: "%s"
+                storeToVariable: putLargeResponse
+            """.formatted(port, "X".repeat(30_000)); // 30KB payload
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        engine.publishEvent(event);
+
+        var response = (JsonNode) event.getMetadata("putLargeResponse");
+        assertThat(response.get("length").asInt()).isEqualTo(30_000);
+    }
+
+    @Test
+    void testSendHttpRequest_putMultipartForm() {
+        var yaml = """
+            alias: send-put-multipart
+            triggers:
+              - trigger: alwaysTrue
+            actions:
+              - action: sendHttpRequest
+                url: http://localhost:%s/sendHttpRequest/put/multipart
+                method: PUT
+                contentType: multipart/form-data
+                body:
+                  description: "Test upload"
+                storeToVariable: putMultipartResponse
+            """.formatted(port);
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        engine.publishEvent(event);
+
+        var response = (JsonNode) event.getMetadata("putMultipartResponse");
+        assertThat(response.get("description").asText()).isEqualTo("Test upload");
+    }
+
+    @Test
+    void testSendHttpRequest_putNoContentType() {
+        var yaml = """
+            alias: send-put-no-content-type
+            triggers:
+              - trigger: alwaysTrue
+            actions:
+              - action: sendHttpRequest
+                url: http://localhost:%s/sendHttpRequest/put/noContentType
+                method: PUT
+                body:
+                  info: "noContentType"
+                storeToVariable: putNoContentTypeResponse
+            """.formatted(port);
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        engine.publishEvent(event);
+
+        var response = (JsonNode) event.getMetadata("putNoContentTypeResponse");
+        assertThat(response.get("result").asText()).isEqualTo("Handled without content-type");
+    }
+
+    @Test
+    void testPut_missingPathVariable() {
+        var yaml = """
+            alias: put-missing-path-variable
+            triggers:
+              - trigger: alwaysTrue
+            actions:
+              - action: sendHttpRequest
+                url: http://localhost:%s/sendHttpRequest/putWithoutId
+                method: PUT
+                storeToVariable: missingPathVar
+            """.formatted(port);
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        engine.publishEvent(event);
+
+        var response = (JsonNode) event.getMetadata("missingPathVar");
+        assertThat(response.asText()).contains("Missing id");
+    }
+
+    @Test
+    void testPut_extraQueryParams() {
+        var yaml = """
+            alias: put-extra-query
+            triggers:
+              - trigger: alwaysTrue
+            actions:
+              - action: sendHttpRequest
+                url: http://localhost:%s/sendHttpRequest/putWithQuery?id=123&extra=unexpected
+                method: PUT
+                storeToVariable: extraQuery
+            """.formatted(port);
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        engine.publishEvent(event);
+
+        var response = (JsonNode) event.getMetadata("extraQuery");
+        assertThat(response.get("id").asText()).isEqualTo("123");
+    }
+
+    @Test
+    void testPut_nonExistingEndpoint() {
+        var yaml = """
+            alias: put-non-existing
+            triggers:
+              - trigger: alwaysTrue
+            actions:
+              - action: sendHttpRequest
+                url: http://localhost:%s/sendHttpRequest/notFoundEndpoint
+                method: PUT
+                storeToVariable: nonExisting
+            """.formatted(port);
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        engine.publishEvent(event);
+
+        var response = (JsonNode) event.getMetadata("nonExisting");
+        assertThat(response.asText()).contains("Not Found");
+    }
+
+    @Test
+    void testPut_wrongMethod() {
+        var yaml = """
+            alias: put-wrong-method
+            triggers:
+              - trigger: alwaysTrue
+            actions:
+              - action: sendHttpRequest
+                url: http://localhost:%s/sendHttpRequest/putWithQuery?id=1
+                method: GET
+                storeToVariable: wrongMethod
+            """.formatted(port);
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        engine.publishEvent(event);
+
+        var response = (JsonNode) event.getMetadata("wrongMethod");
+        assertThat(response.asText()).contains("Method Not Allowed");
+    }
+    @Test
+    void testPut_largeBody() {
+        var largeBody = "A".repeat(5_000_000); // 5MB
+
+        var yaml = """
+            alias: put-large-body
+            triggers:
+              - trigger: alwaysTrue
+            actions:
+              - action: sendHttpRequest
+                url: http://localhost:%s/sendHttpRequest/putLargeBody
+                method: PUT
+                contentType: application/json
+                body:
+                  largeField: "%s"
+                storeToVariable: largeBody
+            """.formatted(port, largeBody);
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        engine.publishEvent(event);
+
+        var response = (JsonNode) event.getMetadata("largeBody");
+        assertThat(response.get("status").asText()).isEqualTo("received large body");
+    }
+
+    @Test
+    void testPut_timeout() {
+        var yaml = """
+            alias: put-timeout
+            triggers:
+              - trigger: alwaysTrue
+            actions:
+              - action: sendHttpRequest
+                url: http://localhost:%s/sendHttpRequest/putTimeout
+                method: PUT
+                storeToVariable: timeoutResponse
+            """.formatted(port);
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        engine.publishEvent(event);
+
+        var response = (JsonNode) event.getMetadata("timeoutResponse");
+        assertThat(response.asText()).contains("Request timeout");
+    }
+
+    @Test
+    void testPut_malformedHeaders() {
+        var yaml = """
+            alias: put-malformed-headers
+            triggers:
+              - trigger: alwaysTrue
+            actions:
+              - action: sendHttpRequest
+                url: http://localhost:%s/sendHttpRequest/putMalformedHeaders
+                method: PUT
+                headers:
+                  X-Custom-Header: "invalid header \u0000"
+                storeToVariable: malformedHeaders
+            """.formatted(port);
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        engine.publishEvent(event);
+
+        var response = (JsonNode) event.getMetadata("malformedHeaders");
+        assertThat(response.asText()).contains("Bad Request");
+    }
+
+    @Test
+    void testPut_emptyPath() {
+        var yaml = """
+            alias: put-empty-path
+            triggers:
+              - trigger: alwaysTrue
+            actions:
+              - action: sendHttpRequest
+                url: http://localhost:%s/
+                method: PUT
+                storeToVariable: emptyPath
+            """.formatted(port);
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        engine.publishEvent(event);
+
+        var response = (JsonNode) event.getMetadata("emptyPath");
+        assertThat(response.asText()).contains("Not Found");
+    }
+
+    @Test
+    void testPut_noBody() {
+        var yaml = """
+            alias: put-no-body
+            triggers:
+              - trigger: alwaysTrue
+            actions:
+              - action: sendHttpRequest
+                url: http://localhost:%s/sendHttpRequest/putNoBody
+                method: PUT
+                storeToVariable: noBodyResponse
+            """.formatted(port);
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        engine.publishEvent(event);
+
+        var response = (JsonNode) event.getMetadata("noBodyResponse");
+        assertThat(response.asText()).isEqualTo("No body provided");
+    }
+
+    @Test
+    void testPut_overwriteBehavior() {
+        var yaml = """
+            alias: put-overwrite
+            triggers:
+              - trigger: alwaysTrue
+            actions:
+              - action: sendHttpRequest
+                url: http://localhost:%s/sendHttpRequest/putOverwrite?id=123
+                method: PUT
+                body:
+                  field: "initial"
+                storeToVariable: firstPut
+              - action: sendHttpRequest
+                url: http://localhost:%s/sendHttpRequest/putOverwrite?id=123
+                method: PUT
+                body:
+                  field: "updated"
+                storeToVariable: secondPut
+            """.formatted(port, port);
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        engine.publishEvent(event);
+
+        var updatedResponse = (JsonNode) event.getMetadata("secondPut");
+        assertThat(updatedResponse.get("field").asText()).isEqualTo("updated");
+    }
+
+    @Test
+    void testPut_nonJsonContentType() {
+        var yaml = """
+            alias: put-non-json
+            triggers:
+              - trigger: alwaysTrue
+            actions:
+              - action: sendHttpRequest
+                url: http://localhost:%s/sendHttpRequest/putPlainText
+                method: PUT
+                contentType: text/plain
+                body: "plain text body"
+                storeToVariable: plainTextResponse
+            """.formatted(port);
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        engine.publishEvent(event);
+
+        var response = (JsonNode) event.getMetadata("plainTextResponse");
+        assertThat(response.asText()).contains("plain text body");
+    }
+
+    @Test
+    void testPut_unicodeInBody() {
+        var yaml = """
+            alias: put-unicode
+            triggers:
+              - trigger: alwaysTrue
+            actions:
+              - action: sendHttpRequest
+                url: http://localhost:%s/sendHttpRequest/putUnicode
+                method: PUT
+                body:
+                  message: "Hello 🌎🚀"
+                storeToVariable: unicodeResponse
+            """.formatted(port);
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        engine.publishEvent(event);
+
+        var response = (JsonNode) event.getMetadata("unicodeResponse");
+        assertThat(response.get("message").asText()).isEqualTo("Hello 🌎🚀");
+    }
+
+    @Test
+    void testPut_deeplyNestedJson() {
+        var yaml = """
+            alias: put-nested-json
+            triggers:
+              - trigger: alwaysTrue
+            actions:
+              - action: sendHttpRequest
+                url: http://localhost:%s/sendHttpRequest/putNestedJson
+                method: PUT
+                body:
+                  level1:
+                    level2:
+                      level3:
+                        level4:
+                          level5: "deep value"
+                storeToVariable: nestedJsonResponse
+            """.formatted(port);
+
+        var automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        engine.publishEvent(event);
+
+        var response = (JsonNode) event.getMetadata("nestedJsonResponse");
+        assertThat(response.at("/level1/level2/level3/level4/level5").asText()).isEqualTo("deep value");
+    }
+
 
 
 
