@@ -1206,7 +1206,8 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
         engine.publishEvent(event);
 
         var response = (JsonNode) event.getMetadata("emptyPath");
-        assertThat(response.asText()).contains("Not Found");
+        var errorResponse = response.get("error");
+        assertThat(errorResponse.asText()).contains("Not Found");
     }
 
     @Test
@@ -1432,7 +1433,8 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
         engine.publishEvent(event);
 
         var response = (JsonNode) event.getMetadata("wrongMethod");
-        assertThat(response.asText()).contains("Method Not Allowed");
+        var errorResponse = response.get("error");
+        assertThat(errorResponse.asText()).contains("Method Not Allowed");
     }
 
     @Test
@@ -1531,7 +1533,8 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
         engine.publishEvent(event);
 
         var response = (JsonNode) event.getMetadata("emptyPathResponse");
-        assertThat(response.asText()).contains("Not Found");
+        var errorResponse = response.get("error");
+        assertThat(errorResponse.asText()).contains("Not Found");
     }
 
     @Test
@@ -1697,11 +1700,9 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
                   - trigger: alwaysTrue
                 actions:
                   - action: sendHttpRequest
-                    url: http://localhost:%s/sendHttpRequest/delete/{id}
+                    url: http://localhost:%s/sendHttpRequest/delete/12345
                     method: DELETE
                     storeToVariable: deleteResponse
-                    pathVariables:
-                      - id: "12345"
                 """.formatted(port);
 
         var automation = factory.createAutomation("yaml", yaml);
@@ -1841,7 +1842,7 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
                   - trigger: alwaysTrue
                 actions:
                   - action: sendHttpRequest
-                    url: http://localhost:%s/sendHttpRequest/deleteWithInvalidPathVariable/{id}
+                    url: http://localhost:%s/sendHttpRequest/deleteWithInvalidPathVariable/invalid-id
                     method: DELETE
                     storeToVariable: deleteResponse
                 """.formatted(port);

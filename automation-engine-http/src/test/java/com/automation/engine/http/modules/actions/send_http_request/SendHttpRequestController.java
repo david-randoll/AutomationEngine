@@ -300,6 +300,12 @@ public class SendHttpRequestController {
         return Map.of("status", "body received");
     }
 
+    @PatchMapping("/patchTimeout")
+    public String patchTimeout() throws InterruptedException {
+        Thread.sleep(5000); // simulate slow server
+        return "Request timeout";
+    }
+
     @PatchMapping("/patchPartial")
     public ResponseEntity<Map<String, String>> patchPartial(@RequestBody Map<String, String> body) {
         var response = new HashMap<String, String>();
@@ -321,6 +327,16 @@ public class SendHttpRequestController {
     @PatchMapping("/patchDeepJson")
     public Map<String, Object> patchDeepJson(@RequestBody Map<String, Object> body) {
         return body;
+    }
+
+    @PatchMapping("/patchWithQuery")
+    public Map<String, Object> patchWithQuery(@RequestParam Map<String, Object> params) {
+        return params;
+    }
+
+    @PatchMapping("/patchWithoutId")
+    public ResponseEntity<String> patchWithoutId() {
+        return ResponseEntity.badRequest().body("Missing id");
     }
 
     @DeleteMapping("/delete/{id}")
