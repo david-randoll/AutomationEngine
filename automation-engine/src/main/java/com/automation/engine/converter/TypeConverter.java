@@ -1,6 +1,6 @@
 package com.automation.engine.converter;
 
-import com.automation.engine.conditional.AEConditionalOnMissingBean;
+import com.automation.engine.conditional.AEConditionalOnMissingBeanType;
 import com.automation.engine.core.utils.InvalidInputException;
 import com.automation.engine.spi.ITypeConverter;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-@AEConditionalOnMissingBean(ITypeConverter.class)
+@AEConditionalOnMissingBeanType(ITypeConverter.class)
 public class TypeConverter implements ITypeConverter {
     private final ObjectMapper objectMapper;
 

@@ -1,6 +1,6 @@
 package com.automation.engine.converter;
 
-import com.automation.engine.conditional.AEConditionalOnMissingBean;
+import com.automation.engine.conditional.AEConditionalOnMissingBeanType;
 import com.automation.engine.creator.parsers.json.IJsonConverter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-@AEConditionalOnMissingBean(IJsonConverter.class)
+@AEConditionalOnMissingBeanType(IJsonConverter.class)
 public class JsonConverter implements IJsonConverter {
     private final ObjectMapper mapper;
 

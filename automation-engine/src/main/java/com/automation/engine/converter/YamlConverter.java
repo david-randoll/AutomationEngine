@@ -1,6 +1,6 @@
 package com.automation.engine.converter;
 
-import com.automation.engine.conditional.AEConditionalOnMissingBean;
+import com.automation.engine.conditional.AEConditionalOnMissingBeanType;
 import com.automation.engine.creator.parsers.yaml.IYamlConverter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -8,7 +8,7 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Service;
 
 @Service
-@AEConditionalOnMissingBean(IYamlConverter.class)
+@AEConditionalOnMissingBeanType(IYamlConverter.class)
 public class YamlConverter implements IYamlConverter {
     @Override
     public <T> T convert(String yaml, Class<T> clazz) {

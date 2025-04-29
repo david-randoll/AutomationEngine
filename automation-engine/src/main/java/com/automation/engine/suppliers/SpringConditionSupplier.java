@@ -1,6 +1,6 @@
 package com.automation.engine.suppliers;
 
-import com.automation.engine.conditional.AEConditionalOnMissingBean;
+import com.automation.engine.conditional.AEConditionalOnMissingBeanType;
 import com.automation.engine.core.conditions.ICondition;
 import com.automation.engine.creator.conditions.ConditionNotFoundException;
 import com.automation.engine.creator.conditions.IConditionSupplier;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-@AEConditionalOnMissingBean(IConditionSupplier.class)
+@AEConditionalOnMissingBeanType(IConditionSupplier.class)
 public class SpringConditionSupplier implements IConditionSupplier {
     private final ApplicationContext applicationContext;
 
