@@ -1,6 +1,6 @@
 package com.automation.engine.http;
 
-import com.automation.engine.AutomationEngineConfigProvider;
+import com.automation.engine.AEConfigProvider;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -14,8 +14,8 @@ public class AutomationEngineHttpApplication {
     }
 
     @Bean
-    public AutomationEngineConfigProvider automationEngineConfigProvider() {
-        return new AutomationEngineConfigProvider()
+    public AEConfigProvider automationEngineConfigProvider() {
+        return new AEConfigProvider()
                 .setDefaultTimeout(Duration.ofSeconds(1));
     }
 }

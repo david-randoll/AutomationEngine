@@ -1,5 +1,6 @@
 package com.automation.engine.suppliers;
 
+import com.automation.engine.conditional.AEConditionalOnMissingBean;
 import com.automation.engine.core.triggers.ITrigger;
 import com.automation.engine.creator.triggers.ITriggerSupplier;
 import com.automation.engine.creator.triggers.TriggerNotFoundException;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@AEConditionalOnMissingBean(ITriggerSupplier.class)
 public class SpringTriggerSupplier implements ITriggerSupplier {
     private final ApplicationContext applicationContext;
 

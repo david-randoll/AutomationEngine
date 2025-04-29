@@ -13,8 +13,8 @@ public class AutomationEngineApplication {
     }
 
     @Bean
-    public AutomationEngineConfigProvider automationEngineConfigProvider() {
-        return new AutomationEngineConfigProvider()
+    public AEConfigProvider automationEngineConfigProvider() {
+        return new AEConfigProvider()
                 .setDefaultTimeout(Duration.ofSeconds(1));
     }
 }

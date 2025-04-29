@@ -1,6 +1,6 @@
 package com.automation.engine.modules.actions.wait_for_trigger;
 
-import com.automation.engine.AutomationEngineConfigProvider;
+import com.automation.engine.AEConfigProvider;
 import com.automation.engine.core.events.EventContext;
 import com.automation.engine.creator.triggers.Trigger;
 import com.automation.engine.spi.PluggableAction;
@@ -24,7 +24,7 @@ public class WaitForTriggerAction extends PluggableAction<WaitForTriggerActionCo
     private final List<WaitingAction> waitingActions = new CopyOnWriteArrayList<>();
 
     @Autowired(required = false)
-    private AutomationEngineConfigProvider provider;
+    private AEConfigProvider provider;
 
     @Override
     public void execute(EventContext ec, WaitForTriggerActionContext ac) {

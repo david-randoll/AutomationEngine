@@ -6,7 +6,7 @@ import com.automation.engine.TestLogAppender;
 import com.automation.engine.core.Automation;
 import com.automation.engine.core.AutomationEngine;
 import com.automation.engine.creator.AutomationCreator;
-import com.automation.engine.AutomationEngineConfigProvider;
+import com.automation.engine.AEConfigProvider;
 import com.automation.engine.modules.actions.parallel.ParallelAction;
 import com.automation.engine.modules.actions.wait_for_trigger.WaitForTriggerAction;
 import com.automation.engine.modules.events.time_based.TimeBasedEvent;
@@ -87,7 +87,7 @@ class ParallelActionTest {
     @Test
     void testParallelExecutionWithExecutorProvider() {
         // Mock executor provider to check if it was used
-        AutomationEngineConfigProvider mockAutomationEngineConfigurationProvider = mock(AutomationEngineConfigProvider.class);
+        AEConfigProvider mockAutomationEngineConfigurationProvider = mock(AEConfigProvider.class);
         when(mockAutomationEngineConfigurationProvider.getExecutor()).thenReturn(Executors.newFixedThreadPool(2));
 
         // Inject mock provider

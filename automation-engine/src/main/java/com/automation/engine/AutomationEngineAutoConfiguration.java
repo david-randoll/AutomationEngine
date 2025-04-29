@@ -40,8 +40,8 @@ public class AutomationEngineAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public AutomationEngineConfigProvider automationEngineConfigProvider() {
-        return new AutomationEngineConfigProvider();
+    public AEConfigProvider automationEngineConfigProvider() {
+        return new AEConfigProvider();
     }
 
     @Bean

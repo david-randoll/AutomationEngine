@@ -1,6 +1,6 @@
 package com.automation.engine.modules.actions.parallel;
 
-import com.automation.engine.AutomationEngineConfigProvider;
+import com.automation.engine.AEConfigProvider;
 import com.automation.engine.core.events.EventContext;
 import com.automation.engine.spi.PluggableAction;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +15,7 @@ import org.springframework.util.ObjectUtils;
 public class ParallelAction extends PluggableAction<ParallelActionContext> {
 
     @Autowired(required = false)
-    private AutomationEngineConfigProvider provider;
+    private AEConfigProvider provider;
 
     @Override
     public void execute(EventContext ec, ParallelActionContext ac) {

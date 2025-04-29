@@ -16,7 +16,7 @@ import java.util.concurrent.ScheduledExecutorService;
 @NoArgsConstructor
 @Builder
 @Accessors(chain = true)
-public class AutomationEngineConfigProvider {
+public class AEConfigProvider {
     private Executor executor;
     private ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
     private Duration defaultTimeout = Duration.ofSeconds(60);

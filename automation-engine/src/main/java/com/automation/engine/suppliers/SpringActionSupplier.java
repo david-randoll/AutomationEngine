@@ -1,5 +1,6 @@
 package com.automation.engine.suppliers;
 
+import com.automation.engine.conditional.AEConditionalOnMissingBean;
 import com.automation.engine.core.actions.IAction;
 import com.automation.engine.creator.actions.ActionNotFoundException;
 import com.automation.engine.creator.actions.IActionSupplier;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@AEConditionalOnMissingBean(IActionSupplier.class)
 public class SpringActionSupplier implements IActionSupplier {
     private final ApplicationContext applicationContext;
 
