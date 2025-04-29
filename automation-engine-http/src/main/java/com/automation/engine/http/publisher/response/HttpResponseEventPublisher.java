@@ -59,9 +59,9 @@ public class HttpResponseEventPublisher extends OncePerRequestFilter {
         CachedBodyHttpServletRequest requestWrapper = HttpServletUtils.toCachedBodyHttpServletRequest(request, objectMapper);
         CachedBodyHttpServletResponse responseWrapper = HttpServletUtils.toCachedBodyHttpServletResponse(response, objectMapper);
 
-        filterChain.doFilter(requestWrapper, responseWrapper);
-
         try {
+            filterChain.doFilter(requestWrapper, responseWrapper);
+
             if (!requestWrapper.isEndpointExists()) return;
             buildAndPublishResponseEvent(request, requestWrapper, responseWrapper);
         } catch (Exception ex) {

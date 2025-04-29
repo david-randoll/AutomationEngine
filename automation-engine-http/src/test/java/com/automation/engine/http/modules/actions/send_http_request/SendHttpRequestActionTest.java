@@ -1081,7 +1081,8 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
         engine.publishEvent(event);
 
         var response = (JsonNode) event.getMetadata("nonExisting");
-        assertThat(response.asText()).contains("Not Found");
+        var errorResponse = response.get("error");
+        assertThat(errorResponse.asText()).contains("Not Found");
     }
 
     @Test
@@ -1104,7 +1105,8 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
         engine.publishEvent(event);
 
         var response = (JsonNode) event.getMetadata("wrongMethod");
-        assertThat(response.asText()).contains("Method Not Allowed");
+        var errorResponse = response.get("error");
+        assertThat(errorResponse.asText()).contains("Method Not Allowed");
     }
 
     @Test
@@ -1169,7 +1171,7 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
                     url: http://localhost:%s/sendHttpRequest/putMalformedHeaders
                     method: PUT
                     headers:
-                      X-Custom-Header: "invalid header \u0000"
+                      X-Custom-Header: "invalid header \\u0000"
                     storeToVariable: malformedHeaders
                 """.formatted(port);
 
@@ -1180,7 +1182,8 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
         engine.publishEvent(event);
 
         var response = (JsonNode) event.getMetadata("malformedHeaders");
-        assertThat(response.asText()).contains("Bad Request");
+        var errorResponse = response.get("error");
+        assertThat(errorResponse.asText()).contains("Bad Request");
     }
 
     @Test
