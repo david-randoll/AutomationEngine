@@ -13,6 +13,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -49,11 +50,22 @@ public class VariableTemplatingInterceptor implements IVariableInterceptor {
         var mapCopy = new HashMap<>(variableContext.getData());
         for (Map.Entry<String, Object> entry : mapCopy.entrySet()) {
             if (entry.getValue() instanceof String valueStr) {
-                String processedValue = templateProcessor.process(valueStr, eventContext.getEventData());
-                entry.setValue(processedValue);
+                try {
+                    String processedValue = templateProcessor.process(valueStr, eventContext.getEventData());
+                    entry.setValue(processedValue);
+                } catch (IOException e) {
+                    log.error("Error processing template for key: {}. Error: {}", entry.getKey(), e.getMessage());
+                    throw new AutomationEngineProcessingException(e);
+                }
             }
         }
         variable.resolve(eventContext, new VariableContext(mapCopy));
         log.debug("VariableTemplatingInterceptor done.");
+    }
+
+    public static class AutomationEngineProcessingException extends RuntimeException {
+        public AutomationEngineProcessingException(Throwable cause) {
+            super(cause);
+        }
     }
 }

@@ -16,11 +16,17 @@ public class YamlConverter implements IYamlConverter {
             var mapper = getYamlObjectMapper();
             return mapper.readValue(yaml, clazz);
         } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+            throw new AutomationEngineInvalidYamlException(e);
         }
     }
 
     public ObjectMapper getYamlObjectMapper() {
         return Jackson2ObjectMapperBuilder.yaml().build();
+    }
+
+    public static class AutomationEngineInvalidYamlException extends RuntimeException {
+        public AutomationEngineInvalidYamlException(Throwable cause) {
+            super(cause);
+        }
     }
 }

@@ -7,12 +7,12 @@ import com.automation.engine.core.events.EventContext;
 import com.automation.engine.templating.TemplateProcessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,7 +39,6 @@ public class ActionTemplatingInterceptor implements IActionInterceptor {
      */
 
     @Override
-    @SneakyThrows
     public void intercept(EventContext eventContext, ActionContext actionContext, IAction action) {
         log.debug("ActionTemplatingInterceptor: Processing action data...");
         if (ObjectUtils.isEmpty(actionContext.getData()) || ObjectUtils.isEmpty(eventContext.getEventData())) {
@@ -49,11 +48,22 @@ public class ActionTemplatingInterceptor implements IActionInterceptor {
         var mapCopy = new HashMap<>(actionContext.getData());
         for (Map.Entry<String, Object> entry : mapCopy.entrySet()) {
             if (entry.getValue() instanceof String valueStr) {
-                String processedValue = templateProcessor.process(valueStr, eventContext.getEventData());
-                entry.setValue(processedValue);
+                try {
+                    String processedValue = templateProcessor.process(valueStr, eventContext.getEventData());
+                    entry.setValue(processedValue);
+                } catch (IOException e) {
+                    log.error("Error processing template for key: {}. Error: {}", entry.getKey(), e.getMessage());
+                    throw new AutomationEngineProcessingException(e);
+                }
             }
         }
         action.execute(eventContext, new ActionContext(mapCopy));
         log.debug("ActionTemplatingInterceptor done.");
+    }
+
+    public static class AutomationEngineProcessingException extends RuntimeException {
+        public AutomationEngineProcessingException(Throwable cause) {
+            super(cause);
+        }
     }
 }

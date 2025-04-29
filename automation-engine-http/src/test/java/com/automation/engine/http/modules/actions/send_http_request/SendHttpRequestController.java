@@ -338,12 +338,28 @@ public class SendHttpRequestController {
         return ResponseEntity.ok("Query param id " + id + " deleted");
     }
 
+    @DeleteMapping("/deleteWithInvalidQueryParam")
+    public ResponseEntity<String> deleteWithInvalidQuery(@RequestParam(value = "param", required = false) String param) {
+        if ("invalid".equals(param)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid query parameter");
+        }
+        return ResponseEntity.status(HttpStatus.OK).body("Item deleted with param: " + param);
+    }
+
     @DeleteMapping("/deleteWithHeaders")
     public ResponseEntity<String> deleteWithHeaders(@RequestHeader("X-Custom-Header") String header) {
         if ("some-header-value".equals(header)) {
             return ResponseEntity.ok("Headers received");
         }
         return ResponseEntity.badRequest().body("Bad Header");
+    }
+
+    @DeleteMapping("/deleteWithInvalidHeaders")
+    public ResponseEntity<String> deleteWithInvalidHeaders(@RequestHeader(value = "X-Invalid-Header", required = false) String invalidHeader) {
+        if (invalidHeader != null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid Header");
+        }
+        return ResponseEntity.status(HttpStatus.OK).body("Item deleted with valid headers");
     }
 
     @DeleteMapping("/deleteInvalid")
@@ -367,30 +383,13 @@ public class SendHttpRequestController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not Found");
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/deleteWithInvalidPathVariable/{id}")
     public ResponseEntity<String> deleteWithInvalidPathVariable(@PathVariable("id") String id) {
         if ("invalid-id".equals(id)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Item invalid-id not found");
         }
         return ResponseEntity.status(HttpStatus.OK).body("Item " + id + " deleted");
     }
-
-    @DeleteMapping("/deleteWithQuery")
-    public ResponseEntity<String> deleteWithInvalidQuery(@RequestParam(value = "param", required = false) String param) {
-        if ("invalid".equals(param)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid query parameter");
-        }
-        return ResponseEntity.status(HttpStatus.OK).body("Item deleted with param: " + param);
-    }
-
-    @DeleteMapping("/deleteWithHeaders")
-    public ResponseEntity<String> deleteWithInvalidHeaders(@RequestHeader(value = "X-Invalid-Header", required = false) String invalidHeader) {
-        if (invalidHeader != null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid Header");
-        }
-        return ResponseEntity.status(HttpStatus.OK).body("Item deleted with valid headers");
-    }
-
 
     @DeleteMapping("/deleteMalformedJson")
     public ResponseEntity<String> deleteMalformedJson(@RequestBody String malformedJson) {

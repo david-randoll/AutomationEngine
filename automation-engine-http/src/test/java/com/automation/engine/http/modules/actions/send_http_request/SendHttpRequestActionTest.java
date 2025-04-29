@@ -1405,7 +1405,8 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
         engine.publishEvent(event);
 
         var response = (JsonNode) event.getMetadata("nonExisting");
-        assertThat(response.asText()).contains("Not Found");
+        var message = response.get("message");
+        assertThat(message.asText()).contains("No endpoint PATCH /sendHttpRequest/notFoundEndpoint.");
     }
 
     @Test
@@ -1680,8 +1681,9 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
         var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
         engine.publishEvent(event);
 
-        var deleteResponse = (String) event.getMetadata("deleteResponse");
-        assertThat(deleteResponse).isEqualTo("Not Found");
+        var deleteResponse = (JsonNode) event.getMetadata("deleteResponse");
+        var message = deleteResponse.get("message");
+        assertThat(message.asText()).isEqualTo("No endpoint DELETE /sendHttpRequest/.");
     }
 
     @Test
@@ -1705,8 +1707,8 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
         var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
         engine.publishEvent(event);
 
-        var deleteResponse = (String) event.getMetadata("deleteResponse");
-        assertThat(deleteResponse).isEqualTo("Item 12345 deleted");
+        var deleteResponse = (JsonNode) event.getMetadata("deleteResponse");
+        assertThat(deleteResponse.asText()).isEqualTo("Item 12345 deleted");
     }
 
     @Test
@@ -1728,8 +1730,8 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
         var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
         engine.publishEvent(event);
 
-        var deleteResponse = (String) event.getMetadata("deleteResponse");
-        assertThat(deleteResponse).isEqualTo("Not Found");
+        var deleteResponse = (JsonNode) event.getMetadata("deleteResponse");
+        assertThat(deleteResponse.asText()).isEqualTo("Not Found");
     }
 
     @Test
@@ -1751,8 +1753,8 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
         var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
         engine.publishEvent(event);
 
-        var deleteResponse = (String) event.getMetadata("deleteResponse");
-        assertThat(deleteResponse).isEqualTo("Query param id 12345 deleted");
+        var deleteResponse = (JsonNode) event.getMetadata("deleteResponse");
+        assertThat(deleteResponse.asText()).isEqualTo("Query param id 12345 deleted");
     }
 
     @Test
@@ -1776,8 +1778,8 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
         var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
         engine.publishEvent(event);
 
-        var deleteResponse = (String) event.getMetadata("deleteResponse");
-        assertThat(deleteResponse).isEqualTo("Headers received");
+        var deleteResponse = (JsonNode) event.getMetadata("deleteResponse");
+        assertThat(deleteResponse.asText()).isEqualTo("Headers received");
     }
 
     @Test
@@ -1799,8 +1801,8 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
         var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
         engine.publishEvent(event);
 
-        var deleteResponse = (String) event.getMetadata("deleteResponse");
-        assertThat(deleteResponse).isEqualTo("Not Found");
+        var deleteResponse = (JsonNode) event.getMetadata("deleteResponse");
+        assertThat(deleteResponse.asText()).isEqualTo("Not Found");
     }
 
     @Test
@@ -1824,8 +1826,8 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
         var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
         engine.publishEvent(event);
 
-        var deleteResponse = (String) event.getMetadata("deleteResponse");
-        assertThat(deleteResponse).isEqualTo("Item 12345 deleted with body");
+        var deleteResponse = (JsonNode) event.getMetadata("deleteResponse");
+        assertThat(deleteResponse.asText()).isEqualTo("Item 12345 deleted with body");
     }
 
     @Test
@@ -1836,11 +1838,9 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
                   - trigger: alwaysTrue
                 actions:
                   - action: sendHttpRequest
-                    url: http://localhost:%s/sendHttpRequest/delete/{id}
+                    url: http://localhost:%s/sendHttpRequest/deleteWithInvalidPathVariable/{id}
                     method: DELETE
                     storeToVariable: deleteResponse
-                    pathVariables:
-                      - id: "invalid-id"
                 """.formatted(port);
 
         var automation = factory.createAutomation("yaml", yaml);
@@ -1849,8 +1849,8 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
         var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
         engine.publishEvent(event);
 
-        var deleteResponse = (String) event.getMetadata("deleteResponse");
-        assertThat(deleteResponse).isEqualTo("Item invalid-id not found");
+        var deleteResponse = (JsonNode) event.getMetadata("deleteResponse");
+        assertThat(deleteResponse.asText()).isEqualTo("Item invalid-id not found");
     }
 
     @Test
@@ -1861,7 +1861,7 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
                   - trigger: alwaysTrue
                 actions:
                   - action: sendHttpRequest
-                    url: http://localhost:%s/sendHttpRequest/deleteWithQuery?param=invalid
+                    url: http://localhost:%s/sendHttpRequest/deleteWithInvalidQueryParam?param=invalid
                     method: DELETE
                     storeToVariable: deleteResponse
                 """.formatted(port);
@@ -1872,8 +1872,8 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
         var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
         engine.publishEvent(event);
 
-        var deleteResponse = (String) event.getMetadata("deleteResponse");
-        assertThat(deleteResponse).isEqualTo("Invalid query parameter");
+        var deleteResponse = (JsonNode) event.getMetadata("deleteResponse");
+        assertThat(deleteResponse.asText()).isEqualTo("Invalid query parameter");
     }
 
     @Test
@@ -1884,7 +1884,7 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
                   - trigger: alwaysTrue
                 actions:
                   - action: sendHttpRequest
-                    url: http://localhost:%s/sendHttpRequest/deleteWithHeaders
+                    url: http://localhost:%s/sendHttpRequest/deleteWithInvalidHeaders
                     method: DELETE
                     headers:
                       X-Invalid-Header: "invalid-value"
@@ -1897,8 +1897,8 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
         var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
         engine.publishEvent(event);
 
-        var deleteResponse = (String) event.getMetadata("deleteResponse");
-        assertThat(deleteResponse).isEqualTo("Invalid Header");
+        var deleteResponse = (JsonNode) event.getMetadata("deleteResponse");
+        assertThat(deleteResponse.asText()).isEqualTo("Invalid Header");
     }
 
 
@@ -1912,8 +1912,8 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
                   - action: sendHttpRequest
                     url: http://localhost:%s/sendHttpRequest/deleteMalformedJson
                     method: DELETE
-                    body: 
-                      { "id": "abc, }  // Malformed JSON
+                    body:
+                      { "id": "abc" }  # Malformed JSON
                     storeToVariable: deleteResponse
                 """.formatted(port);
 
@@ -1923,8 +1923,8 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
         var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
         engine.publishEvent(event);
 
-        var deleteResponse = (String) event.getMetadata("deleteResponse");
-        assertThat(deleteResponse).isEqualTo("Malformed JSON");
+        var deleteResponse = (JsonNode) event.getMetadata("deleteResponse");
+        assertThat(deleteResponse.asText()).isEqualTo("Malformed JSON");
     }
 
     @Test
@@ -1946,8 +1946,8 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
         var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
         engine.publishEvent(event);
 
-        var deleteResponse = (String) event.getMetadata("deleteResponse");
-        assertThat(deleteResponse).isEqualTo("Item 12345 deleted with extra params");
+        var deleteResponse = (JsonNode) event.getMetadata("deleteResponse");
+        assertThat(deleteResponse.asText()).isEqualTo("Item 12345 deleted with extra params");
     }
 
     @Test
@@ -1970,8 +1970,8 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
         var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
         engine.publishEvent(event);
 
-        var deleteResponse = (String) event.getMetadata("deleteResponse");
-        assertThat(deleteResponse).isEqualTo("Empty body received");
+        var deleteResponse = (JsonNode) event.getMetadata("deleteResponse");
+        assertThat(deleteResponse.asText()).isEqualTo("Empty body received");
     }
 
 

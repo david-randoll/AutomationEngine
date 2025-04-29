@@ -12,6 +12,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,11 +34,22 @@ public class ConditionTemplatingInterceptor implements IConditionInterceptor {
         var mapCopy = new HashMap<>(conditionContext.getData());
         for (Map.Entry<String, Object> entry : mapCopy.entrySet()) {
             if (entry.getValue() instanceof String valueStr) {
-                String processedValue = templateProcessor.process(valueStr, eventContext.getEventData());
-                entry.setValue(processedValue);
+                try {
+                    String processedValue = templateProcessor.process(valueStr, eventContext.getEventData());
+                    entry.setValue(processedValue);
+                } catch (IOException e) {
+                    log.error("Error processing template for key: {}. Error: {}", entry.getKey(), e.getMessage());
+                    throw new ActionTemplatingInterceptor.AutomationEngineProcessingException(e);
+                }
             }
         }
         condition.isSatisfied(eventContext, new ConditionContext(mapCopy));
         log.debug("ConditionTemplatingInterceptor: Condition data processed successfully.");
+    }
+
+    public static class AutomationEngineProcessingException extends RuntimeException {
+        public AutomationEngineProcessingException(Throwable cause) {
+            super(cause);
+        }
     }
 }
