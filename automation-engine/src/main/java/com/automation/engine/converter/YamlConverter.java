@@ -3,12 +3,10 @@ package com.automation.engine.converter;
 import com.automation.engine.creator.parsers.yaml.IYamlConverter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.RequiredArgsConstructor;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
-import org.springframework.stereotype.Service;
+import org.yaml.snakeyaml.LoaderOptions;
 
-@Service
-@RequiredArgsConstructor
 public class YamlConverter implements IYamlConverter {
     @Override
     public <T> T convert(String yaml, Class<T> clazz) {
@@ -21,7 +19,15 @@ public class YamlConverter implements IYamlConverter {
     }
 
     public ObjectMapper getYamlObjectMapper() {
-        return Jackson2ObjectMapperBuilder.yaml().build();
+        var options = new LoaderOptions();
+        options.setCodePointLimit(100 * 1024 * 1024);
+        var factory = YAMLFactory.builder()
+                .loaderOptions(options)
+                .build();
+        return Jackson2ObjectMapperBuilder
+                .yaml()
+                .factory(factory)
+                .build();
     }
 
     public static class AutomationEngineInvalidYamlException extends RuntimeException {

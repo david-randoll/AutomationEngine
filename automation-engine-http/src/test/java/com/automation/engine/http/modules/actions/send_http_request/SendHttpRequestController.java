@@ -306,6 +306,11 @@ public class SendHttpRequestController {
         return "Request timeout";
     }
 
+    @PatchMapping("/patchLargeBody")
+    public Map<String, Object> patchLargeBody(@RequestBody Map<String, Object> body) {
+        return Map.of("status", "received large body");
+    }
+
     @PatchMapping("/patchPartial")
     public ResponseEntity<Map<String, String>> patchPartial(@RequestBody Map<String, String> body) {
         var response = new HashMap<String, String>();

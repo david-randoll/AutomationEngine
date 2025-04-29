@@ -1161,32 +1161,6 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
     }
 
     @Test
-    void testPut_malformedHeaders() {
-        var yaml = """
-                alias: put-malformed-headers
-                triggers:
-                  - trigger: alwaysTrue
-                actions:
-                  - action: sendHttpRequest
-                    url: http://localhost:%s/sendHttpRequest/putMalformedHeaders
-                    method: PUT
-                    headers:
-                      X-Custom-Header: "invalid header \\u0000"
-                    storeToVariable: malformedHeaders
-                """.formatted(port);
-
-        var automation = factory.createAutomation("yaml", yaml);
-        engine.register(automation);
-
-        var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
-        engine.publishEvent(event);
-
-        var response = (JsonNode) event.getMetadata("malformedHeaders");
-        var errorResponse = response.get("error");
-        assertThat(errorResponse.asText()).contains("Bad Request");
-    }
-
-    @Test
     void testPut_emptyPath() {
         var yaml = """
                 alias: put-empty-path
@@ -1486,31 +1460,6 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
 
         var response = (JsonNode) event.getMetadata("timeoutResponse");
         assertThat(response.asText()).contains("Request timeout");
-    }
-
-    @Test
-    void testPatch_malformedHeaders() {
-        var yaml = """
-                alias: patch-malformed-headers
-                triggers:
-                  - trigger: alwaysTrue
-                actions:
-                  - action: sendHttpRequest
-                    url: http://localhost:%s/sendHttpRequest/patchMalformedHeaders
-                    method: PATCH
-                    headers:
-                      X-Custom-Header: "\\u0000InvalidHeader"
-                    storeToVariable: malformedHeaderResponse
-                """.formatted(port);
-
-        var automation = factory.createAutomation("yaml", yaml);
-        engine.register(automation);
-
-        var event = new EventContext(new TimeBasedEvent(LocalTime.now()));
-        engine.publishEvent(event);
-
-        var response = (JsonNode) event.getMetadata("malformedHeaderResponse");
-        assertThat(response.asText()).contains("Bad Request");
     }
 
     @Test

@@ -27,7 +27,7 @@ import java.util.Optional;
 public class HttpServletUtils {
     public static final String DEFAULT_IP = "0.0.0.0";
 
-    public CachedBodyHttpServletRequest toCachedBodyHttpServletRequest(@NonNull HttpServletRequest request, ObjectMapper mapper) throws IOException {
+    public CachedBodyHttpServletRequest toCachedBodyHttpServletRequest(@NonNull HttpServletRequest request, ObjectMapper mapper) {
         if (request instanceof CachedBodyHttpServletRequest cachedBodyHttpServletRequest)
             return cachedBodyHttpServletRequest;
         return new CachedBodyHttpServletRequest(request, mapper);
