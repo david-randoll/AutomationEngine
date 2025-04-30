@@ -1,5 +1,6 @@
 package com.automation.engine.modules.actions.stop;
 
+import com.automation.engine.conditional.AEConditionalOnMissingBeanName;
 import com.automation.engine.core.actions.exceptions.StopActionSequenceException;
 import com.automation.engine.core.actions.exceptions.StopAutomationException;
 import com.automation.engine.core.events.EventContext;
@@ -12,6 +13,7 @@ import java.util.List;
 
 @Component("stopAction")
 @RequiredArgsConstructor
+@AEConditionalOnMissingBeanName
 public class StopAction extends PluggableAction<StopActionContext> {
 
     @Override

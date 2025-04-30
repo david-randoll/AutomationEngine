@@ -1,5 +1,6 @@
 package com.automation.engine.modules.actions.variable;
 
+import com.automation.engine.conditional.AEConditionalOnMissingBeanName;
 import com.automation.engine.core.events.EventContext;
 import com.automation.engine.spi.PluggableAction;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +12,7 @@ import org.springframework.util.ObjectUtils;
 @Slf4j
 @Component("variableAction")
 @RequiredArgsConstructor
+@AEConditionalOnMissingBeanName
 public class VariableAction extends PluggableAction<VariableActionContext> {
 
     @Override

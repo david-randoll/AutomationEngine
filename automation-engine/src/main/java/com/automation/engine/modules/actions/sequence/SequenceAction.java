@@ -1,5 +1,6 @@
 package com.automation.engine.modules.actions.sequence;
 
+import com.automation.engine.conditional.AEConditionalOnMissingBeanName;
 import com.automation.engine.core.events.EventContext;
 import com.automation.engine.spi.PluggableAction;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +11,7 @@ import org.springframework.util.ObjectUtils;
 @Slf4j
 @Component("sequenceAction")
 @RequiredArgsConstructor
+@AEConditionalOnMissingBeanName
 public class SequenceAction extends PluggableAction<SequenceActionContext> {
 
     @Override

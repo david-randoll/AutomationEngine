@@ -1,5 +1,6 @@
 package com.automation.engine.modules.conditions.and;
 
+import com.automation.engine.conditional.AEConditionalOnMissingBeanName;
 import com.automation.engine.core.events.EventContext;
 import com.automation.engine.spi.PluggableCondition;
 import lombok.RequiredArgsConstructor;
@@ -8,6 +9,7 @@ import org.springframework.util.ObjectUtils;
 
 @Component("andCondition")
 @RequiredArgsConstructor
+@AEConditionalOnMissingBeanName
 public class AndCondition extends PluggableCondition<AndConditionContext> {
 
     @Override

@@ -40,12 +40,6 @@ public class AutomationEngineAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public AEConfigProvider automationEngineConfigProvider() {
-        return new AEConfigProvider();
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
     public AutomationEngine automationEngine(IEventPublisher publisher) {
         return new AutomationEngine(publisher);
     }

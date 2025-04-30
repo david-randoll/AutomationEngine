@@ -1,5 +1,6 @@
 package com.automation.engine.modules.events;
 
+import com.automation.engine.conditional.AEConditionalOnMissingBeanType;
 import com.automation.engine.core.events.publisher.IEventPublisher;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
@@ -8,7 +9,8 @@ import org.springframework.util.Assert;
 
 @Service
 @RequiredArgsConstructor
-public class AutomationEngineEventPublisher implements IEventPublisher {
+@AEConditionalOnMissingBeanType(IEventPublisher.class)
+public class AEEventPublisher implements IEventPublisher {
     private final ApplicationEventPublisher publisher;
 
     @Override

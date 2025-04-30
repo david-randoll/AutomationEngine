@@ -1,5 +1,6 @@
 package com.automation.engine.conditional;
 
+import com.automation.engine.AEConfigProvider;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Condition;
@@ -11,9 +12,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
 import java.lang.annotation.Annotation;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
-import java.util.Objects;
 import java.util.TreeSet;
 
 class AEConditionalOnMissingBeanCondition implements Condition {
@@ -27,10 +28,13 @@ class AEConditionalOnMissingBeanCondition implements Condition {
         Class<?>[] types = (Class<?>[]) attrs.getOrDefault("type", new Class<?>[0]);
         var names = this.getBeanNames(metadata);
 
-        ConfigurableListableBeanFactory beanFactory = Objects.requireNonNull(context.getBeanFactory());
+        if (Arrays.stream(types).noneMatch(x -> x.equals(AEConfigProvider.class))) return true;
+
+        ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
+        if (beanFactory == null) return true;
 
         for (Class<?> type : types) {
-            if (beanFactory.getBeanNamesForType(type, true, false).length > 0) {
+            if (beanFactory.getBeanNamesForType(type).length > 0) {
                 return false;
             }
         }
