@@ -12,5 +12,5 @@ import java.lang.annotation.Target;
 @Conditional(AEConditionalOnMissingBeanCondition.class)
 public @interface AEConditionalOnMissingBean {
     Class<?>[] type() default {};
-    String[] beanNames() default {};
+    String[] name() default {};
 }

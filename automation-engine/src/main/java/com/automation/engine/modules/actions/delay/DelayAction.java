@@ -10,7 +10,7 @@ import java.time.Duration;
 
 @Component("delayAction")
 @RequiredArgsConstructor
-@AEConditionalOnMissingBeanName("delayAction")
+@AEConditionalOnMissingBeanName
 public class DelayAction extends PluggableAction<DelayActionContext> {
 
     @Override

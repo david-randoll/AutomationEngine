@@ -1,13 +1,20 @@
 package com.automation.engine.conditional;
 
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.lang.NonNull;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
+import java.lang.annotation.Annotation;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
+import java.util.TreeSet;
 
 class AEConditionalOnMissingBeanCondition implements Condition {
     @Override
@@ -18,7 +25,7 @@ class AEConditionalOnMissingBeanCondition implements Condition {
         if (attrs == null) return true;
 
         Class<?>[] types = (Class<?>[]) attrs.getOrDefault("type", new Class<?>[0]);
-        String[] beanNames = (String[]) attrs.getOrDefault("beanNames", new String[0]);
+        var names = this.getBeanNames(metadata);
 
         ConfigurableListableBeanFactory beanFactory = Objects.requireNonNull(context.getBeanFactory());
 
@@ -28,12 +35,41 @@ class AEConditionalOnMissingBeanCondition implements Condition {
             }
         }
 
-        for (String name : beanNames) {
+        for (String name : names) {
             if (beanFactory.containsBeanDefinition(name) || beanFactory.containsSingleton(name)) {
                 return false;
             }
         }
 
         return true;
+    }
+
+    /**
+     * Get the names from AEConditionalOnMissingBean if present.
+     * or from @Component if present.
+     * or from @Service if present.
+     * or from @Bean if present.
+     */
+    TreeSet<String> getBeanNames(AnnotatedTypeMetadata metadata) {
+        var names = new TreeSet<String>();
+        addToBeanNames(metadata, AEConditionalOnMissingBean.class, "name", names);
+        addToBeanNames(metadata, Component.class, "value", names);
+        addToBeanNames(metadata, Service.class, "value", names);
+        addToBeanNames(metadata, Bean.class, "name", names);
+        return names;
+    }
+
+    private static void addToBeanNames(AnnotatedTypeMetadata metadata, Class<? extends Annotation> annotation, String value, TreeSet<String> names) {
+        Map<String, Object> beanNames = metadata.getAnnotationAttributes(annotation.getName());
+        if (beanNames != null) {
+            var nameAttr = beanNames.get(value);
+            if (ObjectUtils.isEmpty(nameAttr)) return;
+            switch (nameAttr) {
+                case String str -> names.add(str);
+                case String[] arr -> Collections.addAll(names, arr);
+                default ->
+                        throw new IllegalArgumentException("Invalid value for " + value + " in " + annotation.getName());
+            }
+        }
     }
 }
