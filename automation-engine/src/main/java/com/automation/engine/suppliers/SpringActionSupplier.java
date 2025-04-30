@@ -6,12 +6,14 @@ import com.automation.engine.creator.actions.IActionSupplier;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@ConditionalOnMissingBean(value = IActionSupplier.class, ignored = SpringActionSupplier.class)
 public class SpringActionSupplier implements IActionSupplier {
     private final ApplicationContext applicationContext;
 

@@ -1,6 +1,6 @@
 package com.automation.engine.modules.events.time_based;
 
-import com.automation.engine.config.AEConfigProvider;
+import com.automation.engine.provider.AEConfigProvider;
 import com.automation.engine.core.AutomationEngine;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

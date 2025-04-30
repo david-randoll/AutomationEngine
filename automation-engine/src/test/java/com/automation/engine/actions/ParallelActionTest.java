@@ -6,7 +6,7 @@ import com.automation.engine.TestLogAppender;
 import com.automation.engine.core.Automation;
 import com.automation.engine.core.AutomationEngine;
 import com.automation.engine.creator.AutomationCreator;
-import com.automation.engine.config.AEConfigProvider;
+import com.automation.engine.provider.AEConfigProvider;
 import com.automation.engine.modules.actions.parallel.ParallelAction;
 import com.automation.engine.modules.actions.wait_for_trigger.WaitForTriggerAction;
 import com.automation.engine.modules.events.time_based.TimeBasedEvent;

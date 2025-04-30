@@ -1,4 +1,4 @@
-package com.automation.engine.config;
+package com.automation.engine.provider;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

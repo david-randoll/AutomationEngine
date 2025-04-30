@@ -6,12 +6,14 @@ import com.automation.engine.creator.conditions.IConditionSupplier;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@ConditionalOnMissingBean(value = IConditionSupplier.class, ignored = SpringConditionSupplier.class)
 public class SpringConditionSupplier implements IConditionSupplier {
     private final ApplicationContext applicationContext;
 

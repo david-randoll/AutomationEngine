@@ -6,12 +6,14 @@ import com.automation.engine.creator.variables.VariableNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@ConditionalOnMissingBean(value = IVariableSupplier.class, ignored = SpringVariableSupplier.class)
 public class SpringVariableSupplier implements IVariableSupplier {
     private final ApplicationContext applicationContext;
 

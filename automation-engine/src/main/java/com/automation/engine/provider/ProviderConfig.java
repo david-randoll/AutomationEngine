@@ -1,18 +1,17 @@
-package com.automation.engine;
+package com.automation.engine.provider;
 
-import com.automation.engine.provider.AEConfigProvider;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
-import java.time.Duration;
-
 @Configuration
-public class TestConfig {
+public class ProviderConfig {
+
     @Bean
+    @ConditionalOnMissingBean
     public AEConfigProvider automationEngineConfigProvider(ThreadPoolTaskScheduler taskScheduler) {
         return new AEConfigProvider()
-                .setTaskScheduler(taskScheduler)
-                .setDefaultTimeout(Duration.ofSeconds(1));
+                .setTaskScheduler(taskScheduler);
     }
 }

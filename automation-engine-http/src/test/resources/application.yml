@@ -1,4 +1,5 @@
 server:
+  port: 9083
   error:
     include-message: always
     include-binding-errors: always

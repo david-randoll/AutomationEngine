@@ -6,12 +6,14 @@ import com.automation.engine.creator.triggers.TriggerNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@ConditionalOnMissingBean(value = ITriggerSupplier.class, ignored = SpringTriggerSupplier.class)
 public class SpringTriggerSupplier implements ITriggerSupplier {
     private final ApplicationContext applicationContext;
 
