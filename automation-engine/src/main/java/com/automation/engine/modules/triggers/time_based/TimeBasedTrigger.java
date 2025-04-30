@@ -1,6 +1,6 @@
 package com.automation.engine.modules.triggers.time_based;
 
-import com.automation.engine.conditional.AEConditionalOnMissingBeanName;
+
 import com.automation.engine.core.events.EventContext;
 import com.automation.engine.modules.events.time_based.TimeBasedEvent;
 import com.automation.engine.spi.PluggableTrigger;
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import java.time.LocalTime;
 
 @Component("timeTrigger")
-@AEConditionalOnMissingBeanName
+
 public class TimeBasedTrigger extends PluggableTrigger<TimeBasedTriggerContext> {
 
     @Override

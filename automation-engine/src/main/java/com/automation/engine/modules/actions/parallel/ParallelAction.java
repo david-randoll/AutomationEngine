@@ -1,7 +1,7 @@
 package com.automation.engine.modules.actions.parallel;
 
 import com.automation.engine.AEConfigProvider;
-import com.automation.engine.conditional.AEConditionalOnMissingBeanName;
+
 import com.automation.engine.core.events.EventContext;
 import com.automation.engine.spi.PluggableAction;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +13,7 @@ import org.springframework.util.ObjectUtils;
 @Slf4j
 @Component("parallelAction")
 @RequiredArgsConstructor
-@AEConditionalOnMissingBeanName
+
 public class ParallelAction extends PluggableAction<ParallelActionContext> {
 
     @Autowired(required = false)

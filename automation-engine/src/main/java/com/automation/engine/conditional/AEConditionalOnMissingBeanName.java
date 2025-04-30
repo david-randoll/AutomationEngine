@@ -19,7 +19,7 @@ import java.lang.annotation.*;
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @AEConditionalOnMissingBean
-public @interface AEConditionalOnMissingBeanName {
+@interface AEConditionalOnMissingBeanName {
     @AliasFor(annotation = AEConditionalOnMissingBean.class, attribute = "name")
     String[] value() default {};
 }

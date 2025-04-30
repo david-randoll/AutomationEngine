@@ -1,6 +1,5 @@
 package com.automation.engine.modules.actions.if_then_else;
 
-import com.automation.engine.conditional.AEConditionalOnMissingBeanName;
 import com.automation.engine.core.events.EventContext;
 import com.automation.engine.spi.PluggableAction;
 import lombok.RequiredArgsConstructor;
@@ -9,7 +8,6 @@ import org.springframework.util.ObjectUtils;
 
 @Component("ifThenElseAction")
 @RequiredArgsConstructor
-@AEConditionalOnMissingBeanName
 public class IfThenElseAction extends PluggableAction<IfThenElseActionContext> {
 
     @Override

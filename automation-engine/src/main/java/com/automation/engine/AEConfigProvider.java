@@ -1,6 +1,5 @@
 package com.automation.engine;
 
-import com.automation.engine.conditional.AEConditionalOnMissingBeanType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,7 +20,6 @@ import java.util.concurrent.ScheduledExecutorService;
 @Builder
 @Accessors(chain = true)
 @Configuration
-@AEConditionalOnMissingBeanType(AEConfigProvider.class)
 @ConfigurationProperties(prefix = "automation.engine")
 public class AEConfigProvider {
     private Executor executor;

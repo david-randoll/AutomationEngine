@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Conditional(AEConditionalOnMissingBeanCondition.class)
-public @interface AEConditionalOnMissingBean {
+@interface AEConditionalOnMissingBean {
     Class<?>[] type() default {};
     String[] name() default {};
 }

@@ -1,7 +1,7 @@
 package com.automation.engine.modules.actions.wait_for_trigger;
 
 import com.automation.engine.AEConfigProvider;
-import com.automation.engine.conditional.AEConditionalOnMissingBeanName;
+
 import com.automation.engine.core.events.EventContext;
 import com.automation.engine.creator.triggers.Trigger;
 import com.automation.engine.spi.PluggableAction;
@@ -21,7 +21,7 @@ import java.util.concurrent.*;
 @Component("waitForTriggerAction")
 @RequiredArgsConstructor
 @FieldNameConstants
-@AEConditionalOnMissingBeanName
+
 public class WaitForTriggerAction extends PluggableAction<WaitForTriggerActionContext> {
     private final List<WaitingAction> waitingActions = new CopyOnWriteArrayList<>();
 

@@ -1,6 +1,6 @@
 package com.automation.engine.modules.actions.repeat;
 
-import com.automation.engine.conditional.AEConditionalOnMissingBeanName;
+
 import com.automation.engine.core.events.EventContext;
 import com.automation.engine.spi.PluggableAction;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +11,7 @@ import org.springframework.util.ObjectUtils;
 @Slf4j
 @Component("repeatAction")
 @RequiredArgsConstructor
-@AEConditionalOnMissingBeanName
+
 public class RepeatAction extends PluggableAction<RepeatActionContext> {
 
     @Override

@@ -1,6 +1,6 @@
 package com.automation.engine.modules.conditions.or;
 
-import com.automation.engine.conditional.AEConditionalOnMissingBeanName;
+
 import com.automation.engine.core.events.EventContext;
 import com.automation.engine.spi.PluggableCondition;
 import lombok.RequiredArgsConstructor;
@@ -9,7 +9,7 @@ import org.springframework.util.ObjectUtils;
 
 @Component("orCondition")
 @RequiredArgsConstructor
-@AEConditionalOnMissingBeanName
+
 public class OrCondition extends PluggableCondition<OrConditionContext> {
 
     @Override
