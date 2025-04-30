@@ -1,28 +1,47 @@
 package com.automation.engine.modules.events.time_based;
 
+import com.automation.engine.config.AEConfigProvider;
 import com.automation.engine.core.AutomationEngine;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.support.CronTrigger;
 
 import java.time.LocalTime;
+import java.util.concurrent.ScheduledFuture;
 
 @Slf4j
-@Component
+@Configuration
 @RequiredArgsConstructor
-@ConditionalOnProperty(
-        name = "automation.engine.time-based.enabled",
-        havingValue = "true",
-        matchIfMissing = true
-)
-public class TimeBasedEventPublisher {
+public class TimeBasedEventPublisher implements InitializingBean, DisposableBean {
     private final AutomationEngine engine;
+    private final AEConfigProvider configProvider;
 
-    @Scheduled(cron = "${automation.engine.time-based.cron}")
-    public void run() {
-        var timeBasedEvent = new TimeBasedEvent(LocalTime.now());
-        engine.publishEvent(timeBasedEvent);
+    private ScheduledFuture<?> scheduledTask;
+
+    @Override
+    public void afterPropertiesSet() {
+        var cronExpression = configProvider.getTimeBased().getCron();
+        var taskScheduler = configProvider.getTaskScheduler();
+
+        scheduledTask = taskScheduler.schedule(this::publishEvent, new CronTrigger(cronExpression));
+    }
+
+    private void publishEvent() {
+        try {
+            var timeBasedEvent = new TimeBasedEvent(LocalTime.now());
+            engine.publishEvent(timeBasedEvent);
+        } catch (Exception e) {
+            log.error("Failed to publish time-based event", e);
+        }
+    }
+
+    @Override
+    public void destroy() {
+        if (scheduledTask != null) {
+            scheduledTask.cancel(true);
+        }
     }
 }

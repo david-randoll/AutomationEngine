@@ -4,9 +4,7 @@ import com.automation.engine.creator.parsers.yaml.IYamlConverter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
-import org.springframework.stereotype.Service;
 
-@Service
 public class YamlConverter implements IYamlConverter {
     @Override
     public <T> T convert(String yaml, Class<T> clazz) {

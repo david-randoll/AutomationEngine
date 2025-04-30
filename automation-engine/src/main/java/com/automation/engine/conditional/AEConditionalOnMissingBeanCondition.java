@@ -1,6 +1,6 @@
 package com.automation.engine.conditional;
 
-import com.automation.engine.AEConfigProvider;
+import com.automation.engine.config.AEConfigProvider;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Condition;

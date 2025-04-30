@@ -1,13 +1,12 @@
-package com.automation.engine;
+package com.automation.engine.config;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
 import java.time.Duration;
 import java.util.concurrent.Executor;
@@ -19,11 +18,10 @@ import java.util.concurrent.ScheduledExecutorService;
 @NoArgsConstructor
 @Builder
 @Accessors(chain = true)
-@Configuration
-@ConfigurationProperties(prefix = "automation.engine")
 public class AEConfigProvider {
     private Executor executor;
     private ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
+    private ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
 
     private Duration defaultTimeout = Duration.ofSeconds(60);
 
@@ -33,9 +31,8 @@ public class AEConfigProvider {
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
-    @ConfigurationProperties(prefix = "time-based")
     public static class TimeBasedProperties {
-        private boolean enabled = true;
+        private boolean enabled = false;
         private String cron = "0 * * * * *"; // every minute
     }
 }

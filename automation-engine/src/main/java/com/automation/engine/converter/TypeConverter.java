@@ -6,9 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.springframework.stereotype.Service;
 
-@Service
 @RequiredArgsConstructor
 public class TypeConverter implements ITypeConverter {
     private final ObjectMapper objectMapper;

@@ -1,6 +1,6 @@
 package com.automation.engine.modules.actions.parallel;
 
-import com.automation.engine.AEConfigProvider;
+import com.automation.engine.config.AEConfigProvider;
 
 import com.automation.engine.core.events.EventContext;
 import com.automation.engine.spi.PluggableAction;

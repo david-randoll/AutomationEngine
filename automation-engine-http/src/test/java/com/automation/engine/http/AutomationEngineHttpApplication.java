@@ -1,6 +1,6 @@
 package com.automation.engine.http;
 
-import com.automation.engine.AEConfigProvider;
+import com.automation.engine.config.AEConfigProvider;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
