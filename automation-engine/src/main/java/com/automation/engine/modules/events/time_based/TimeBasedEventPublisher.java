@@ -1,20 +1,22 @@
 package com.automation.engine.modules.events.time_based;
 
-import com.automation.engine.provider.AEConfigProvider;
 import com.automation.engine.core.AutomationEngine;
+import com.automation.engine.provider.AEConfigProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.scheduling.support.CronTrigger;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalTime;
 import java.util.concurrent.ScheduledFuture;
 
 @Slf4j
-@Configuration
+@Component("timeBasedEventPublisher")
 @RequiredArgsConstructor
+@ConditionalOnMissingBean(name = "timeBasedEventPublisher", ignored = TimeBasedEventPublisher.class)
 public class TimeBasedEventPublisher implements InitializingBean, DisposableBean {
     private final AutomationEngine engine;
     private final AEConfigProvider configProvider;

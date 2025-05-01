@@ -1,14 +1,14 @@
 package com.automation.engine.modules.actions.wait_for_trigger;
 
-import com.automation.engine.provider.AEConfigProvider;
-
 import com.automation.engine.core.events.EventContext;
 import com.automation.engine.creator.triggers.Trigger;
+import com.automation.engine.provider.AEConfigProvider;
 import com.automation.engine.spi.PluggableAction;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldNameConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
@@ -21,7 +21,7 @@ import java.util.concurrent.*;
 @Component("waitForTriggerAction")
 @RequiredArgsConstructor
 @FieldNameConstants
-
+@ConditionalOnMissingBean(name = "waitForTriggerAction", ignored = WaitForTriggerAction.class)
 public class WaitForTriggerAction extends PluggableAction<WaitForTriggerActionContext> {
     private final List<WaitingAction> waitingActions = new CopyOnWriteArrayList<>();
 

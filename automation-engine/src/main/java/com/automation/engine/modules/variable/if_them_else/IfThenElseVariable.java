@@ -4,12 +4,13 @@ package com.automation.engine.modules.variable.if_them_else;
 import com.automation.engine.core.events.EventContext;
 import com.automation.engine.spi.PluggableVariable;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 
 @Component("ifThenElseVariable")
 @RequiredArgsConstructor
-
+@ConditionalOnMissingBean(name = "ifThenElseVariable", ignored = IfThenElseVariable.class)
 public class IfThenElseVariable extends PluggableVariable<IfThenElseVariableContext> {
 
     @Override

@@ -4,11 +4,12 @@ package com.automation.engine.modules.triggers.always_true;
 import com.automation.engine.core.events.EventContext;
 import com.automation.engine.spi.PluggableTrigger;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.stereotype.Component;
 
 @Component("alwaysTrueTrigger")
 @RequiredArgsConstructor
-
+@ConditionalOnMissingBean(name = "alwaysTrueTrigger", ignored = AlwaysTrueTrigger.class)
 public class AlwaysTrueTrigger extends PluggableTrigger<AlwaysTrueTriggerContext> {
 
     @Override

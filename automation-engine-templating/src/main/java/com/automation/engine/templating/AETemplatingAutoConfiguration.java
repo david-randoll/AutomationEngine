@@ -7,5 +7,5 @@ import org.springframework.context.annotation.ComponentScan;
 @AutoConfiguration
 @ComponentScan
 @ConfigurationPropertiesScan
-public class AutomationEngineTemplatingAutoConfiguration {
+public class AETemplatingAutoConfiguration {
 }

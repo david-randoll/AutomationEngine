@@ -6,6 +6,7 @@ import com.automation.engine.core.actions.exceptions.StopAutomationException;
 import com.automation.engine.core.events.EventContext;
 import com.automation.engine.spi.PluggableAction;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 
@@ -13,7 +14,7 @@ import java.util.List;
 
 @Component("stopAction")
 @RequiredArgsConstructor
-
+@ConditionalOnMissingBean(name = "stopAction", ignored = StopAction.class)
 public class StopAction extends PluggableAction<StopActionContext> {
 
     @Override
