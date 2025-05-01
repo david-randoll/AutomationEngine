@@ -4,8 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.lang.NonNull;
@@ -16,9 +15,9 @@ import org.springframework.web.servlet.ModelAndView;
 import java.io.IOException;
 import java.util.HashMap;
 
-@Component
+@Component("runtimeExceptionResolver")
 @RequiredArgsConstructor
-@Order(Ordered.LOWEST_PRECEDENCE)
+@ConditionalOnMissingBean(name = "runtimeExceptionResolver", ignored = RuntimeExceptionResolver.class)
 public class RuntimeExceptionResolver implements HandlerExceptionResolver {
     private final ObjectMapper mapper;
 

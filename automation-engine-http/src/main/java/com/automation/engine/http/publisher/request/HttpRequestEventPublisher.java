@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -16,8 +17,9 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import java.util.List;
 
 @Slf4j
-@Component
+@Component("httpRequestEventPublisher")
 @RequiredArgsConstructor
+@ConditionalOnMissingBean(name = "httpRequestEventPublisher", ignored = HttpRequestEventPublisher.class)
 public class HttpRequestEventPublisher implements HandlerInterceptor {
     private final AutomationEngine engine;
     private final List<IHttpEventExtension> httpEventExtensions;

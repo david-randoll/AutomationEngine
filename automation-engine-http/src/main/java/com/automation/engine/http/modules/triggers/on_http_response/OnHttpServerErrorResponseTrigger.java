@@ -4,10 +4,12 @@ import com.automation.engine.core.events.EventContext;
 import com.automation.engine.http.event.HttpResponseEvent;
 import com.automation.engine.spi.PluggableTrigger;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.stereotype.Component;
 
 @Component("onHttpServerErrorResponseTrigger")
 @RequiredArgsConstructor
+@ConditionalOnMissingBean(name = "onHttpServerErrorResponseTrigger", ignored = OnHttpServerErrorResponseTrigger.class)
 public class OnHttpServerErrorResponseTrigger extends PluggableTrigger<OnHttpResponseTriggerContext> {
     private final OnHttpResponseTrigger onHttpResponseTrigger;
 

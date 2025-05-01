@@ -7,10 +7,12 @@ import com.automation.engine.http.utils.JsonNodeMatcher;
 import com.automation.engine.spi.PluggableTrigger;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.stereotype.Component;
 
 @Component("onHttpResponseTrigger")
 @RequiredArgsConstructor
+@ConditionalOnMissingBean(name = "onHttpResponseTrigger", ignored = OnHttpResponseTrigger.class)
 public class OnHttpResponseTrigger extends PluggableTrigger<OnHttpResponseTriggerContext> {
     private final ObjectMapper objectMapper;
 

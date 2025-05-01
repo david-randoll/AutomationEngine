@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
 import org.springframework.core.Ordered;
@@ -36,9 +37,10 @@ import java.util.concurrent.CompletionStage;
 
 
 @Slf4j
-@Component
+@Component("httpResponseEventPublisher")
 @RequiredArgsConstructor
 @Order(Ordered.HIGHEST_PRECEDENCE + 1)
+@ConditionalOnMissingBean(name = "httpResponseEventPublisher", ignored = HttpResponseEventPublisher.class)
 public class HttpResponseEventPublisher extends OncePerRequestFilter {
     private final AutomationEngine engine;
     private final DefaultErrorAttributes defaultErrorAttributes;

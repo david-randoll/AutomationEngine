@@ -7,10 +7,12 @@ import com.automation.engine.http.utils.StringMatcher;
 import com.automation.engine.spi.PluggableCondition;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.stereotype.Component;
 
 @Component("httpPathParamCondition")
 @RequiredArgsConstructor
+@ConditionalOnMissingBean(name = "httpPathParamCondition", ignored = HttpPathParamCondition.class)
 public class HttpPathParamCondition extends PluggableCondition<HttpPathParamConditionContext> {
     private final ObjectMapper objectMapper;
 

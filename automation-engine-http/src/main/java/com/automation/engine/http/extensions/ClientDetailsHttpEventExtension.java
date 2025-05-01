@@ -5,14 +5,20 @@ import com.automation.engine.http.event.HttpResponseEvent;
 import com.automation.engine.http.utils.HttpServletUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * This class is responsible for extending HTTP events with client details such as IP address and user agent.
+ * It implements the IHttpEventExtension interface to provide additional information for both request and response events.
+ */
 @Slf4j
-@Component
+@Component("clientDetailsHttpEventExtension")
 @RequiredArgsConstructor
+@ConditionalOnMissingBean(name = "clientDetailsHttpEventExtension", ignored = {ClientDetailsHttpEventExtension.class})
 public class ClientDetailsHttpEventExtension implements IHttpEventExtension {
     @Override
     public Map<String, Object> extendRequestEvent(HttpRequestEvent requestEvent) {

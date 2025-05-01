@@ -6,12 +6,14 @@ import com.automation.engine.http.utils.StringMatcher;
 import com.automation.engine.spi.PluggableCondition;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 @Component("httpResponseStatusCondition")
 @RequiredArgsConstructor
+@ConditionalOnMissingBean(name = "httpResponseStatusCondition", ignored = HttpResponseStatusCondition.class)
 public class HttpResponseStatusCondition extends PluggableCondition<HttpResponseStatusConditionContext> {
     private final ObjectMapper objectMapper;
 

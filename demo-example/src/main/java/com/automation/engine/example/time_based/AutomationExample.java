@@ -14,6 +14,7 @@ import com.automation.engine.core.triggers.IBaseTrigger;
 import com.automation.engine.core.triggers.TriggerContext;
 import com.automation.engine.core.triggers.interceptors.ITriggerInterceptor;
 import com.automation.engine.core.triggers.interceptors.InterceptingTrigger;
+import com.automation.engine.core.variables.BaseVariableList;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,7 +41,8 @@ public class AutomationExample {
         BaseTriggerList triggers = BaseTriggerList.of(getTrigger());
         BaseConditionList conditions = BaseConditionList.of();
         BaseActionList actions = BaseActionList.of(getAction());
-        var automation = new Automation("Time based automation", triggers, conditions, actions);
+        BaseVariableList variables = BaseVariableList.of();
+        var automation = new Automation("Time based automation", variables, triggers, conditions, actions);
         engine.register(automation);
     }
 

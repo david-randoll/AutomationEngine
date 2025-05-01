@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.lang.NonNull;
@@ -20,9 +21,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
-@Component
+@Component("httpDurationFilterExtension")
 @RequiredArgsConstructor
 @Order(Ordered.HIGHEST_PRECEDENCE)
+@ConditionalOnMissingBean(name = "httpDurationFilterExtension")
 public class HttpDurationFilterExtension extends OncePerRequestFilter implements IHttpEventExtension {
     private final ThreadLocal<Long> timeStartLocal = new InheritableThreadLocal<>();
 

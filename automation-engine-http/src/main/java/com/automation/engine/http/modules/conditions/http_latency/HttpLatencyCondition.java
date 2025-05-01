@@ -5,12 +5,14 @@ import com.automation.engine.http.event.HttpResponseEvent;
 import com.automation.engine.http.modules.triggers.on_slow_http_request.OnSlowHttpRequestException;
 import com.automation.engine.spi.PluggableCondition;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
 
 @Component("httpLatencyCondition")
 @RequiredArgsConstructor
+@ConditionalOnMissingBean(name = "httpLatencyCondition", ignored = HttpLatencyCondition.class)
 public class HttpLatencyCondition extends PluggableCondition<HttpLatencyConditionContext> {
     @Override
     public boolean isSatisfied(EventContext ec, HttpLatencyConditionContext cc) {

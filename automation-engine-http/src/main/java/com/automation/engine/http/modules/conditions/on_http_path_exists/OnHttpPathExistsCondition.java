@@ -5,10 +5,12 @@ import com.automation.engine.http.modules.triggers.on_http_path_exists.OnHttpPat
 import com.automation.engine.http.modules.triggers.on_http_path_exists.OnHttpPathExistsTriggerContext;
 import com.automation.engine.spi.PluggableCondition;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.stereotype.Component;
 
 @Component("httpPathExistsCondition")
 @RequiredArgsConstructor
+@ConditionalOnMissingBean(name = "httpPathExistsCondition", ignored = OnHttpPathExistsCondition.class)
 public class OnHttpPathExistsCondition extends PluggableCondition<OnHttpPathExistsConditionContext> {
     private final OnHttpPathExistsTrigger trigger;
 
