@@ -1,7 +1,6 @@
 package com.automation.engine.core.variables.interceptors;
 
 import com.automation.engine.core.events.EventContext;
-import com.automation.engine.core.variables.IBaseVariable;
 import com.automation.engine.core.variables.IVariable;
 import com.automation.engine.core.variables.VariableContext;
 
@@ -9,10 +8,10 @@ import java.util.List;
 import java.util.Optional;
 
 public class InterceptingVariable implements IVariable {
-    private final IBaseVariable delegate;
+    private final IVariable delegate;
     private final List<IVariableInterceptor> interceptors;
 
-    public InterceptingVariable(IBaseVariable delegate, List<IVariableInterceptor> interceptors) {
+    public InterceptingVariable(IVariable delegate, List<IVariableInterceptor> interceptors) {
         this.delegate = delegate;
         this.interceptors = Optional.ofNullable(interceptors).orElse(List.of());
     }

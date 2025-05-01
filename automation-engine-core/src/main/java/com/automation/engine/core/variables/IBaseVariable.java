@@ -5,8 +5,4 @@ import com.automation.engine.core.events.EventContext;
 @FunctionalInterface
 public interface IBaseVariable {
     void resolve(EventContext context);
-
-    default void resolve(EventContext context, VariableContext variableContext) {
-        resolve(context);
-    }
 }
