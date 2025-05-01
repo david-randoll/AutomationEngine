@@ -13,7 +13,7 @@ import static java.util.Objects.isNull;
 
 @Data
 @AllArgsConstructor
-public class Automation {
+public final class Automation {
     private final String alias;
     private final BaseVariableList variables;
     private final BaseTriggerList triggers;

@@ -7,8 +7,4 @@ import com.automation.engine.core.events.EventContext;
 @FunctionalInterface
 public interface IBaseAction {
     void execute(EventContext context) throws StopActionSequenceException, StopAutomationException;
-
-    default void execute(EventContext context, ActionContext actionContext) throws StopActionSequenceException, StopAutomationException {
-        execute(context);
-    }
 }

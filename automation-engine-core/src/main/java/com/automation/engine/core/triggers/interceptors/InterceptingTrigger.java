@@ -1,7 +1,6 @@
 package com.automation.engine.core.triggers.interceptors;
 
 import com.automation.engine.core.events.EventContext;
-import com.automation.engine.core.triggers.IBaseTrigger;
 import com.automation.engine.core.triggers.ITrigger;
 import com.automation.engine.core.triggers.TriggerContext;
 
@@ -9,10 +8,10 @@ import java.util.List;
 import java.util.Optional;
 
 public class InterceptingTrigger implements ITrigger {
-    private final IBaseTrigger delegate;
+    private final ITrigger delegate;
     private final List<ITriggerInterceptor> interceptors;
 
-    public InterceptingTrigger(IBaseTrigger delegate, List<ITriggerInterceptor> interceptors) {
+    public InterceptingTrigger(ITrigger delegate, List<ITriggerInterceptor> interceptors) {
         this.delegate = delegate;
         this.interceptors = Optional.ofNullable(interceptors).orElse(List.of());
     }

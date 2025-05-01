@@ -1,7 +1,6 @@
 package com.automation.engine.core.conditions.interceptors;
 
 import com.automation.engine.core.conditions.ConditionContext;
-import com.automation.engine.core.conditions.IBaseCondition;
 import com.automation.engine.core.conditions.ICondition;
 import com.automation.engine.core.events.EventContext;
 
@@ -9,10 +8,10 @@ import java.util.List;
 import java.util.Optional;
 
 public class InterceptingCondition implements ICondition {
-    private final IBaseCondition delegate;
+    private final ICondition delegate;
     private final List<IConditionInterceptor> interceptors;
 
-    public InterceptingCondition(IBaseCondition delegate, List<IConditionInterceptor> interceptors) {
+    public InterceptingCondition(ICondition delegate, List<IConditionInterceptor> interceptors) {
         this.delegate = delegate;
         this.interceptors = Optional.ofNullable(interceptors).orElse(List.of());
     }

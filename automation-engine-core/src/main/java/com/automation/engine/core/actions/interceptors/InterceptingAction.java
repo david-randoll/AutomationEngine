@@ -2,17 +2,16 @@ package com.automation.engine.core.actions.interceptors;
 
 import com.automation.engine.core.actions.ActionContext;
 import com.automation.engine.core.actions.IAction;
-import com.automation.engine.core.actions.IBaseAction;
 import com.automation.engine.core.events.EventContext;
 
 import java.util.List;
 import java.util.Optional;
 
 public class InterceptingAction implements IAction {
-    private final IBaseAction delegate;
+    private final IAction delegate;
     private final List<IActionInterceptor> interceptors;
 
-    public InterceptingAction(IBaseAction delegate, List<IActionInterceptor> interceptors) {
+    public InterceptingAction(IAction delegate, List<IActionInterceptor> interceptors) {
         this.delegate = delegate;
         this.interceptors = Optional.ofNullable(interceptors).orElse(List.of());
     }
