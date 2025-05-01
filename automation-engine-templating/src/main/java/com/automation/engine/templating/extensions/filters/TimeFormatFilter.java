@@ -4,6 +4,7 @@ import io.pebbletemplates.pebble.error.PebbleException;
 import io.pebbletemplates.pebble.extension.Filter;
 import io.pebbletemplates.pebble.template.EvaluationContext;
 import io.pebbletemplates.pebble.template.PebbleTemplate;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalTime;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 @Component("time_format")
+@ConditionalOnMissingBean(name = "time_format", ignored = TimeFormatFilter.class)
 public class TimeFormatFilter implements Filter {
 
     @Override

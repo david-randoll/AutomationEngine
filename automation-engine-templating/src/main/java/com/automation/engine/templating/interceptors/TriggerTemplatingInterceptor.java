@@ -8,6 +8,7 @@ import com.automation.engine.templating.TemplateProcessor;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
@@ -16,10 +17,19 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Interceptor for processing trigger data using templating.
+ * <p>
+ * This interceptor processes the trigger context data by replacing any placeholders
+ * in the strings with corresponding values from the event context.
+ * It uses a {@link TemplateProcessor} to perform the templating.
+ * </p>
+ */
 @Slf4j
-@Component
+@Component("triggerTemplatingInterceptor")
 @RequiredArgsConstructor
 @Order(-1)
+@ConditionalOnMissingBean(name = "triggerTemplatingInterceptor", ignored = TriggerTemplatingInterceptor.class)
 public class TriggerTemplatingInterceptor implements ITriggerInterceptor {
     private final TemplateProcessor templateProcessor;
 

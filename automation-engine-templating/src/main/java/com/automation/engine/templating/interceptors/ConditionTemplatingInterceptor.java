@@ -8,6 +8,7 @@ import com.automation.engine.templating.TemplateProcessor;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
@@ -16,10 +17,19 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Interceptor for processing condition data using templating.
+ * <p>
+ * This interceptor processes the condition context data by replacing any placeholders
+ * in the strings with corresponding values from the event context.
+ * It uses a {@link TemplateProcessor} to perform the templating.
+ * </p>
+ */
 @Slf4j
-@Component
+@Component("conditionTemplatingInterceptor")
 @RequiredArgsConstructor
 @Order(-1)
+@ConditionalOnMissingBean(name = "conditionTemplatingInterceptor", ignored = ConditionTemplatingInterceptor.class)
 public class ConditionTemplatingInterceptor implements IConditionInterceptor {
     private final TemplateProcessor templateProcessor;
 
