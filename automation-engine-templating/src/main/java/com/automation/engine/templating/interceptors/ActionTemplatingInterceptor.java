@@ -52,7 +52,7 @@ public class ActionTemplatingInterceptor implements IActionInterceptor {
     public void intercept(EventContext eventContext, ActionContext actionContext, IAction action) {
         log.debug("ActionTemplatingInterceptor: Processing action data...");
         if (ObjectUtils.isEmpty(actionContext.getData()) || ObjectUtils.isEmpty(eventContext.getEventData())) {
-            action.execute(eventContext, actionContext);
+            action.tryExecute(eventContext, actionContext);
         }
 
         var mapCopy = new HashMap<>(actionContext.getData());
@@ -67,7 +67,7 @@ public class ActionTemplatingInterceptor implements IActionInterceptor {
                 }
             }
         }
-        action.execute(eventContext, new ActionContext(mapCopy));
+        action.tryExecute(eventContext, new ActionContext(mapCopy));
         log.debug("ActionTemplatingInterceptor done.");
     }
 

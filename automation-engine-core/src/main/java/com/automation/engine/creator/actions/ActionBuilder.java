@@ -41,7 +41,7 @@ public class ActionBuilder {
         var interceptingAction = new InterceptingAction(actionInstance, actionInterceptors);
         var actionContext = new ActionContext(action.getParams());
 
-        return eventContext -> interceptingAction.execute(eventContext, actionContext);
+        return eventContext -> interceptingAction.tryExecute(eventContext, actionContext);
     }
 
     public void executeActions(EventContext eventContext, List<Action> actions) {

@@ -28,7 +28,7 @@ public class InterceptingAction implements IAction {
             interceptor.intercept(eventContext, actionContext, action);
         } else {
             // All interceptors have been processed, execute the delegate
-            delegate.execute(eventContext, actionContext);
+            delegate.tryExecute(eventContext, actionContext);
         }
     }
 }
