@@ -17,6 +17,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+import static org.apache.commons.lang3.BooleanUtils.isFalse;
+
 @Slf4j
 @Component("sendHttpRequestAction")
 @RequiredArgsConstructor
@@ -25,10 +27,28 @@ public class SendHttpRequestAction extends PluggableAction<SendHttpRequestAction
     private final ObjectMapper mapper;
 
     @Override
-    public void execute(EventContext ec, SendHttpRequestActionContext ac) {
-        if (ec.getEvent() instanceof HttpRequestEvent) return;
-        if (ec.getEvent() instanceof HttpResponseEvent) return;
+    public boolean canExecute(EventContext ec, SendHttpRequestActionContext ac) {
+        if (isFalse(ac.isAllowHttpEvent())) {
+            log.debug("SendHttpRequestAction is not allowed to process HTTP events: {}", ac.getAlias());
+            if (ec.getEvent() instanceof HttpRequestEvent) return false;
+            if (ec.getEvent() instanceof HttpResponseEvent) return false;
+        }
 
+        if (ObjectUtils.isEmpty(ac.getUrl())) {
+            log.warn("URL is empty for SendHttpRequestAction: {}", ac.getAlias());
+            return false;
+        }
+
+        if (ObjectUtils.isEmpty(ac.getMethod())) {
+            log.warn("HTTP method is empty for SendHttpRequestAction: {}", ac.getAlias());
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public void doExecute(EventContext ec, SendHttpRequestActionContext ac) {
         log.debug("Executing SendHttpRequestAction: {}", ac.getAlias());
         var webClient = WebClient.builder()
                 .baseUrl(ac.getUrl())

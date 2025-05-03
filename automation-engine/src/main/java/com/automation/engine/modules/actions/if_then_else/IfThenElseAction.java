@@ -13,7 +13,7 @@ import org.springframework.util.ObjectUtils;
 public class IfThenElseAction extends PluggableAction<IfThenElseActionContext> {
 
     @Override
-    public void execute(EventContext ec, IfThenElseActionContext ac) {
+    public void doExecute(EventContext ec, IfThenElseActionContext ac) {
         if (!ObjectUtils.isEmpty(ac.getIfConditions())) {
             boolean isSatisfied = allConditionsSatisfied(ec, ac.getIfConditions());
             if (isSatisfied) {

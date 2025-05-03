@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 public class LoggerAction extends PluggableAction<LoggerActionContext> {
 
     @Override
-    public void execute(EventContext ec, LoggerActionContext ac) {
+    public void doExecute(EventContext ec, LoggerActionContext ac) {
         switch (ac.getLevel().toUpperCase()) {
             case "TRACE" -> log.trace("{}", ac.getMessage());
             case "DEBUG" -> log.debug("{}", ac.getMessage());

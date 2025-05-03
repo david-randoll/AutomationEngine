@@ -20,7 +20,7 @@ public class ParallelAction extends PluggableAction<ParallelActionContext> {
     private AEConfigProvider provider;
 
     @Override
-    public void execute(EventContext ec, ParallelActionContext ac) {
+    public void doExecute(EventContext ec, ParallelActionContext ac) {
         if (ObjectUtils.isEmpty(ac.getActions())) return;
 
         var executor = provider != null ? provider.getExecutor() : null;

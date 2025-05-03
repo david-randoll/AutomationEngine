@@ -29,7 +29,7 @@ public class WaitForTriggerAction extends PluggableAction<WaitForTriggerActionCo
     private AEConfigProvider provider;
 
     @Override
-    public void execute(EventContext ec, WaitForTriggerActionContext ac) {
+    public void doExecute(EventContext ec, WaitForTriggerActionContext ac) {
         if (ObjectUtils.isEmpty(ac.getTriggers())) return;
 
         long timeout = Optional.ofNullable(ac.getTimeout())

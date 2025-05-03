@@ -18,7 +18,7 @@ import java.util.List;
 public class StopAction extends PluggableAction<StopActionContext> {
 
     @Override
-    public void execute(EventContext ec, StopActionContext ac) {
+    public void doExecute(EventContext ec, StopActionContext ac) {
         if (ObjectUtils.isEmpty(ac.getCondition())) return;
         var isSatisfied = processor.allConditionsSatisfied(ec, List.of(ac.getCondition()));
         if (!isSatisfied) return;

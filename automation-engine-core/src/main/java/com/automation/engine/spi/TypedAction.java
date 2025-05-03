@@ -17,8 +17,17 @@ public interface TypedAction<T extends IActionContext> extends IAction {
     @Override
     default void execute(EventContext eventContext, ActionContext actionContext) {
         T data = getTypeConverter().convert(actionContext.getData(), getContextType());
-        execute(eventContext, data);
+        if (data == null) {
+            throw new IllegalArgumentException("Cannot convert action context data to " + getContextType());
+        }
+        if (canExecute(eventContext, data)) {
+            doExecute(eventContext, data);
+        }
     }
 
-    void execute(EventContext ec, T ac);
+    default boolean canExecute(EventContext ec, T ac) {
+        return true;
+    }
+
+    void doExecute(EventContext ec, T ac);
 }

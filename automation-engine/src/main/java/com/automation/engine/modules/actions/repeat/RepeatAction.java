@@ -16,7 +16,7 @@ import org.springframework.util.ObjectUtils;
 public class RepeatAction extends PluggableAction<RepeatActionContext> {
 
     @Override
-    public void execute(EventContext ec, RepeatActionContext ac) {
+    public void doExecute(EventContext ec, RepeatActionContext ac) {
         if (ObjectUtils.isEmpty(ac.getActions())) return;
         for (int i = 0; i < ac.getCount(); i++) {
             processor.executeActions(ec, ac.getActions());
