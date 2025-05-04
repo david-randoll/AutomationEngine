@@ -24,12 +24,12 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.automation.engine</groupId>
-            <artifactId>automation-engine</artifactId>
+            <groupId>com.davidrandoll</groupId>
+            <artifactId>automation-engine-spring-starter</artifactId>
             <version>${revision}</version>
         </dependency>
         <dependency>
-            <groupId>com.automation.engine</groupId>
+            <groupId>com.davidrandoll</groupId>
             <artifactId>automation-engine-http</artifactId>
             <version>${revision}</version>
         </dependency>

@@ -4,8 +4,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>com.automation.engine</groupId>
-        <artifactId>AutomationEngine</artifactId>
+        <groupId>com.davidrandoll</groupId>
+        <artifactId>automation-engine</artifactId>
         <version>0.0.1-beta</version>
     </parent>
 
@@ -21,7 +21,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.automation.engine</groupId>
+            <groupId>com.davidrandoll</groupId>
             <artifactId>automation-engine-core</artifactId>
             <version>${revision}</version>
         </dependency>
