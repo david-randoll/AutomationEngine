@@ -1,9 +1,8 @@
-package com.davidrandoll.automation.engine.http;
+package com.davidrandoll.automation.engine;
 
 import ch.qos.logback.classic.Logger;
 import com.davidrandoll.automation.engine.core.AutomationEngine;
 import com.davidrandoll.automation.engine.creator.AutomationCreator;
-import com.davidrandoll.automation.engine.http.publisher.EventCaptureListener;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInstance;
@@ -15,7 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.web.servlet.MockMvc;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = AutomationEngineHttpApplication.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = AutomationEngineApplication.class)
 @AutoConfigureMockMvc
 @AutoConfigureWebTestClient
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -32,9 +31,6 @@ public class AutomationEngineTest {
     protected MockMvc mockMvc;
 
     @Autowired
-    protected EventCaptureListener eventCaptureListener; // Capture published events
-
-    @Autowired
     protected ObjectMapper objectMapper;
 
     @LocalServerPort
@@ -48,6 +44,5 @@ public class AutomationEngineTest {
         logAppender.start();
 
         engine.removeAll();
-        eventCaptureListener.clearEvents(); // Reset events before each test
     }
 }

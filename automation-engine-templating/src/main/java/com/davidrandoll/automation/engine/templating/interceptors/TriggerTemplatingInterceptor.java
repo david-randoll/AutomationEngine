@@ -1,9 +1,9 @@
 package com.davidrandoll.automation.engine.templating.interceptors;
 
-import com.automation.engine.core.events.EventContext;
-import com.automation.engine.core.triggers.ITrigger;
-import com.automation.engine.core.triggers.TriggerContext;
-import com.automation.engine.core.triggers.interceptors.ITriggerInterceptor;
+import com.davidrandoll.automation.engine.core.events.EventContext;
+import com.davidrandoll.automation.engine.core.triggers.ITrigger;
+import com.davidrandoll.automation.engine.core.triggers.TriggerContext;
+import com.davidrandoll.automation.engine.core.triggers.interceptors.ITriggerInterceptor;
 import com.davidrandoll.automation.engine.templating.TemplateProcessor;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;

@@ -1,9 +1,9 @@
 package com.davidrandoll.automation.engine.templating.interceptors;
 
-import com.automation.engine.core.actions.ActionContext;
-import com.automation.engine.core.actions.IAction;
-import com.automation.engine.core.actions.interceptors.IActionInterceptor;
-import com.automation.engine.core.events.EventContext;
+import com.davidrandoll.automation.engine.core.actions.ActionContext;
+import com.davidrandoll.automation.engine.core.actions.IAction;
+import com.davidrandoll.automation.engine.core.actions.interceptors.IActionInterceptor;
+import com.davidrandoll.automation.engine.core.events.EventContext;
 import com.davidrandoll.automation.engine.templating.TemplateProcessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;

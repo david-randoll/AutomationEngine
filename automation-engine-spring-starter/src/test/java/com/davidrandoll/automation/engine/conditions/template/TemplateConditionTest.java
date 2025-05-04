@@ -1,45 +1,16 @@
 package com.davidrandoll.automation.engine.conditions.template;
 
-import ch.qos.logback.classic.Logger;
-import com.davidrandoll.automation.engine.AutomationEngineApplication;
-import com.davidrandoll.automation.engine.TestLogAppender;
+import com.davidrandoll.automation.engine.AutomationEngineTest;
 import com.davidrandoll.automation.engine.core.Automation;
-import com.davidrandoll.automation.engine.core.AutomationEngine;
 import com.davidrandoll.automation.engine.core.events.EventContext;
-import com.davidrandoll.automation.engine.creator.AutomationCreator;
 import com.davidrandoll.automation.engine.modules.conditions.template.TemplateCondition;
 import com.davidrandoll.automation.engine.modules.conditions.template.TemplateConditionContext;
 import com.davidrandoll.automation.engine.modules.events.DefaultEvent;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK, classes = AutomationEngineApplication.class)
-@ExtendWith(SpringExtension.class)
-class TemplateConditionTest {
-    @Autowired
-    private AutomationEngine engine;
-
-    @Autowired
-    private AutomationCreator factory;
-
-    private TestLogAppender logAppender;
-
-    @BeforeEach
-    void setUp() {
-        Logger logger = (Logger) LoggerFactory.getLogger("com.automation.engine");
-        logAppender = new TestLogAppender();
-        logger.addAppender(logAppender);
-        logAppender.start();
-
-        engine.removeAll();
-    }
+class TemplateConditionTest extends AutomationEngineTest {
 
     @Test
     void testTemplateConditionIsSatisfiedWhenExpressionIsTrue() {
