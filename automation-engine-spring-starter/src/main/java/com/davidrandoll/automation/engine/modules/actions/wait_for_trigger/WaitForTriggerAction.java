@@ -42,8 +42,10 @@ public class WaitForTriggerAction extends PluggableAction<WaitForTriggerActionCo
         ScheduledExecutorService scheduler = provider != null ? provider.getScheduledExecutorService() : null;
         if (scheduler != null) {
             pollingTask = scheduler.scheduleAtFixedRate(() -> {
+                log.debug("Polling for trigger...");
                 if (!future.isDone() && processor.anyTriggersTriggered(ec, ac.getTriggers())) {
                     future.complete(true);
+                    log.debug("Trigger met, completing future!");
                 }
             }, 0, 1, TimeUnit.SECONDS);
         }
@@ -67,6 +69,7 @@ public class WaitForTriggerAction extends PluggableAction<WaitForTriggerActionCo
 
     @EventListener
     public void handleEvent(EventContext eventContext) {
+        log.debug("WaitForTriggerAction received event: {}", eventContext.getEvent());
         for (WaitingAction action : waitingActions) {
             if (!action.future.isDone() && processor.anyTriggersTriggered(eventContext, action.triggers)) {
                 action.future.complete(true);

@@ -150,7 +150,7 @@ class WaitForTriggerActionTest extends AutomationEngineTest {
     void testWaitForTriggerActionWithLongTimeoutButEarlyTrigger() {
         var time = LocalTime.now().withNano(0);
         var triggerStr = time.toString();
-        var waitForTriggerStr = time.plusMinutes(1).toString();
+        var waitForTriggerStr = time.plusSeconds(60).toString();
         var yaml = """
                 alias: Wait for Trigger with Long Timeout But Early Trigger
                 triggers:

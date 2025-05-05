@@ -8,4 +8,4 @@ server:
   forward-headers-strategy: framework
 logging:
   level:
-    com.automation.engine: DEBUG
+    com.davidrandoll.automation-engine: debug
