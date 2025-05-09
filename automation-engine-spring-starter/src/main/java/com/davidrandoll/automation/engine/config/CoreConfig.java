@@ -26,9 +26,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.List;
-import java.util.Map;
-
 @Configuration
 public class CoreConfig {
     @Bean
@@ -39,35 +36,9 @@ public class CoreConfig {
 
     @Bean
     @ConditionalOnMissingBean
-    public ActionBuilder actionBuilder(IActionSupplier supplier, List<IActionInterceptor> interceptors) {
-        return new ActionBuilder(supplier, interceptors);
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
-    public ConditionBuilder conditionBuilder(IConditionSupplier supplier, List<IConditionInterceptor> interceptors) {
-        return new ConditionBuilder(supplier, interceptors);
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
-    public TriggerBuilder triggerBuilder(ITriggerSupplier supplier, List<ITriggerInterceptor> interceptors) {
-        return new TriggerBuilder(supplier, interceptors);
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
-    public VariableBuilder variableBuilder(IVariableSupplier supplier, List<IVariableInterceptor> interceptors) {
-        return new VariableBuilder(supplier, interceptors);
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
     public AutomationProcessor automationProcessor(
-            ActionBuilder actionBuilder,
-            ConditionBuilder conditionBuilder,
-            TriggerBuilder triggerBuilder,
-            VariableBuilder variableBuilder
+            ActionBuilder actionBuilder, ConditionBuilder conditionBuilder,
+            TriggerBuilder triggerBuilder, VariableBuilder variableBuilder
     ) {
         return new AutomationProcessor(actionBuilder, conditionBuilder, triggerBuilder, variableBuilder);
     }
@@ -78,21 +49,9 @@ public class CoreConfig {
         return new ManualAutomationBuilder(processor);
     }
 
-    @Bean("jsonAutomationParser")
-    @ConditionalOnMissingBean
-    public JsonAutomationParser jsonAutomationParser(ManualAutomationBuilder builder, IJsonConverter converter) {
-        return new JsonAutomationParser(builder, converter);
-    }
-
-    @Bean("yamlAutomationParser")
-    @ConditionalOnMissingBean
-    public YamlAutomationParser yamlAutomationParser(ManualAutomationBuilder builder, IYamlConverter converter) {
-        return new YamlAutomationParser(builder, converter);
-    }
-
     @Bean
     @ConditionalOnMissingBean
-    public AutomationCreator automationCreator(ManualAutomationBuilder builder, Map<String, IAutomationFormatParser<?>> formatParsers) {
-        return new AutomationCreator(builder, formatParsers);
+    public AutomationCreator automationCreator(ManualAutomationBuilder builder, AutomationParserRouter router) {
+        return new AutomationCreator(builder, router);
     }
 }
