@@ -1,7 +1,7 @@
-package com.automation.engine.creator.parsers;
+package com.davidrandoll.automation.engine.creator.parsers;
 
-import com.automation.engine.core.Automation;
-import com.automation.engine.creator.exceptions.FormatParserNotFoundException;
+import com.davidrandoll.automation.engine.core.Automation;
+import com.davidrandoll.automation.engine.creator.exceptions.FormatParserNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;

@@ -1,12 +1,12 @@
-package com.automation.engine.config;
+package com.davidrandoll.automation.engine.config;
 
-import com.automation.engine.creator.parsers.AutomationParserRouter;
-import com.automation.engine.creator.parsers.IAutomationFormatParser;
-import com.automation.engine.creator.parsers.ManualAutomationBuilder;
-import com.automation.engine.creator.parsers.json.IJsonConverter;
-import com.automation.engine.creator.parsers.json.JsonAutomationParser;
-import com.automation.engine.creator.parsers.yaml.IYamlConverter;
-import com.automation.engine.creator.parsers.yaml.YamlAutomationParser;
+import com.davidrandoll.automation.engine.creator.parsers.AutomationParserRouter;
+import com.davidrandoll.automation.engine.creator.parsers.IAutomationFormatParser;
+import com.davidrandoll.automation.engine.creator.parsers.ManualAutomationBuilder;
+import com.davidrandoll.automation.engine.creator.parsers.json.IJsonConverter;
+import com.davidrandoll.automation.engine.creator.parsers.json.JsonAutomationParser;
+import com.davidrandoll.automation.engine.creator.parsers.yaml.IYamlConverter;
+import com.davidrandoll.automation.engine.creator.parsers.yaml.YamlAutomationParser;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
