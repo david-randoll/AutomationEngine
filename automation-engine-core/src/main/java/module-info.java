@@ -1,4 +1,4 @@
-module automation.engine.core {
+module com.davidrandoll.automation.engine {
     requires com.fasterxml.jackson.annotation;
     requires jakarta.validation;
     requires static lombok;
