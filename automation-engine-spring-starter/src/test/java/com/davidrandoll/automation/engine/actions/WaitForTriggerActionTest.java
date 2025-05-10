@@ -148,9 +148,20 @@ class WaitForTriggerActionTest extends AutomationEngineTest {
 
     @Test
     void testWaitForTriggerActionWithLongTimeoutButEarlyTrigger() {
-        var time = LocalTime.now().withNano(0);
-        var triggerStr = time.toString();
-        var waitForTriggerStr = time.plusSeconds(60).toString();
+        LocalTime time = LocalTime.now().withNano(0);
+        // add x amount of seconds to the current time so that the next minute is always more than 30 seconds away
+        LocalTime waitForTriggerTime = null;
+        if (time.getSecond() > 30) {
+            // this means that time is greater than 30 seconds
+            // so for example if time is 14:00:45, we want the next minute away to be more than 30 seconds away
+            // so we need to add 90 seconds to the current time to guarantee that is more than 30 seconds away
+            waitForTriggerTime = time.plusSeconds(90);
+        } else {
+            // this means that time is less than 30 seconds
+            // so for example if time is 14:00:15, we want the next minute away to be more than 30 seconds away
+            // so we need to add 60 seconds to the current time to guarantee that is more than 30 seconds away
+            waitForTriggerTime = time.plusSeconds(60);
+        }
         var yaml = """
                 alias: Wait for Trigger with Long Timeout But Early Trigger
                 triggers:
@@ -166,7 +177,7 @@ class WaitForTriggerActionTest extends AutomationEngineTest {
                         at: %s
                   - action: logger
                     message: "Trigger met, proceeding early!"
-                """.formatted(triggerStr, waitForTriggerStr);
+                """.formatted(time, waitForTriggerTime);
 
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
@@ -184,7 +195,7 @@ class WaitForTriggerActionTest extends AutomationEngineTest {
                 .anyMatch(msg -> msg.contains("Waiting for trigger..."))
                 .anyMatch(msg -> msg.contains("Trigger met, proceeding early!"));
 
-        assertThat(elapsedTime).isGreaterThan(30_000).isLessThan(61_000);
+        assertThat(elapsedTime).isGreaterThan(30_000).isLessThan(90_000);
     }
 
     @Test
