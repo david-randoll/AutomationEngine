@@ -36,7 +36,7 @@ public class EventContext {
         this.metadata = new ConcurrentHashMap<>(); // some actions may be executed in parallel
         this.type = event.getClass();
         this.timestamp = Instant.now();
-        this.source = getFromStackTrace(this.getClass());
+        this.source = determineSourceFromStackTrace(this.getClass());
     }
 
     public static EventContext of(IEvent event) {
@@ -125,7 +125,7 @@ public class EventContext {
      *
      * @return the class name of the caller
      */
-    public static String getFromStackTrace(Class<?> clazz) {
+    public static String determineSourceFromStackTrace(Class<?> clazz) {
         StackTraceElement[] stackTraces = Thread.currentThread().getStackTrace();
         for (var i = 0; i < stackTraces.length; i++) {
             var foundAutomationEngine = AutomationEngine.class.getName().equals(stackTraces[i].getClassName());

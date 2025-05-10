@@ -2,12 +2,15 @@ package com.davidrandoll.automation.engine.config;
 
 import com.davidrandoll.automation.engine.core.actions.interceptors.IActionInterceptor;
 import com.davidrandoll.automation.engine.core.conditions.interceptors.IConditionInterceptor;
+import com.davidrandoll.automation.engine.core.result.interceptors.IResultInterceptor;
 import com.davidrandoll.automation.engine.core.triggers.interceptors.ITriggerInterceptor;
 import com.davidrandoll.automation.engine.core.variables.interceptors.IVariableInterceptor;
 import com.davidrandoll.automation.engine.creator.actions.ActionBuilder;
 import com.davidrandoll.automation.engine.creator.actions.IActionSupplier;
 import com.davidrandoll.automation.engine.creator.conditions.ConditionBuilder;
 import com.davidrandoll.automation.engine.creator.conditions.IConditionSupplier;
+import com.davidrandoll.automation.engine.creator.result.IResultSupplier;
+import com.davidrandoll.automation.engine.creator.result.ResultBuilder;
 import com.davidrandoll.automation.engine.creator.triggers.ITriggerSupplier;
 import com.davidrandoll.automation.engine.creator.triggers.TriggerBuilder;
 import com.davidrandoll.automation.engine.creator.variables.IVariableSupplier;
@@ -42,5 +45,11 @@ public class BuilderConfig {
     @ConditionalOnMissingBean
     public VariableBuilder variableBuilder(IVariableSupplier supplier, List<IVariableInterceptor> interceptors) {
         return new VariableBuilder(supplier, interceptors);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public ResultBuilder resultBuilder(IResultSupplier supplier, List<IResultInterceptor> interceptors) {
+        return new ResultBuilder(supplier, interceptors);
     }
 }

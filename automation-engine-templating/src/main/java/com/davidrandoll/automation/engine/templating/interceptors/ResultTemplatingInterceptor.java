@@ -1,12 +1,11 @@
 package com.davidrandoll.automation.engine.templating.interceptors;
 
-import com.davidrandoll.automation.engine.core.conditions.ConditionContext;
-import com.davidrandoll.automation.engine.core.conditions.ICondition;
-import com.davidrandoll.automation.engine.core.conditions.interceptors.IConditionInterceptor;
 import com.davidrandoll.automation.engine.core.events.EventContext;
+import com.davidrandoll.automation.engine.core.result.IResult;
+import com.davidrandoll.automation.engine.core.result.ResultContext;
+import com.davidrandoll.automation.engine.core.result.interceptors.IResultInterceptor;
 import com.davidrandoll.automation.engine.templating.TemplateProcessor;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.core.annotation.Order;
@@ -18,30 +17,29 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Interceptor for processing condition data using templating.
+ * Interceptor for processing result data using templating.
  * <p>
- * This interceptor processes the condition context data by replacing any placeholders
+ * This interceptor processes the result context data by replacing any placeholders
  * in the strings with corresponding values from the event context.
  * It uses a {@link TemplateProcessor} to perform the templating.
  * </p>
  */
 @Slf4j
-@Component("conditionTemplatingInterceptor")
+@Component("resultTemplatingInterceptor")
 @RequiredArgsConstructor
 @Order(-1)
-@ConditionalOnMissingBean(name = "conditionTemplatingInterceptor", ignored = ConditionTemplatingInterceptor.class)
-public class ConditionTemplatingInterceptor implements IConditionInterceptor {
+@ConditionalOnMissingBean(name = "resultTemplatingInterceptor", ignored = ResultTemplatingInterceptor.class)
+public class ResultTemplatingInterceptor implements IResultInterceptor {
     private final TemplateProcessor templateProcessor;
 
     @Override
-    @SneakyThrows
-    public void intercept(EventContext eventContext, ConditionContext conditionContext, ICondition condition) {
-        log.debug("ConditionTemplatingInterceptor: Processing condition data...");
-        if (ObjectUtils.isEmpty(conditionContext.getData()) || ObjectUtils.isEmpty(eventContext.getEventData())) {
-            condition.isSatisfied(eventContext, conditionContext);
+    public Object intercept(EventContext eventContext, ResultContext resultContext, IResult result) {
+        log.debug("ConditionTemplatingInterceptor: Processing result data...");
+        if (ObjectUtils.isEmpty(resultContext.getData()) || ObjectUtils.isEmpty(eventContext.getEventData())) {
+            return result.getExecutionSummary(eventContext, resultContext);
         }
 
-        var mapCopy = new HashMap<>(conditionContext.getData());
+        var mapCopy = new HashMap<>(resultContext.getData());
         for (Map.Entry<String, Object> entry : mapCopy.entrySet()) {
             if (entry.getValue() instanceof String valueStr) {
                 try {
@@ -53,8 +51,9 @@ public class ConditionTemplatingInterceptor implements IConditionInterceptor {
                 }
             }
         }
-        condition.isSatisfied(eventContext, new ConditionContext(mapCopy));
+        var res = result.getExecutionSummary(eventContext, new ResultContext(mapCopy));
         log.debug("ConditionTemplatingInterceptor: Condition data processed successfully.");
+        return res;
     }
 
     public static class AutomationEngineProcessingException extends RuntimeException {

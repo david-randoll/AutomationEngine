@@ -19,7 +19,8 @@ public class ManualAutomationBuilder implements IAutomationFormatParser<CreateAu
                 processor.resolveVariables(request.getVariables()),
                 processor.resolveTriggers(request.getTriggers()),
                 processor.resolveConditions(request.getConditions()),
-                processor.resolveActions(request.getActions())
+                processor.resolveActions(request.getActions()),
+                processor.resolveResult(request.getResult())
         );
         log.info("Automation {} created successfully", request.getAlias());
         return automation;

@@ -1,5 +1,6 @@
 package com.davidrandoll.automation.engine.creator.conditions;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -19,6 +20,7 @@ import java.util.Map;
 public class Condition {
     private String alias;
     @NotEmpty
+    @JsonAlias({"type", "condition"})
     private String condition;
 
     @JsonIgnore

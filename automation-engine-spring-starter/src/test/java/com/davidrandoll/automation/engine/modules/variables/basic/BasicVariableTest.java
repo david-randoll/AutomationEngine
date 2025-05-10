@@ -1,4 +1,4 @@
-package com.davidrandoll.automation.engine.modules.variable.basic;
+package com.davidrandoll.automation.engine.modules.variables.basic;
 
 import com.davidrandoll.automation.engine.AutomationEngineTest;
 import com.davidrandoll.automation.engine.core.Automation;

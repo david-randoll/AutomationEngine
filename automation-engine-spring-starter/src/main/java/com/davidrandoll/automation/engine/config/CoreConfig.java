@@ -8,6 +8,7 @@ import com.davidrandoll.automation.engine.creator.actions.ActionBuilder;
 import com.davidrandoll.automation.engine.creator.conditions.ConditionBuilder;
 import com.davidrandoll.automation.engine.creator.parsers.AutomationParserRouter;
 import com.davidrandoll.automation.engine.creator.parsers.ManualAutomationBuilder;
+import com.davidrandoll.automation.engine.creator.result.ResultBuilder;
 import com.davidrandoll.automation.engine.creator.triggers.TriggerBuilder;
 import com.davidrandoll.automation.engine.creator.variables.VariableBuilder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -26,9 +27,10 @@ public class CoreConfig {
     @ConditionalOnMissingBean
     public AutomationProcessor automationProcessor(
             ActionBuilder actionBuilder, ConditionBuilder conditionBuilder,
-            TriggerBuilder triggerBuilder, VariableBuilder variableBuilder
+            TriggerBuilder triggerBuilder, VariableBuilder variableBuilder,
+            ResultBuilder resultBuilder
     ) {
-        return new AutomationProcessor(actionBuilder, conditionBuilder, triggerBuilder, variableBuilder);
+        return new AutomationProcessor(actionBuilder, conditionBuilder, triggerBuilder, variableBuilder, resultBuilder);
     }
 
     @Bean("manualAutomationParser")

@@ -1,6 +1,6 @@
-package com.davidrandoll.automation.engine.modules.variable.basic;
+package com.davidrandoll.automation.engine.modules.results.basic;
 
-import com.davidrandoll.automation.engine.core.variables.IVariableContext;
+import com.davidrandoll.automation.engine.core.result.IResultContext;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import lombok.AllArgsConstructor;
@@ -13,10 +13,10 @@ import java.util.Map;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class BasicVariableContext implements IVariableContext {
+public class BasicResultContext implements IResultContext {
     private String alias;
 
     @JsonAnySetter
     @JsonAnyGetter
-    private Map<String, Object> variables = new HashMap<>();
+    private Map<String, Object> results = new HashMap<>();
 }

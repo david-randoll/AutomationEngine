@@ -1,4 +1,4 @@
-package com.davidrandoll.automation.engine.creator.variables;
+package com.davidrandoll.automation.engine.creator.result;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
@@ -16,11 +16,11 @@ import java.util.Map;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Variable {
+public class Result {
     private String alias;
 
-    @JsonAlias({"variable", "type"})
-    private String variable = "basic";
+    @JsonAlias({"result", "return", "type"})
+    private String result = "basic";
 
     @JsonIgnore
     @JsonAnyGetter

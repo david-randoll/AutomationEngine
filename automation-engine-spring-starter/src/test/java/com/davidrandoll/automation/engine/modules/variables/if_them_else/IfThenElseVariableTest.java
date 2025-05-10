@@ -1,4 +1,4 @@
-package com.davidrandoll.automation.engine.modules.variable.if_them_else;
+package com.davidrandoll.automation.engine.modules.variables.if_them_else;
 
 import com.davidrandoll.automation.engine.AutomationEngineTest;
 import com.davidrandoll.automation.engine.core.Automation;

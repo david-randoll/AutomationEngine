@@ -3,12 +3,15 @@ package com.davidrandoll.automation.engine.creator;
 import com.davidrandoll.automation.engine.core.actions.BaseActionList;
 import com.davidrandoll.automation.engine.core.conditions.BaseConditionList;
 import com.davidrandoll.automation.engine.core.events.EventContext;
+import com.davidrandoll.automation.engine.core.result.IBaseResult;
 import com.davidrandoll.automation.engine.core.triggers.BaseTriggerList;
 import com.davidrandoll.automation.engine.core.variables.BaseVariableList;
 import com.davidrandoll.automation.engine.creator.actions.Action;
 import com.davidrandoll.automation.engine.creator.actions.ActionBuilder;
 import com.davidrandoll.automation.engine.creator.conditions.Condition;
 import com.davidrandoll.automation.engine.creator.conditions.ConditionBuilder;
+import com.davidrandoll.automation.engine.creator.result.Result;
+import com.davidrandoll.automation.engine.creator.result.ResultBuilder;
 import com.davidrandoll.automation.engine.creator.triggers.Trigger;
 import com.davidrandoll.automation.engine.creator.triggers.TriggerBuilder;
 import com.davidrandoll.automation.engine.creator.variables.Variable;
@@ -24,6 +27,7 @@ public class AutomationProcessor {
     private final ConditionBuilder conditionBuilder;
     private final TriggerBuilder triggerBuilder;
     private final VariableBuilder variableBuilder;
+    private final ResultBuilder resultBuilder;
 
     /*
         Actions
@@ -91,5 +95,16 @@ public class AutomationProcessor {
 
     public void resolveVariables(EventContext eventContext, List<Variable> variables) {
         variableBuilder.resolveVariables(eventContext, variables);
+    }
+
+    /*
+        Results
+     */
+    public IBaseResult resolveResult(Result result) {
+        return resultBuilder.resolve(result);
+    }
+
+    public Object resolveResult(EventContext eventContext, Result result) {
+        return resultBuilder.resolveResult(eventContext, result);
     }
 }

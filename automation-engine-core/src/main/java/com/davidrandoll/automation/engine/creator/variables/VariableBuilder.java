@@ -7,7 +7,6 @@ import com.davidrandoll.automation.engine.core.variables.IVariable;
 import com.davidrandoll.automation.engine.core.variables.VariableContext;
 import com.davidrandoll.automation.engine.core.variables.interceptors.IVariableInterceptor;
 import com.davidrandoll.automation.engine.core.variables.interceptors.InterceptingVariable;
-import com.davidrandoll.automation.engine.creator.actions.ActionNotFoundException;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
@@ -35,7 +34,7 @@ public class VariableBuilder {
 
     private IBaseVariable buildVariable(Variable variable) {
         IVariable variableInstance = Optional.ofNullable(supplier.getVariable(variable.getVariable()))
-                .orElseThrow(() -> new ActionNotFoundException(variable.getVariable()));
+                .orElseThrow(() -> new VariableNotFoundException(variable.getVariable()));
 
         var interceptingVariable = new InterceptingVariable(variableInstance, variableInterceptors);
         var variableContext = new VariableContext(variable.getParams());
