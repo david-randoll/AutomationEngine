@@ -412,4 +412,165 @@ class BasicResultTest extends AutomationEngineTest {
         assertThat(resultNode.get("initials").asText()).isEqualTo("JD");
     }
 
+    @Test
+    void testRunAutomation_withNestedUserInfo() {
+        var yaml = """
+                alias: return-nested-user-info
+                variables:
+                  - firstName: "David"
+                    lastName: "Randoll"
+                    email: "david@example.com"
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: logger
+                    message: "Collecting user info..."
+                result:
+                  user:
+                    fullName: "{{ firstName }} {{ lastName }}"
+                    contact:
+                      email: "{{ email }}"
+                      initials: "{{ firstName | slice(0,1) }}{{ lastName | slice(0,1) }}"
+                """;
+
+        var automation = factory.createAutomation("yaml", yaml);
+
+        var eventContext = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        AutomationResult result = engine.runAutomation(automation, eventContext);
+
+        assertThat(result.isExecuted()).isTrue();
+
+        JsonNode resultNode = (JsonNode) result.getResult().orElseThrow();
+        assertThat(resultNode.path("user").path("fullName").asText()).isEqualTo("David Randoll");
+        assertThat(resultNode.path("user").path("contact").path("email").asText()).isEqualTo("david@example.com");
+        assertThat(resultNode.path("user").path("contact").path("initials").asText()).isEqualTo("DR");
+    }
+
+    @Test
+    void testRunAutomation_withListOfItems() {
+        var yaml = """
+                alias: return-order-items
+                variables:
+                  - item1: "Laptop"
+                    item2: "Mouse"
+                    item3: "Keyboard"
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: logger
+                    message: "Preparing item list..."
+                result:
+                  items:
+                    - "{{ item1 }}"
+                    - "{{ item2 }}"
+                    - "{{ item3 }}"
+                """;
+
+        var automation = factory.createAutomation("yaml", yaml);
+
+        var eventContext = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        AutomationResult result = engine.runAutomation(automation, eventContext);
+
+        assertThat(result.isExecuted()).isTrue();
+
+        JsonNode resultNode = (JsonNode) result.getResult().orElseThrow();
+        assertThat(resultNode.path("items")).hasSize(3);
+        assertThat(resultNode.path("items").get(0).asText()).isEqualTo("Laptop");
+        assertThat(resultNode.path("items").get(1).asText()).isEqualTo("Mouse");
+        assertThat(resultNode.path("items").get(2).asText()).isEqualTo("Keyboard");
+    }
+
+    @Test
+    void testRunAutomation_withDeepNestedFields() {
+        var yaml = """
+                alias: return-deep-nested-data
+                variables:
+                  - country: "USA"
+                    state: "California"
+                    city: "San Francisco"
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: logger
+                    message: "Building address..."
+                result:
+                  address:
+                    country: "{{ country }}"
+                    details:
+                      state: "{{ state }}"
+                      city: "{{ city }}"
+                """;
+
+        var automation = factory.createAutomation("yaml", yaml);
+
+        var eventContext = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        AutomationResult result = engine.runAutomation(automation, eventContext);
+
+        assertThat(result.isExecuted()).isTrue();
+
+        JsonNode resultNode = (JsonNode) result.getResult().orElseThrow();
+        assertThat(resultNode.path("address").path("country").asText()).isEqualTo("USA");
+        assertThat(resultNode.path("address").path("details").path("state").asText()).isEqualTo("California");
+        assertThat(resultNode.path("address").path("details").path("city").asText()).isEqualTo("San Francisco");
+    }
+
+    @Test
+    void testRunAutomation_withPriceComputation() {
+        var yaml = """
+                alias: return-price-computation
+                variables:
+                  - unitPrice: 50
+                    quantity: 3
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: logger
+                    message: "Calculating total..."
+                result:
+                  totalPrice: "{{ unitPrice * quantity }}"
+                  details:
+                    unit: "{{ unitPrice }}"
+                    quantity: "{{ quantity }}"
+                """;
+
+        var automation = factory.createAutomation("yaml", yaml);
+
+        var eventContext = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        AutomationResult result = engine.runAutomation(automation, eventContext);
+
+        assertThat(result.isExecuted()).isTrue();
+
+        JsonNode resultNode = (JsonNode) result.getResult().orElseThrow();
+        assertThat(resultNode.path("totalPrice").asInt()).isEqualTo(150);
+        assertThat(resultNode.path("details").path("unit").asInt()).isEqualTo(50);
+        assertThat(resultNode.path("details").path("quantity").asInt()).isEqualTo(3);
+    }
+
+    @Test
+    void testRunAutomation_withDefaultValue() {
+        var yaml = """
+                alias: return-with-default-value
+                variables:
+                  - userName: ""
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: logger
+                    message: "Checking user name..."
+                result:
+                  userName: "{{ userName | default('Guest') }}"
+                """;
+
+        var automation = factory.createAutomation("yaml", yaml);
+
+        var eventContext = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        AutomationResult result = engine.runAutomation(automation, eventContext);
+
+        assertThat(result.isExecuted()).isTrue();
+
+        JsonNode resultNode = (JsonNode) result.getResult().orElseThrow();
+        assertThat(resultNode.path("userName").asText()).isEqualTo("Guest");
+    }
+
+
 }
