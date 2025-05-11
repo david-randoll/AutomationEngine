@@ -1,12 +1,11 @@
 package com.davidrandoll.automation.engine.core.result;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-
-import java.util.Map;
 
 @Data
 @AllArgsConstructor
 public class ResultContext {
-    private Map<String, Object> data;
+    private JsonNode data;
 }

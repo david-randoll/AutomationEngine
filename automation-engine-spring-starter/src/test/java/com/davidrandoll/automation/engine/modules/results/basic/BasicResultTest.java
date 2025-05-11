@@ -4,12 +4,10 @@ import com.davidrandoll.automation.engine.AutomationEngineTest;
 import com.davidrandoll.automation.engine.core.events.EventContext;
 import com.davidrandoll.automation.engine.core.result.AutomationResult;
 import com.davidrandoll.automation.engine.modules.events.time_based.TimeBasedEvent;
-import org.assertj.core.api.InstanceOfAssertFactories;
+import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalTime;
-import java.util.List;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -37,12 +35,11 @@ class BasicResultTest extends AutomationEngineTest {
 
         AutomationResult result = engine.runAutomation(automation, eventContext);
         assertThat(result.isExecuted()).isTrue();
-        assertThat(result.getResult())
-                .isPresent().get()
-                .asInstanceOf(InstanceOfAssertFactories.MAP)
-                .containsEntry("success", true)
-                .containsEntry("message", "Operation completed")
-                .containsEntry("recordId", 12345);
+        JsonNode resultNode = (JsonNode) result.getResult().orElseThrow();
+
+        assertThat(resultNode.get("success").asBoolean()).isTrue();
+        assertThat(resultNode.get("message").asText()).isEqualTo("Operation completed");
+        assertThat(resultNode.get("recordId").asInt()).isEqualTo(12345);
     }
 
     @Test
@@ -62,10 +59,10 @@ class BasicResultTest extends AutomationEngineTest {
         AutomationResult result = engine.runAutomation(automation, eventContext);
 
         assertThat(result.isExecuted()).isTrue();
-        assertThat(result.getResult())
-                .isPresent().get()
-                .asInstanceOf(InstanceOfAssertFactories.MAP)
-                .containsEntry("status", "ok");
+
+        JsonNode resultNode = (JsonNode) result.getResult().orElseThrow();
+
+        assertThat(resultNode.get("status").asText()).isEqualTo("ok");
     }
 
     @Test
@@ -88,16 +85,13 @@ class BasicResultTest extends AutomationEngineTest {
         AutomationResult result = engine.runAutomation(automation, eventContext);
 
         assertThat(result.isExecuted()).isTrue();
-        assertThat(result.getResult())
-                .isPresent().get()
-                .asInstanceOf(InstanceOfAssertFactories.MAP)
-                .containsEntry("success", true)
-                .containsKey("details");
 
-        var details = (Map<String, Object>) ((Map<?, ?>) result.getResult().get()).get("details");
-        assertThat(details)
-                .containsEntry("createdAt", "2025-05-10T12:00:00Z")
-                .containsEntry("createdBy", "admin");
+        JsonNode resultNode = (JsonNode) result.getResult().orElseThrow();
+        assertThat(resultNode.get("success").asBoolean()).isTrue();
+        assertThat(resultNode.get("details")).isNotNull();
+        var detailsNode = resultNode.get("details");
+        assertThat(detailsNode.get("createdAt").asText()).isEqualTo("2025-05-10T12:00:00Z");
+        assertThat(detailsNode.get("createdBy").asText()).isEqualTo("admin");
     }
 
     @Test
@@ -120,14 +114,14 @@ class BasicResultTest extends AutomationEngineTest {
         AutomationResult result = engine.runAutomation(automation, eventContext);
 
         assertThat(result.isExecuted()).isTrue();
-        assertThat(result.getResult())
-                .isPresent().get()
-                .asInstanceOf(InstanceOfAssertFactories.MAP)
-                .containsKey("items");
-
-        var items = (List<String>) ((Map<?, ?>) result.getResult().get()).get("items");
-        assertThat(items)
-                .containsExactly("item1", "item2", "item3");
+        JsonNode resultNode = (JsonNode) result.getResult().orElseThrow();
+        var itemsNode = resultNode.get("items");
+        assertThat(itemsNode).isNotNull();
+        assertThat(itemsNode.isArray()).isTrue();
+        assertThat(itemsNode.size()).isEqualTo(3);
+        assertThat(itemsNode.get(0).asText()).isEqualTo("item1");
+        assertThat(itemsNode.get(1).asText()).isEqualTo("item2");
+        assertThat(itemsNode.get(2).asText()).isEqualTo("item3");
     }
 
     @Test
@@ -152,16 +146,15 @@ class BasicResultTest extends AutomationEngineTest {
         AutomationResult result = engine.runAutomation(automation, eventContext);
 
         assertThat(result.isExecuted()).isTrue();
-        var resultMap = (Map<String, Object>) result.getResult().get();
-
-        assertThat(resultMap)
-                .containsEntry("count", 42)
-                .containsEntry("active", false)
-                .containsEntry("username", "david");
-
-        var tags = (List<String>) resultMap.get("tags");
-        assertThat(tags)
-                .containsExactly("tag1", "tag2");
+        JsonNode resultNode = (JsonNode) result.getResult().orElseThrow();
+        assertThat(resultNode.get("count").asInt()).isEqualTo(42);
+        assertThat(resultNode.get("active").asBoolean()).isFalse();
+        assertThat(resultNode.get("username").asText()).isEqualTo("david");
+        assertThat(resultNode.get("tags")).isNotNull();
+        assertThat(resultNode.get("tags").isArray()).isTrue();
+        assertThat(resultNode.get("tags").size()).isEqualTo(2);
+        assertThat(resultNode.get("tags").get(0).asText()).isEqualTo("tag1");
+        assertThat(resultNode.get("tags").get(1).asText()).isEqualTo("tag2");
     }
 
     @Test
@@ -180,10 +173,11 @@ class BasicResultTest extends AutomationEngineTest {
         AutomationResult result = engine.runAutomation(automation, eventContext);
 
         assertThat(result.isExecuted()).isTrue();
-        assertThat(result.getResult())
-                .isPresent().get()
-                .asInstanceOf(InstanceOfAssertFactories.MAP)
-                .isEmpty();
+        JsonNode resultNode = (JsonNode) result.getResult().orElseThrow();
+        assertThat(resultNode).isNotNull();
+        assertThat(resultNode.isObject()).isTrue();
+        assertThat(resultNode.size()).isZero();
+        assertThat(resultNode.isEmpty()).isTrue();
     }
 
     @Test
@@ -204,7 +198,6 @@ class BasicResultTest extends AutomationEngineTest {
 
         var eventContext = new EventContext(new TimeBasedEvent(LocalTime.now()));
         AutomationResult result = engine.runAutomation(automation, eventContext);
-
         assertThat(result.isExecuted()).isFalse();
         assertThat(result.getResult()).isEmpty();
     }
@@ -226,5 +219,115 @@ class BasicResultTest extends AutomationEngineTest {
         assertThat(result.getResult()).isEmpty();
     }
 
+    @Test
+    void testRunAutomation_withNullResultInYaml() {
+        var yaml = """
+                alias: null-result
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: logger
+                    message: "Still executes"
+                result: null
+                """;
 
+        var automation = factory.createAutomation("yaml", yaml);
+
+        var eventContext = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        AutomationResult result = engine.runAutomation(automation, eventContext);
+        assertThat(result.isExecuted()).isTrue();
+        JsonNode resultNode = (JsonNode) result.getResult().orElseThrow();
+        assertThat(resultNode.isNull()).isTrue();
+    }
+
+    @Test
+    void testRunAutomation_withPrimitiveResult() {
+        var yaml = """
+                alias: primitive-result
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: logger
+                    message: "Primitive result"
+                result: 42
+                """;
+
+        var automation = factory.createAutomation("yaml", yaml);
+
+        var eventContext = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        AutomationResult result = engine.runAutomation(automation, eventContext);
+        assertThat(result.isExecuted()).isTrue();
+        JsonNode resultNode = (JsonNode) result.getResult().orElseThrow();
+        assertThat(resultNode).isNotNull();
+        assertThat(resultNode.isInt()).isTrue();
+        assertThat(resultNode.asInt()).isEqualTo(42);
+    }
+
+    @Test
+    void testRunAutomation_withEmptyListResult() {
+        var yaml = """
+                alias: empty-list-result
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: logger
+                    message: "Empty list as result"
+                result: []
+                """;
+
+        var automation = factory.createAutomation("yaml", yaml);
+
+        var eventContext = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        AutomationResult result = engine.runAutomation(automation, eventContext);
+        assertThat(result.isExecuted()).isTrue();
+        JsonNode resultNode = (JsonNode) result.getResult().orElseThrow();
+        assertThat(resultNode).isNotNull();
+        assertThat(resultNode.isArray()).isTrue();
+        assertThat(resultNode.size()).isZero();
+        assertThat(resultNode.isEmpty()).isTrue();
+    }
+
+    @Test
+    void testRunAutomation_withEmptyMapResult() {
+        var yaml = """
+                alias: empty-map-result
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: logger
+                    message: "Empty map as result"
+                result: {}
+                """;
+
+        var automation = factory.createAutomation("yaml", yaml);
+
+        var eventContext = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        AutomationResult result = engine.runAutomation(automation, eventContext);
+        assertThat(result.isExecuted()).isTrue();
+        JsonNode resultNode = (JsonNode) result.getResult().orElseThrow();
+        assertThat(resultNode).isNotNull();
+        assertThat(resultNode.isObject()).isTrue();
+        assertThat(resultNode.size()).isZero();
+        assertThat(resultNode.isEmpty()).isTrue();
+    }
+
+    @Test
+    void testRunAutomation_withoutResultField() {
+        var yaml = """
+                alias: no-result-field
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: logger
+                    message: "No result defined"
+                """;
+
+        var automation = factory.createAutomation("yaml", yaml);
+
+        var eventContext = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        AutomationResult result = engine.runAutomation(automation, eventContext);
+        assertThat(result.isExecuted()).isTrue();
+        JsonNode resultNode = (JsonNode) result.getResult().orElseThrow();
+        assertThat(resultNode.isNull()).isTrue();
+    }
 }
