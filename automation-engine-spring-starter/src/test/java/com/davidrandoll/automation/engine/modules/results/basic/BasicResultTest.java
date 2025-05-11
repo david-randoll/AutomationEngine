@@ -330,4 +330,86 @@ class BasicResultTest extends AutomationEngineTest {
         JsonNode resultNode = (JsonNode) result.getResult().orElseThrow();
         assertThat(resultNode.isNull()).isTrue();
     }
+
+    @Test
+    void testRunAutomation_returnVariableInResult() {
+        var yaml = """
+                alias: return-variable-result
+                variables:
+                  - someValue: 99
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: logger
+                    message: "Using someValue"
+                result:
+                  valueFromVariable: "{{ someValue }}"
+                """;
+
+        var automation = factory.createAutomation("yaml", yaml);
+
+        var eventContext = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        AutomationResult result = engine.runAutomation(automation, eventContext);
+
+        assertThat(result.isExecuted()).isTrue();
+        JsonNode resultNode = (JsonNode) result.getResult().orElseThrow();
+        assertThat(resultNode).isNotNull();
+        assertThat(resultNode.get("valueFromVariable").asInt()).isEqualTo(99);
+    }
+
+    @Test
+    void testRunAutomation_returnUpdatedVariable() {
+        var yaml = """
+                alias: return-updated-variable
+                variables:
+                  - counter: 0
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: variable
+                    counter: "{{ counter + 1 }}"
+                result:
+                  finalCounter: "{{ counter }}"
+                """;
+
+        var automation = factory.createAutomation("yaml", yaml);
+
+        var eventContext = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        AutomationResult result = engine.runAutomation(automation, eventContext);
+
+        assertThat(result.isExecuted()).isTrue();
+        JsonNode resultNode = (JsonNode) result.getResult().orElseThrow();
+        assertThat(resultNode).isNotNull();
+        assertThat(resultNode.get("finalCounter").asInt()).isEqualTo(1);
+    }
+
+    @Test
+    void testRunAutomation_returnMultipleVariables() {
+        var yaml = """
+                alias: return-multiple-variables
+                variables:
+                  - firstName: "John"
+                    lastName: "Doe"
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: logger
+                    message: "Combining names"
+                result:
+                  fullName: "{{ firstName }} {{ lastName }}"
+                  initials: "{{ firstName | slice(0,1) }}{{ lastName | slice(0,1) }}"
+                """;
+
+        var automation = factory.createAutomation("yaml", yaml);
+
+        var eventContext = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        AutomationResult result = engine.runAutomation(automation, eventContext);
+
+        assertThat(result.isExecuted()).isTrue();
+        JsonNode resultNode = (JsonNode) result.getResult().orElseThrow();
+        assertThat(resultNode).isNotNull();
+        assertThat(resultNode.get("fullName").asText()).isEqualTo("John Doe");
+        assertThat(resultNode.get("initials").asText()).isEqualTo("JD");
+    }
+
 }
