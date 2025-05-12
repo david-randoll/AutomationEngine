@@ -17,9 +17,8 @@ public class ResultBuilder {
     private final List<IResultInterceptor> interceptors;
 
     public IBaseResult resolve(Result result) {
-        result = Optional.ofNullable(result)
-                .orElse(new Result());
-        IResult instance = supplier.getResult(result.getResult());
+        IResult instance = Optional.ofNullable(supplier.getResult(result.getResult()))
+                .orElseThrow(() -> new ResultNotFoundException(result.getResult()));
 
         var interceptingResult = new InterceptingResult(instance, interceptors);
         var resultContext = new ResultContext(result.getParams());
