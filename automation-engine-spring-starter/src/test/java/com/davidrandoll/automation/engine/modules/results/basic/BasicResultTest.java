@@ -572,5 +572,157 @@ class BasicResultTest extends AutomationEngineTest {
         assertThat(resultNode.path("userName").asText()).isEqualTo("Guest");
     }
 
+    @Test
+    void testRunAutomation_emptyVariables() {
+        var yaml = """
+                alias: return-empty-variables
+                variables:
+                  - 
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: logger
+                    message: "Empty variables"
+                result:
+                  message: "No variables here"
+                """;
+
+        var automation = factory.createAutomation("yaml", yaml);
+
+        var eventContext = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        AutomationResult result = engine.runAutomation(automation, eventContext);
+
+        assertThat(result.isExecuted()).isTrue();
+        JsonNode resultNode = (JsonNode) result.getResult().orElseThrow();
+        assertThat(resultNode.path("message").asText()).isEqualTo("No variables here");
+    }
+
+    @Test
+    void testRunAutomation_missingVariableUsage() {
+        var yaml = """
+                alias: return-missing-variable
+                variables:
+                  - firstName: "David"
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: logger
+                    message: "Trying to use missing lastName..."
+                result:
+                  fullName: "{{ firstName }} {{ lastName }}"
+                """;
+
+        var automation = factory.createAutomation("yaml", yaml);
+
+        var eventContext = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        AutomationResult result = engine.runAutomation(automation, eventContext);
+
+        assertThat(result.isExecuted()).isTrue();
+        JsonNode resultNode = (JsonNode) result.getResult().orElseThrow();
+        assertThat(resultNode.path("fullName").asText()).isEqualTo("David "); // Missing lastName results in blank
+    }
+
+    @Test
+    void testRunAutomation_nullVariable() {
+        var yaml = """
+                alias: return-null-variable
+                variables:
+                  - firstName: null
+                    lastName: "Smith"
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: logger
+                    message: "Handling null variable"
+                result:
+                  fullName: "{{ firstName | default('Unknown') }} {{ lastName }}"
+                """;
+
+        var automation = factory.createAutomation("yaml", yaml);
+
+        var eventContext = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        AutomationResult result = engine.runAutomation(automation, eventContext);
+
+        assertThat(result.isExecuted()).isTrue();
+        JsonNode resultNode = (JsonNode) result.getResult().orElseThrow();
+        assertThat(resultNode.path("fullName").asText()).isEqualTo("Unknown Smith");
+    }
+
+    @Test
+    void testRunAutomation_numericComputationStringInputs() {
+        var yaml = """
+                alias: numeric-computation-string-input
+                variables:
+                  - price: "100"
+                    tax: "15"
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: logger
+                    message: "Numeric operations with string numbers"
+                result:
+                  totalPrice: "{{ price | int + tax | int }}"
+                """;
+
+        var automation = factory.createAutomation("yaml", yaml);
+
+        var eventContext = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        AutomationResult result = engine.runAutomation(automation, eventContext);
+
+        assertThat(result.isExecuted()).isTrue();
+        JsonNode resultNode = (JsonNode) result.getResult().orElseThrow();
+        assertThat(resultNode.path("totalPrice").asInt()).isEqualTo(115);
+    }
+
+    @Test
+    void testRunAutomation_specialCharactersInVariables() {
+        var yaml = """
+                alias: return-special-characters
+                variables:
+                  - companyName: "ACME & Sons, Inc."
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: logger
+                    message: "Special chars in variables"
+                result:
+                  company: "{{ companyName }}"
+                """;
+
+        var automation = factory.createAutomation("yaml", yaml);
+
+        var eventContext = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        AutomationResult result = engine.runAutomation(automation, eventContext);
+
+        assertThat(result.isExecuted()).isTrue();
+        JsonNode resultNode = (JsonNode) result.getResult().orElseThrow();
+        assertThat(resultNode.path("company").asText()).isEqualTo("ACME & Sons, Inc.");
+    }
+
+    @Test
+    void testRunAutomation_reservedKeywordVariable() {
+        var yaml = """
+                alias: reserved-keyword-variable
+                variables:
+                  - default: "some value"
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: logger
+                    message: "Testing reserved keyword"
+                result:
+                  output: "{{ default }}"
+                """;
+
+        var automation = factory.createAutomation("yaml", yaml);
+
+        var eventContext = new EventContext(new TimeBasedEvent(LocalTime.now()));
+        AutomationResult result = engine.runAutomation(automation, eventContext);
+
+        assertThat(result.isExecuted()).isTrue();
+        JsonNode resultNode = (JsonNode) result.getResult().orElseThrow();
+        assertThat(resultNode.path("output").asText()).isEqualTo("some value");
+    }
+
 
 }
