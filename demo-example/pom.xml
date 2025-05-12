@@ -13,7 +13,7 @@
     <groupId>com.automation.engine.example</groupId>
     <artifactId>demo-example</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>AutomationEngineExample</name>
+    <name>demo-example</name>
     <description>A project to demonstrate the usage of automation-engine</description>
 
     <properties>
