@@ -10,6 +10,7 @@ import com.davidrandoll.automation.engine.core.actions.interceptors.IActionInter
 import com.davidrandoll.automation.engine.core.actions.interceptors.InterceptingAction;
 import com.davidrandoll.automation.engine.core.conditions.BaseConditionList;
 import com.davidrandoll.automation.engine.core.conditions.ICondition;
+import com.davidrandoll.automation.engine.core.result.IBaseResult;
 import com.davidrandoll.automation.engine.core.triggers.BaseTriggerList;
 import com.davidrandoll.automation.engine.core.triggers.IBaseTrigger;
 import com.davidrandoll.automation.engine.core.triggers.ITrigger;
@@ -40,11 +41,12 @@ public class AutomationExample {
 
     @PostConstruct
     public void init() {
-        BaseTriggerList triggers = BaseTriggerList.of(getTrigger());
-        BaseConditionList conditions = BaseConditionList.of();
-        BaseActionList actions = BaseActionList.of(getAction());
-        BaseVariableList variables = BaseVariableList.of();
-        var automation = new Automation("Time based automation", variables, triggers, conditions, actions);
+        BaseTriggerList triggersList = BaseTriggerList.of(getTrigger());
+        BaseConditionList conditionsList = BaseConditionList.of();
+        BaseActionList actionsList = BaseActionList.of(getAction());
+        BaseVariableList variablesList = BaseVariableList.of();
+        IBaseResult result = e -> null;
+        var automation = new Automation("Time based automation", variablesList, triggersList, conditionsList, actionsList, result);
         engine.register(automation);
     }
 
