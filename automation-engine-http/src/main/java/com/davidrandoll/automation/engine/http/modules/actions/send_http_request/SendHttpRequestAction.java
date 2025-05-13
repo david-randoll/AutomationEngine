@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -23,6 +24,7 @@ import static org.apache.commons.lang3.BooleanUtils.isFalse;
 @Component("sendHttpRequestAction")
 @RequiredArgsConstructor
 @ConditionalOnMissingBean(name = "sendHttpRequestAction", ignored = SendHttpRequestAction.class)
+@ConditionalOnClass(WebClient.class)
 public class SendHttpRequestAction extends PluggableAction<SendHttpRequestActionContext> {
     private final ObjectMapper mapper;
 
