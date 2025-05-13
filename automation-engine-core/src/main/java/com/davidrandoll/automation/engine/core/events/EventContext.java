@@ -8,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import static java.util.Objects.isNull;
 
@@ -33,7 +32,7 @@ public class EventContext {
         if (isNull(event)) throw new IllegalArgumentException("Event cannot be null");
 
         this.event = event;
-        this.metadata = new ConcurrentHashMap<>(); // some actions may be executed in parallel
+        this.metadata = new NullableConcurrentHashMap<>(); // some actions may be executed in parallel
         this.type = event.getClass();
         this.timestamp = Instant.now();
         this.source = determineSourceFromStackTrace(this.getClass());
