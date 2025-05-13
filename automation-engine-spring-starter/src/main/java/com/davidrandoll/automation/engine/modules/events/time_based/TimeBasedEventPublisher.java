@@ -1,6 +1,6 @@
 package com.davidrandoll.automation.engine.modules.events.time_based;
 
-import com.davidrandoll.automation.engine.core.AutomationEngine;
+import com.davidrandoll.automation.engine.AutomationEngine;
 import com.davidrandoll.automation.engine.provider.AEConfigProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

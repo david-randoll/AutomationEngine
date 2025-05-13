@@ -33,7 +33,7 @@ class BasicResultTest extends AutomationEngineTest {
 
         var eventContext = new EventContext(new TimeBasedEvent(LocalTime.now()));
 
-        AutomationResult result = engine.runAutomation(automation, eventContext);
+        AutomationResult result = engine.executeAutomation(automation, eventContext);
         assertThat(result.isExecuted()).isTrue();
         JsonNode resultNode = (JsonNode) result.getResult().orElseThrow();
 
@@ -56,7 +56,7 @@ class BasicResultTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
 
         var eventContext = new EventContext(new TimeBasedEvent(LocalTime.now()));
-        AutomationResult result = engine.runAutomation(automation, eventContext);
+        AutomationResult result = engine.executeAutomation(automation, eventContext);
 
         assertThat(result.isExecuted()).isTrue();
 
@@ -82,7 +82,7 @@ class BasicResultTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
 
         var eventContext = new EventContext(new TimeBasedEvent(LocalTime.now()));
-        AutomationResult result = engine.runAutomation(automation, eventContext);
+        AutomationResult result = engine.executeAutomation(automation, eventContext);
 
         assertThat(result.isExecuted()).isTrue();
 
@@ -111,7 +111,7 @@ class BasicResultTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
 
         var eventContext = new EventContext(new TimeBasedEvent(LocalTime.now()));
-        AutomationResult result = engine.runAutomation(automation, eventContext);
+        AutomationResult result = engine.executeAutomation(automation, eventContext);
 
         assertThat(result.isExecuted()).isTrue();
         JsonNode resultNode = (JsonNode) result.getResult().orElseThrow();
@@ -143,7 +143,7 @@ class BasicResultTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
 
         var eventContext = new EventContext(new TimeBasedEvent(LocalTime.now()));
-        AutomationResult result = engine.runAutomation(automation, eventContext);
+        AutomationResult result = engine.executeAutomation(automation, eventContext);
 
         assertThat(result.isExecuted()).isTrue();
         JsonNode resultNode = (JsonNode) result.getResult().orElseThrow();
@@ -170,7 +170,7 @@ class BasicResultTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
 
         var eventContext = new EventContext(new TimeBasedEvent(LocalTime.now()));
-        AutomationResult result = engine.runAutomation(automation, eventContext);
+        AutomationResult result = engine.executeAutomation(automation, eventContext);
 
         assertThat(result.isExecuted()).isTrue();
         JsonNode resultNode = (JsonNode) result.getResult().orElseThrow();
@@ -197,7 +197,7 @@ class BasicResultTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
 
         var eventContext = new EventContext(new TimeBasedEvent(LocalTime.now()));
-        AutomationResult result = engine.runAutomation(automation, eventContext);
+        AutomationResult result = engine.executeAutomation(automation, eventContext);
         assertThat(result.isExecuted()).isFalse();
         assertThat(result.getResult()).isEmpty();
     }
@@ -213,7 +213,7 @@ class BasicResultTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
 
         var eventContext = new EventContext(new TimeBasedEvent(LocalTime.now()));
-        AutomationResult result = engine.runAutomation(automation, eventContext);
+        AutomationResult result = engine.executeAutomation(automation, eventContext);
 
         assertThat(result.isExecuted()).isFalse();
         assertThat(result.getResult()).isEmpty();
@@ -234,7 +234,7 @@ class BasicResultTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
 
         var eventContext = new EventContext(new TimeBasedEvent(LocalTime.now()));
-        AutomationResult result = engine.runAutomation(automation, eventContext);
+        AutomationResult result = engine.executeAutomation(automation, eventContext);
         assertThat(result.isExecuted()).isTrue();
         JsonNode resultNode = (JsonNode) result.getResult().orElseThrow();
         assertThat(resultNode.isNull()).isTrue();
@@ -255,7 +255,7 @@ class BasicResultTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
 
         var eventContext = new EventContext(new TimeBasedEvent(LocalTime.now()));
-        AutomationResult result = engine.runAutomation(automation, eventContext);
+        AutomationResult result = engine.executeAutomation(automation, eventContext);
         assertThat(result.isExecuted()).isTrue();
         JsonNode resultNode = (JsonNode) result.getResult().orElseThrow();
         assertThat(resultNode).isNotNull();
@@ -278,7 +278,7 @@ class BasicResultTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
 
         var eventContext = new EventContext(new TimeBasedEvent(LocalTime.now()));
-        AutomationResult result = engine.runAutomation(automation, eventContext);
+        AutomationResult result = engine.executeAutomation(automation, eventContext);
         assertThat(result.isExecuted()).isTrue();
         JsonNode resultNode = (JsonNode) result.getResult().orElseThrow();
         assertThat(resultNode).isNotNull();
@@ -302,7 +302,7 @@ class BasicResultTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
 
         var eventContext = new EventContext(new TimeBasedEvent(LocalTime.now()));
-        AutomationResult result = engine.runAutomation(automation, eventContext);
+        AutomationResult result = engine.executeAutomation(automation, eventContext);
         assertThat(result.isExecuted()).isTrue();
         JsonNode resultNode = (JsonNode) result.getResult().orElseThrow();
         assertThat(resultNode).isNotNull();
@@ -325,7 +325,7 @@ class BasicResultTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
 
         var eventContext = new EventContext(new TimeBasedEvent(LocalTime.now()));
-        AutomationResult result = engine.runAutomation(automation, eventContext);
+        AutomationResult result = engine.executeAutomation(automation, eventContext);
         assertThat(result.isExecuted()).isTrue();
         JsonNode resultNode = (JsonNode) result.getResult().orElseThrow();
         assertThat(resultNode.isNull()).isTrue();
@@ -349,7 +349,7 @@ class BasicResultTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
 
         var eventContext = new EventContext(new TimeBasedEvent(LocalTime.now()));
-        AutomationResult result = engine.runAutomation(automation, eventContext);
+        AutomationResult result = engine.executeAutomation(automation, eventContext);
 
         assertThat(result.isExecuted()).isTrue();
         JsonNode resultNode = (JsonNode) result.getResult().orElseThrow();
@@ -375,7 +375,7 @@ class BasicResultTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
 
         var eventContext = new EventContext(new TimeBasedEvent(LocalTime.now()));
-        AutomationResult result = engine.runAutomation(automation, eventContext);
+        AutomationResult result = engine.executeAutomation(automation, eventContext);
 
         assertThat(result.isExecuted()).isTrue();
         JsonNode resultNode = (JsonNode) result.getResult().orElseThrow();
@@ -403,7 +403,7 @@ class BasicResultTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
 
         var eventContext = new EventContext(new TimeBasedEvent(LocalTime.now()));
-        AutomationResult result = engine.runAutomation(automation, eventContext);
+        AutomationResult result = engine.executeAutomation(automation, eventContext);
 
         assertThat(result.isExecuted()).isTrue();
         JsonNode resultNode = (JsonNode) result.getResult().orElseThrow();
@@ -436,7 +436,7 @@ class BasicResultTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
 
         var eventContext = new EventContext(new TimeBasedEvent(LocalTime.now()));
-        AutomationResult result = engine.runAutomation(automation, eventContext);
+        AutomationResult result = engine.executeAutomation(automation, eventContext);
 
         assertThat(result.isExecuted()).isTrue();
 
@@ -469,7 +469,7 @@ class BasicResultTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
 
         var eventContext = new EventContext(new TimeBasedEvent(LocalTime.now()));
-        AutomationResult result = engine.runAutomation(automation, eventContext);
+        AutomationResult result = engine.executeAutomation(automation, eventContext);
 
         assertThat(result.isExecuted()).isTrue();
 
@@ -504,7 +504,7 @@ class BasicResultTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
 
         var eventContext = new EventContext(new TimeBasedEvent(LocalTime.now()));
-        AutomationResult result = engine.runAutomation(automation, eventContext);
+        AutomationResult result = engine.executeAutomation(automation, eventContext);
 
         assertThat(result.isExecuted()).isTrue();
 
@@ -536,7 +536,7 @@ class BasicResultTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
 
         var eventContext = new EventContext(new TimeBasedEvent(LocalTime.now()));
-        AutomationResult result = engine.runAutomation(automation, eventContext);
+        AutomationResult result = engine.executeAutomation(automation, eventContext);
 
         assertThat(result.isExecuted()).isTrue();
 
@@ -564,7 +564,7 @@ class BasicResultTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
 
         var eventContext = new EventContext(new TimeBasedEvent(LocalTime.now()));
-        AutomationResult result = engine.runAutomation(automation, eventContext);
+        AutomationResult result = engine.executeAutomation(automation, eventContext);
 
         assertThat(result.isExecuted()).isTrue();
 
@@ -590,7 +590,7 @@ class BasicResultTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
 
         var eventContext = new EventContext(new TimeBasedEvent(LocalTime.now()));
-        AutomationResult result = engine.runAutomation(automation, eventContext);
+        AutomationResult result = engine.executeAutomation(automation, eventContext);
 
         assertThat(result.isExecuted()).isTrue();
         JsonNode resultNode = (JsonNode) result.getResult().orElseThrow();
@@ -615,7 +615,7 @@ class BasicResultTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
 
         var eventContext = new EventContext(new TimeBasedEvent(LocalTime.now()));
-        AutomationResult result = engine.runAutomation(automation, eventContext);
+        AutomationResult result = engine.executeAutomation(automation, eventContext);
 
         assertThat(result.isExecuted()).isTrue();
         JsonNode resultNode = (JsonNode) result.getResult().orElseThrow();
@@ -641,7 +641,7 @@ class BasicResultTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
 
         var eventContext = new EventContext(new TimeBasedEvent(LocalTime.now()));
-        AutomationResult result = engine.runAutomation(automation, eventContext);
+        AutomationResult result = engine.executeAutomation(automation, eventContext);
 
         assertThat(result.isExecuted()).isTrue();
         JsonNode resultNode = (JsonNode) result.getResult().orElseThrow();
@@ -667,7 +667,7 @@ class BasicResultTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
 
         var eventContext = new EventContext(new TimeBasedEvent(LocalTime.now()));
-        AutomationResult result = engine.runAutomation(automation, eventContext);
+        AutomationResult result = engine.executeAutomation(automation, eventContext);
 
         assertThat(result.isExecuted()).isTrue();
         JsonNode resultNode = (JsonNode) result.getResult().orElseThrow();
@@ -692,7 +692,7 @@ class BasicResultTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
 
         var eventContext = new EventContext(new TimeBasedEvent(LocalTime.now()));
-        AutomationResult result = engine.runAutomation(automation, eventContext);
+        AutomationResult result = engine.executeAutomation(automation, eventContext);
 
         assertThat(result.isExecuted()).isTrue();
         JsonNode resultNode = (JsonNode) result.getResult().orElseThrow();
@@ -717,7 +717,7 @@ class BasicResultTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
 
         var eventContext = new EventContext(new TimeBasedEvent(LocalTime.now()));
-        AutomationResult result = engine.runAutomation(automation, eventContext);
+        AutomationResult result = engine.executeAutomation(automation, eventContext);
 
         assertThat(result.isExecuted()).isTrue();
         JsonNode resultNode = (JsonNode) result.getResult().orElseThrow();

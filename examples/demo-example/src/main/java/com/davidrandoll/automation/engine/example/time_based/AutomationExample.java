@@ -1,7 +1,7 @@
 package com.davidrandoll.automation.engine.example.time_based;
 
 import com.davidrandoll.automation.engine.core.Automation;
-import com.davidrandoll.automation.engine.core.AutomationEngine;
+import com.davidrandoll.automation.engine.AutomationEngine;
 import com.davidrandoll.automation.engine.core.actions.ActionContext;
 import com.davidrandoll.automation.engine.core.actions.BaseActionList;
 import com.davidrandoll.automation.engine.core.actions.IAction;

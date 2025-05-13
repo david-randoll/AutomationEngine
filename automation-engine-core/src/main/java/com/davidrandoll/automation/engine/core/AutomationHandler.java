@@ -9,48 +9,49 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @Slf4j
 @RequiredArgsConstructor
-public class AutomationEngine {
+public class AutomationHandler {
     private final IEventPublisher publisher;
-    private final List<Automation> automations = new ArrayList<>();
+    private final List<Automation> automations = new CopyOnWriteArrayList<>();
 
-    public void register(Automation automation) {
+    public void registerAutomation(Automation automation) {
         automations.add(automation);
         publisher.publishEvent(new AutomationEngineRegisterEvent(automation));
     }
 
-    public void remove(Automation automation) {
+    public void removeAutomation(Automation automation) {
         automations.remove(automation);
         publisher.publishEvent(new AutomationEngineRemoveEvent(automation));
     }
 
-    public void removeAll() {
+    public void removeAllAutomations() {
         var automationsCopy = new ArrayList<>(automations);
         automations.clear();
         publisher.publishEvent(new AutomationEngineRemoveAllEvent(automationsCopy));
     }
 
-    public void publishEvent(EventContext eventContext) {
+    public void handleEventContext(EventContext eventContext) {
         if (eventContext == null) throw new IllegalArgumentException("EventContext cannot be null");
         for (Automation automation : automations) {
-            runAutomation(automation, eventContext);
+            executeAutomation(automation, eventContext);
         }
         publisher.publishEvent(eventContext.getEvent()); //publish the event
         publisher.publishEvent(eventContext); //publish the context
     }
 
-    public void publishEvent(IEvent event) {
+    public void handleEvent(IEvent event) {
         if (event == null) throw new IllegalArgumentException("Event cannot be null");
         for (Automation automation : automations) {
-            runAutomation(automation, EventContext.of(event));
+            executeAutomation(automation, EventContext.of(event));
         }
         publisher.publishEvent(event); //publish the event
         publisher.publishEvent(EventContext.of(event)); //publish the context
     }
 
-    public AutomationResult runAutomation(Automation automation, EventContext eventContext) {
+    public AutomationResult executeAutomation(Automation automation, EventContext eventContext) {
         log.debug("Processing automation: {}", automation.getAlias());
         AutomationResult result;
         automation.resolveVariables(eventContext);

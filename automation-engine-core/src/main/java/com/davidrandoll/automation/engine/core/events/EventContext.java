@@ -1,6 +1,6 @@
 package com.davidrandoll.automation.engine.core.events;
 
-import com.davidrandoll.automation.engine.core.AutomationEngine;
+import com.davidrandoll.automation.engine.AutomationEngine;
 import com.davidrandoll.automation.engine.core.utils.ReflectionUtils;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;

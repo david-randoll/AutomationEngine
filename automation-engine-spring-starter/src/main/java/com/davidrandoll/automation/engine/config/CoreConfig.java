@@ -1,6 +1,7 @@
 package com.davidrandoll.automation.engine.config;
 
-import com.davidrandoll.automation.engine.core.AutomationEngine;
+import com.davidrandoll.automation.engine.AutomationEngine;
+import com.davidrandoll.automation.engine.core.AutomationHandler;
 import com.davidrandoll.automation.engine.core.events.publisher.IEventPublisher;
 import com.davidrandoll.automation.engine.creator.AutomationCreator;
 import com.davidrandoll.automation.engine.creator.AutomationProcessor;
@@ -19,8 +20,14 @@ import org.springframework.context.annotation.Configuration;
 public class CoreConfig {
     @Bean
     @ConditionalOnMissingBean
-    public AutomationEngine automationEngine(IEventPublisher publisher) {
-        return new AutomationEngine(publisher);
+    public AutomationHandler automationHandler(IEventPublisher publisher) {
+        return new AutomationHandler(publisher);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public AutomationEngine automationEngine(AutomationHandler handler, AutomationCreator creator) {
+        return new AutomationEngine(handler, creator);
     }
 
     @Bean

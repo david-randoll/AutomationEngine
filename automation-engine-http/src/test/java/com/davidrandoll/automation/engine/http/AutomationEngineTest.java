@@ -1,7 +1,7 @@
 package com.davidrandoll.automation.engine.http;
 
 import ch.qos.logback.classic.Logger;
-import com.davidrandoll.automation.engine.core.AutomationEngine;
+import com.davidrandoll.automation.engine.AutomationEngine;
 import com.davidrandoll.automation.engine.creator.AutomationCreator;
 import com.davidrandoll.automation.engine.http.publisher.EventCaptureListener;
 import com.fasterxml.jackson.databind.ObjectMapper;

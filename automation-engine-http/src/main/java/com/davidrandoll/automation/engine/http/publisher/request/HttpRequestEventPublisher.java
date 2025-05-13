@@ -1,6 +1,6 @@
 package com.davidrandoll.automation.engine.http.publisher.request;
 
-import com.davidrandoll.automation.engine.core.AutomationEngine;
+import com.davidrandoll.automation.engine.AutomationEngine;
 import com.davidrandoll.automation.engine.http.event.HttpRequestEvent;
 import com.davidrandoll.automation.engine.http.extensions.IHttpEventExtension;
 import com.davidrandoll.automation.engine.http.utils.HttpServletUtils;

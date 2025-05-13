@@ -1,7 +1,6 @@
 package com.davidrandoll.automation.engine;
 
 import ch.qos.logback.classic.Logger;
-import com.davidrandoll.automation.engine.core.AutomationEngine;
 import com.davidrandoll.automation.engine.creator.AutomationCreator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;

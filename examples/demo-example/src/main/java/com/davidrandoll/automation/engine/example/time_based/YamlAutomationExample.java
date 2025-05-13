@@ -1,7 +1,7 @@
 package com.davidrandoll.automation.engine.example.time_based;
 
 import com.davidrandoll.automation.engine.core.Automation;
-import com.davidrandoll.automation.engine.core.AutomationEngine;
+import com.davidrandoll.automation.engine.AutomationEngine;
 import com.davidrandoll.automation.engine.creator.AutomationCreator;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
