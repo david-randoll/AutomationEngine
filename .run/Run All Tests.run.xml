@@ -3,6 +3,7 @@
     <runConfiguration name="All in automation-engine-spring-starter" type="JUnit" />
     <runConfiguration name="All in automation-engine-templating" type="JUnit" />
     <runConfiguration name="All in automation-engine-http" type="JUnit" />
+    <runConfiguration name="All in demo-example" type="JUnit" />
     <method v="2" />
   </configuration>
 </component>
