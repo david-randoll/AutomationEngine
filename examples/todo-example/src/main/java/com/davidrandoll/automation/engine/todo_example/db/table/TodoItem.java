@@ -1,15 +1,11 @@
 package com.davidrandoll.automation.engine.todo_example.db.table;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @Entity
 @Table(name = "todo_item")
 public class TodoItem {
@@ -39,5 +35,15 @@ public class TodoItem {
     @PreUpdate
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
+    }
+
+    public TodoItem(String title, TodoStatus status, TodoAssignee assignee) {
+        this.title = title;
+        this.status = status;
+        this.assignee = assignee;
+    }
+
+    private TodoItem() {
+        // Default constructor for JPA
     }
 }
