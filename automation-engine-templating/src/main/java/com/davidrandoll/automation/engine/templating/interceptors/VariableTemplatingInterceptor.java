@@ -53,7 +53,8 @@ public class VariableTemplatingInterceptor implements IVariableInterceptor {
     @SneakyThrows
     public void intercept(EventContext eventContext, VariableContext variableContext, IVariable variable) {
         log.debug("VariableTemplatingInterceptor: Processing variable data...");
-        if (ObjectUtils.isEmpty(variableContext.getData()) || ObjectUtils.isEmpty(eventContext.getEventData())) {
+        var eventData = eventContext.getEventData(objectMapper);
+        if (ObjectUtils.isEmpty(variableContext.getData()) || ObjectUtils.isEmpty(eventData)) {
             variable.resolve(eventContext, variableContext);
         }
 
@@ -61,7 +62,7 @@ public class VariableTemplatingInterceptor implements IVariableInterceptor {
         for (Map.Entry<String, Object> entry : mapCopy.entrySet()) {
             if (entry.getValue() instanceof String valueStr) {
                 try {
-                    String processedValue = templateProcessor.process(valueStr, eventContext.getEventData());
+                    String processedValue = templateProcessor.process(valueStr, eventData);
                     entry.setValue(processedValue);
                 } catch (IOException e) {
                     log.error("Error processing template for key: {}. Error: {}", entry.getKey(), e.getMessage());

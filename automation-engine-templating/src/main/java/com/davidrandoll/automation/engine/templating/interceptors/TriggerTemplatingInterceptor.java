@@ -5,6 +5,7 @@ import com.davidrandoll.automation.engine.core.triggers.ITrigger;
 import com.davidrandoll.automation.engine.core.triggers.TriggerContext;
 import com.davidrandoll.automation.engine.core.triggers.interceptors.ITriggerInterceptor;
 import com.davidrandoll.automation.engine.templating.TemplateProcessor;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -32,12 +33,14 @@ import java.util.Map;
 @ConditionalOnMissingBean(name = "triggerTemplatingInterceptor", ignored = TriggerTemplatingInterceptor.class)
 public class TriggerTemplatingInterceptor implements ITriggerInterceptor {
     private final TemplateProcessor templateProcessor;
+    private final ObjectMapper objectMapper;
 
     @Override
     @SneakyThrows
     public void intercept(EventContext eventContext, TriggerContext context, ITrigger trigger) {
         log.debug("TriggerTemplatingInterceptor: Processing trigger data...");
-        if (ObjectUtils.isEmpty(context.getData()) || ObjectUtils.isEmpty(eventContext.getEventData())) {
+        var eventData = eventContext.getEventData(objectMapper);
+        if (ObjectUtils.isEmpty(context.getData()) || ObjectUtils.isEmpty(eventData)) {
             trigger.isTriggered(eventContext, context);
         }
 
@@ -45,7 +48,7 @@ public class TriggerTemplatingInterceptor implements ITriggerInterceptor {
         for (Map.Entry<String, Object> entry : mapCopy.entrySet()) {
             if (entry.getValue() instanceof String valueStr) {
                 try {
-                    String processedValue = templateProcessor.process(valueStr, eventContext.getEventData());
+                    String processedValue = templateProcessor.process(valueStr, eventData);
                     entry.setValue(processedValue);
                 } catch (IOException e) {
                     log.error("Error processing template for key: {}. Error: {}", entry.getKey(), e.getMessage());

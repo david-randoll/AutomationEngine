@@ -9,12 +9,14 @@ import com.davidrandoll.automation.engine.creator.actions.ActionBuilder;
 import com.davidrandoll.automation.engine.creator.actions.IActionSupplier;
 import com.davidrandoll.automation.engine.creator.conditions.ConditionBuilder;
 import com.davidrandoll.automation.engine.creator.conditions.IConditionSupplier;
+import com.davidrandoll.automation.engine.creator.events.EventFactory;
 import com.davidrandoll.automation.engine.creator.result.IResultSupplier;
 import com.davidrandoll.automation.engine.creator.result.ResultBuilder;
 import com.davidrandoll.automation.engine.creator.triggers.ITriggerSupplier;
 import com.davidrandoll.automation.engine.creator.triggers.TriggerBuilder;
 import com.davidrandoll.automation.engine.creator.variables.IVariableSupplier;
 import com.davidrandoll.automation.engine.creator.variables.VariableBuilder;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -51,5 +53,11 @@ public class BuilderConfig {
     @ConditionalOnMissingBean
     public ResultBuilder resultBuilder(IResultSupplier supplier, List<IResultInterceptor> interceptors) {
         return new ResultBuilder(supplier, interceptors);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public EventFactory eventFactory(ObjectMapper mapper) {
+        return new EventFactory(mapper);
     }
 }

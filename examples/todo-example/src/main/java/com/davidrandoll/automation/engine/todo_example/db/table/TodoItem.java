@@ -43,6 +43,10 @@ public class TodoItem {
         this.assignee = assignee;
     }
 
+    public TodoItem(String title, TodoStatus status) {
+        this(title, status, null);
+    }
+
     private TodoItem() {
         // Default constructor for JPA
     }

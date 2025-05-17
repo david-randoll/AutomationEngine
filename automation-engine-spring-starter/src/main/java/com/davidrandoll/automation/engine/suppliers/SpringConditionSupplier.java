@@ -20,6 +20,9 @@ public class SpringConditionSupplier implements IConditionSupplier {
     @Override
     public ICondition getCondition(String name) {
         try {
+            if (name.endsWith("Condition")) {
+                return applicationContext.getBean(name, ICondition.class);
+            }
             var conditionName = "%sCondition".formatted(name);
             return applicationContext.getBean(conditionName, ICondition.class);
         } catch (NoSuchBeanDefinitionException e) {

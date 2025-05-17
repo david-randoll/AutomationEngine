@@ -7,6 +7,7 @@ import com.davidrandoll.automation.engine.creator.AutomationCreator;
 import com.davidrandoll.automation.engine.creator.AutomationProcessor;
 import com.davidrandoll.automation.engine.creator.actions.ActionBuilder;
 import com.davidrandoll.automation.engine.creator.conditions.ConditionBuilder;
+import com.davidrandoll.automation.engine.creator.events.EventFactory;
 import com.davidrandoll.automation.engine.creator.parsers.AutomationParserRouter;
 import com.davidrandoll.automation.engine.creator.parsers.ManualAutomationBuilder;
 import com.davidrandoll.automation.engine.creator.result.ResultBuilder;
@@ -26,8 +27,8 @@ public class CoreConfig {
 
     @Bean
     @ConditionalOnMissingBean
-    public AutomationEngine automationEngine(AutomationHandler handler, AutomationCreator creator) {
-        return new AutomationEngine(handler, creator);
+    public AutomationEngine automationEngine(AutomationHandler handler, AutomationCreator creator, EventFactory eventFactory) {
+        return new AutomationEngine(handler, creator, eventFactory);
     }
 
     @Bean

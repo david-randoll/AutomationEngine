@@ -20,6 +20,9 @@ public class SpringVariableSupplier implements IVariableSupplier {
     @Override
     public IVariable getVariable(String name) {
         try {
+            if (name.endsWith("Variable")) {
+                return applicationContext.getBean(name, IVariable.class);
+            }
             var variableName = "%sVariable".formatted(name);
             return applicationContext.getBean(variableName, IVariable.class);
         } catch (NoSuchBeanDefinitionException e) {

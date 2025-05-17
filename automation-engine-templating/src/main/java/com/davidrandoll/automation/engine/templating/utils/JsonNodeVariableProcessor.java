@@ -1,6 +1,5 @@
 package com.davidrandoll.automation.engine.templating.utils;
 
-import com.davidrandoll.automation.engine.core.events.EventContext;
 import com.davidrandoll.automation.engine.core.result.ResultContext;
 import com.davidrandoll.automation.engine.templating.TemplateProcessor;
 import com.davidrandoll.automation.engine.templating.interceptors.ResultTemplatingInterceptor;
@@ -26,12 +25,12 @@ public class JsonNodeVariableProcessor {
     private final ObjectMapper mapper;
     private static final Set<String> AUTOMATION_FIELDS = Set.of("action", "variable", "condition", "trigger", "result");
 
-    public JsonNode processIfNotAutomation(EventContext eventContext, Map<String, Object> map) {
+    public JsonNode processIfNotAutomation(Map<String, Object> eventData, Map<String, Object> map) {
         JsonNode node = mapper.valueToTree(map);
-        return processIfNotAutomation(eventContext, node);
+        return processIfNotAutomation(eventData, node);
     }
 
-    public JsonNode processIfNotAutomation(EventContext eventContext, JsonNode node) {
+    public JsonNode processIfNotAutomation(Map<String, Object> eventData, JsonNode node) {
         if (node == null || node.isNull()) return node;
 
         if (node.isObject()) {
@@ -42,7 +41,7 @@ public class JsonNodeVariableProcessor {
             node.fields().forEachRemaining(entry -> {
                 String fieldName = entry.getKey();
                 JsonNode child = entry.getValue();
-                processedNode.set(fieldName, processIfNotAutomation(eventContext, child));
+                processedNode.set(fieldName, processIfNotAutomation(eventData, child));
             });
             return processedNode;
         }
@@ -50,14 +49,14 @@ public class JsonNodeVariableProcessor {
         if (node.isArray()) {
             ArrayNode processedArray = mapper.createArrayNode();
             for (JsonNode item : node) {
-                processedArray.add(processIfNotAutomation(eventContext, item));
+                processedArray.add(processIfNotAutomation(eventData, item));
             }
             return processedArray;
         }
 
         if (node.isTextual()) {
             try {
-                String processedText = templateProcessor.process(node.asText(), eventContext.getEventData());
+                String processedText = templateProcessor.process(node.asText(), eventData);
                 return new TextNode(processedText);
             } catch (IOException e) {
                 log.error("Error processing template for text node: {}. Error: {}", node.asText(), e.getMessage());
@@ -81,14 +80,14 @@ public class JsonNodeVariableProcessor {
         return false;
     }
 
-    public JsonNode processOnlyString(EventContext eventContext, ResultContext resultContext) {
+    public JsonNode processOnlyString(Map<String, Object> eventData, ResultContext resultContext) {
         JsonNode jsonNodeCopy = resultContext.getData();
         for (Iterator<Map.Entry<String, JsonNode>> it = jsonNodeCopy.fields(); it.hasNext(); ) {
             var entry = it.next();
             if (entry.getValue().isTextual()) {
                 String valueStr = entry.getValue().asText();
                 try {
-                    String processedValue = templateProcessor.process(valueStr, eventContext.getEventData());
+                    String processedValue = templateProcessor.process(valueStr, eventData);
                     entry.setValue(mapper.getNodeFactory().textNode(processedValue));
                 } catch (IOException e) {
                     log.error("Error processing template for key: {}. Error: {}", entry.getKey(), e.getMessage());

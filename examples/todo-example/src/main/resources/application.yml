@@ -17,3 +17,7 @@ spring:
     console:
       enabled: true
       path: /h2-console
+
+logging:
+  level:
+    com.davidrandoll: DEBUG

@@ -20,6 +20,9 @@ public class SpringResultSupplier implements IResultSupplier {
     @Override
     public IResult getResult(String name) {
         try {
+            if (name.endsWith("Result")) {
+                return applicationContext.getBean(name, IResult.class);
+            }
             var resultName = "%sResult".formatted(name);
             return applicationContext.getBean(resultName, IResult.class);
         } catch (NoSuchBeanDefinitionException e) {

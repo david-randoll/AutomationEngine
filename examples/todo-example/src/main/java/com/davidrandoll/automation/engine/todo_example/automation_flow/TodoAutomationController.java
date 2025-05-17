@@ -1,0 +1,39 @@
+package com.davidrandoll.automation.engine.todo_example.automation_flow;
+
+import com.davidrandoll.automation.engine.AutomationEngine;
+import com.davidrandoll.automation.engine.core.events.IEvent;
+import com.fasterxml.jackson.databind.JsonNode;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/api/todos/automation")
+@RequiredArgsConstructor
+public class TodoAutomationController {
+    private final AutomationEngine engine;
+
+    @PostMapping
+    public Object executeAutomation(@RequestBody JsonNode body) {
+        IEvent event = engine.getEventFactory().createEvent(body);
+        String yaml = """
+                id: create-todo-automation
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: createTodo
+                    title: "{{ title }}"
+                    status: "{{ status }}"
+                    assignee: "{{ assignee }}"
+                result:
+                  id: "{{ todo.id }}"
+                  title: "{{ todo.title }}"
+                  status: "{{ todo.status.code }}"
+                  assignee: "{{ todo.assignee.username }}"
+                """;
+        return engine.executeAutomationWithYaml(yaml, event)
+                .orElse(null);
+    }
+}

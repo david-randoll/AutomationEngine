@@ -6,24 +6,29 @@ import com.davidrandoll.automation.engine.core.events.EventContext;
 import com.davidrandoll.automation.engine.core.events.IEvent;
 import com.davidrandoll.automation.engine.core.result.AutomationResult;
 import com.davidrandoll.automation.engine.creator.AutomationCreator;
+import com.davidrandoll.automation.engine.creator.events.EventFactory;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class AutomationEngine {
     private final AutomationHandler handler;
-    private final AutomationCreator creator;
+    private final AutomationCreator factory;
+
+    @Getter
+    private final EventFactory eventFactory;
 
     public void register(Automation automation) {
         handler.registerAutomation(automation);
     }
 
     public void registerWithYaml(String yaml) {
-        var automation = creator.createAutomation("yaml", yaml);
+        var automation = factory.createAutomation("yaml", yaml);
         register(automation);
     }
 
     public void registerWithJson(String json) {
-        var automation = creator.createAutomation("json", json);
+        var automation = factory.createAutomation("json", json);
         register(automation);
     }
 
@@ -48,7 +53,7 @@ public class AutomationEngine {
     }
 
     public AutomationResult executeAutomationWithYaml(String yaml, EventContext eventContext) {
-        var automation = creator.createAutomation("yaml", yaml);
+        var automation = factory.createAutomation("yaml", yaml);
         return handler.executeAutomation(automation, eventContext);
     }
 
@@ -57,7 +62,7 @@ public class AutomationEngine {
     }
 
     public AutomationResult executeAutomationWithJson(String json, EventContext eventContext) {
-        var automation = creator.createAutomation("json", json);
+        var automation = factory.createAutomation("json", json);
         return handler.executeAutomation(automation, eventContext);
     }
 

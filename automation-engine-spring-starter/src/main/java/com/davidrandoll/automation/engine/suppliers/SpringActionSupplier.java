@@ -20,6 +20,9 @@ public class SpringActionSupplier implements IActionSupplier {
     @Override
     public IAction getAction(String name) throws ActionNotFoundException {
         try {
+            if (name.endsWith("Action")) {
+                return applicationContext.getBean(name, IAction.class);
+            }
             var actionName = "%sAction".formatted(name);
             return applicationContext.getBean(actionName, IAction.class);
         } catch (NoSuchBeanDefinitionException e) {

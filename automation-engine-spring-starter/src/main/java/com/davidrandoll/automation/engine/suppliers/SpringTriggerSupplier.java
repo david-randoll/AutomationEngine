@@ -20,6 +20,9 @@ public class SpringTriggerSupplier implements ITriggerSupplier {
     @Override
     public ITrigger getTrigger(String name) {
         try {
+            if (name.endsWith("Trigger")) {
+                return applicationContext.getBean(name, ITrigger.class);
+            }
             var triggerName = "%sTrigger".formatted(name);
             return applicationContext.getBean(triggerName, ITrigger.class);
         } catch (NoSuchBeanDefinitionException e) {

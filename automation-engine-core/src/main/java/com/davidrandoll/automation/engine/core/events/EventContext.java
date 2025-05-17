@@ -2,6 +2,8 @@ package com.davidrandoll.automation.engine.core.events;
 
 import com.davidrandoll.automation.engine.AutomationEngine;
 import com.davidrandoll.automation.engine.core.utils.ReflectionUtils;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -65,6 +67,15 @@ public class EventContext {
     public Map<String, Object> getEventData() {
         var result = new HashMap<String, Object>();
         result.putAll(ReflectionUtils.buildMapFromObject(event));
+        result.putAll(metadata);
+        return result;
+    }
+
+    public Map<String, Object> getEventData(ObjectMapper mapper) {
+        var result = new HashMap<String, Object>();
+        Map<String, Object> eventData = mapper.convertValue(event, new TypeReference<>() {
+        });
+        result.putAll(eventData);
         result.putAll(metadata);
         return result;
     }

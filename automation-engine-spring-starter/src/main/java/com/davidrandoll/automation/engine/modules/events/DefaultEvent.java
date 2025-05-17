@@ -1,10 +1,10 @@
 package com.davidrandoll.automation.engine.modules.events;
 
 import com.davidrandoll.automation.engine.core.events.IEvent;
-import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.NoArgsConstructor;
 
-@Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 @NoArgsConstructor
 public class DefaultEvent implements IEvent {
 

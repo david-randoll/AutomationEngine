@@ -30,17 +30,18 @@ import org.springframework.util.ObjectUtils;
 @ConditionalOnMissingBean(name = "resultTemplatingInterceptor", ignored = ResultTemplatingInterceptor.class)
 public class ResultTemplatingInterceptor implements IResultInterceptor {
     private final JsonNodeVariableProcessor processor;
-    private final ObjectMapper mapper;
+    private final ObjectMapper objectMapper;
 
     @Override
     public Object intercept(EventContext eventContext, ResultContext resultContext, IResult result) {
         log.debug("ConditionTemplatingInterceptor: Processing result data...");
-        if (ObjectUtils.isEmpty(resultContext.getData()) || ObjectUtils.isEmpty(eventContext.getEventData())) {
+        var eventData = eventContext.getEventData(objectMapper);
+        if (ObjectUtils.isEmpty(resultContext.getData()) || ObjectUtils.isEmpty(eventData)) {
             return result.getExecutionSummary(eventContext, resultContext);
         }
 
-        JsonNode jsonNodeCopy = mapper.valueToTree(resultContext.getData()); // Create a copy of the data
-        jsonNodeCopy = processor.processIfNotAutomation(eventContext, jsonNodeCopy);
+        JsonNode jsonNodeCopy = objectMapper.valueToTree(resultContext.getData()); // Create a copy of the data
+        jsonNodeCopy = processor.processIfNotAutomation(eventData, jsonNodeCopy);
 
         var res = result.getExecutionSummary(eventContext, new ResultContext(jsonNodeCopy));
         log.debug("ConditionTemplatingInterceptor: Condition data processed successfully.");

@@ -5,6 +5,7 @@ import com.davidrandoll.automation.engine.core.conditions.ICondition;
 import com.davidrandoll.automation.engine.core.conditions.interceptors.IConditionInterceptor;
 import com.davidrandoll.automation.engine.core.events.EventContext;
 import com.davidrandoll.automation.engine.templating.TemplateProcessor;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -32,12 +33,14 @@ import java.util.Map;
 @ConditionalOnMissingBean(name = "conditionTemplatingInterceptor", ignored = ConditionTemplatingInterceptor.class)
 public class ConditionTemplatingInterceptor implements IConditionInterceptor {
     private final TemplateProcessor templateProcessor;
+    private final ObjectMapper objectMapper;
 
     @Override
     @SneakyThrows
     public void intercept(EventContext eventContext, ConditionContext conditionContext, ICondition condition) {
         log.debug("ConditionTemplatingInterceptor: Processing condition data...");
-        if (ObjectUtils.isEmpty(conditionContext.getData()) || ObjectUtils.isEmpty(eventContext.getEventData())) {
+        var eventData = eventContext.getEventData(objectMapper);
+        if (ObjectUtils.isEmpty(conditionContext.getData()) || ObjectUtils.isEmpty(eventData)) {
             condition.isSatisfied(eventContext, conditionContext);
         }
 
@@ -45,7 +48,7 @@ public class ConditionTemplatingInterceptor implements IConditionInterceptor {
         for (Map.Entry<String, Object> entry : mapCopy.entrySet()) {
             if (entry.getValue() instanceof String valueStr) {
                 try {
-                    String processedValue = templateProcessor.process(valueStr, eventContext.getEventData());
+                    String processedValue = templateProcessor.process(valueStr, eventData);
                     entry.setValue(processedValue);
                 } catch (IOException e) {
                     log.error("Error processing template for key: {}. Error: {}", entry.getKey(), e.getMessage());

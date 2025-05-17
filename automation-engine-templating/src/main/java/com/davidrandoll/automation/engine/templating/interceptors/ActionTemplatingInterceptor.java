@@ -51,7 +51,8 @@ public class ActionTemplatingInterceptor implements IActionInterceptor {
     @Override
     public void intercept(EventContext eventContext, ActionContext actionContext, IAction action) {
         log.debug("ActionTemplatingInterceptor: Processing action data...");
-        if (ObjectUtils.isEmpty(actionContext.getData()) || ObjectUtils.isEmpty(eventContext.getEventData())) {
+        var eventData = eventContext.getEventData(objectMapper);
+        if (ObjectUtils.isEmpty(actionContext.getData()) || ObjectUtils.isEmpty(eventData)) {
             action.execute(eventContext, actionContext);
         }
 
@@ -59,7 +60,7 @@ public class ActionTemplatingInterceptor implements IActionInterceptor {
         for (Map.Entry<String, Object> entry : mapCopy.entrySet()) {
             if (entry.getValue() instanceof String valueStr) {
                 try {
-                    String processedValue = templateProcessor.process(valueStr, eventContext.getEventData());
+                    String processedValue = templateProcessor.process(valueStr, eventData);
                     entry.setValue(processedValue);
                 } catch (IOException e) {
                     log.error("Error processing template for key: {}. Error: {}", entry.getKey(), e.getMessage());
