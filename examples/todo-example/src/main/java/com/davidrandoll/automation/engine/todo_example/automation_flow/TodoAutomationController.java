@@ -16,10 +16,10 @@ public class TodoAutomationController {
     private final AutomationEngine engine;
 
     @PostMapping
-    public Object executeAutomation(@RequestBody JsonNode body) {
+    public Object createTodo(@RequestBody JsonNode body) {
         IEvent event = engine.getEventFactory().createEvent(body);
         String yaml = """
-                id: create-todo-automation
+                alias: create-todo-automation
                 triggers:
                   - trigger: alwaysTrue
                 actions:
@@ -28,7 +28,31 @@ public class TodoAutomationController {
                     status: "{{ status }}"
                     assignee: "{{ assignee }}"
                 result:
-                  id: "{{ todo.id }}"
+                  id: "{{todo.id}}"
+                  title: "{{ todo.title }}"
+                  status: "{{ todo.status.code }}"
+                  assignee: "{{ todo.assignee.username }}"
+                """;
+        return engine.executeAutomationWithYaml(yaml, event)
+                .orElse(null);
+    }
+
+    @PostMapping("with-status-and-assignee-object")
+    public Object createTodoWithStatusAndAssigneeObject(@RequestBody JsonNode body) {
+        IEvent event = engine.getEventFactory().createEvent(body);
+        String yaml = """
+                alias: create-todo-automation
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: createTodo
+                    title: "{{ title }}"
+                    status:
+                      code: "{{ status }}"
+                    assignee:
+                      username: "{{ assignee }}"
+                result:
+                  id: "{{todo.id}}"
                   title: "{{ todo.title }}"
                   status: "{{ todo.status.code }}"
                   assignee: "{{ todo.assignee.username }}"
