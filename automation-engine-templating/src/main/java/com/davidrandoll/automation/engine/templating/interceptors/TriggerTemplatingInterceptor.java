@@ -5,6 +5,7 @@ import com.davidrandoll.automation.engine.core.triggers.ITrigger;
 import com.davidrandoll.automation.engine.core.triggers.TriggerContext;
 import com.davidrandoll.automation.engine.core.triggers.interceptors.ITriggerInterceptor;
 import com.davidrandoll.automation.engine.templating.TemplateProcessor;
+import com.davidrandoll.automation.engine.templating.utils.JsonNodeVariableProcessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -13,10 +14,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
-
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Interceptor for processing trigger data using templating.
@@ -32,30 +29,19 @@ import java.util.Map;
 @Order(-1)
 @ConditionalOnMissingBean(name = "triggerTemplatingInterceptor", ignored = TriggerTemplatingInterceptor.class)
 public class TriggerTemplatingInterceptor implements ITriggerInterceptor {
-    private final TemplateProcessor templateProcessor;
+    private final JsonNodeVariableProcessor processor;
     private final ObjectMapper objectMapper;
 
     @Override
     @SneakyThrows
-    public void intercept(EventContext eventContext, TriggerContext context, ITrigger trigger) {
+    public void intercept(EventContext eventContext, TriggerContext triggerContext, ITrigger trigger) {
         log.debug("TriggerTemplatingInterceptor: Processing trigger data...");
         var eventData = eventContext.getEventData(objectMapper);
-        if (ObjectUtils.isEmpty(context.getData()) || ObjectUtils.isEmpty(eventData)) {
-            trigger.isTriggered(eventContext, context);
+        if (ObjectUtils.isEmpty(triggerContext.getData()) || ObjectUtils.isEmpty(eventData)) {
+            trigger.isTriggered(eventContext, triggerContext);
         }
 
-        var mapCopy = new HashMap<>(context.getData());
-        for (Map.Entry<String, Object> entry : mapCopy.entrySet()) {
-            if (entry.getValue() instanceof String valueStr) {
-                try {
-                    String processedValue = templateProcessor.process(valueStr, eventData);
-                    entry.setValue(processedValue);
-                } catch (IOException e) {
-                    log.error("Error processing template for key: {}. Error: {}", entry.getKey(), e.getMessage());
-                    throw new AutomationEngineProcessingException(e);
-                }
-            }
-        }
+        var mapCopy = processor.processIfNotAutomation(eventData, triggerContext.getData());
         trigger.isTriggered(eventContext, new TriggerContext(mapCopy));
         log.debug("TriggerTemplatingInterceptor: Trigger data processed successfully.");
     }

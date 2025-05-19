@@ -5,6 +5,7 @@ import com.davidrandoll.automation.engine.core.conditions.ICondition;
 import com.davidrandoll.automation.engine.core.conditions.interceptors.IConditionInterceptor;
 import com.davidrandoll.automation.engine.core.events.EventContext;
 import com.davidrandoll.automation.engine.templating.TemplateProcessor;
+import com.davidrandoll.automation.engine.templating.utils.JsonNodeVariableProcessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -13,10 +14,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
-
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Interceptor for processing condition data using templating.
@@ -32,7 +29,7 @@ import java.util.Map;
 @Order(-1)
 @ConditionalOnMissingBean(name = "conditionTemplatingInterceptor", ignored = ConditionTemplatingInterceptor.class)
 public class ConditionTemplatingInterceptor implements IConditionInterceptor {
-    private final TemplateProcessor templateProcessor;
+    private final JsonNodeVariableProcessor processor;
     private final ObjectMapper objectMapper;
 
     @Override
@@ -44,18 +41,7 @@ public class ConditionTemplatingInterceptor implements IConditionInterceptor {
             condition.isSatisfied(eventContext, conditionContext);
         }
 
-        var mapCopy = new HashMap<>(conditionContext.getData());
-        for (Map.Entry<String, Object> entry : mapCopy.entrySet()) {
-            if (entry.getValue() instanceof String valueStr) {
-                try {
-                    String processedValue = templateProcessor.process(valueStr, eventData);
-                    entry.setValue(processedValue);
-                } catch (IOException e) {
-                    log.error("Error processing template for key: {}. Error: {}", entry.getKey(), e.getMessage());
-                    throw new AutomationEngineProcessingException(e);
-                }
-            }
-        }
+        var mapCopy = processor.processIfNotAutomation(eventData, conditionContext.getData());
         condition.isSatisfied(eventContext, new ConditionContext(mapCopy));
         log.debug("ConditionTemplatingInterceptor: Condition data processed successfully.");
     }

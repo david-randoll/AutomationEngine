@@ -5,6 +5,7 @@ import com.davidrandoll.automation.engine.core.actions.IAction;
 import com.davidrandoll.automation.engine.core.actions.interceptors.IActionInterceptor;
 import com.davidrandoll.automation.engine.core.events.EventContext;
 import com.davidrandoll.automation.engine.templating.TemplateProcessor;
+import com.davidrandoll.automation.engine.templating.utils.JsonNodeVariableProcessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,10 +13,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
-
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Interceptor for processing action data using templating.
@@ -31,7 +28,7 @@ import java.util.Map;
 @Order(-1)
 @ConditionalOnMissingBean(name = "actionTemplatingInterceptor", ignored = ActionTemplatingInterceptor.class)
 public class ActionTemplatingInterceptor implements IActionInterceptor {
-    private final TemplateProcessor templateProcessor;
+    private final JsonNodeVariableProcessor processor;
     private final ObjectMapper objectMapper;
 
     /**
@@ -56,18 +53,7 @@ public class ActionTemplatingInterceptor implements IActionInterceptor {
             action.execute(eventContext, actionContext);
         }
 
-        var mapCopy = new HashMap<>(actionContext.getData());
-        for (Map.Entry<String, Object> entry : mapCopy.entrySet()) {
-            if (entry.getValue() instanceof String valueStr) {
-                try {
-                    String processedValue = templateProcessor.process(valueStr, eventData);
-                    entry.setValue(processedValue);
-                } catch (IOException e) {
-                    log.error("Error processing template for key: {}. Error: {}", entry.getKey(), e.getMessage());
-                    throw new AutomationEngineProcessingException(e);
-                }
-            }
-        }
+        var mapCopy = processor.processIfNotAutomation(eventData, actionContext.getData());
         action.execute(eventContext, new ActionContext(mapCopy));
         log.debug("ActionTemplatingInterceptor done.");
     }

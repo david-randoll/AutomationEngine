@@ -3,6 +3,7 @@ package com.davidrandoll.automation.engine.templating.utils;
 import com.davidrandoll.automation.engine.core.result.ResultContext;
 import com.davidrandoll.automation.engine.templating.TemplateProcessor;
 import com.davidrandoll.automation.engine.templating.interceptors.ResultTemplatingInterceptor;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -25,9 +26,11 @@ public class JsonNodeVariableProcessor {
     private final ObjectMapper mapper;
     private static final Set<String> AUTOMATION_FIELDS = Set.of("action", "variable", "condition", "trigger", "result");
 
-    public JsonNode processIfNotAutomation(Map<String, Object> eventData, Map<String, Object> map) {
+    public Map<String, Object> processIfNotAutomation(Map<String, Object> eventData, Map<String, Object> map) {
         JsonNode node = mapper.valueToTree(map);
-        return processIfNotAutomation(eventData, node);
+        node = processIfNotAutomation(eventData, node);
+        return mapper.convertValue(node, new TypeReference<>() {
+        });
     }
 
     public JsonNode processIfNotAutomation(Map<String, Object> eventData, JsonNode node) {

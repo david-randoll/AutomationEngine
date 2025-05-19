@@ -5,6 +5,7 @@ import com.davidrandoll.automation.engine.core.variables.IVariable;
 import com.davidrandoll.automation.engine.core.variables.VariableContext;
 import com.davidrandoll.automation.engine.core.variables.interceptors.IVariableInterceptor;
 import com.davidrandoll.automation.engine.templating.TemplateProcessor;
+import com.davidrandoll.automation.engine.templating.utils.JsonNodeVariableProcessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -13,10 +14,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
-
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Interceptor for processing variable data using templating.
@@ -32,7 +29,7 @@ import java.util.Map;
 @Order(-1)
 @ConditionalOnMissingBean(name = "variableTemplatingInterceptor", ignored = VariableTemplatingInterceptor.class)
 public class VariableTemplatingInterceptor implements IVariableInterceptor {
-    private final TemplateProcessor templateProcessor;
+    private final JsonNodeVariableProcessor processor;
     private final ObjectMapper objectMapper;
 
     /**
@@ -58,18 +55,7 @@ public class VariableTemplatingInterceptor implements IVariableInterceptor {
             variable.resolve(eventContext, variableContext);
         }
 
-        var mapCopy = new HashMap<>(variableContext.getData());
-        for (Map.Entry<String, Object> entry : mapCopy.entrySet()) {
-            if (entry.getValue() instanceof String valueStr) {
-                try {
-                    String processedValue = templateProcessor.process(valueStr, eventData);
-                    entry.setValue(processedValue);
-                } catch (IOException e) {
-                    log.error("Error processing template for key: {}. Error: {}", entry.getKey(), e.getMessage());
-                    throw new AutomationEngineProcessingException(e);
-                }
-            }
-        }
+        var mapCopy = processor.processIfNotAutomation(eventData, variableContext.getData());
         variable.resolve(eventContext, new VariableContext(mapCopy));
         log.debug("VariableTemplatingInterceptor done.");
     }
