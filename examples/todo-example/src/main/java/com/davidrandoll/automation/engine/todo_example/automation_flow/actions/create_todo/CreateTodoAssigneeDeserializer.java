@@ -17,7 +17,8 @@ public class CreateTodoAssigneeDeserializer extends JsonDeserializer<CreateTodoA
             return new CreateTodoActionContext.CreateTodoAssignee()
                     .setUsername(text);
         } else {
-            return p.readValueAs(CreateTodoActionContext.CreateTodoAssignee.class);
+            var objectMapper = p.getCodec();
+            return objectMapper.treeToValue(node, CreateTodoActionContext.CreateTodoAssignee.class);
         }
     }
 }

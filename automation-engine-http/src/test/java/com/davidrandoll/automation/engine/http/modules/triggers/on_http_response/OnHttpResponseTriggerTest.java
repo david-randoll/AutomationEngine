@@ -6,7 +6,6 @@ import com.davidrandoll.automation.engine.http.AutomationEngineTest;
 import com.davidrandoll.automation.engine.http.JsonTestUtils;
 import com.davidrandoll.automation.engine.http.event.HttpMethodEnum;
 import com.davidrandoll.automation.engine.http.event.HttpResponseEvent;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
@@ -3919,7 +3918,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
 
         var context = EventContext.of(event);
         assertThatThrownBy(() -> engine.publishEvent(context))
-                .isInstanceOf(JsonMappingException.class)
+                .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("Invalid HTTP status value");
     }
 

@@ -17,7 +17,8 @@ public class CreateTodoStatusDeserializer extends JsonDeserializer<CreateTodoAct
             return new CreateTodoActionContext.CreateTodoStatus()
                     .setCode(text);
         } else {
-            return p.readValueAs(CreateTodoActionContext.CreateTodoStatus.class);
+            var objectMapper = p.getCodec();
+            return objectMapper.treeToValue(node, CreateTodoActionContext.CreateTodoStatus.class);
         }
     }
 }

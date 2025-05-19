@@ -1,28 +1,25 @@
 package com.davidrandoll.automation.engine.converter;
 
-import com.davidrandoll.automation.engine.core.utils.InvalidInputException;
 import com.davidrandoll.automation.engine.spi.ITypeConverter;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @ConditionalOnMissingBean(value = ITypeConverter.class, ignored = TypeConverter.class)
 public class TypeConverter implements ITypeConverter {
     private final ObjectMapper objectMapper;
 
-    @SneakyThrows
     @SuppressWarnings("unchecked")
     public <T> T convert(Object object, Class<?> clazz) {
-        try {
-            var dataStr = objectMapper.writeValueAsString(object);
-            return (T) objectMapper.readValue(dataStr, clazz);
-        } catch (MismatchedInputException e) {
-            throw new InvalidInputException(e);
+        var result = (T) objectMapper.convertValue(object, clazz);
+        if (result == null) {
+            log.warn("Type conversion failed. Object: {}, Class: {}", object, clazz);
         }
+        return result;
     }
 }
