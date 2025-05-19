@@ -60,4 +60,48 @@ public class TodoAutomationController {
         return engine.executeAutomationWithYaml(yaml, event)
                 .orElse(null);
     }
+
+    @PostMapping("without-status-and-assignee-object")
+    public Object createTodoWithoutStatusAndAssigneeObject(@RequestBody JsonNode body) {
+        IEvent event = engine.getEventFactory().createEvent(body);
+        String yaml = """
+                alias: create-todo-automation
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: createTodo
+                    title: "{{ title }}"
+                result:
+                  id: "{{todo.id}}"
+                  title: "{{ todo.title }}"
+                  status: "{{ todo.status.code }}"
+                  assignee: "{{ todo.assignee.username }}"
+                """;
+        return engine.executeAutomationWithYaml(yaml, event)
+                .orElse(null);
+    }
+
+    @PostMapping("without-status-and-assignee-event")
+    public Object createTodoWithoutStatusAndAssigneeEvent(@RequestBody JsonNode body) {
+        IEvent event = engine.getEventFactory().createEvent(body);
+        String yaml = """
+                alias: create-todo-automation
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: createTodo
+                    title: "{{ title }}"
+                    status:
+                      code: "{{ status }}"
+                    assignee:
+                      username: "{{ assignee }}"
+                result:
+                  id: "{{todo.id}}"
+                  title: "{{ todo.title }}"
+                  status: "{{ todo.status.code }}"
+                  assignee: "{{ todo.assignee.username }}"
+                """;
+        return engine.executeAutomationWithYaml(yaml, event)
+                .orElse(null);
+    }
 }
