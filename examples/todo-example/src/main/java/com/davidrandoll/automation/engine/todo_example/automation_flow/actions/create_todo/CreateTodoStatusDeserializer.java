@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
+import org.springframework.util.ObjectUtils;
 
 import java.io.IOException;
 
@@ -14,8 +15,11 @@ public class CreateTodoStatusDeserializer extends JsonDeserializer<CreateTodoAct
         JsonNode node = p.readValueAsTree();
         if (node.isTextual()) {
             String text = node.asText().trim();
-            return new CreateTodoActionContext.CreateTodoStatus()
-                    .setCode(text);
+            var result = new CreateTodoActionContext.CreateTodoStatus();
+            if (!ObjectUtils.isEmpty(text)) {
+                result.setCode(text);
+            }
+            return result;
         } else {
             var objectMapper = p.getCodec();
             return objectMapper.treeToValue(node, CreateTodoActionContext.CreateTodoStatus.class);

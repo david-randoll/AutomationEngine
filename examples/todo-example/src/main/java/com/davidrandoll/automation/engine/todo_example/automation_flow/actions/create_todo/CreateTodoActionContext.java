@@ -5,23 +5,34 @@ import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
-@Data
 @NoArgsConstructor
 public class CreateTodoActionContext implements IActionContext {
+    @Getter
     private String alias;
+    @Getter
     private String title;
+    @Getter
     private String storeToVariable = "todo";
 
     @JsonAlias({"status", "todoStatus"})
     @JsonDeserialize(using = CreateTodoStatusDeserializer.class)
-    private CreateTodoStatus todoStatus = new CreateTodoStatus();
+    private CreateTodoStatus todoStatus;
 
     @JsonAlias({"assignee", "todoAssignee"})
     @JsonDeserialize(using = CreateTodoAssigneeDeserializer.class)
-    private CreateTodoAssignee todoAssignee = new CreateTodoAssignee();
+    private CreateTodoAssignee todoAssignee;
+
+    public CreateTodoStatus getTodoStatus() {
+        return todoStatus != null ? todoStatus : new CreateTodoStatus();
+    }
+
+    public CreateTodoAssignee getTodoAssignee() {
+        return todoAssignee != null ? todoAssignee : new CreateTodoAssignee();
+    }
 
     @Data
     @NoArgsConstructor
