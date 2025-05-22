@@ -288,4 +288,33 @@ class TodoAutomationControllerTest {
     }
 
 
+    @Test
+    void testCreateAndSendEmail() throws Exception {
+        String requestBody = """
+                    {
+                      "title": "Prepare sprint review",
+                      "status": "in-progress",
+                      "assignee": {
+                        "username": "john.doe@test.com",
+                        "fullName": "John Doe"
+                      }
+                    }
+                """;
+
+        mockMvc.perform(post("/api/todos/automation/create-and-send-email")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title").value("Prepare sprint review"))
+                .andExpect(jsonPath("$.status").value("in-progress"))
+                .andExpect(jsonPath("$.assignee").value("john.doe@test.com"));
+
+        // Assert the DB contains the new TodoItem
+        assertThat(todoItemRepository.findAll()).anyMatch(todo ->
+                todo.getTitle().equals("Prepare sprint review") &&
+                todo.getStatus().getCode().equals("in-progress") &&
+                todo.getAssignee().getUsername().equals("john.doe@test.com") &&
+                todo.getAssignee().getFullName().equals("John Doe")
+        );
+    }
 }

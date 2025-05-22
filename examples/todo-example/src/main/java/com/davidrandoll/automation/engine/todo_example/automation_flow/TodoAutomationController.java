@@ -181,5 +181,38 @@ public class TodoAutomationController {
                 .orElse(null);
     }
 
+    @PostMapping("/create-and-send-email")
+    public Object createAndSendEmail(@RequestBody JsonNode body) {
+        IEvent event = engine.getEventFactory().createEvent(body);
+
+        String yaml = """
+                alias: create-and-send-email
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: createTodo
+                    title: "{{ title }}"
+                    status: "{{ status }}"
+                    assignee:
+                      username: "{{ assignee.username }}"
+                      fullName: "{{ assignee.fullName }}"
+                    storeToVariable: todo
+                
+                  - action: sendEmail
+                    to: "{{ todo.assignee.username }}"
+                    subject: Todo Created
+                    body: Hello {{ todo.assignee.fullName }}, your todo "{{ todo.title }}" has been created.
+                
+                result:
+                  id: "{{ todo.id }}"
+                  title: "{{ todo.title }}"
+                  status: "{{ todo.status.code }}"
+                  assignee: "{{ todo.assignee.username }}"
+                """;
+
+        return engine.executeAutomationWithYaml(yaml, event)
+                .orElse(null);
+    }
+
 
 }
