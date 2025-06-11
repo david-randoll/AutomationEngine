@@ -97,6 +97,11 @@ public class TestController {
         return ResponseEntity.ok("Processed after delay");
     }
 
+    @PostMapping("post-without-body")
+    public ResponseEntity<String> postWithoutBody() {
+        return ResponseEntity.ok("Post without body received");
+    }
+
     public record TestRequest(@NotEmpty String name, String value) {
     }
 }

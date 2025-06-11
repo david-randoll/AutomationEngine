@@ -392,4 +392,32 @@ class HttpRequestEventPublisherTest {
         HttpRequestEvent requestEvent = eventCaptureListener.getRequestEvents().getFirst();
         assertThat(requestEvent.getQueryParams()).containsEntry("q", List.of("value with spaces & special!"));
     }
+
+
+    @Test
+    void testSendingRequestBodyToEndpointThatDoesNotAcceptIt() throws Exception {
+        String requestBody = "{\"name\": \"Test\"}";
+
+        mockMvc.perform(post("/test/post-without-body")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isOk());
+
+        // Verify request event did have the request body
+        assertThat(eventCaptureListener.getRequestEvents()).hasSize(1);
+        HttpRequestEvent requestEvent = eventCaptureListener.getRequestEvents().getFirst();
+        assertThat(requestEvent.getPath()).isEqualTo("/test/post-without-body");
+        assertThat(requestEvent.getMethod()).isEqualTo(HttpMethodEnum.POST);
+        // requestBody should contain the body since it was sent
+        // requestBody
+        JsonNode bodyJson = requestEvent.getRequestBody();
+        assertThat(bodyJson.get("name").asText()).isEqualTo("Test");
+
+        // Verify response event
+        assertThat(eventCaptureListener.getResponseEvents()).hasSize(1);
+        HttpResponseEvent responseEvent = eventCaptureListener.getResponseEvents().getFirst();
+        JsonNode responseBodyJson = responseEvent.getResponseBody();
+        assertThat(responseBodyJson.asText()).isEqualTo("Post without body received");
+
+    }
 }
