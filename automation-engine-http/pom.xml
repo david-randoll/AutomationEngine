@@ -15,6 +15,8 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <spring-web-captor.version>0.0.1-beta</spring-web-captor.version>
     </properties>
 
     <dependencies>
@@ -23,6 +25,11 @@
             <artifactId>automation-engine-spring-starter</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.davidrandoll</groupId>
+            <artifactId>spring-web-captor</artifactId>
+            <version>${spring-web-captor.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

@@ -2,7 +2,7 @@ package com.davidrandoll.automation.engine.http.modules.conditions.http_response
 
 import com.davidrandoll.automation.engine.core.events.EventContext;
 import com.davidrandoll.automation.engine.http.AutomationEngineTest;
-import com.davidrandoll.automation.engine.http.event.HttpResponseEvent;
+import com.davidrandoll.automation.engine.http.events.AEHttpResponseEvent;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
@@ -28,7 +28,7 @@ class HttpResponseStatusConditionTest extends AutomationEngineTest {
 
         var automation = factory.createAutomation("yaml", yaml);
 
-        var event = HttpResponseEvent.builder().responseStatus(HttpStatus.OK).build();
+        var event = AEHttpResponseEvent.builder().responseStatus(HttpStatus.OK).build();
         var context = EventContext.of(event);
         engine.publishEvent(context);
 
@@ -51,7 +51,7 @@ class HttpResponseStatusConditionTest extends AutomationEngineTest {
 
         var automation = factory.createAutomation("yaml", yaml);
 
-        var event = HttpResponseEvent.builder().responseStatus(HttpStatus.OK).build();
+        var event = AEHttpResponseEvent.builder().responseStatus(HttpStatus.OK).build();
         var context = EventContext.of(event);
         engine.publishEvent(context);
 
@@ -74,7 +74,7 @@ class HttpResponseStatusConditionTest extends AutomationEngineTest {
 
         var automation = factory.createAutomation("yaml", yaml);
 
-        var event = HttpResponseEvent.builder().responseStatus(HttpStatus.OK).build();
+        var event = AEHttpResponseEvent.builder().responseStatus(HttpStatus.OK).build();
         var context = EventContext.of(event);
         engine.publishEvent(context);
 
@@ -97,7 +97,7 @@ class HttpResponseStatusConditionTest extends AutomationEngineTest {
 
         var automation = factory.createAutomation("yaml", yaml);
 
-        var event = HttpResponseEvent.builder().responseStatus(HttpStatus.OK).build();
+        var event = AEHttpResponseEvent.builder().responseStatus(HttpStatus.OK).build();
         var context = EventContext.of(event);
         engine.publishEvent(context);
 
@@ -120,7 +120,7 @@ class HttpResponseStatusConditionTest extends AutomationEngineTest {
 
         var automation = factory.createAutomation("yaml", yaml);
 
-        var event = HttpResponseEvent.builder().responseStatus(HttpStatus.NO_CONTENT).build();
+        var event = AEHttpResponseEvent.builder().responseStatus(HttpStatus.NO_CONTENT).build();
         var context = EventContext.of(event);
         engine.publishEvent(context);
 
@@ -143,7 +143,7 @@ class HttpResponseStatusConditionTest extends AutomationEngineTest {
 
         var automation = factory.createAutomation("yaml", yaml);
 
-        var event = HttpResponseEvent.builder().responseStatus(HttpStatus.OK).build();
+        var event = AEHttpResponseEvent.builder().responseStatus(HttpStatus.OK).build();
         var context = EventContext.of(event);
         engine.publishEvent(context);
 
@@ -166,7 +166,7 @@ class HttpResponseStatusConditionTest extends AutomationEngineTest {
 
         var automation = factory.createAutomation("yaml", yaml);
 
-        var event = HttpResponseEvent.builder().responseStatus(HttpStatus.NO_CONTENT).build();
+        var event = AEHttpResponseEvent.builder().responseStatus(HttpStatus.NO_CONTENT).build();
         var context = EventContext.of(event);
         engine.publishEvent(context);
 
@@ -189,7 +189,7 @@ class HttpResponseStatusConditionTest extends AutomationEngineTest {
 
         var automation = factory.createAutomation("yaml", yaml);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .responseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
                 .build();
         var context = EventContext.of(event);
@@ -214,7 +214,7 @@ class HttpResponseStatusConditionTest extends AutomationEngineTest {
 
         var automation = factory.createAutomation("yaml", yaml);
 
-        var event = HttpResponseEvent.builder().responseStatus(null).build();
+        var event = AEHttpResponseEvent.builder().responseStatus(null).build();
         var context = EventContext.of(event);
         engine.publishEvent(context);
 
@@ -237,7 +237,7 @@ class HttpResponseStatusConditionTest extends AutomationEngineTest {
 
         var automation = factory.createAutomation("yaml", yaml);
 
-        var event = HttpResponseEvent.builder().responseStatus(null).build();
+        var event = AEHttpResponseEvent.builder().responseStatus(null).build();
         var context = EventContext.of(event);
         engine.publishEvent(context);
 
@@ -261,7 +261,7 @@ class HttpResponseStatusConditionTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder().responseStatus(HttpStatus.OK).build();
+        var event = AEHttpResponseEvent.builder().responseStatus(HttpStatus.OK).build();
         var context = EventContext.of(event);
         engine.publishEvent(context);
 
@@ -285,7 +285,7 @@ class HttpResponseStatusConditionTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder().responseStatus(HttpStatus.OK).build();
+        var event = AEHttpResponseEvent.builder().responseStatus(HttpStatus.OK).build();
         var context = EventContext.of(event);
         engine.publishEvent(context);
 
@@ -309,7 +309,7 @@ class HttpResponseStatusConditionTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder().responseStatus(HttpStatus.CREATED).build();
+        var event = AEHttpResponseEvent.builder().responseStatus(HttpStatus.CREATED).build();
         var context = EventContext.of(event);
         engine.publishEvent(context);
 
@@ -333,7 +333,7 @@ class HttpResponseStatusConditionTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .responseStatus(HttpStatus.CREATED)
                 .build();
         var context = EventContext.of(event);
@@ -359,7 +359,7 @@ class HttpResponseStatusConditionTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .responseStatus(HttpStatus.CREATED)
                 .build();
         var context = EventContext.of(event);
@@ -385,7 +385,7 @@ class HttpResponseStatusConditionTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .responseStatus(HttpStatus.CREATED)
                 .build();
         var context = EventContext.of(event);
@@ -411,7 +411,7 @@ class HttpResponseStatusConditionTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .responseStatus(HttpStatus.CREATED)
                 .build();
         var context = EventContext.of(event);
@@ -437,7 +437,7 @@ class HttpResponseStatusConditionTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder().responseStatus(HttpStatus.NOT_FOUND).build();
+        var event = AEHttpResponseEvent.builder().responseStatus(HttpStatus.NOT_FOUND).build();
         var context = EventContext.of(event);
         engine.publishEvent(context);
 
@@ -461,7 +461,7 @@ class HttpResponseStatusConditionTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .responseStatus(HttpStatus.OK)
                 .build();
         var context = EventContext.of(event);
@@ -487,7 +487,7 @@ class HttpResponseStatusConditionTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .responseStatus(HttpStatus.SERVICE_UNAVAILABLE)
                 .build();
         var context = EventContext.of(event);
@@ -513,7 +513,7 @@ class HttpResponseStatusConditionTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder().responseStatus(null).build();
+        var event = AEHttpResponseEvent.builder().responseStatus(null).build();
         var context = EventContext.of(event);
         engine.publishEvent(context);
 
@@ -537,7 +537,7 @@ class HttpResponseStatusConditionTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .responseStatus(HttpStatus.OK)
                 .build();
 
@@ -564,7 +564,7 @@ class HttpResponseStatusConditionTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .responseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
                 .build();
 
@@ -591,7 +591,7 @@ class HttpResponseStatusConditionTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .responseStatus(HttpStatus.NOT_FOUND)
                 .build();
 
@@ -618,7 +618,7 @@ class HttpResponseStatusConditionTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .responseStatus(HttpStatus.BAD_REQUEST)
                 .build();
 
@@ -645,7 +645,7 @@ class HttpResponseStatusConditionTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .responseStatus(HttpStatus.FORBIDDEN)
                 .build();
 
@@ -672,7 +672,7 @@ class HttpResponseStatusConditionTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .responseStatus(HttpStatus.NOT_FOUND)
                 .build();
 
@@ -699,7 +699,7 @@ class HttpResponseStatusConditionTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .responseStatus(HttpStatus.NOT_FOUND)
                 .build();
 
@@ -726,7 +726,7 @@ class HttpResponseStatusConditionTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .responseStatus(HttpStatus.NOT_FOUND)
                 .build();
 
@@ -753,7 +753,7 @@ class HttpResponseStatusConditionTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .responseStatus(HttpStatus.NOT_FOUND)
                 .build();
 
@@ -780,7 +780,7 @@ class HttpResponseStatusConditionTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .responseStatus(HttpStatus.NOT_FOUND)
                 .build();
 
@@ -807,7 +807,7 @@ class HttpResponseStatusConditionTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .responseStatus(HttpStatus.NOT_FOUND) // 404
                 .build();
 
@@ -834,7 +834,7 @@ class HttpResponseStatusConditionTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .responseStatus(HttpStatus.INTERNAL_SERVER_ERROR) // 500
                 .build();
 
@@ -861,7 +861,7 @@ class HttpResponseStatusConditionTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .responseStatus(HttpStatus.BAD_REQUEST) // 400
                 .build();
 
@@ -888,7 +888,7 @@ class HttpResponseStatusConditionTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .responseStatus(HttpStatus.INTERNAL_SERVER_ERROR) // 500
                 .build();
 
@@ -915,7 +915,7 @@ class HttpResponseStatusConditionTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder().responseStatus(null).build();
+        var event = AEHttpResponseEvent.builder().responseStatus(null).build();
         var context = EventContext.of(event);
         engine.publishEvent(context);
 
@@ -939,7 +939,7 @@ class HttpResponseStatusConditionTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder().responseStatus(HttpStatus.NO_CONTENT).build();
+        var event = AEHttpResponseEvent.builder().responseStatus(HttpStatus.NO_CONTENT).build();
         var context = EventContext.of(event);
         engine.publishEvent(context);
 
@@ -963,7 +963,7 @@ class HttpResponseStatusConditionTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder().responseStatus(null).build();
+        var event = AEHttpResponseEvent.builder().responseStatus(null).build();
         var context = EventContext.of(event);
         engine.publishEvent(context);
 
@@ -987,7 +987,7 @@ class HttpResponseStatusConditionTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder().responseStatus(HttpStatus.GATEWAY_TIMEOUT).build(); // 504
+        var event = AEHttpResponseEvent.builder().responseStatus(HttpStatus.GATEWAY_TIMEOUT).build(); // 504
         var context = EventContext.of(event);
         engine.publishEvent(context);
 
@@ -1011,7 +1011,7 @@ class HttpResponseStatusConditionTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder().responseStatus(HttpStatus.OK).build(); // 200
+        var event = AEHttpResponseEvent.builder().responseStatus(HttpStatus.OK).build(); // 200
         var context = EventContext.of(event);
         engine.publishEvent(context);
 

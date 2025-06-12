@@ -1,7 +1,7 @@
 package com.davidrandoll.automation.engine.http.modules.conditions.http_error_detail;
 
 import com.davidrandoll.automation.engine.core.events.EventContext;
-import com.davidrandoll.automation.engine.http.event.HttpResponseEvent;
+import com.davidrandoll.automation.engine.http.events.AEHttpResponseEvent;
 import com.davidrandoll.automation.engine.http.utils.StringMatcher;
 import com.davidrandoll.automation.engine.spi.PluggableCondition;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,7 +17,7 @@ public class HttpErrorDetailCondition extends PluggableCondition<HttpErrorDetail
 
     @Override
     public boolean isSatisfied(EventContext ec, HttpErrorDetailConditionContext cc) {
-        if (!(ec.getEvent() instanceof HttpResponseEvent event)) return false;
+        if (!(ec.getEvent() instanceof AEHttpResponseEvent event)) return false;
         return StringMatcher.matchesCondition(cc.getErrorDetail(), event.getErrorDetail(), objectMapper);
     }
 }

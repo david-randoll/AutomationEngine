@@ -1,10 +1,10 @@
 package com.davidrandoll.automation.engine.http.modules.triggers.on_http_response;
 
 import com.davidrandoll.automation.engine.core.events.EventContext;
-import com.davidrandoll.automation.engine.http.event.HttpResponseEvent;
-import com.davidrandoll.automation.engine.http.utils.HttpServletUtils;
 import com.davidrandoll.automation.engine.http.utils.JsonNodeMatcher;
 import com.davidrandoll.automation.engine.spi.PluggableTrigger;
+import com.davidrandoll.automation.engine.http.events.AEHttpResponseEvent;
+import com.davidrandoll.spring_web_captor.utils.HttpServletUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -18,7 +18,7 @@ public class OnHttpResponseTrigger extends PluggableTrigger<OnHttpResponseTrigge
 
     @Override
     public boolean isTriggered(EventContext ec, OnHttpResponseTriggerContext tc) {
-        if (!(ec.getEvent() instanceof HttpResponseEvent event)) return false;
+        if (!(ec.getEvent() instanceof AEHttpResponseEvent event)) return false;
 
         var isMethodTriggered = tc.hasMethods() && !tc.getMethods().contains(event.getMethod());
         if (isMethodTriggered) return false;

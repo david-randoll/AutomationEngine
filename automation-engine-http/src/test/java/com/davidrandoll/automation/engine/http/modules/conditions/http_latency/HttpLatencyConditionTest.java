@@ -2,7 +2,7 @@ package com.davidrandoll.automation.engine.http.modules.conditions.http_latency;
 
 import com.davidrandoll.automation.engine.core.events.EventContext;
 import com.davidrandoll.automation.engine.http.AutomationEngineTest;
-import com.davidrandoll.automation.engine.http.event.HttpResponseEvent;
+import com.davidrandoll.automation.engine.http.events.AEHttpResponseEvent;
 import com.davidrandoll.automation.engine.http.modules.triggers.on_slow_http_request.OnSlowHttpRequestException;
 import org.junit.jupiter.api.Test;
 
@@ -36,7 +36,7 @@ class HttpLatencyConditionTest extends AutomationEngineTest {
 
         Map<String, Object> additionalData = new HashMap<>();
         additionalData.put("duration", Duration.ofSeconds(3)); // Simulate 3 seconds
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .additionalData(additionalData)
                 .build();
 
@@ -65,7 +65,7 @@ class HttpLatencyConditionTest extends AutomationEngineTest {
 
         Map<String, Object> additionalData = new HashMap<>();
         additionalData.put("duration", Duration.ofMillis(500));
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .additionalData(additionalData)
                 .build();
 
@@ -94,7 +94,7 @@ class HttpLatencyConditionTest extends AutomationEngineTest {
 
         Map<String, Object> additionalData = new HashMap<>();
         additionalData.put("duration", Duration.ofMinutes(2)); // Simulate 2 minutes
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .additionalData(additionalData)
                 .build();
 
@@ -121,7 +121,7 @@ class HttpLatencyConditionTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder().build(); // No duration
+        var event = AEHttpResponseEvent.builder().build(); // No duration
         var context = EventContext.of(event);
 
         assertThatThrownBy(() -> automation.allConditionsMet(context))
@@ -147,7 +147,7 @@ class HttpLatencyConditionTest extends AutomationEngineTest {
 
         Map<String, Object> additionalData = new HashMap<>();
         additionalData.put("duration", Duration.ofSeconds(2));
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .additionalData(additionalData)
                 .build();
 
@@ -177,7 +177,7 @@ class HttpLatencyConditionTest extends AutomationEngineTest {
 
         Map<String, Object> additionalData = new HashMap<>();
         additionalData.put("duration", Duration.ofMillis(1000)); // Simulate exact match
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .additionalData(additionalData)
                 .build();
 
@@ -207,7 +207,7 @@ class HttpLatencyConditionTest extends AutomationEngineTest {
 
         Map<String, Object> additionalData = new HashMap<>();
         additionalData.put("duration", Duration.ofMillis(-1000)); // Simulate negative duration
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .additionalData(additionalData)
                 .build();
 
@@ -236,7 +236,7 @@ class HttpLatencyConditionTest extends AutomationEngineTest {
 
         Map<String, Object> additionalData = new HashMap<>();
         additionalData.put("duration", Duration.ofMillis(-600)); // Simulate negative duration
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .additionalData(additionalData)
                 .build();
 
@@ -265,7 +265,7 @@ class HttpLatencyConditionTest extends AutomationEngineTest {
 
         Map<String, Object> additionalData = new HashMap<>();
         additionalData.put("duration", null); // Simulate null duration
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .additionalData(additionalData)
                 .build();
 
@@ -293,7 +293,7 @@ class HttpLatencyConditionTest extends AutomationEngineTest {
         engine.register(automation);
 
         Map<String, Object> additionalData = Map.of("duration", Duration.ofSeconds(1));
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .additionalData(additionalData)
                 .build();
 

@@ -2,8 +2,8 @@ package com.davidrandoll.automation.engine.http.modules.conditions.http_header;
 
 import com.davidrandoll.automation.engine.core.events.EventContext;
 import com.davidrandoll.automation.engine.http.AutomationEngineTest;
-import com.davidrandoll.automation.engine.http.event.HttpRequestEvent;
-import com.davidrandoll.automation.engine.http.event.HttpResponseEvent;
+import com.davidrandoll.automation.engine.http.events.AEHttpRequestEvent;
+import com.davidrandoll.automation.engine.http.events.AEHttpResponseEvent;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
 
@@ -32,7 +32,7 @@ class HttpHeaderConditionTest extends AutomationEngineTest {
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("X-Request-Id", "1234");
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .headers(headers)
                 .build();
 
@@ -41,7 +41,7 @@ class HttpHeaderConditionTest extends AutomationEngineTest {
 
         assertThat(automation.allConditionsMet(context)).isTrue();
 
-        var responseEvent = HttpResponseEvent.builder()
+        var responseEvent = AEHttpResponseEvent.builder()
                 .headers(headers)
                 .build();
         var responseContext = EventContext.of(responseEvent);
@@ -70,7 +70,7 @@ class HttpHeaderConditionTest extends AutomationEngineTest {
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("X-Request-Id", "1234");
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .headers(headers)
                 .build();
 
@@ -79,7 +79,7 @@ class HttpHeaderConditionTest extends AutomationEngineTest {
 
         assertThat(automation.allConditionsMet(context)).isFalse();
 
-        var responseEvent = HttpResponseEvent.builder()
+        var responseEvent = AEHttpResponseEvent.builder()
                 .headers(headers)
                 .build();
         var responseContext = EventContext.of(responseEvent);
@@ -110,7 +110,7 @@ class HttpHeaderConditionTest extends AutomationEngineTest {
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("X-Request-Id", "5678");
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .headers(headers)
                 .build();
 
@@ -119,7 +119,7 @@ class HttpHeaderConditionTest extends AutomationEngineTest {
 
         assertThat(automation.allConditionsMet(context)).isTrue();
 
-        var responseEvent = HttpResponseEvent.builder()
+        var responseEvent = AEHttpResponseEvent.builder()
                 .headers(headers)
                 .build();
         var responseContext = EventContext.of(responseEvent);
@@ -150,7 +150,7 @@ class HttpHeaderConditionTest extends AutomationEngineTest {
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("X-Request-Id", "5678");
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .headers(headers)
                 .build();
 
@@ -159,7 +159,7 @@ class HttpHeaderConditionTest extends AutomationEngineTest {
 
         assertThat(automation.allConditionsMet(context)).isFalse();
 
-        var responseEvent = HttpResponseEvent.builder()
+        var responseEvent = AEHttpResponseEvent.builder()
                 .headers(headers)
                 .build();
         var responseContext = EventContext.of(responseEvent);
@@ -188,7 +188,7 @@ class HttpHeaderConditionTest extends AutomationEngineTest {
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("X-Request-Id", "1234");
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .headers(headers)
                 .build();
 
@@ -197,7 +197,7 @@ class HttpHeaderConditionTest extends AutomationEngineTest {
 
         assertThat(automation.allConditionsMet(context)).isTrue();
 
-        var responseEvent = HttpResponseEvent.builder()
+        var responseEvent = AEHttpResponseEvent.builder()
                 .headers(headers)
                 .build();
         var responseContext = EventContext.of(responseEvent);
@@ -226,7 +226,7 @@ class HttpHeaderConditionTest extends AutomationEngineTest {
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("X-Request-Id", "123456");
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .headers(headers)
                 .build();
 
@@ -235,7 +235,7 @@ class HttpHeaderConditionTest extends AutomationEngineTest {
 
         assertThat(automation.allConditionsMet(context)).isTrue();
 
-        var responseEvent = HttpResponseEvent.builder()
+        var responseEvent = AEHttpResponseEvent.builder()
                 .headers(headers)
                 .build();
         var responseContext = EventContext.of(responseEvent);
@@ -264,7 +264,7 @@ class HttpHeaderConditionTest extends AutomationEngineTest {
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("X-Request-Id", "1234");
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .headers(headers)
                 .build();
 
@@ -273,7 +273,7 @@ class HttpHeaderConditionTest extends AutomationEngineTest {
 
         assertThat(automation.allConditionsMet(context)).isTrue();
 
-        var responseEvent = HttpResponseEvent.builder()
+        var responseEvent = AEHttpResponseEvent.builder()
                 .headers(headers)
                 .build();
         var responseContext = EventContext.of(responseEvent);
@@ -301,7 +301,7 @@ class HttpHeaderConditionTest extends AutomationEngineTest {
         engine.register(automation);
 
         HttpHeaders headers = new HttpHeaders();
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .headers(headers)  // Empty headers
                 .build();
 
@@ -310,7 +310,7 @@ class HttpHeaderConditionTest extends AutomationEngineTest {
 
         assertThat(automation.allConditionsMet(context)).isFalse();
 
-        var responseEvent = HttpResponseEvent.builder()
+        var responseEvent = AEHttpResponseEvent.builder()
                 .headers(headers)
                 .build();
         var responseContext = EventContext.of(responseEvent);
@@ -338,7 +338,7 @@ class HttpHeaderConditionTest extends AutomationEngineTest {
         engine.register(automation);
 
         HttpHeaders headers = new HttpHeaders();
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .headers(headers)  // Empty headers
                 .build();
 
@@ -347,7 +347,7 @@ class HttpHeaderConditionTest extends AutomationEngineTest {
 
         assertThat(automation.allConditionsMet(context)).isTrue();
 
-        var responseEvent = HttpResponseEvent.builder()
+        var responseEvent = AEHttpResponseEvent.builder()
                 .headers(headers)
                 .build();
         var responseContext = EventContext.of(responseEvent);
@@ -377,7 +377,7 @@ class HttpHeaderConditionTest extends AutomationEngineTest {
         HttpHeaders headers = new HttpHeaders();
         headers.add("X-Request-Id", "12345");
 
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .headers(headers)
                 .build();
 
@@ -386,7 +386,7 @@ class HttpHeaderConditionTest extends AutomationEngineTest {
 
         assertThat(automation.allConditionsMet(context)).isTrue();
 
-        var responseEvent = HttpResponseEvent.builder()
+        var responseEvent = AEHttpResponseEvent.builder()
                 .headers(headers)
                 .build();
         var responseContext = EventContext.of(responseEvent);
@@ -415,7 +415,7 @@ class HttpHeaderConditionTest extends AutomationEngineTest {
 
         HttpHeaders headers = new HttpHeaders(); // Empty headers
 
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .headers(headers)
                 .build();
 
@@ -424,7 +424,7 @@ class HttpHeaderConditionTest extends AutomationEngineTest {
 
         assertThat(automation.allConditionsMet(context)).isFalse();
 
-        var responseEvent = HttpResponseEvent.builder()
+        var responseEvent = AEHttpResponseEvent.builder()
                 .headers(headers)
                 .build();
         var responseContext = EventContext.of(responseEvent);
@@ -454,7 +454,7 @@ class HttpHeaderConditionTest extends AutomationEngineTest {
         HttpHeaders headers = new HttpHeaders();
         headers.add("X-Request-Id", "12345");
 
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .headers(headers)
                 .build();
 
@@ -463,7 +463,7 @@ class HttpHeaderConditionTest extends AutomationEngineTest {
 
         assertThat(automation.allConditionsMet(context)).isTrue();
 
-        var responseEvent = HttpResponseEvent.builder()
+        var responseEvent = AEHttpResponseEvent.builder()
                 .headers(headers)
                 .build();
         var responseContext = EventContext.of(responseEvent);
@@ -493,7 +493,7 @@ class HttpHeaderConditionTest extends AutomationEngineTest {
         HttpHeaders headers = new HttpHeaders();
         headers.add("X-Request-Id", "67890");
 
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .headers(headers)
                 .build();
 
@@ -502,7 +502,7 @@ class HttpHeaderConditionTest extends AutomationEngineTest {
 
         assertThat(automation.allConditionsMet(context)).isFalse();
 
-        var responseEvent = HttpResponseEvent.builder()
+        var responseEvent = AEHttpResponseEvent.builder()
                 .headers(headers)
                 .build();
         var responseContext = EventContext.of(responseEvent);
@@ -534,7 +534,7 @@ class HttpHeaderConditionTest extends AutomationEngineTest {
         HttpHeaders headers = new HttpHeaders();
         headers.add("X-Request-Id", "12345");
 
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .headers(headers)
                 .build();
 
@@ -543,7 +543,7 @@ class HttpHeaderConditionTest extends AutomationEngineTest {
 
         assertThat(automation.allConditionsMet(context)).isTrue();
 
-        var responseEvent = HttpResponseEvent.builder()
+        var responseEvent = AEHttpResponseEvent.builder()
                 .headers(headers)
                 .build();
         var responseContext = EventContext.of(responseEvent);
@@ -575,7 +575,7 @@ class HttpHeaderConditionTest extends AutomationEngineTest {
         HttpHeaders headers = new HttpHeaders();
         headers.add("X-Request-Id", "99999");
 
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .headers(headers)
                 .build();
 
@@ -584,7 +584,7 @@ class HttpHeaderConditionTest extends AutomationEngineTest {
 
         assertThat(automation.allConditionsMet(context)).isFalse();
 
-        var responseEvent = HttpResponseEvent.builder()
+        var responseEvent = AEHttpResponseEvent.builder()
                 .headers(headers)
                 .build();
         var responseContext = EventContext.of(responseEvent);
@@ -614,7 +614,7 @@ class HttpHeaderConditionTest extends AutomationEngineTest {
         HttpHeaders headers = new HttpHeaders();
         headers.add("X-Request-Id", "12345");
 
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .headers(headers)
                 .build();
 
@@ -623,7 +623,7 @@ class HttpHeaderConditionTest extends AutomationEngineTest {
 
         assertThat(automation.allConditionsMet(context)).isTrue();
 
-        var responseEvent = HttpResponseEvent.builder()
+        var responseEvent = AEHttpResponseEvent.builder()
                 .headers(headers)
                 .build();
         var responseContext = EventContext.of(responseEvent);
@@ -653,7 +653,7 @@ class HttpHeaderConditionTest extends AutomationEngineTest {
         HttpHeaders headers = new HttpHeaders();
         headers.add("X-Request-Id", "abcde");
 
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .headers(headers)
                 .build();
 
@@ -662,7 +662,7 @@ class HttpHeaderConditionTest extends AutomationEngineTest {
 
         assertThat(automation.allConditionsMet(context)).isFalse();
 
-        var responseEvent = HttpResponseEvent.builder()
+        var responseEvent = AEHttpResponseEvent.builder()
                 .headers(headers)
                 .build();
         var responseContext = EventContext.of(responseEvent);

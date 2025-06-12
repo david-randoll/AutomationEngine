@@ -1,10 +1,10 @@
 package com.davidrandoll.automation.engine.http.modules.actions.send_http_request;
 
 import com.davidrandoll.automation.engine.core.events.EventContext;
-import com.davidrandoll.automation.engine.http.event.HttpRequestEvent;
-import com.davidrandoll.automation.engine.http.event.HttpResponseEvent;
-import com.davidrandoll.automation.engine.http.utils.HttpServletUtils;
+import com.davidrandoll.automation.engine.http.events.AEHttpRequestEvent;
+import com.davidrandoll.automation.engine.http.events.AEHttpResponseEvent;
 import com.davidrandoll.automation.engine.spi.PluggableAction;
+import com.davidrandoll.spring_web_captor.utils.HttpServletUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -32,8 +32,8 @@ public class SendHttpRequestAction extends PluggableAction<SendHttpRequestAction
     public boolean canExecute(EventContext ec, SendHttpRequestActionContext ac) {
         if (isFalse(ac.isAllowHttpEvent())) {
             log.debug("SendHttpRequestAction is not allowed to process HTTP events: {}", ac.getAlias());
-            if (ec.getEvent() instanceof HttpRequestEvent) return false;
-            if (ec.getEvent() instanceof HttpResponseEvent) return false;
+            if (ec.getEvent() instanceof AEHttpRequestEvent) return false;
+            if (ec.getEvent() instanceof AEHttpResponseEvent) return false;
         }
 
         if (ObjectUtils.isEmpty(ac.getUrl())) {

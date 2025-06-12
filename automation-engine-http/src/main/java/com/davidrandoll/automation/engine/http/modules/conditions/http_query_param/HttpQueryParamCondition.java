@@ -1,8 +1,8 @@
 package com.davidrandoll.automation.engine.http.modules.conditions.http_query_param;
 
 import com.davidrandoll.automation.engine.core.events.EventContext;
-import com.davidrandoll.automation.engine.http.event.HttpRequestEvent;
-import com.davidrandoll.automation.engine.http.event.HttpResponseEvent;
+import com.davidrandoll.automation.engine.http.events.AEHttpRequestEvent;
+import com.davidrandoll.automation.engine.http.events.AEHttpResponseEvent;
 import com.davidrandoll.automation.engine.http.utils.StringMatcher;
 import com.davidrandoll.automation.engine.spi.PluggableCondition;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -18,9 +18,9 @@ public class HttpQueryParamCondition extends PluggableCondition<HttpQueryParamCo
 
     @Override
     public boolean isSatisfied(EventContext ec, HttpQueryParamConditionContext cc) {
-        if (ec.getEvent() instanceof HttpRequestEvent event) {
+        if (ec.getEvent() instanceof AEHttpRequestEvent event) {
             return StringMatcher.matchesCondition(cc.getQueryParams(), event.getQueryParams(), objectMapper);
-        } else if (ec.getEvent() instanceof HttpResponseEvent event) {
+        } else if (ec.getEvent() instanceof AEHttpResponseEvent event) {
             return StringMatcher.matchesCondition(cc.getQueryParams(), event.getQueryParams(), objectMapper);
         }
         return false;

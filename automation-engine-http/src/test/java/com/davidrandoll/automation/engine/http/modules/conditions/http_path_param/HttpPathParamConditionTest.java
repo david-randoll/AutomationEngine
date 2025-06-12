@@ -2,7 +2,7 @@ package com.davidrandoll.automation.engine.http.modules.conditions.http_path_par
 
 import com.davidrandoll.automation.engine.core.events.EventContext;
 import com.davidrandoll.automation.engine.http.AutomationEngineTest;
-import com.davidrandoll.automation.engine.http.event.HttpRequestEvent;
+import com.davidrandoll.automation.engine.http.events.AEHttpRequestEvent;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
@@ -32,7 +32,7 @@ class HttpPathParamConditionTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .pathParams(Map.of("userId", "123"))
                 .build();
 
@@ -61,7 +61,7 @@ class HttpPathParamConditionTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .pathParams(Map.of("userId", "456"))
                 .build();
 
@@ -90,7 +90,7 @@ class HttpPathParamConditionTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .pathParams(Map.of("userId", "guest"))
                 .build();
 
@@ -119,7 +119,7 @@ class HttpPathParamConditionTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .pathParams(Map.of("role", "editor"))
                 .build();
 
@@ -148,7 +148,7 @@ class HttpPathParamConditionTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .pathParams(Map.of("role", "guest"))
                 .build();
 
@@ -177,7 +177,7 @@ class HttpPathParamConditionTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .pathParams(Map.of("status", "active"))
                 .build();
 
@@ -206,7 +206,7 @@ class HttpPathParamConditionTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .pathParams(Map.of("sessionId", "abc123"))
                 .build();
 
@@ -235,7 +235,7 @@ class HttpPathParamConditionTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .pathParams(Map.of())
                 .build();
 
@@ -264,7 +264,7 @@ class HttpPathParamConditionTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .pathParams(Map.of("orderId", "AB-2024"))
                 .build();
 
@@ -293,7 +293,7 @@ class HttpPathParamConditionTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .pathParams(Map.of("orderId", "123-AB"))
                 .build();
 
@@ -326,7 +326,7 @@ class HttpPathParamConditionTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .pathParams(Map.of(
                         "userId", "u123",
                         "role", "admin",
@@ -363,7 +363,7 @@ class HttpPathParamConditionTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .pathParams(Map.of(
                         "userId", "u123",
                         "role", "viewer",  // not in list
@@ -400,7 +400,7 @@ class HttpPathParamConditionTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .pathParams(Map.of(
                         "sessionId", "xyz",
                         "trackingId", "track-12345",
@@ -435,7 +435,7 @@ class HttpPathParamConditionTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .pathParams(Map.of("env", "prod")) // token missing
                 .build();
 
@@ -466,7 +466,7 @@ class HttpPathParamConditionTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .pathParams(Map.of("version", "v1"))
                 .build();
 
@@ -495,7 +495,7 @@ class HttpPathParamConditionTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .pathParams(Map.of("debug", "true"))
                 .build();
 

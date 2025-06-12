@@ -1,10 +1,10 @@
 package com.davidrandoll.automation.engine.http.modules.conditions.http_full_path;
 
 import com.davidrandoll.automation.engine.core.events.EventContext;
-import com.davidrandoll.automation.engine.http.event.HttpRequestEvent;
-import com.davidrandoll.automation.engine.http.event.HttpResponseEvent;
 import com.davidrandoll.automation.engine.http.utils.StringMatcher;
 import com.davidrandoll.automation.engine.spi.PluggableCondition;
+import com.davidrandoll.automation.engine.http.events.AEHttpRequestEvent;
+import com.davidrandoll.automation.engine.http.events.AEHttpResponseEvent;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -18,9 +18,9 @@ public class HttpFullPathCondition extends PluggableCondition<HttpFullPathCondit
 
     @Override
     public boolean isSatisfied(EventContext ec, HttpFullPathConditionContext cc) {
-        if (ec.getEvent() instanceof HttpRequestEvent event) {
+        if (ec.getEvent() instanceof AEHttpRequestEvent event) {
             return StringMatcher.matchesCondition(cc, event.getFullUrl(), objectMapper);
-        } else if (ec.getEvent() instanceof HttpResponseEvent event) {
+        } else if (ec.getEvent() instanceof AEHttpResponseEvent event) {
             return StringMatcher.matchesCondition(cc, event.getFullUrl(), objectMapper);
         }
         return false;

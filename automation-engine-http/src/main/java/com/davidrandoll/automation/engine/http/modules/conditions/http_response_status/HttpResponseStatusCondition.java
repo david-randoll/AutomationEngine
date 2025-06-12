@@ -1,7 +1,7 @@
 package com.davidrandoll.automation.engine.http.modules.conditions.http_response_status;
 
 import com.davidrandoll.automation.engine.core.events.EventContext;
-import com.davidrandoll.automation.engine.http.event.HttpResponseEvent;
+import com.davidrandoll.automation.engine.http.events.AEHttpResponseEvent;
 import com.davidrandoll.automation.engine.http.utils.StringMatcher;
 import com.davidrandoll.automation.engine.spi.PluggableCondition;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -19,7 +19,7 @@ public class HttpResponseStatusCondition extends PluggableCondition<HttpResponse
 
     @Override
     public boolean isSatisfied(EventContext ec, HttpResponseStatusConditionContext cc) {
-        if (!(ec.getEvent() instanceof HttpResponseEvent event)) return false;
+        if (!(ec.getEvent() instanceof AEHttpResponseEvent event)) return false;
         if (event.getResponseStatus() != null) {
             var statusFamily = switch (event.getResponseStatus().series()) {
                 case INFORMATIONAL -> "1xx";

@@ -2,8 +2,8 @@ package com.davidrandoll.automation.engine.http.modules.conditions.http_full_pat
 
 import com.davidrandoll.automation.engine.core.events.EventContext;
 import com.davidrandoll.automation.engine.http.AutomationEngineTest;
-import com.davidrandoll.automation.engine.http.event.HttpRequestEvent;
-import com.davidrandoll.automation.engine.http.event.HttpResponseEvent;
+import com.davidrandoll.automation.engine.http.events.AEHttpRequestEvent;
+import com.davidrandoll.automation.engine.http.events.AEHttpResponseEvent;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -28,7 +28,7 @@ class HttpFullPathConditionTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .fullUrl("https://example.com/api/users")
                 .build();
 
@@ -37,7 +37,7 @@ class HttpFullPathConditionTest extends AutomationEngineTest {
 
         assertThat(automation.allConditionsMet(context)).isTrue();
 
-        var responseEvent = HttpResponseEvent.builder()
+        var responseEvent = AEHttpResponseEvent.builder()
                 .fullUrl("https://example.com/api/users")
                 .build();
         var responseContext = EventContext.of(responseEvent);
@@ -63,7 +63,7 @@ class HttpFullPathConditionTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .fullUrl("https://example.com/api/users?active=true")
                 .build();
 
@@ -72,7 +72,7 @@ class HttpFullPathConditionTest extends AutomationEngineTest {
 
         assertThat(automation.allConditionsMet(context)).isFalse();
 
-        var responseEvent = HttpResponseEvent.builder()
+        var responseEvent = AEHttpResponseEvent.builder()
                 .fullUrl("https://example.com/api/users?active=true")
                 .build();
         var responseContext = EventContext.of(responseEvent);
@@ -97,7 +97,7 @@ class HttpFullPathConditionTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .fullUrl("https://example.com/api/users")
                 .build();
 
@@ -106,7 +106,7 @@ class HttpFullPathConditionTest extends AutomationEngineTest {
 
         assertThat(automation.allConditionsMet(context)).isTrue();
 
-        var responseEvent = HttpResponseEvent.builder()
+        var responseEvent = AEHttpResponseEvent.builder()
                 .fullUrl("https://example.com/api/users")
                 .build();
         var responseContext = EventContext.of(responseEvent);
@@ -131,7 +131,7 @@ class HttpFullPathConditionTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .fullUrl("https://example.com/api/users/")
                 .build();
 
@@ -140,7 +140,7 @@ class HttpFullPathConditionTest extends AutomationEngineTest {
 
         assertThat(automation.allConditionsMet(context)).isFalse();
 
-        var responseEvent = HttpResponseEvent.builder()
+        var responseEvent = AEHttpResponseEvent.builder()
                 .fullUrl("https://example.com/api/users/")
                 .build();
         var responseContext = EventContext.of(responseEvent);
@@ -165,7 +165,7 @@ class HttpFullPathConditionTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .fullUrl("https://example.com/api/products/123")
                 .build();
 
@@ -174,7 +174,7 @@ class HttpFullPathConditionTest extends AutomationEngineTest {
 
         assertThat(automation.allConditionsMet(context)).isTrue();
 
-        var responseEvent = HttpResponseEvent.builder()
+        var responseEvent = AEHttpResponseEvent.builder()
                 .fullUrl("https://example.com/api/products/123")
                 .build();
         var responseContext = EventContext.of(responseEvent);
@@ -199,7 +199,7 @@ class HttpFullPathConditionTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .fullUrl("https://example.com/api/orders/789")
                 .build();
 
@@ -208,7 +208,7 @@ class HttpFullPathConditionTest extends AutomationEngineTest {
 
         assertThat(automation.allConditionsMet(context)).isTrue();
 
-        var responseEvent = HttpResponseEvent.builder()
+        var responseEvent = AEHttpResponseEvent.builder()
                 .fullUrl("https://example.com/api/orders/789")
                 .build();
         var responseContext = EventContext.of(responseEvent);
@@ -233,7 +233,7 @@ class HttpFullPathConditionTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .fullUrl(null)
                 .build();
 
@@ -242,7 +242,7 @@ class HttpFullPathConditionTest extends AutomationEngineTest {
 
         assertThat(automation.allConditionsMet(context)).isFalse(); // Should not crash
 
-        var responseEvent = HttpResponseEvent.builder()
+        var responseEvent = AEHttpResponseEvent.builder()
                 .fullUrl(null)
                 .build();
         var responseContext = EventContext.of(responseEvent);
@@ -269,7 +269,7 @@ class HttpFullPathConditionTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .fullUrl("https://example.com/api/two")
                 .build();
 
@@ -278,7 +278,7 @@ class HttpFullPathConditionTest extends AutomationEngineTest {
 
         assertThat(automation.allConditionsMet(context)).isTrue();
 
-        var responseEvent = HttpResponseEvent.builder()
+        var responseEvent = AEHttpResponseEvent.builder()
                 .fullUrl("https://example.com/api/two")
                 .build();
         var responseContext = EventContext.of(responseEvent);
@@ -305,7 +305,7 @@ class HttpFullPathConditionTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .fullUrl("https://example.com/api/block")
                 .build();
 
@@ -314,7 +314,7 @@ class HttpFullPathConditionTest extends AutomationEngineTest {
 
         assertThat(automation.allConditionsMet(context)).isFalse();
 
-        var responseEvent = HttpResponseEvent.builder()
+        var responseEvent = AEHttpResponseEvent.builder()
                 .fullUrl("https://example.com/api/block")
                 .build();
         var responseContext = EventContext.of(responseEvent);
@@ -340,7 +340,7 @@ class HttpFullPathConditionTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .fullUrl("https://example.com/api/deny")
                 .build();
 
@@ -349,7 +349,7 @@ class HttpFullPathConditionTest extends AutomationEngineTest {
 
         assertThat(automation.allConditionsMet(context)).isFalse();
 
-        var responseEvent = HttpResponseEvent.builder()
+        var responseEvent = AEHttpResponseEvent.builder()
                 .fullUrl("https://example.com/api/deny")
                 .build();
         var responseContext = EventContext.of(responseEvent);
@@ -374,7 +374,7 @@ class HttpFullPathConditionTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .fullUrl("https://example.com/api/ping")
                 .build();
 
@@ -383,7 +383,7 @@ class HttpFullPathConditionTest extends AutomationEngineTest {
 
         assertThat(automation.allConditionsMet(context)).isTrue();
 
-        var responseEvent = HttpResponseEvent.builder()
+        var responseEvent = AEHttpResponseEvent.builder()
                 .fullUrl("https://example.com/api/ping")
                 .build();
         var responseContext = EventContext.of(responseEvent);
@@ -408,7 +408,7 @@ class HttpFullPathConditionTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .fullUrl(null)
                 .build();
 
@@ -417,7 +417,7 @@ class HttpFullPathConditionTest extends AutomationEngineTest {
 
         assertThat(automation.allConditionsMet(context)).isFalse();
 
-        var responseEvent = HttpResponseEvent.builder()
+        var responseEvent = AEHttpResponseEvent.builder()
                 .fullUrl(null)
                 .build();
         var responseContext = EventContext.of(responseEvent);
@@ -442,7 +442,7 @@ class HttpFullPathConditionTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .fullUrl(null)
                 .build();
 
@@ -451,7 +451,7 @@ class HttpFullPathConditionTest extends AutomationEngineTest {
 
         assertThat(automation.allConditionsMet(context)).isTrue();
 
-        var responseEvent = HttpResponseEvent.builder()
+        var responseEvent = AEHttpResponseEvent.builder()
                 .fullUrl(null)
                 .build();
         var responseContext = EventContext.of(responseEvent);

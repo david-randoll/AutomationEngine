@@ -1,7 +1,8 @@
 package com.davidrandoll.automation.engine.http.extensions;
 
-import com.davidrandoll.automation.engine.http.event.HttpRequestEvent;
-import com.davidrandoll.automation.engine.http.event.HttpResponseEvent;
+import com.davidrandoll.spring_web_captor.event.HttpRequestEvent;
+import com.davidrandoll.spring_web_captor.event.HttpResponseEvent;
+import com.davidrandoll.spring_web_captor.extensions.IHttpEventExtension;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

@@ -2,7 +2,7 @@ package com.davidrandoll.automation.engine.http.modules.conditions.http_response
 
 import com.davidrandoll.automation.engine.core.events.EventContext;
 import com.davidrandoll.automation.engine.http.AutomationEngineTest;
-import com.davidrandoll.automation.engine.http.event.HttpResponseEvent;
+import com.davidrandoll.automation.engine.http.events.AEHttpResponseEvent;
 import org.junit.jupiter.api.Test;
 
 import static com.davidrandoll.automation.engine.http.JsonTestUtils.json;
@@ -36,7 +36,7 @@ class HttpResponseBodyConditionTest extends AutomationEngineTest {
                 }
                 """);
 
-        var event = HttpResponseEvent.builder().responseBody(responseBody).build();
+        var event = AEHttpResponseEvent.builder().responseBody(responseBody).build();
         var context = EventContext.of(event);
         engine.publishEvent(context);
 
@@ -67,7 +67,7 @@ class HttpResponseBodyConditionTest extends AutomationEngineTest {
                 }
                 """);
 
-        var event = HttpResponseEvent.builder().responseBody(responseBody).build();
+        var event = AEHttpResponseEvent.builder().responseBody(responseBody).build();
         var context = EventContext.of(event);
         engine.publishEvent(context);
 
@@ -98,7 +98,7 @@ class HttpResponseBodyConditionTest extends AutomationEngineTest {
                 }
                 """);
 
-        var event = HttpResponseEvent.builder().responseBody(responseBody).build();
+        var event = AEHttpResponseEvent.builder().responseBody(responseBody).build();
         var context = EventContext.of(event);
         engine.publishEvent(context);
 
@@ -129,7 +129,7 @@ class HttpResponseBodyConditionTest extends AutomationEngineTest {
                 }
                 """);
 
-        var event = HttpResponseEvent.builder().responseBody(responseBody).build();
+        var event = AEHttpResponseEvent.builder().responseBody(responseBody).build();
         var context = EventContext.of(event);
         engine.publishEvent(context);
 
@@ -164,7 +164,7 @@ class HttpResponseBodyConditionTest extends AutomationEngineTest {
                 }
                 """);
 
-        var event = HttpResponseEvent.builder().responseBody(responseBody).build();
+        var event = AEHttpResponseEvent.builder().responseBody(responseBody).build();
         var context = EventContext.of(event);
         engine.publishEvent(context);
 
@@ -196,7 +196,7 @@ class HttpResponseBodyConditionTest extends AutomationEngineTest {
                 }
                 """);
 
-        var event = HttpResponseEvent.builder().responseBody(responseBody).build();
+        var event = AEHttpResponseEvent.builder().responseBody(responseBody).build();
         var context = EventContext.of(event);
         engine.publishEvent(context);
 
@@ -229,7 +229,7 @@ class HttpResponseBodyConditionTest extends AutomationEngineTest {
                 }
                 """);
 
-        var event = HttpResponseEvent.builder().responseBody(responseBody).build();
+        var event = AEHttpResponseEvent.builder().responseBody(responseBody).build();
         var context = EventContext.of(event);
         engine.publishEvent(context);
 
@@ -262,7 +262,7 @@ class HttpResponseBodyConditionTest extends AutomationEngineTest {
                 }
                 """);
 
-        var event = HttpResponseEvent.builder().responseBody(responseBody).build();
+        var event = AEHttpResponseEvent.builder().responseBody(responseBody).build();
         var context = EventContext.of(event);
         engine.publishEvent(context);
 
@@ -303,7 +303,7 @@ class HttpResponseBodyConditionTest extends AutomationEngineTest {
                 }
                 """);
 
-        var event = HttpResponseEvent.builder().responseBody(responseBody).build();
+        var event = AEHttpResponseEvent.builder().responseBody(responseBody).build();
         var context = EventContext.of(event);
         engine.publishEvent(context);
 
@@ -336,7 +336,7 @@ class HttpResponseBodyConditionTest extends AutomationEngineTest {
                 }
                 """);
 
-        var event = HttpResponseEvent.builder().responseBody(responseBody).build();
+        var event = AEHttpResponseEvent.builder().responseBody(responseBody).build();
         var context = EventContext.of(event);
         engine.publishEvent(context);
 
@@ -367,7 +367,7 @@ class HttpResponseBodyConditionTest extends AutomationEngineTest {
                 }
                 """);
 
-        var event = HttpResponseEvent.builder().responseBody(responseBody).build();
+        var event = AEHttpResponseEvent.builder().responseBody(responseBody).build();
         var context = EventContext.of(event);
         engine.publishEvent(context);
 
@@ -398,7 +398,7 @@ class HttpResponseBodyConditionTest extends AutomationEngineTest {
                 }
                 """);
 
-        var event = HttpResponseEvent.builder().responseBody(responseBody).build();
+        var event = AEHttpResponseEvent.builder().responseBody(responseBody).build();
         var context = EventContext.of(event);
         engine.publishEvent(context);
 
@@ -425,7 +425,7 @@ class HttpResponseBodyConditionTest extends AutomationEngineTest {
 
         var responseBody = json("{}");
 
-        var event = HttpResponseEvent.builder().responseBody(responseBody).build();
+        var event = AEHttpResponseEvent.builder().responseBody(responseBody).build();
         var context = EventContext.of(event);
         engine.publishEvent(context);
 
@@ -452,7 +452,7 @@ class HttpResponseBodyConditionTest extends AutomationEngineTest {
 
         var responseBody = json("{}");
 
-        var event = HttpResponseEvent.builder().responseBody(responseBody).build();
+        var event = AEHttpResponseEvent.builder().responseBody(responseBody).build();
         var context = EventContext.of(event);
         engine.publishEvent(context);
 
@@ -477,7 +477,7 @@ class HttpResponseBodyConditionTest extends AutomationEngineTest {
 
         var automation = factory.createAutomation("yaml", yaml);
 
-        var event = HttpResponseEvent.builder().responseBody(null).build();
+        var event = AEHttpResponseEvent.builder().responseBody(null).build();
         var context = EventContext.of(event);
         engine.publishEvent(context);
 

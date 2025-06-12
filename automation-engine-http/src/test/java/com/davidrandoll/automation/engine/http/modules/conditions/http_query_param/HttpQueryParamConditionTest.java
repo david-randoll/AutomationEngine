@@ -2,7 +2,7 @@ package com.davidrandoll.automation.engine.http.modules.conditions.http_query_pa
 
 import com.davidrandoll.automation.engine.core.events.EventContext;
 import com.davidrandoll.automation.engine.http.AutomationEngineTest;
-import com.davidrandoll.automation.engine.http.event.HttpRequestEvent;
+import com.davidrandoll.automation.engine.http.events.AEHttpRequestEvent;
 import org.junit.jupiter.api.Test;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -34,7 +34,7 @@ class HttpQueryParamConditionTest extends AutomationEngineTest {
 
         MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<>();
         queryParams.add("version", "v1");
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .queryParams(queryParams)
                 .build();
 
@@ -68,7 +68,7 @@ class HttpQueryParamConditionTest extends AutomationEngineTest {
         MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<>();
         queryParams.add("env", "prod");
         queryParams.add("debug", "true");
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .queryParams(queryParams)
                 .build();
 
@@ -99,7 +99,7 @@ class HttpQueryParamConditionTest extends AutomationEngineTest {
 
         MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<>();
         queryParams.add("mode", "safe");
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .queryParams(queryParams)
                 .build();
 
@@ -136,7 +136,7 @@ class HttpQueryParamConditionTest extends AutomationEngineTest {
         queryParams.add("token", "abc-12345");
         queryParams.add("version", "v1");
         queryParams.add("user", "admin");
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .queryParams(queryParams)
                 .build();
 
@@ -167,7 +167,7 @@ class HttpQueryParamConditionTest extends AutomationEngineTest {
 
         MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<>();
         queryParams.add("testMode", "true");
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .queryParams(queryParams)
                 .build();
 
@@ -197,7 +197,7 @@ class HttpQueryParamConditionTest extends AutomationEngineTest {
         engine.register(automation);
 
         MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<>();
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .queryParams(queryParams) // No debug param
                 .build();
 
@@ -231,7 +231,7 @@ class HttpQueryParamConditionTest extends AutomationEngineTest {
         MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<>();
         queryParams.add("emptyKey", "");
         queryParams.add("CASE_KEY", "VaLuE");
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .queryParams(queryParams)
                 .build();
 
@@ -264,7 +264,7 @@ class HttpQueryParamConditionTest extends AutomationEngineTest {
         queryParams.add("category", "movies");
         queryParams.add("category", "books");
         queryParams.add("category", "games");
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .queryParams(queryParams)
                 .build();
 
@@ -295,7 +295,7 @@ class HttpQueryParamConditionTest extends AutomationEngineTest {
 
         MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<>();
         queryParams.add("status", "");
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .queryParams(queryParams)
                 .build();
 
@@ -326,7 +326,7 @@ class HttpQueryParamConditionTest extends AutomationEngineTest {
 
         MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<>();
         queryParams.add("code", "123-AB*");
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .queryParams(queryParams)
                 .build();
 
@@ -357,7 +357,7 @@ class HttpQueryParamConditionTest extends AutomationEngineTest {
 
         MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<>();
         queryParams.add("expected", "yes");
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .queryParams(queryParams)
                 .build();
 
@@ -391,7 +391,7 @@ class HttpQueryParamConditionTest extends AutomationEngineTest {
         MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<>();
         queryParams.add("api_key", "123");
         queryParams.add("user-id", "abc");
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .queryParams(queryParams)
                 .build();
 
@@ -422,7 +422,7 @@ class HttpQueryParamConditionTest extends AutomationEngineTest {
 
         MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<>();
         queryParams.add("Mode", "Debug");
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .queryParams(queryParams)
                 .build();
 

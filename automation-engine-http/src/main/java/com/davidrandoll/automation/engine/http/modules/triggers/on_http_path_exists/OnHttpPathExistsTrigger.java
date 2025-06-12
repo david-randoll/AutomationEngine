@@ -1,7 +1,7 @@
 package com.davidrandoll.automation.engine.http.modules.triggers.on_http_path_exists;
 
 import com.davidrandoll.automation.engine.core.events.EventContext;
-import com.davidrandoll.automation.engine.http.event.HttpRequestEvent;
+import com.davidrandoll.automation.engine.http.events.AEHttpRequestEvent;
 import com.davidrandoll.automation.engine.spi.PluggableTrigger;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -14,7 +14,7 @@ import org.springframework.util.ObjectUtils;
 public class OnHttpPathExistsTrigger extends PluggableTrigger<OnHttpPathExistsTriggerContext> {
     @Override
     public boolean isTriggered(EventContext ec, OnHttpPathExistsTriggerContext tc) {
-        if (!(ec.getEvent() instanceof HttpRequestEvent event)) return false;
+        if (!(ec.getEvent() instanceof AEHttpRequestEvent event)) return false;
         if (event.getPath() == null) return false;
 
         // was the endpoint found?

@@ -3,9 +3,9 @@ package com.davidrandoll.automation.engine.http.modules.conditions.http_method;
 import com.davidrandoll.automation.engine.core.events.EventContext;
 import com.davidrandoll.automation.engine.core.events.IEvent;
 import com.davidrandoll.automation.engine.http.AutomationEngineTest;
-import com.davidrandoll.automation.engine.http.event.HttpMethodEnum;
-import com.davidrandoll.automation.engine.http.event.HttpRequestEvent;
-import com.davidrandoll.automation.engine.http.event.HttpResponseEvent;
+import com.davidrandoll.automation.engine.http.events.AEHttpRequestEvent;
+import com.davidrandoll.automation.engine.http.events.AEHttpResponseEvent;
+import com.davidrandoll.spring_web_captor.event.HttpMethodEnum;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -31,7 +31,7 @@ class HttpMethodConditionTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .method(HttpMethodEnum.GET)
                 .build();
 
@@ -40,7 +40,7 @@ class HttpMethodConditionTest extends AutomationEngineTest {
 
         assertThat(automation.allConditionsMet(context)).isTrue();
 
-        var responseEvent = HttpResponseEvent.builder()
+        var responseEvent = AEHttpResponseEvent.builder()
                 .method(HttpMethodEnum.GET)
                 .build();
         var responseContext = EventContext.of(responseEvent);
@@ -65,7 +65,7 @@ class HttpMethodConditionTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .method(HttpMethodEnum.GET)
                 .build();
 
@@ -74,7 +74,7 @@ class HttpMethodConditionTest extends AutomationEngineTest {
 
         assertThat(automation.allConditionsMet(context)).isFalse();
 
-        var responseEvent = HttpResponseEvent.builder()
+        var responseEvent = AEHttpResponseEvent.builder()
                 .method(HttpMethodEnum.GET)
                 .build();
         var responseContext = EventContext.of(responseEvent);
@@ -99,7 +99,7 @@ class HttpMethodConditionTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .method(null)
                 .build();
 
@@ -108,7 +108,7 @@ class HttpMethodConditionTest extends AutomationEngineTest {
 
         assertThat(automation.allConditionsMet(context)).isFalse();
 
-        var responseEvent = HttpResponseEvent.builder()
+        var responseEvent = AEHttpResponseEvent.builder()
                 .method(null)
                 .build();
         var responseContext = EventContext.of(responseEvent);
@@ -130,13 +130,13 @@ class HttpMethodConditionTest extends AutomationEngineTest {
                     message: method is GET
                 """;
 
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .method(HttpMethodEnum.GET)
                 .build();
 
         assertSatisfied(yaml, event);
 
-        var responseEvent = HttpResponseEvent.builder()
+        var responseEvent = AEHttpResponseEvent.builder()
                 .method(HttpMethodEnum.GET)
                 .build();
 
@@ -158,13 +158,13 @@ class HttpMethodConditionTest extends AutomationEngineTest {
                     message: method is not POST
                 """;
 
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .method(HttpMethodEnum.GET)
                 .build();
 
         assertSatisfied(yaml, event);
 
-        var responseEvent = HttpResponseEvent.builder()
+        var responseEvent = AEHttpResponseEvent.builder()
                 .method(HttpMethodEnum.GET)
                 .build();
         assertSatisfied(yaml, responseEvent);
@@ -184,13 +184,13 @@ class HttpMethodConditionTest extends AutomationEngineTest {
                     message: method in allowed list
                 """;
 
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .method(HttpMethodEnum.POST)
                 .build();
 
         assertSatisfied(yaml, event);
 
-        var responseEvent = HttpResponseEvent.builder()
+        var responseEvent = AEHttpResponseEvent.builder()
                 .method(HttpMethodEnum.POST)
                 .build();
         assertSatisfied(yaml, responseEvent);
@@ -210,13 +210,13 @@ class HttpMethodConditionTest extends AutomationEngineTest {
                     message: method is not PUT/DELETE
                 """;
 
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .method(HttpMethodEnum.GET)
                 .build();
 
         assertSatisfied(yaml, event);
 
-        var responseEvent = HttpResponseEvent.builder()
+        var responseEvent = AEHttpResponseEvent.builder()
                 .method(HttpMethodEnum.GET)
                 .build();
         assertSatisfied(yaml, responseEvent);
@@ -236,13 +236,13 @@ class HttpMethodConditionTest extends AutomationEngineTest {
                     message: method matches regex
                 """;
 
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .method(HttpMethodEnum.GET)
                 .build();
 
         assertSatisfied(yaml, event);
 
-        var responseEvent = HttpResponseEvent.builder()
+        var responseEvent = AEHttpResponseEvent.builder()
                 .method(HttpMethodEnum.GET)
                 .build();
         assertSatisfied(yaml, responseEvent);
@@ -262,13 +262,13 @@ class HttpMethodConditionTest extends AutomationEngineTest {
                     message: method matches wildcard
                 """;
 
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .method(HttpMethodEnum.GET)
                 .build();
 
         assertSatisfied(yaml, event);
 
-        var responseEvent = HttpResponseEvent.builder()
+        var responseEvent = AEHttpResponseEvent.builder()
                 .method(HttpMethodEnum.GET)
                 .build();
         assertSatisfied(yaml, responseEvent);
@@ -288,13 +288,13 @@ class HttpMethodConditionTest extends AutomationEngineTest {
                     message: method exists
                 """;
 
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .method(HttpMethodEnum.GET)
                 .build();
 
         assertSatisfied(yaml, event);
 
-        var responseEvent = HttpResponseEvent.builder()
+        var responseEvent = AEHttpResponseEvent.builder()
                 .method(HttpMethodEnum.GET)
                 .build();
         assertSatisfied(yaml, responseEvent);
@@ -314,13 +314,13 @@ class HttpMethodConditionTest extends AutomationEngineTest {
                     message: shouldn't trigger
                 """;
 
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .method(null)
                 .build();
 
         assertNotSatisfied(yaml, event);
 
-        var responseEvent = HttpResponseEvent.builder()
+        var responseEvent = AEHttpResponseEvent.builder()
                 .method(null)
                 .build();
         assertNotSatisfied(yaml, responseEvent);

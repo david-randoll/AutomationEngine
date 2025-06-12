@@ -3,7 +3,7 @@ package com.davidrandoll.automation.engine.http.modules.conditions.http_request_
 import com.davidrandoll.automation.engine.core.events.EventContext;
 import com.davidrandoll.automation.engine.http.AutomationEngineTest;
 import com.davidrandoll.automation.engine.http.JsonTestUtils;
-import com.davidrandoll.automation.engine.http.event.HttpRequestEvent;
+import com.davidrandoll.automation.engine.http.events.AEHttpRequestEvent;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -37,7 +37,7 @@ class HttpRequestBodyConditionTest extends AutomationEngineTest {
                 }
                 """);
 
-        var event = HttpRequestEvent.builder().requestBody(requestBody).build();
+        var event = AEHttpRequestEvent.builder().requestBody(requestBody).build();
         var context = EventContext.of(event);
         engine.publishEvent(context);
 
@@ -72,7 +72,7 @@ class HttpRequestBodyConditionTest extends AutomationEngineTest {
                 }
                 """);
 
-        var event = HttpRequestEvent.builder().requestBody(requestBody).build();
+        var event = AEHttpRequestEvent.builder().requestBody(requestBody).build();
         var context = EventContext.of(event);
         engine.publishEvent(context);
 
@@ -104,7 +104,7 @@ class HttpRequestBodyConditionTest extends AutomationEngineTest {
                 }
                 """);
 
-        var event = HttpRequestEvent.builder().requestBody(requestBody).build();
+        var event = AEHttpRequestEvent.builder().requestBody(requestBody).build();
         var context = EventContext.of(event);
         engine.publishEvent(context);
 
@@ -136,7 +136,7 @@ class HttpRequestBodyConditionTest extends AutomationEngineTest {
                 }
                 """);
 
-        var event = HttpRequestEvent.builder().requestBody(requestBody).build();
+        var event = AEHttpRequestEvent.builder().requestBody(requestBody).build();
         var context = EventContext.of(event);
         engine.publishEvent(context);
 
@@ -167,7 +167,7 @@ class HttpRequestBodyConditionTest extends AutomationEngineTest {
                 }
                 """);
 
-        var event = HttpRequestEvent.builder().requestBody(requestBody).build();
+        var event = AEHttpRequestEvent.builder().requestBody(requestBody).build();
         var context = EventContext.of(event);
         engine.publishEvent(context);
 
@@ -199,7 +199,7 @@ class HttpRequestBodyConditionTest extends AutomationEngineTest {
                 }
                 """);
 
-        var event = HttpRequestEvent.builder().requestBody(requestBody).build();
+        var event = AEHttpRequestEvent.builder().requestBody(requestBody).build();
         var context = EventContext.of(event);
         engine.publishEvent(context);
 
@@ -231,7 +231,7 @@ class HttpRequestBodyConditionTest extends AutomationEngineTest {
                 }
                 """);
 
-        var event = HttpRequestEvent.builder().requestBody(requestBody).build();
+        var event = AEHttpRequestEvent.builder().requestBody(requestBody).build();
         var context = EventContext.of(event);
         engine.publishEvent(context);
 
@@ -263,7 +263,7 @@ class HttpRequestBodyConditionTest extends AutomationEngineTest {
                 }
                 """);
 
-        var event = HttpRequestEvent.builder().requestBody(requestBody).build();
+        var event = AEHttpRequestEvent.builder().requestBody(requestBody).build();
         var context = EventContext.of(event);
         engine.publishEvent(context);
 
@@ -295,7 +295,7 @@ class HttpRequestBodyConditionTest extends AutomationEngineTest {
                 }
                 """);
 
-        var event = HttpRequestEvent.builder().requestBody(requestBody).build();
+        var event = AEHttpRequestEvent.builder().requestBody(requestBody).build();
         var context = EventContext.of(event);
         engine.publishEvent(context);
 
@@ -330,7 +330,7 @@ class HttpRequestBodyConditionTest extends AutomationEngineTest {
                 }
                 """);
 
-        var event = HttpRequestEvent.builder().requestBody(requestBody).build();
+        var event = AEHttpRequestEvent.builder().requestBody(requestBody).build();
         var context = EventContext.of(event);
         engine.publishEvent(context);
 
@@ -362,7 +362,7 @@ class HttpRequestBodyConditionTest extends AutomationEngineTest {
                 }
                 """);
 
-        var event = HttpRequestEvent.builder().requestBody(requestBody).build();
+        var event = AEHttpRequestEvent.builder().requestBody(requestBody).build();
         var context = EventContext.of(event);
         engine.publishEvent(context);
 
@@ -394,7 +394,7 @@ class HttpRequestBodyConditionTest extends AutomationEngineTest {
                 }
                 """);
 
-        var event = HttpRequestEvent.builder().requestBody(requestBody).build();
+        var event = AEHttpRequestEvent.builder().requestBody(requestBody).build();
         var context = EventContext.of(event);
         engine.publishEvent(context);
 
@@ -426,7 +426,7 @@ class HttpRequestBodyConditionTest extends AutomationEngineTest {
                 }
                 """);
 
-        var event = HttpRequestEvent.builder().requestBody(requestBody).build();
+        var event = AEHttpRequestEvent.builder().requestBody(requestBody).build();
         var context = EventContext.of(event);
         engine.publishEvent(context);
 
@@ -461,7 +461,7 @@ class HttpRequestBodyConditionTest extends AutomationEngineTest {
                 }
                 """);
 
-        var event = HttpRequestEvent.builder().requestBody(requestBody).build();
+        var event = AEHttpRequestEvent.builder().requestBody(requestBody).build();
         var context = EventContext.of(event);
         engine.publishEvent(context);
 
@@ -492,7 +492,7 @@ class HttpRequestBodyConditionTest extends AutomationEngineTest {
                 }
                 """);
 
-        var event = HttpRequestEvent.builder().requestBody(requestBody).build();
+        var event = AEHttpRequestEvent.builder().requestBody(requestBody).build();
         var context = EventContext.of(event);
         engine.publishEvent(context);
 
@@ -526,7 +526,7 @@ class HttpRequestBodyConditionTest extends AutomationEngineTest {
                 }
                 """);
 
-        var event = HttpRequestEvent.builder().requestBody(requestBody).build();
+        var event = AEHttpRequestEvent.builder().requestBody(requestBody).build();
         var context = EventContext.of(event);
         engine.publishEvent(context);
 
@@ -563,7 +563,7 @@ class HttpRequestBodyConditionTest extends AutomationEngineTest {
                 }
                 """);
 
-        var event = HttpRequestEvent.builder().requestBody(requestBody).build();
+        var event = AEHttpRequestEvent.builder().requestBody(requestBody).build();
         var context = EventContext.of(event);
         engine.publishEvent(context);
 
@@ -598,7 +598,7 @@ class HttpRequestBodyConditionTest extends AutomationEngineTest {
                 }
                 """);
 
-        var event = HttpRequestEvent.builder().requestBody(requestBody).build();
+        var event = AEHttpRequestEvent.builder().requestBody(requestBody).build();
         var context = EventContext.of(event);
         engine.publishEvent(context);
 
@@ -633,7 +633,7 @@ class HttpRequestBodyConditionTest extends AutomationEngineTest {
                 }
                 """);
 
-        var event = HttpRequestEvent.builder().requestBody(requestBody).build();
+        var event = AEHttpRequestEvent.builder().requestBody(requestBody).build();
         var context = EventContext.of(event);
         engine.publishEvent(context);
 
@@ -668,7 +668,7 @@ class HttpRequestBodyConditionTest extends AutomationEngineTest {
                 }
                 """);
 
-        var event = HttpRequestEvent.builder().requestBody(requestBody).build();
+        var event = AEHttpRequestEvent.builder().requestBody(requestBody).build();
         var context = EventContext.of(event);
         engine.publishEvent(context);
 
@@ -703,7 +703,7 @@ class HttpRequestBodyConditionTest extends AutomationEngineTest {
                 }
                 """);
 
-        var event = HttpRequestEvent.builder().requestBody(requestBody).build();
+        var event = AEHttpRequestEvent.builder().requestBody(requestBody).build();
         var context = EventContext.of(event);
         engine.publishEvent(context);
 
@@ -739,7 +739,7 @@ class HttpRequestBodyConditionTest extends AutomationEngineTest {
                 }
                 """);
 
-        var event = HttpRequestEvent.builder().requestBody(requestBody).build();
+        var event = AEHttpRequestEvent.builder().requestBody(requestBody).build();
         var context = EventContext.of(event);
         engine.publishEvent(context);
 
@@ -775,7 +775,7 @@ class HttpRequestBodyConditionTest extends AutomationEngineTest {
                 }
                 """);
 
-        var event = HttpRequestEvent.builder().requestBody(requestBody).build();
+        var event = AEHttpRequestEvent.builder().requestBody(requestBody).build();
         var context = EventContext.of(event);
         engine.publishEvent(context);
 
@@ -810,7 +810,7 @@ class HttpRequestBodyConditionTest extends AutomationEngineTest {
                 }
                 """);
 
-        var event = HttpRequestEvent.builder().requestBody(requestBody).build();
+        var event = AEHttpRequestEvent.builder().requestBody(requestBody).build();
         var context = EventContext.of(event);
         engine.publishEvent(context);
 

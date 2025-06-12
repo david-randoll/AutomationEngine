@@ -2,7 +2,7 @@ package com.davidrandoll.automation.engine.http.modules.triggers.on_slow_http_re
 
 import com.davidrandoll.automation.engine.core.events.EventContext;
 import com.davidrandoll.automation.engine.http.AutomationEngineTest;
-import com.davidrandoll.automation.engine.http.event.HttpResponseEvent;
+import com.davidrandoll.automation.engine.http.events.AEHttpResponseEvent;
 import com.davidrandoll.automation.engine.modules.events.time_based.TimeBasedEvent;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -32,7 +32,7 @@ class OnSlowHttpRequestTriggerTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .responseStatus(HttpStatus.OK)
                 .build();
 
@@ -59,7 +59,7 @@ class OnSlowHttpRequestTriggerTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .responseStatus(HttpStatus.OK)
                 .build();
 
@@ -86,7 +86,7 @@ class OnSlowHttpRequestTriggerTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder().build();
+        var event = AEHttpResponseEvent.builder().build();
         event.addAdditionalData("duration", Duration.ofNanos(2_000_000_000)); // 2s
 
         var context = EventContext.of(event);
@@ -110,7 +110,7 @@ class OnSlowHttpRequestTriggerTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder().build(); // no duration
+        var event = AEHttpResponseEvent.builder().build(); // no duration
 
         var context = EventContext.of(event);
 
@@ -124,7 +124,7 @@ class OnSlowHttpRequestTriggerTest extends AutomationEngineTest {
         var trigger = new OnSlowHttpRequestTrigger();
 
         var context = new OnSlowHttpRequestContext(); // no duration set
-        var event = HttpResponseEvent.builder().build();
+        var event = AEHttpResponseEvent.builder().build();
         event.addAdditionalData("duration", Duration.ofSeconds(5));
 
         var ec = EventContext.of(event);
@@ -135,7 +135,7 @@ class OnSlowHttpRequestTriggerTest extends AutomationEngineTest {
     }
 
     @Test
-    void testShouldNotTriggerOnNonHttpResponseEvent() {
+    void testShouldNotTriggerOnNonAEHttpResponseEvent() {
         var trigger = new OnSlowHttpRequestTrigger();
         var context = new OnSlowHttpRequestContext();
         context.setDuration(Duration.ofSeconds(1));

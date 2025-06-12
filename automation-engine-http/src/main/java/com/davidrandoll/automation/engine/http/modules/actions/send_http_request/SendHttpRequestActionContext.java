@@ -1,8 +1,8 @@
 package com.davidrandoll.automation.engine.http.modules.actions.send_http_request;
 
 import com.davidrandoll.automation.engine.core.actions.IActionContext;
-import com.davidrandoll.automation.engine.http.event.HttpRequestEvent;
-import com.davidrandoll.automation.engine.http.event.HttpResponseEvent;
+import com.davidrandoll.automation.engine.http.events.AEHttpRequestEvent;
+import com.davidrandoll.automation.engine.http.events.AEHttpResponseEvent;
 import com.davidrandoll.automation.engine.http.jackson.flexible_multi_value_map.FlexibleMultiValueMap;
 import com.davidrandoll.automation.engine.modules.triggers.always_true.AlwaysTrueTrigger;
 import com.fasterxml.jackson.annotation.JsonAlias;
@@ -37,11 +37,11 @@ public class SendHttpRequestActionContext implements IActionContext {
     private String storeToVariable;
 
     /**
-     * If true, the {@link SendHttpRequestAction#canExecute} will process any {@link HttpRequestEvent} or {@link HttpResponseEvent}.
+     * If true, the {@link SendHttpRequestAction#canExecute} will process any {@link AEHttpRequestEvent} or {@link AEHttpResponseEvent}.
      * Without this, there could be an infinite loop of events.
      * <br>
      * For example, an automation with an {@link AlwaysTrueTrigger} will always cause the automation to be triggered.
-     * This means that when the {@link SendHttpRequestAction#doExecute} is called, it will publish an {@link HttpRequestEvent} or {@link HttpResponseEvent}.
+     * This means that when the {@link SendHttpRequestAction#doExecute} is called, it will publish an {@link AEHttpRequestEvent} or {@link AEHttpResponseEvent}.
      * And this will cause the automation to be triggered again which cause the {@link SendHttpRequestAction#doExecute} to be called again.
      */
     private boolean allowHttpEvent = false;

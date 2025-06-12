@@ -1384,7 +1384,7 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
 
         var response = (JsonNode) event.getMetadata("nonExisting");
         var message = response.get("message");
-        assertThat(message.asText()).contains("No endpoint PATCH /sendHttpRequest/notFoundEndpoint.");
+        assertThat(message.asText()).contains("No static resource sendHttpRequest/notFoundEndpoint.");
     }
 
     @Test
@@ -1638,7 +1638,7 @@ class SendHttpRequestActionTest extends AutomationEngineTest {
 
         var deleteResponse = (JsonNode) event.getMetadata("deleteResponse");
         var message = deleteResponse.get("message");
-        assertThat(message.asText()).isEqualTo("No endpoint DELETE /sendHttpRequest/.");
+        assertThat(message.asText()).isEqualTo("No static resource sendHttpRequest.");
     }
 
     @Test

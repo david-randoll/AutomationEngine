@@ -2,7 +2,7 @@ package com.davidrandoll.automation.engine.http.modules.conditions.http_error_de
 
 import com.davidrandoll.automation.engine.core.events.EventContext;
 import com.davidrandoll.automation.engine.http.AutomationEngineTest;
-import com.davidrandoll.automation.engine.http.event.HttpResponseEvent;
+import com.davidrandoll.automation.engine.http.events.AEHttpResponseEvent;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
@@ -30,7 +30,7 @@ class HttpErrorDetailConditionTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .errorDetail(Map.of("message", "Invalid input"))
                 .build();
 
@@ -59,7 +59,7 @@ class HttpErrorDetailConditionTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .errorDetail(Map.of("message", "Something else"))
                 .build();
 
@@ -88,7 +88,7 @@ class HttpErrorDetailConditionTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .errorDetail(Map.of("message", "Missing token"))
                 .build();
 
@@ -117,7 +117,7 @@ class HttpErrorDetailConditionTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .errorDetail(Map.of("type", "TOKEN_EXPIRED"))
                 .build();
 
@@ -146,7 +146,7 @@ class HttpErrorDetailConditionTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .errorDetail(Map.of("code", "MISSING_FIELD"))
                 .build();
 
@@ -175,7 +175,7 @@ class HttpErrorDetailConditionTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .errorDetail(Map.of("traceId", "abc123"))
                 .build();
 
@@ -204,7 +204,7 @@ class HttpErrorDetailConditionTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .errorDetail(Map.of("message", "Unauthorized"))
                 .build();
 

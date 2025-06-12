@@ -2,8 +2,8 @@ package com.davidrandoll.automation.engine.http.modules.triggers.on_http_path_ex
 
 import com.davidrandoll.automation.engine.core.events.EventContext;
 import com.davidrandoll.automation.engine.http.AutomationEngineTest;
-import com.davidrandoll.automation.engine.http.event.HttpMethodEnum;
-import com.davidrandoll.automation.engine.http.event.HttpRequestEvent;
+import com.davidrandoll.spring_web_captor.event.HttpMethodEnum;
+import com.davidrandoll.automation.engine.http.events.AEHttpRequestEvent;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -24,7 +24,7 @@ class OnHttpPathExistsTriggerTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .path("/api/user")
                 .endpointExists(true)
                 .build();
@@ -50,7 +50,7 @@ class OnHttpPathExistsTriggerTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .path("/api/user/123")
                 .endpointExists(true)
                 .build();
@@ -76,7 +76,7 @@ class OnHttpPathExistsTriggerTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .path("/api/missing")
                 .endpointExists(false)
                 .build();
@@ -102,7 +102,7 @@ class OnHttpPathExistsTriggerTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .path("/api/orders")
                 .endpointExists(true)
                 .build();
@@ -128,7 +128,7 @@ class OnHttpPathExistsTriggerTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .path(null)
                 .endpointExists(true)
                 .build();
@@ -153,7 +153,7 @@ class OnHttpPathExistsTriggerTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .path("/api/orders")
                 .endpointExists(true)
                 .build();
@@ -180,7 +180,7 @@ class OnHttpPathExistsTriggerTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .path("/api/hello")
                 .method(HttpMethodEnum.GET)
                 .endpointExists(true)
@@ -208,7 +208,7 @@ class OnHttpPathExistsTriggerTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .path("/api/item/123")
                 .method(HttpMethodEnum.POST)
                 .endpointExists(true)
@@ -235,7 +235,7 @@ class OnHttpPathExistsTriggerTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .path("/test")
                 .method(HttpMethodEnum.PUT)
                 .endpointExists(true)
@@ -262,7 +262,7 @@ class OnHttpPathExistsTriggerTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .path("/anything")
                 .method(HttpMethodEnum.DELETE)
                 .endpointExists(true)
@@ -290,7 +290,7 @@ class OnHttpPathExistsTriggerTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .path("/fail")
                 .method(HttpMethodEnum.GET)
                 .endpointExists(false) // <- this blocks the trigger
@@ -318,7 +318,7 @@ class OnHttpPathExistsTriggerTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .path("/only-get")
                 .method(HttpMethodEnum.POST)
                 .endpointExists(true)
@@ -346,7 +346,7 @@ class OnHttpPathExistsTriggerTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpRequestEvent.builder()
+        var event = AEHttpRequestEvent.builder()
                 .path("/unexpected")
                 .method(HttpMethodEnum.GET)
                 .endpointExists(true)

@@ -1,7 +1,7 @@
 package com.davidrandoll.automation.engine.http.modules.triggers.on_http_response;
 
 import com.davidrandoll.automation.engine.core.triggers.ITriggerContext;
-import com.davidrandoll.automation.engine.http.event.HttpMethodEnum;
+import com.davidrandoll.spring_web_captor.event.HttpMethodEnum;
 import com.davidrandoll.automation.engine.http.jackson.flexible_httpstatus.FlexibleHttpStatusList;
 import com.davidrandoll.automation.engine.http.jackson.flexible_map_object.FlexibleMapObject;
 import com.davidrandoll.automation.engine.http.jackson.flexible_method.FlexibleHttpMethodList;

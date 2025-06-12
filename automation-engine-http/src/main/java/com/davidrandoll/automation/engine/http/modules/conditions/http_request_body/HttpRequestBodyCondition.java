@@ -1,8 +1,8 @@
 package com.davidrandoll.automation.engine.http.modules.conditions.http_request_body;
 
 import com.davidrandoll.automation.engine.core.events.EventContext;
-import com.davidrandoll.automation.engine.http.event.HttpRequestEvent;
-import com.davidrandoll.automation.engine.http.event.HttpResponseEvent;
+import com.davidrandoll.automation.engine.http.events.AEHttpRequestEvent;
+import com.davidrandoll.automation.engine.http.events.AEHttpResponseEvent;
 import com.davidrandoll.automation.engine.http.utils.StringMatcher;
 import com.davidrandoll.automation.engine.spi.PluggableCondition;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -18,9 +18,9 @@ public class HttpRequestBodyCondition extends PluggableCondition<HttpRequestBody
 
     @Override
     public boolean isSatisfied(EventContext ec, HttpRequestBodyConditionContext cc) {
-        if (ec.getEvent() instanceof HttpRequestEvent event) {
+        if (ec.getEvent() instanceof AEHttpRequestEvent event) {
             return StringMatcher.matchesCondition(cc.getRequestBody(), event.getRequestBody(), objectMapper);
-        } else if (ec.getEvent() instanceof HttpResponseEvent event) {
+        } else if (ec.getEvent() instanceof AEHttpResponseEvent event) {
             return StringMatcher.matchesCondition(cc.getRequestBody(), event.getRequestBody(), objectMapper);
         }
         return false;

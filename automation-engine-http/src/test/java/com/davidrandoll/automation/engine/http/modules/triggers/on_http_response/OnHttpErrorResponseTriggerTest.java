@@ -2,7 +2,7 @@ package com.davidrandoll.automation.engine.http.modules.triggers.on_http_respons
 
 import com.davidrandoll.automation.engine.core.events.EventContext;
 import com.davidrandoll.automation.engine.http.AutomationEngineTest;
-import com.davidrandoll.automation.engine.http.event.HttpResponseEvent;
+import com.davidrandoll.automation.engine.http.events.AEHttpResponseEvent;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
@@ -31,7 +31,7 @@ class OnHttpErrorResponseTriggerTest extends AutomationEngineTest {
         engine.register(automation);
 
         Map<String, Object> errorDetail = Map.of("message", "Internal error");
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .responseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
                 .errorDetail(errorDetail)
                 .build();
@@ -59,7 +59,7 @@ class OnHttpErrorResponseTriggerTest extends AutomationEngineTest {
         engine.register(automation);
 
         Map<String, Object> errorDetail = Map.of("message", "Something wrong");
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .responseStatus(HttpStatus.OK) // 200 - success
                 .errorDetail(errorDetail)
                 .build();
@@ -87,7 +87,7 @@ class OnHttpErrorResponseTriggerTest extends AutomationEngineTest {
         engine.register(automation);
 
         Map<String, Object> errorDetail = Map.of("message", "Internal Server Error"); // different
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .responseStatus(HttpStatus.BAD_REQUEST)
                 .errorDetail(errorDetail)
                 .build();
@@ -113,7 +113,7 @@ class OnHttpErrorResponseTriggerTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .responseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
                 .build();
 
@@ -138,7 +138,7 @@ class OnHttpErrorResponseTriggerTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder().build(); // no status
+        var event = AEHttpResponseEvent.builder().build(); // no status
 
         var context = EventContext.of(event);
         engine.publishEvent(context);

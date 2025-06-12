@@ -1,8 +1,9 @@
 package com.davidrandoll.automation.engine.http.extensions;
 
-import com.davidrandoll.automation.engine.http.event.HttpRequestEvent;
-import com.davidrandoll.automation.engine.http.event.HttpResponseEvent;
-import com.davidrandoll.automation.engine.http.utils.HttpServletUtils;
+import com.davidrandoll.spring_web_captor.event.HttpRequestEvent;
+import com.davidrandoll.spring_web_captor.event.HttpResponseEvent;
+import com.davidrandoll.spring_web_captor.extensions.IHttpEventExtension;
+import com.davidrandoll.spring_web_captor.utils.HttpServletUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;

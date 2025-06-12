@@ -4,8 +4,8 @@ import com.davidrandoll.automation.engine.core.Automation;
 import com.davidrandoll.automation.engine.core.events.EventContext;
 import com.davidrandoll.automation.engine.http.AutomationEngineTest;
 import com.davidrandoll.automation.engine.http.JsonTestUtils;
-import com.davidrandoll.automation.engine.http.event.HttpMethodEnum;
-import com.davidrandoll.automation.engine.http.event.HttpResponseEvent;
+import com.davidrandoll.automation.engine.http.events.AEHttpResponseEvent;
+import com.davidrandoll.spring_web_captor.event.HttpMethodEnum;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
@@ -42,7 +42,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .method(HttpMethodEnum.POST)
                 .build();
 
@@ -73,7 +73,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .method(HttpMethodEnum.GET)
                 .build();
 
@@ -103,7 +103,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .method(HttpMethodEnum.PUT)
                 .build();
 
@@ -133,7 +133,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .method(HttpMethodEnum.DELETE)
                 .build();
 
@@ -162,7 +162,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .method(HttpMethodEnum.HEAD)
                 .build();
 
@@ -192,7 +192,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .method(null)
                 .build();
 
@@ -225,7 +225,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .fullUrl("http://localhost:8080/api/users")
                 .build();
 
@@ -255,7 +255,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .fullUrl("http://localhost:8080/api/products")
                 .build();
 
@@ -288,7 +288,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .fullUrl("http://localhost:8080/api/products")
                 .build();
 
@@ -321,7 +321,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .fullUrl("http://localhost:8080/api/unknown")
                 .build();
 
@@ -351,7 +351,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .fullUrl("http://localhost:8080/api/users/123")
                 .build();
 
@@ -381,7 +381,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .fullUrl("http://localhost:8080/api/products/456")
                 .build();
 
@@ -411,7 +411,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .fullUrl("http://localhost:8080/api/users/42/posts")
                 .build();
 
@@ -441,7 +441,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .fullUrl("http://localhost:8080/api/users/42/comments")
                 .build();
 
@@ -471,7 +471,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .fullUrl("http://localhost:8080/api/users/")
                 .build();
 
@@ -497,7 +497,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .fullUrl("http://localhost:8080/api/users/42?sort=asc")
                 .build();
 
@@ -522,7 +522,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .fullUrl("http://localhost:8080/api/users")
                 .build();
 
@@ -547,7 +547,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .fullUrl("http://localhost:80/api/users")
                 .build();
 
@@ -572,7 +572,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .fullUrl("http://localhost:8080/api/file/config.json")
                 .build();
 
@@ -597,7 +597,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .fullUrl("http://localhost:8080/api/users")
                 .build();
 
@@ -627,7 +627,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .method(HttpMethodEnum.GET)
                 .fullUrl("http://localhost:8080/api/users/42")
                 .build();
@@ -662,7 +662,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .path("/api/users")
                 .build();
 
@@ -692,7 +692,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .path("/api/accounts")
                 .build();
 
@@ -724,7 +724,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .path("/api/users")
                 .build();
 
@@ -756,7 +756,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .path("/api/users")
                 .build();
 
@@ -786,7 +786,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .path("/api/users/42/posts")
                 .build();
 
@@ -816,7 +816,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .path("/api/users/posts")
                 .build(); // missing the {id} in the middle
 
@@ -846,7 +846,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .method(HttpMethodEnum.GET)
                 .path("/some/endpoint")
                 .build();
@@ -877,7 +877,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .path("/api/users/123/order") // should NOT match /api/users/{id}/posts
                 .build();
 
@@ -907,7 +907,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .path("/api/users/123/posts")
                 .build();
 
@@ -937,7 +937,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .path("/api/users/123/comments")
                 .build();
 
@@ -967,7 +967,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .fullUrl("http://localhost/api/123/posts")
                 .build();
 
@@ -997,7 +997,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .path("/api/users")
                 .build();
 
@@ -1023,7 +1023,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .path("/api/search")
                 .queryParams(MultiValueMap.fromMultiValue(Map.of("q", List.of("something"))))
                 .build();
@@ -1050,7 +1050,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .path("/api/users/123")
                 .build();
 
@@ -1076,7 +1076,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .path("/api/items/@special")
                 .build();
 
@@ -1102,7 +1102,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .path("/api/product/42/details")
                 .build();
 
@@ -1129,7 +1129,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .path("/api/users/123/profile")
                 .build();
 
@@ -1167,7 +1167,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         var headers = new HttpHeaders();
         headers.add("X-Auth-Type", "Bearer");
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .headers(headers)
                 .build();
 
@@ -1201,7 +1201,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         var headers = new HttpHeaders();
         headers.add("X-Auth-Type", "Basic");
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .headers(headers)
                 .build();
 
@@ -1237,7 +1237,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         headers.add("X-Auth-Type", "Bearer");
         headers.add("X-Client-Version", "v1");
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .headers(headers)
                 .build();
 
@@ -1269,7 +1269,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         headers.add("X-Auth-Type", "Bearer");
         headers.add("X-Client-Version", "v2"); // mismatch here
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .headers(headers)
                 .build();
 
@@ -1298,7 +1298,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
 
         var headers = new HttpHeaders(); // empty
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .headers(headers)
                 .build();
 
@@ -1328,7 +1328,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         var headers = new HttpHeaders();
         headers.add("X-Auth-Type", "Bearer"); // uppercase
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .headers(headers)
                 .build();
 
@@ -1356,7 +1356,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         var headers = new HttpHeaders();
         headers.add("X-Auth-Type", "Bearer");
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .headers(headers)
                 .build();
 
@@ -1390,7 +1390,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         var headers = new HttpHeaders();
         headers.add("X-Auth-Type", "Bearer");
         headers.add("X-Extra-Header", "SomeValue"); // extra header
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .headers(headers)
                 .build();
 
@@ -1423,7 +1423,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
 
         var headers = new HttpHeaders();
         headers.add("X-Auth-Type", "Bearer "); // with trailing space
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .headers(headers)
                 .build();
 
@@ -1457,7 +1457,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         var headers = new HttpHeaders();
         headers.add("X-Auth-Type", "Bearer");
         headers.add("X-Auth-Type", "Basic"); // multiple values for the same header
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .headers(headers)
                 .build();
 
@@ -1490,7 +1490,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
 
         var headers = new HttpHeaders();
         headers.add("X-Auth-Type", "");  // empty value
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .headers(headers)  // empty value
                 .build();
 
@@ -1523,7 +1523,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
 
         var headers = new HttpHeaders();
         headers.add("X-Auth-Type", null);  // null value
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .headers(headers)
                 .build();
 
@@ -1556,7 +1556,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
 
         var headers = new HttpHeaders();
         headers.add("X-Auth-Type", "Bearer token123");  // matches regex
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .headers(headers)
                 .build();
 
@@ -1592,7 +1592,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
 
         MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<String, String>();
         queryParams.add("user", "admin");
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .queryParams(queryParams)
                 .build();
 
@@ -1625,7 +1625,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
 
         MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<String, String>();
         queryParams.add("user", "guest");
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .queryParams(queryParams)
                 .build();
 
@@ -1658,7 +1658,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
 
         var queryParams = new LinkedMultiValueMap<String, String>();
         queryParams.add("role", "manager");
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .queryParams(queryParams)
                 .build();
 
@@ -1691,7 +1691,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
 
         var queryParams = new LinkedMultiValueMap<String, String>();
         queryParams.add("user", "admin"); // missing the required token param
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .queryParams(queryParams)
                 .build();
 
@@ -1726,7 +1726,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         var queryParams = new LinkedMultiValueMap<String, String>();
         queryParams.add("user", "admin");
         queryParams.add("active", "true");
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .queryParams(queryParams)
                 .build();
 
@@ -1761,7 +1761,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         var queryParams = new LinkedMultiValueMap<String, String>();
         queryParams.add("user", "admin");
         queryParams.add("active", "false"); // mismatch here
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .queryParams(queryParams)
                 .build();
 
@@ -1794,7 +1794,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
 
         var queryParams = new LinkedMultiValueMap<String, String>();
         queryParams.add("status", ""); // empty string
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .queryParams(queryParams)
                 .build();
 
@@ -1822,7 +1822,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         engine.register(automation);
 
         var queryParams = new LinkedMultiValueMap<String, String>();
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .queryParams(queryParams) // empty
                 .build();
 
@@ -1853,7 +1853,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         queryParams.add("category", "books");
         queryParams.add("page", "2");
         queryParams.add("sort", "desc");
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .queryParams(queryParams)
                 .build();
 
@@ -1882,7 +1882,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
 
         var queryParams = new LinkedMultiValueMap<String, String>();
         queryParams.add("Category", "books"); // uppercase key
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .queryParams(queryParams) // uppercase key
                 .build();
 
@@ -1912,7 +1912,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
 
         var queryParams = new LinkedMultiValueMap<String, String>();
         queryParams.add("category", "Books"); // capitalized value
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .queryParams(queryParams) // capitalized value
                 .build();
 
@@ -1942,7 +1942,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
 
         var queryParams = new LinkedMultiValueMap<String, String>();
         queryParams.add("search", ".*"); // literal value
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .queryParams(queryParams) // matches exactly ".*"
                 .build();
 
@@ -1972,7 +1972,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .pathParams(Map.of("id", "123"))
                 .build();
 
@@ -1999,7 +1999,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .pathParams(Map.of("id", "456"))
                 .build();
 
@@ -2027,7 +2027,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .pathParams(Map.of("userId", "99", "postId", "321"))
                 .build();
 
@@ -2055,7 +2055,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .pathParams(Map.of("userId", "99", "postId", "999"))
                 .build();
 
@@ -2082,7 +2082,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .pathParams(Map.of()) // No 'id'
                 .build();
 
@@ -2111,7 +2111,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
 
         var queryParams = new HashMap<String, String>();
         queryParams.put("id", null); // Null value
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .pathParams(queryParams) // Null value
                 .build();
 
@@ -2138,7 +2138,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .pathParams(Map.of("id", "123", "extra", "999"))
                 .build();
 
@@ -2165,7 +2165,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .pathParams(Map.of("type", "admin")) // lowercased
                 .build();
 
@@ -2193,7 +2193,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .pathParams(Map.of("slug", "my-article-2025"))
                 .build();
 
@@ -2233,7 +2233,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         headers.add("X-Auth", "secret");
         var queryParams = new LinkedMultiValueMap<String, String>();
         queryParams.add("status", "active");
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .method(HttpMethodEnum.GET)
                 .path("/api/users/42")
                 .pathParams(Map.of("id", "42"))
@@ -2274,7 +2274,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         headers.add("X-Auth", "wrong-secret"); // mismatch
         var queryParams = new LinkedMultiValueMap<String, String>();
         queryParams.add("status", "active");
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .method(HttpMethodEnum.GET)
                 .path("/api/users/42")
                 .pathParams(Map.of("id", "42"))
@@ -2315,7 +2315,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         headers.add("X-Role", "admin");
         var queryParams = new LinkedMultiValueMap<String, String>();
         queryParams.add("status", "pending");
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .method(HttpMethodEnum.POST)
                 .path("/api/users/43")
                 .pathParams(Map.of("id", "43"))
@@ -2356,7 +2356,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         headers.add("X-Auth", "secret");
         var queryParams = new LinkedMultiValueMap<String, String>();
         queryParams.add("status", "active");
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .method(HttpMethodEnum.GET)
                 .path("/api/users/42")
                 .headers(headers)
@@ -2396,7 +2396,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         headers.add("X-Api-Key", "abc123");
         var queryParams = new LinkedMultiValueMap<String, String>();
         queryParams.add("type", "premium");
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .method(HttpMethodEnum.POST)
                 .fullUrl("https://api.example.com/api/users/123")
                 .pathParams(Map.of("id", "123"))
@@ -2437,7 +2437,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         headers.add("X-Env", "prod");
         var queryParams = new LinkedMultiValueMap<String, String>();
         queryParams.add("mode", "view"); // mismatch
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .method(HttpMethodEnum.PUT)
                 .path("/api/products/999")
                 .pathParams(Map.of("sku", "999"))
@@ -2478,7 +2478,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         headers.add("X-CUSTOM-HEADER", "TokenValue"); // different casing
         var queryParams = new LinkedMultiValueMap<String, String>();
         queryParams.add("SORT", "ASC"); // different casing
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .method(HttpMethodEnum.GET)
                 .path("/api/items/abc")
                 .pathParams(Map.of("itemId", "abc"))
@@ -2519,7 +2519,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         headers.add("X-Client", "mobile");
         var queryParams = new LinkedMultiValueMap<String, String>();
         queryParams.add("detail", "yes");
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .method(HttpMethodEnum.GET)
                 .path("/api/users/0042") // different string, not exact "42"
                 .pathParams(Map.of("id", "0042")) // technically a different string
@@ -2555,7 +2555,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
                 .put("name", "John")
                 .put("age", 30);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .method(HttpMethodEnum.POST)
                 .requestBody(body)
                 .build();
@@ -2592,7 +2592,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
                 .put("name", "John")
                 .put("age", 25); // Not matching age
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .method(HttpMethodEnum.POST)
                 .requestBody(body)
                 .build();
@@ -2628,7 +2628,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
                 .put("name", "Alice")
                 .put("age", 28); // Extra field
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .method(HttpMethodEnum.POST)
                 .requestBody(body)
                 .build();
@@ -2669,7 +2669,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         var body = new ObjectMapper().createObjectNode()
                 .set("user", userNode);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .method(HttpMethodEnum.POST)
                 .requestBody(body)
                 .build();
@@ -2705,7 +2705,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         var body = new ObjectMapper().createObjectNode()
                 .put("name", "Charlie"); // Missing email
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .method(HttpMethodEnum.POST)
                 .requestBody(body)
                 .build();
@@ -2744,7 +2744,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         var body = new ObjectMapper().createObjectNode()
                 .set("tags", array);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .method(HttpMethodEnum.POST)
                 .requestBody(body)
                 .build();
@@ -2780,7 +2780,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
                 .put("username", "testuser")
                 .put("role", "admin"); // extra field
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .method(HttpMethodEnum.POST)
                 .requestBody(body)
                 .build();
@@ -2815,7 +2815,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         var body = new ObjectMapper().createObjectNode()
                 .put("email", "user@example.com");
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .method(HttpMethodEnum.POST)
                 .requestBody(body)
                 .build();
@@ -2850,7 +2850,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         var body = new ObjectMapper().createObjectNode()
                 .putNull("status");
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .method(HttpMethodEnum.POST)
                 .requestBody(body)
                 .build();
@@ -2894,7 +2894,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         var body = new ObjectMapper().createObjectNode()
                 .set("user", user);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .method(HttpMethodEnum.POST)
                 .requestBody(body)
                 .build();
@@ -2929,7 +2929,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         var body = new ObjectMapper().createObjectNode()
                 .put("username", "user_001"); // Doesn't match ^admin_.*
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .method(HttpMethodEnum.POST)
                 .requestBody(body)
                 .build();
@@ -2970,7 +2970,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         var body = new ObjectMapper().createObjectNode()
                 .set("user", user);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .method(HttpMethodEnum.POST)
                 .requestBody(body)
                 .build();
@@ -3010,7 +3010,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         var body = new ObjectMapper().createObjectNode()
                 .set("user", user);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .method(HttpMethodEnum.POST)
                 .requestBody(body)
                 .build();
@@ -3049,7 +3049,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         var body = new ObjectMapper().createObjectNode()
                 .set("user", user);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .method(HttpMethodEnum.POST)
                 .requestBody(body)
                 .build();
@@ -3096,7 +3096,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         var body = new ObjectMapper().createObjectNode()
                 .set("user", user);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .method(HttpMethodEnum.POST)
                 .requestBody(body)
                 .build();
@@ -3141,7 +3141,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         var body = new ObjectMapper().createObjectNode()
                 .set("items", new ObjectMapper().createArrayNode().add(item1).add(item2));
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .method(HttpMethodEnum.POST)
                 .requestBody(body)
                 .build();
@@ -3185,7 +3185,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         var body = new ObjectMapper().createObjectNode()
                 .set("items", new ObjectMapper().createArrayNode().add(item1).add(item2));
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .method(HttpMethodEnum.POST)
                 .requestBody(body)
                 .build();
@@ -3230,7 +3230,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         var body = new ObjectMapper().createObjectNode()
                 .set("items", new ObjectMapper().createArrayNode().add(item1).add(item2));
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .method(HttpMethodEnum.POST)
                 .requestBody(body)
                 .build();
@@ -3268,7 +3268,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
                         .add("tech")
                         .add("science"));
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .method(HttpMethodEnum.POST)
                 .requestBody(body)
                 .build();
@@ -3310,7 +3310,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         var body = new ObjectMapper().createObjectNode()
                 .set("items", new ObjectMapper().createArrayNode().add(item));
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .method(HttpMethodEnum.POST)
                 .requestBody(body)
                 .build();
@@ -3347,7 +3347,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
                         .add("news") // Reversed order
                         .add("tech"));
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .method(HttpMethodEnum.POST)
                 .requestBody(body)
                 .build();
@@ -3388,7 +3388,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         var body = new ObjectMapper().createObjectNode()
                 .set("user", user);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .method(HttpMethodEnum.POST)
                 .requestBody(body)
                 .build();
@@ -3425,7 +3425,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
                 .put("status", "active")
                 .set("tags", new ObjectMapper().createArrayNode().add("urgent"));
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .method(HttpMethodEnum.POST)
                 .requestBody(body)
                 .build();
@@ -3462,7 +3462,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
                         .add("very_urgent")
                         .add("low_priority"));
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .method(HttpMethodEnum.POST)
                 .requestBody(body)
                 .build();
@@ -3514,7 +3514,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         queryParams.add("type", "express");
         var headers = new HttpHeaders();
         headers.add("x-request-id", "req-789");
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .method(HttpMethodEnum.POST)
                 .path("/api/orders/9999")
                 .queryParams(queryParams)
@@ -3557,7 +3557,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
 
         var headers = new HttpHeaders();
         headers.add("auth-token", "secure123");
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .method(HttpMethodEnum.GET)
                 .path("/api/users/456/purchases")
                 .headers(headers)
@@ -3611,7 +3611,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         queryParams.add("extra", "ignore-me"); // Extra param, should be ignored
         var headers = new HttpHeaders();
         headers.add("content-type", "application/json"); // Different casing
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .method(HttpMethodEnum.GET)
                 .queryParams(queryParams)
                 .headers(headers) // Different casing
@@ -3647,7 +3647,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .method(HttpMethodEnum.GET)
                 .responseStatus(HttpStatus.OK)
                 .build();
@@ -3678,7 +3678,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .method(HttpMethodEnum.GET)
                 .responseStatus(HttpStatus.BAD_REQUEST)
                 .build();
@@ -3709,7 +3709,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .method(HttpMethodEnum.GET)
                 .responseStatus(HttpStatus.NOT_FOUND)
                 .build();
@@ -3740,7 +3740,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .method(HttpMethodEnum.GET)
                 .responseStatus(HttpStatus.OK)
                 .build();
@@ -3771,7 +3771,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .method(HttpMethodEnum.GET)
                 .responseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
                 .build();
@@ -3802,7 +3802,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .method(HttpMethodEnum.GET)
                 .responseStatus(HttpStatus.BAD_REQUEST)
                 .build();
@@ -3833,7 +3833,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .method(HttpMethodEnum.GET)
                 .responseStatus(null)
                 .build();
@@ -3860,7 +3860,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .responseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
                 .build();
 
@@ -3886,7 +3886,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .responseStatus(HttpStatus.OK)
                 .build();
 
@@ -3912,7 +3912,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .responseStatus(HttpStatus.OK)
                 .build();
 
@@ -3937,7 +3937,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         Automation automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .responseStatus(HttpStatus.OK)
                 .build();
 
@@ -3975,7 +3975,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
                 }
                 """;
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .responseBody(JsonTestUtils.json(responseJson))
                 .build();
 
@@ -4011,7 +4011,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
                 }
                 """;
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .responseBody(JsonTestUtils.json(responseJson))
                 .build();
 
@@ -4046,7 +4046,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
                 }
                 """;
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .responseBody(JsonTestUtils.json(responseJson))
                 .build();
 
@@ -4086,7 +4086,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
                 }
                 """;
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .responseBody(JsonTestUtils.json(responseJson))
                 .build();
 
@@ -4120,7 +4120,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
                 }
                 """;
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .responseBody(JsonTestUtils.json(responseJson))
                 .build();
 
@@ -4154,7 +4154,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
                 }
                 """;
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .responseBody(JsonTestUtils.json(responseJson))
                 .build();
 
@@ -4189,7 +4189,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .responseBody(JsonTestUtils.json(responseJson))
                 .build();
 
@@ -4221,7 +4221,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .responseBody(JsonTestUtils.json(responseJson))
                 .build();
 
@@ -4258,7 +4258,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .responseBody(JsonTestUtils.json(responseJson))
                 .build();
 
@@ -4298,7 +4298,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .responseBody(JsonTestUtils.json(responseJson))
                 .build();
 
@@ -4335,7 +4335,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .responseBody(JsonTestUtils.json(responseJson))
                 .build();
 
@@ -4373,7 +4373,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .responseBody(JsonTestUtils.json(responseJson))
                 .build();
 
@@ -4405,7 +4405,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .responseBody(JsonTestUtils.json(responseJson))
                 .build();
 
@@ -4437,7 +4437,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .responseBody(JsonTestUtils.json(responseJson))
                 .build();
 
@@ -4469,7 +4469,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .responseBody(JsonTestUtils.json(responseJson))
                 .build();
 
@@ -4505,7 +4505,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .responseBody(JsonTestUtils.json(responseJson))
                 .build();
 
@@ -4551,7 +4551,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .responseBody(JsonTestUtils.json(responseJson))
                 .build();
 
@@ -4584,7 +4584,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .responseStatus(HttpStatus.OK)
                 .responseBody(JsonTestUtils.json(responseJson))
                 .build();
@@ -4617,7 +4617,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .responseBody(JsonTestUtils.json(responseJson))
                 .build();
 
@@ -4656,7 +4656,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .responseBody(JsonTestUtils.json(responseJson))
                 .build();
 
@@ -4688,7 +4688,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .responseBody(JsonTestUtils.json(responseJson))
                 .build();
 
@@ -4714,7 +4714,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
                     message: Matched errorDetail
                 """;
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .responseStatus(HttpStatus.UNAUTHORIZED)
                 .build();
 
@@ -4742,7 +4742,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
                     message: Found code match
                 """;
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .responseStatus(HttpStatus.FORBIDDEN)
                 .build();
 
@@ -4777,7 +4777,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
 
         Map<String, Object> nestedDetail = Map.of("detail", Map.of("reason", "Session expired"));
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .errorDetail(nestedDetail)
                 .build();
 
@@ -4803,7 +4803,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
                     message: Should not run
                 """;
 
-        var event = HttpResponseEvent.builder().build();
+        var event = AEHttpResponseEvent.builder().build();
         event.addErrorDetail(Map.of("message", "Token expired"));
 
         var automation = factory.createAutomation("yaml", yaml);
@@ -4830,7 +4830,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
 
         var errorDetail = new HashMap<String, Object>();
         errorDetail.put("info", null);
-        var event = HttpResponseEvent.builder().build();
+        var event = AEHttpResponseEvent.builder().build();
         event.addErrorDetail(errorDetail);
 
         var automation = factory.createAutomation("yaml", yaml);
@@ -4858,7 +4858,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
 
         Map<String, Object> errorDetail = Map.of("errors", List.of("Field X is required", "Field Y must be numeric"));
 
-        var event = HttpResponseEvent.builder().build();
+        var event = AEHttpResponseEvent.builder().build();
         event.addErrorDetail(errorDetail);
 
         var automation = factory.createAutomation("yaml", yaml);
@@ -4884,7 +4884,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
                     message: Status matched
                 """;
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .responseStatus(HttpStatus.CREATED) // 201
                 .build();
         event.addErrorDetail(Map.of(
@@ -4914,7 +4914,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
                     message: Should not activate
                 """;
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .responseStatus(HttpStatus.NON_AUTHORITATIVE_INFORMATION) // 203
                 .build();
         event.addErrorDetail(Map.of(
@@ -4944,7 +4944,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
                     message: Triggered on successful creation
                 """;
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .responseStatus(HttpStatus.CREATED) // 201
                 .build();
         event.addErrorDetail(Map.of(
@@ -4977,7 +4977,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
                     message: Should not trigger due to unmatched status
                 """;
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .responseStatus(HttpStatus.NON_AUTHORITATIVE_INFORMATION) // 203
                 .build();
         event.addErrorDetail(Map.of(
@@ -5016,7 +5016,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
                 )
         );
 
-        var event = HttpResponseEvent.builder().build();
+        var event = AEHttpResponseEvent.builder().build();
         event.addErrorDetail(errorDetail);
 
         var automation = factory.createAutomation("yaml", yaml);
@@ -5053,7 +5053,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
                 )
         );
 
-        var event = HttpResponseEvent.builder().build();
+        var event = AEHttpResponseEvent.builder().build();
         event.addErrorDetail(errorDetail);
 
         var automation = factory.createAutomation("yaml", yaml);
@@ -5090,7 +5090,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
                 )
         );
 
-        var event = HttpResponseEvent.builder().build();
+        var event = AEHttpResponseEvent.builder().build();
         event.addErrorDetail(errorDetail);
 
         var automation = factory.createAutomation("yaml", yaml);
@@ -5125,7 +5125,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
                 )
         );
 
-        var event = HttpResponseEvent.builder().build();
+        var event = AEHttpResponseEvent.builder().build();
         event.addErrorDetail(errorDetail);
 
         var automation = factory.createAutomation("yaml", yaml);
@@ -5162,7 +5162,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
                 )
         );
 
-        var event = HttpResponseEvent.builder().build();
+        var event = AEHttpResponseEvent.builder().build();
         event.addErrorDetail(errorDetail);
 
         var automation = factory.createAutomation("yaml", yaml);
@@ -5199,7 +5199,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
                 )
         );
 
-        var event = HttpResponseEvent.builder().build();
+        var event = AEHttpResponseEvent.builder().build();
         event.addErrorDetail(errorDetail);
 
         var automation = factory.createAutomation("yaml", yaml);
@@ -5239,7 +5239,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
                 )
         );
 
-        var event = HttpResponseEvent.builder().build();
+        var event = AEHttpResponseEvent.builder().build();
         event.addErrorDetail(errorDetail);
 
         var automation = factory.createAutomation("yaml", yaml);
@@ -5279,7 +5279,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
                 )
         );
 
-        var event = HttpResponseEvent.builder().build();
+        var event = AEHttpResponseEvent.builder().build();
         event.addErrorDetail(errorDetail);
 
         var automation = factory.createAutomation("yaml", yaml);
@@ -5319,7 +5319,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
                 )
         );
 
-        var event = HttpResponseEvent.builder().build();
+        var event = AEHttpResponseEvent.builder().build();
         event.addErrorDetail(errorDetail);
 
         var automation = factory.createAutomation("yaml", yaml);
@@ -5359,7 +5359,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
                 )
         );
 
-        var event = HttpResponseEvent.builder().build();
+        var event = AEHttpResponseEvent.builder().build();
         event.addErrorDetail(errorDetail);
 
         var automation = factory.createAutomation("yaml", yaml);
@@ -5387,7 +5387,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .errorDetail(Map.of("isRetryable", "true")) // string, not boolean
                 .build();
 
@@ -5417,7 +5417,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
 
         var errorDetail = new HashMap<String, Object>();
         errorDetail.put("errorCode", null); // null value
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .errorDetail(errorDetail)
                 .build();
 
@@ -5444,7 +5444,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .errorDetail(Map.of("message", "unauthorized")) // lower case
                 .build();
 
@@ -5477,7 +5477,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         errorDetail.put("message", "Top level");
         errorDetail.put("details", nested);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .errorDetail(errorDetail)
                 .build();
 
@@ -5504,7 +5504,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .errorDetail(Map.of(
                         "message", "Extra test",
                         "code", 403,
@@ -5537,7 +5537,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
 
         Map<String, Object> errorDetail = Map.of("user", Map.of("name", "Alice")); // missing `details.message`
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .errorDetail(errorDetail)
                 .build();
 
@@ -5567,7 +5567,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         // Missing `profile` level
         Map<String, Object> errorDetail = Map.of("user", Map.of("details", Map.of("message", "NotFound")));
 
-        var event = HttpResponseEvent.builder().errorDetail(errorDetail).build();
+        var event = AEHttpResponseEvent.builder().errorDetail(errorDetail).build();
         var context = EventContext.of(event);
         engine.publishEvent(context);
 
@@ -5592,7 +5592,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
 
         Map<String, Object> errorDetail = Map.of("error", Map.of("message", Map.of("actual", "Access denied"))); // message is an object
 
-        var event = HttpResponseEvent.builder().errorDetail(errorDetail).build();
+        var event = AEHttpResponseEvent.builder().errorDetail(errorDetail).build();
         var context = EventContext.of(event);
         engine.publishEvent(context);
 
@@ -5617,7 +5617,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
 
         Map<String, Object> errorDetail = Map.of("errors", List.of(Map.of("message", "Invalid input"))); // inside array
 
-        var event = HttpResponseEvent.builder().errorDetail(errorDetail).build();
+        var event = AEHttpResponseEvent.builder().errorDetail(errorDetail).build();
         var context = EventContext.of(event);
         engine.publishEvent(context);
 
@@ -5643,7 +5643,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
         Map<String, Object> errorDetail = new HashMap<>();
         errorDetail.put("message", null); // null value
 
-        var event = HttpResponseEvent.builder().errorDetail(errorDetail).build();
+        var event = AEHttpResponseEvent.builder().errorDetail(errorDetail).build();
         var context = EventContext.of(event);
         engine.publishEvent(context);
 
@@ -5668,7 +5668,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
 
         Map<String, Object> errorDetail = Map.of("user", Map.of("details", "oops"));
 
-        var event = HttpResponseEvent.builder().errorDetail(errorDetail).build();
+        var event = AEHttpResponseEvent.builder().errorDetail(errorDetail).build();
         var context = EventContext.of(event);
         engine.publishEvent(context);
 
@@ -5701,7 +5701,7 @@ class OnHttpResponseTriggerTest extends AutomationEngineTest {
                 )
         ));
 
-        var event = HttpResponseEvent.builder().errorDetail(errorDetail).build();
+        var event = AEHttpResponseEvent.builder().errorDetail(errorDetail).build();
         var context = EventContext.of(event);
         engine.publishEvent(context);
 

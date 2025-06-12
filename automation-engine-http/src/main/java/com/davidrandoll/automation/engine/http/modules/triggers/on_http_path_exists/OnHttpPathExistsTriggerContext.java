@@ -1,7 +1,7 @@
 package com.davidrandoll.automation.engine.http.modules.triggers.on_http_path_exists;
 
 import com.davidrandoll.automation.engine.core.triggers.ITriggerContext;
-import com.davidrandoll.automation.engine.http.event.HttpMethodEnum;
+import com.davidrandoll.spring_web_captor.event.HttpMethodEnum;
 import com.davidrandoll.automation.engine.http.jackson.flexible_method.FlexibleHttpMethodList;
 import com.davidrandoll.automation.engine.http.jackson.flexible_string_list.FlexibleStringList;
 import com.fasterxml.jackson.annotation.JsonAlias;

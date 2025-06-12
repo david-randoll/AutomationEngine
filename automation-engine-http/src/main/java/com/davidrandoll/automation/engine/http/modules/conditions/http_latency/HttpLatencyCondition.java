@@ -1,7 +1,7 @@
 package com.davidrandoll.automation.engine.http.modules.conditions.http_latency;
 
 import com.davidrandoll.automation.engine.core.events.EventContext;
-import com.davidrandoll.automation.engine.http.event.HttpResponseEvent;
+import com.davidrandoll.automation.engine.http.events.AEHttpResponseEvent;
 import com.davidrandoll.automation.engine.http.modules.triggers.on_slow_http_request.OnSlowHttpRequestException;
 import com.davidrandoll.automation.engine.spi.PluggableCondition;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +16,7 @@ import java.time.Duration;
 public class HttpLatencyCondition extends PluggableCondition<HttpLatencyConditionContext> {
     @Override
     public boolean isSatisfied(EventContext ec, HttpLatencyConditionContext cc) {
-        if (!(ec.getEvent() instanceof HttpResponseEvent event)) return false;
+        if (!(ec.getEvent() instanceof AEHttpResponseEvent event)) return false;
         Duration eventDuration = event.getAdditionalData("duration", Duration.class);
         if (eventDuration == null)
             throw new OnSlowHttpRequestException("Duration not found in event");

@@ -3,7 +3,7 @@ package com.davidrandoll.automation.engine.http.modules.triggers.on_http_respons
 import com.davidrandoll.automation.engine.core.events.EventContext;
 import com.davidrandoll.automation.engine.http.AutomationEngineTest;
 import com.davidrandoll.automation.engine.http.JsonTestUtils;
-import com.davidrandoll.automation.engine.http.event.HttpResponseEvent;
+import com.davidrandoll.automation.engine.http.events.AEHttpResponseEvent;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
@@ -28,7 +28,7 @@ class OnHttpClientErrorResponseTriggerTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .responseStatus(HttpStatus.BAD_REQUEST)
                 .build();
 
@@ -53,7 +53,7 @@ class OnHttpClientErrorResponseTriggerTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .responseStatus(HttpStatus.OK)
                 .build();
 
@@ -78,7 +78,7 @@ class OnHttpClientErrorResponseTriggerTest extends AutomationEngineTest {
         var automation = factory.createAutomation("yaml", yaml);
         engine.register(automation);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .responseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
                 .build();
 
@@ -110,7 +110,7 @@ class OnHttpClientErrorResponseTriggerTest extends AutomationEngineTest {
                 }
                 """);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .responseStatus(HttpStatus.UNAUTHORIZED) // 401
                 .responseBody(body)
                 .build();
@@ -143,7 +143,7 @@ class OnHttpClientErrorResponseTriggerTest extends AutomationEngineTest {
                 }
                 """);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .responseStatus(HttpStatus.FORBIDDEN) // 403
                 .responseBody(body)
                 .build();
@@ -176,7 +176,7 @@ class OnHttpClientErrorResponseTriggerTest extends AutomationEngineTest {
                 }
                 """);
 
-        var event = HttpResponseEvent.builder()
+        var event = AEHttpResponseEvent.builder()
                 .responseBody(body)
                 .build(); // no status
 

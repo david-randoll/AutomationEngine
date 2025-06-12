@@ -1,6 +1,6 @@
 package com.davidrandoll.automation.engine.http.jackson.flexible_method;
 
-import com.davidrandoll.automation.engine.http.event.HttpMethodEnum;
+import com.davidrandoll.spring_web_captor.event.HttpMethodEnum;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
