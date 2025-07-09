@@ -1,10 +1,10 @@
 package com.davidrandoll.automation.engine.http.modules.triggers.on_http_request;
 
 import com.davidrandoll.automation.engine.core.events.EventContext;
+import com.davidrandoll.automation.engine.http.utils.HttpServletUtils;
 import com.davidrandoll.automation.engine.http.utils.JsonNodeMatcher;
 import com.davidrandoll.automation.engine.spi.PluggableTrigger;
 import com.davidrandoll.automation.engine.http.events.AEHttpRequestEvent;
-import com.davidrandoll.spring_web_captor.utils.HttpServletUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
