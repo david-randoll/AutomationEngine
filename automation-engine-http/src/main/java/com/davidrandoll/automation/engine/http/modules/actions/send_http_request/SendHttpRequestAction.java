@@ -3,6 +3,7 @@ package com.davidrandoll.automation.engine.http.modules.actions.send_http_reques
 import com.davidrandoll.automation.engine.core.events.EventContext;
 import com.davidrandoll.automation.engine.http.events.AEHttpRequestEvent;
 import com.davidrandoll.automation.engine.http.events.AEHttpResponseEvent;
+import com.davidrandoll.automation.engine.http.utils.HttpServletUtils;
 import com.davidrandoll.automation.engine.spi.PluggableAction;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -86,13 +87,7 @@ public class SendHttpRequestAction extends PluggableAction<SendHttpRequestAction
         String responseContentType = contentTypeHolder.get();
         ResponseEntity<String> strResponse = responseHolder.get();
 
-        JsonNode response;
-        if (responseContentType != null && responseContentType.contains("json")) {
-            response = mapper.valueToTree(strResponse.getBody());
-        } else {
-            // string response
-            response = mapper.getNodeFactory().textNode(strResponse.getBody());
-        }
+        JsonNode response = HttpServletUtils.toJsonNode(responseContentType, strResponse.getBody(), mapper);
 
         if (!ObjectUtils.isEmpty(ac.getStoreToVariable())) {
             ec.addMetadata(ac.getStoreToVariable(), response);
