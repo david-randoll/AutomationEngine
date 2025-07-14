@@ -75,6 +75,51 @@ TodoCreateEvent event = new TodoCreateEvent("Buy groceries", "johndoe@example.co
 engine.publishEvent(event); // This triggers the automation
 ```
 
+## Manually Running Automations
+
+In addition to event-driven triggers, AutomationEngine supports manually running automations. This is particularly useful for scenarios such as API endpoints, scheduled jobs, or user-initiated actions. You can execute an automation directly by providing its definition and the event/context.
+
+### Example: Manually Executing an Automation
+
+Suppose you want to create a Todo item with specific status and assignee, and return the result. You can define the automation YAML inline and execute it manually using the API:
+
+```java
+@PostMapping
+public Object createTodoWithStatusAndAssigneeObject(@RequestBody JsonNode body) {
+    IEvent event = engine.getEventFactory().createEvent(body);
+    String yaml = """
+            alias: create-todo-automation
+            triggers:
+              - trigger: alwaysTrue
+            actions:
+              - action: createTodo
+                title: "{{ title }}"
+                status:
+                  code: "{{ status }}"
+                assignee:
+                  username: "{{ assignee }}"
+                storeToVariable: todo
+            result:
+              id: "{{todo.id}}"
+              title: "{{ todo.title }}"
+              status: "{{ todo.status.code }}"
+              assignee: "{{ todo.assignee.username }}"
+            """;
+    return engine.executeAutomationWithYaml(yaml, event)
+            .orElse(null);
+}
+```
+
+#### How It Works
+
+- The automation is defined as a YAML string inside the method.
+- The trigger is set to `"alwaysTrue"` so it always executes when called.
+- The action creates a Todo using data from the event/request.
+- The result block extracts and returns the details of the created Todo.
+- The automation is executed manually via `engine.executeAutomationWithYaml(yaml, event)`.
+
+This pattern allows you to leverage all the power of AutomationEngine even in imperative workflows, such as REST endpoints or CLI tools.
+
 ## Contributing
 
 Contributions are welcome! If you have suggestions for improvements or bug fixes, feel free to open an issue or submit a
