@@ -214,6 +214,9 @@ In YAML:
   trigger: onSlackMessage
 ```
 
+# Inspiration
+This project was inspired by [Home Assistant](https://github.com/home-assistant/core) an open-source platform for home automation that allows users to define automations in YAML based on triggers, conditions, and actions. AutomationEngine brings a similar declarative approach to the Java and Spring ecosystem, making it easy to build dynamic workflows across backend services and business domains.
+
 ## Contributing
 
 Contributions are welcome! If you have suggestions for improvements or bug fixes, feel free to open an issue or submit a
