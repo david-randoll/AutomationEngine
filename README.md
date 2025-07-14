@@ -1,23 +1,33 @@
 # AutomationEngine
 
-AutomationEngine is a flexible, extensible Java library for building, managing, and executing automations based on
-events and context. It provides core abstractions and utilities to define automations using code, YAML, or JSON formats,
-and enables event-driven automation workflows.
+AutomationEngine is a flexible and extensible Java library for building event-driven automation workflows. It allows
+developers to define and execute automations using YAML, JSON, or Java code. Automations respond to incoming events and
+context, making it easy to implement dynamic business logic in a structured, declarative way.
 
-# Features
+# Overview
+
+AutomationEngine is built for:
+
+- Defining automation logic through code or configuration
+- Responding to events in real time
+- Dynamically executing actions based on conditions
+- Seamless integration into Spring Boot applications
+
+It provides a modular architecture where triggers, conditions, and actions are all pluggable and customizable.
+
+# Key Features
 
 - **Register and manage automations**: Easily register, remove, and execute automations at runtime.
 - **Event-driven**: Trigger automations in response to custom events or event contexts.
 - **Flexible formats**: Define automations programmatically or via YAML/JSON for dynamic configuration.
 - **Spring integration**: Includes starter modules for seamless integration with Spring applications.
-- **Extensible**: Core utilities for reflection and type resolution, plus pluggable action, trigger, condition, and
-  result builders.
+- **Extensible**: Fully extensible for custom triggers, variables, conditions, result and actions
 
 # Getting Started
 
 ## Installation
 
-Add the AutomationEngine core library to your project. If you're using Maven:
+To use AutomationEngine with Spring Boot, add the following dependency:
 
 ```xml
 
@@ -28,15 +38,14 @@ Add the AutomationEngine core library to your project. If you're using Maven:
 </dependency>
 ```
 
-## Usage
+## Defining Automations
 
-To use AutomationEngine, you can define automations in YAML or JSON format, or programmatically using Java code.
+Automations can be created from configuration files or defined inline. Each automation has a set of triggers, optional
+conditions, and one or more actions.
 
-### Example: Todo Domain Automation
+### YAML Example
 
-Suppose you want to automate sending an email notification whenever a new todo is created. The automation will trigger
-on a custom event (`TodoCreateEvent`), extract details from the event, and then perform an email action using those
-details.
+This automation sends an email whenever a `TodoCreateEvent` occurs:
 
 ```yaml
 alias: send-todo-email-notification
@@ -57,7 +66,7 @@ actions:
       Please review this task.
 ```
 
-### Registering the Automation
+### Programmatic Usage
 
 ```java
 AutomationEngine engine; // inject from spring context
@@ -68,22 +77,19 @@ Automation automation = factory.createAutomation("yaml", yaml);
 engine.register(automation);
 ```
 
-### Publishing the Event
+To publish an event and trigger matching automations:
 
 ```java
 TodoCreateEvent event = new TodoCreateEvent("Buy groceries", "johndoe@example.com", "OPEN");
 engine.publishEvent(event); // This triggers the automation
 ```
 
-## Manually Running Automations
+## Manual Execution
 
-In addition to event-driven triggers, AutomationEngine supports manually running automations. This is particularly useful for scenarios such as API endpoints, scheduled jobs, or user-initiated actions. You can execute an automation directly by providing its definition and the event/context.
-
-### Example: Manually Executing an Automation
-
-Suppose you want to create a Todo item with specific status and assignee, and return the result. You can define the automation YAML inline and execute it manually using the API:
+Automations can also be executed imperatively, which is useful in APIs, scheduled jobs, or CLI tools.
 
 ```java
+
 @PostMapping
 public Object createTodoWithStatusAndAssigneeObject(@RequestBody JsonNode body) {
     IEvent event = engine.getEventFactory().createEvent(body);
@@ -118,7 +124,95 @@ public Object createTodoWithStatusAndAssigneeObject(@RequestBody JsonNode body) 
 - The result block extracts and returns the details of the created Todo.
 - The automation is executed manually via `engine.executeAutomationWithYaml(yaml, event)`.
 
-This pattern allows you to leverage all the power of AutomationEngine even in imperative workflows, such as REST endpoints or CLI tools.
+This pattern allows you to leverage all the power of AutomationEngine even in imperative workflows, such as REST
+endpoints or CLI tools.
+
+# Extensibility
+
+AutomationEngine is designed with extensibility in mind. You can define your own custom triggers, actions, conditions,
+result processors, and variable resolvers by implementing the appropriate interfaces and registering them with the
+engine.
+
+## Custom Action Example
+
+To create your own action:
+
+```java
+
+@Component("sendSlackMessage")
+public class SendSlackMessageAction extends PluggableAction<SendSlackMessageContext> {
+
+    @Override
+    public void doExecute(EventContext eventContext, SendSlackMessageContext context) {
+        String message = context.getMessage();
+        String channel = context.getChannel();
+        // Send message to Slack...
+    }
+}
+```
+
+Create a corresponding context class:
+
+```java
+
+@Data
+public class SendSlackMessageContext extends ActionContext {
+    private String message;
+    private String channel;
+}
+```
+
+Now you can use it in YAML:
+
+```yaml
+- alias: send-slack-notification
+  action: sendSlackMessage
+  message: "New ticket created by {{ event.user }}"
+  channel: "#support"
+```
+
+## Custom Condition Example
+
+```java
+
+@Component("isBusinessHours")
+public class IsBusinessHoursCondition extends PluggableCondition<EmptyConditionContext> {
+
+    @Override
+    public boolean evaluate(EventContext eventContext, EmptyConditionContext context) {
+        LocalTime now = LocalTime.now();
+        return !now.isBefore(LocalTime.of(9, 0)) && !now.isAfter(LocalTime.of(17, 0));
+    }
+}
+```
+
+In YAML:
+
+```yaml
+- alias: check-business-hours
+  condition: isBusinessHours
+```
+
+## Custom Trigger Example
+
+```java
+
+@Component("onSlackMessage")
+public class OnSlackMessageTrigger extends PluggableTrigger<OnSlackMessageTriggerContext> {
+
+    @Override
+    public boolean isTriggered(EventContext context, OnSlackMessageTriggerContext triggerContext) {
+        return "SlackMessageEvent".equals(context.getEventName());
+    }
+}
+```
+
+In YAML:
+
+```yaml
+- alias: on-slack-message
+  trigger: onSlackMessage
+```
 
 ## Contributing
 
