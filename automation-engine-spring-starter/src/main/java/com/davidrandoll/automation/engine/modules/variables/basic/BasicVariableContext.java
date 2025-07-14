@@ -15,6 +15,7 @@ import java.util.Map;
 @AllArgsConstructor
 public class BasicVariableContext implements IVariableContext {
     private String alias;
+    private String description;
 
     @JsonAnySetter
     @JsonAnyGetter

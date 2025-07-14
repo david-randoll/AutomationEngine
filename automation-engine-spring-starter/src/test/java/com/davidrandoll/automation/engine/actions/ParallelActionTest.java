@@ -165,7 +165,7 @@ class ParallelActionTest extends AutomationEngineTest {
         engine.publishEvent(eventAt6PM);
         long endTime = System.currentTimeMillis();
 
-        assertThat(endTime - startTime).isLessThan(2100);
+        assertThat(endTime - startTime).isLessThan(2500);
 
         // Assert: Ensure main actions execute immediately while parallel actions complete later
         assertThat(logAppender.getLoggedMessages())

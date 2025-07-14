@@ -11,4 +11,5 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = true)
 public class HttpResponseStatusConditionContext extends MatchContext implements IConditionContext {
     private String alias;
+    private String description;
 }

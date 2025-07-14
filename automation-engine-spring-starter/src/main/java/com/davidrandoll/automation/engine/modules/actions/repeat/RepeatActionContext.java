@@ -18,6 +18,7 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class RepeatActionContext implements IActionContext {
     private String alias;
+    private String description;
     // repeat options
     private long count;
 

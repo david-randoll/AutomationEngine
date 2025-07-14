@@ -13,6 +13,7 @@ import java.util.Map;
 @NoArgsConstructor
 public class HttpHeaderConditionContext implements IConditionContext {
     private String alias;
+    private String description;
 
     @JsonAnySetter
     @JsonAnyGetter

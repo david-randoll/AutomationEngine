@@ -11,4 +11,5 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = true)
 public class HttpMethodConditionContext extends MatchContext implements IConditionContext {
     private String alias;
+    private String description;
 }

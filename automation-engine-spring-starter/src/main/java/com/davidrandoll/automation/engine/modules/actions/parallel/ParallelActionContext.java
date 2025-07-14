@@ -15,5 +15,6 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ParallelActionContext implements IActionContext {
     private String alias;
+    private String description;
     private List<Action> actions;
 }

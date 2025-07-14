@@ -16,6 +16,7 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class WaitForTriggerActionContext implements IActionContext {
     private String alias;
+    private String description;
     private List<Trigger> triggers;
     private Duration timeout;
 }

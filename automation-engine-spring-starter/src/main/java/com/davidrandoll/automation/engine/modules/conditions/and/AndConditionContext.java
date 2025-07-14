@@ -16,5 +16,6 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AndConditionContext implements IConditionContext {
     private String alias;
+    private String description;
     private List<Condition> conditions = new ArrayList<>();
 }

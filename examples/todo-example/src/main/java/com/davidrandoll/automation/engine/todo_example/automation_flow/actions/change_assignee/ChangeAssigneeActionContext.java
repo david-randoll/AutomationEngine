@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ChangeAssigneeActionContext implements IActionContext {
     private String alias;
+    private String description;
 
     @JsonAlias({"id", "todoId"})
     private Long todoId;

@@ -18,6 +18,7 @@ import java.util.List;
 @NoArgsConstructor
 public class OnHttpRequestTriggerContext implements ITriggerContext {
     private String alias;
+    private String description;
 
     @JsonAlias({"method", "methods"})
     @FlexibleHttpMethodList

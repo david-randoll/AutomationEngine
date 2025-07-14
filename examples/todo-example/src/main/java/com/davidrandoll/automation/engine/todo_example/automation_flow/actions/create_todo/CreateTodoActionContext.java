@@ -14,6 +14,8 @@ public class CreateTodoActionContext implements IActionContext {
     @Getter
     private String alias;
     @Getter
+    private String description;
+    @Getter
     private String title;
     @Getter
     private String storeToVariable = "todo";

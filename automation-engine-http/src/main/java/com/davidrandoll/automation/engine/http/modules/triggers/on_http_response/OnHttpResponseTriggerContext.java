@@ -24,6 +24,7 @@ import java.util.Map;
 @NoArgsConstructor
 public class OnHttpResponseTriggerContext implements ITriggerContext {
     private String alias;
+    private String description;
 
     @JsonAlias({"method", "methods"})
     @FlexibleHttpMethodList

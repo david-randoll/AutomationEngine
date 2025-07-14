@@ -14,6 +14,7 @@ import java.time.LocalTime;
 @JsonIgnoreProperties
 public class TimeBasedConditionContext implements IConditionContext {
     private String alias;
+    private String description;
     private LocalTime before;
     private LocalTime after;
     private boolean inclusive = false;

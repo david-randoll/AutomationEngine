@@ -12,5 +12,6 @@ import java.time.LocalTime;
 @NoArgsConstructor
 public class TimeBasedTriggerContext implements ITriggerContext {
     private String alias;
+    private String description;
     private LocalTime at;
 }

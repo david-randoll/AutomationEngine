@@ -18,6 +18,7 @@ import java.util.List;
 @Builder
 public class OnHttpPathExistsTriggerContext implements ITriggerContext {
     private String alias;
+    private String description;
 
     @JsonAlias({"path", "paths", "url", "fullPath"})
     @FlexibleStringList

@@ -9,5 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class HttpResponseBodyConditionContext implements IConditionContext {
     private String alias;
+    private String description;
     private JsonNode responseBody;
 }

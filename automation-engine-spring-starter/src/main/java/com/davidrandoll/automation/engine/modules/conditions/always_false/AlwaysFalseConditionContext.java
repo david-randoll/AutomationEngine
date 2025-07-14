@@ -10,4 +10,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AlwaysFalseConditionContext implements IConditionContext {
     private String alias;
+    private String description;
 }

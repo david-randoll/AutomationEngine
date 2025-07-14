@@ -24,6 +24,7 @@ import static org.springframework.http.MediaType.MULTIPART_FORM_DATA;
 @NoArgsConstructor
 public class SendHttpRequestActionContext implements IActionContext {
     private String alias;
+    private String description;
     private String url;
     private HttpMethod method;
 

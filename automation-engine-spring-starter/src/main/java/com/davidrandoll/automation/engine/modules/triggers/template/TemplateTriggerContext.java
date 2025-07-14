@@ -12,5 +12,6 @@ import lombok.NoArgsConstructor;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class TemplateTriggerContext implements ITriggerContext {
     private String alias;
+    private String description;
     private String expression;
 }

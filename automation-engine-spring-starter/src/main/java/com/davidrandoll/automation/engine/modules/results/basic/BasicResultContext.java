@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class BasicResultContext implements IResultContext {
     private String alias;
+    private String description;
 
     @JsonAnySetter
     @JsonAnyGetter

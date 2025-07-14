@@ -14,6 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 public class OnHttpPathExistsConditionContext implements IConditionContext {
     private String alias;
+    private String description;
 
     @JsonAlias({"path", "paths", "url", "fullPath"})
     @FlexibleStringList

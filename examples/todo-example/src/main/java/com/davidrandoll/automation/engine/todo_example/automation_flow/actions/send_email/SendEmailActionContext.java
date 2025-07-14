@@ -12,6 +12,7 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class SendEmailActionContext implements IActionContext {
     private String alias;
+    private String description;
     private String to;
     private String subject;
     private String body;

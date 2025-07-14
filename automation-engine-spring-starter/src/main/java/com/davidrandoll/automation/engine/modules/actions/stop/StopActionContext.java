@@ -14,6 +14,7 @@ import org.springframework.util.ObjectUtils;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class StopActionContext implements IActionContext {
     private String alias;
+    private String description;
     private Condition condition;
     private boolean stopActionSequence;
     private boolean stopAutomation;

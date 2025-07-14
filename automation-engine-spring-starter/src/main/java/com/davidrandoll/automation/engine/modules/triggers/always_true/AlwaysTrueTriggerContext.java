@@ -10,4 +10,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AlwaysTrueTriggerContext implements ITriggerContext {
     private String alias;
+    private String description;
 }

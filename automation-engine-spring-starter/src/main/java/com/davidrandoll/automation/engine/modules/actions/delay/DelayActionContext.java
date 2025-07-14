@@ -14,6 +14,7 @@ import java.time.Duration;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DelayActionContext implements IActionContext {
     private String alias;
+    private String description;
     /**
      * Duration to wait before executing the next action.
      * The duration is specified using the ISO-8601 format:

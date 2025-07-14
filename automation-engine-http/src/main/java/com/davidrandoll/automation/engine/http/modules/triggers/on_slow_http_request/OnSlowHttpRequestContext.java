@@ -11,6 +11,7 @@ import java.time.Duration;
 @NoArgsConstructor
 public class OnSlowHttpRequestContext implements ITriggerContext {
     private String alias;
+    private String description;
     @JsonAlias({"timeout", "duration"})
     private Duration duration;
 

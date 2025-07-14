@@ -18,6 +18,7 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class IfThenElseVariableContext implements IVariableContext {
     private String alias;
+    private String description;
 
     @JsonProperty("if")
     private List<Condition> ifConditions = new ArrayList<>();

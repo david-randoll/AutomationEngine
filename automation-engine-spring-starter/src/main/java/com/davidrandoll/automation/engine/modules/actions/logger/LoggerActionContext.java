@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class LoggerActionContext implements IActionContext {
     private String alias;
+    private String description;
     private String level = "INFO";
     private String message = "No message";
 }
