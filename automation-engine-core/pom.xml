@@ -11,6 +11,9 @@
 
     <artifactId>automation-engine-core</artifactId>
     <name>Automation Engine Core</name>
+    <description>
+        Core module of the Automation Engine, providing essential functionalities and utilities.
+    </description>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>

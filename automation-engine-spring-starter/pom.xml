@@ -11,6 +11,9 @@
 
     <artifactId>automation-engine-spring-starter</artifactId>
     <name>Automation Engine Spring Starter</name>
+    <description>
+        A Spring Boot starter for the Automation Engine, providing essential configurations and dependencies.
+    </description>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>

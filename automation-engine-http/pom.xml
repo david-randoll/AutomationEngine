@@ -11,6 +11,10 @@
 
     <artifactId>automation-engine-http</artifactId>
     <name>Automation Engine Http</name>
+    <description>
+        This module provides HTTP support for the Automation Engine.
+        It includes the necessary dependencies and configurations to enable HTTP-based automation tasks.
+    </description>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>

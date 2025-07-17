@@ -11,6 +11,9 @@
 
     <artifactId>automation-engine-templating</artifactId>
     <name>Automation Engine Templating</name>
+    <description>
+        Provides templating capabilities for the Automation Engine using Pebble templates.
+    </description>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
