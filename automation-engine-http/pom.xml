@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.davidrandoll</groupId>
         <artifactId>automation-engine</artifactId>
-        <version>0.0.2-beta</version>
+        <version>1.0.0</version>
     </parent>
 
     <artifactId>automation-engine-http</artifactId>
@@ -17,7 +17,7 @@
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <spring-web-captor.version>0.0.1-beta</spring-web-captor.version>
+        <spring-web-captor.version>1.0.0</spring-web-captor.version>
     </properties>
 
     <dependencies>

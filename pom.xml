@@ -5,12 +5,12 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.0</version>
+        <version>3.5.3</version>
         <relativePath/>
     </parent>
     <groupId>com.davidrandoll</groupId>
     <artifactId>automation-engine</artifactId>
-    <version>0.0.2-beta</version>
+    <version>1.0.0</version>
     <packaging>pom</packaging>
     <name>Automation Engine</name>
     <description>A powerful, extensible automation engine for Java and Spring Boot. Define and run dynamic, event-driven

@@ -2,8 +2,8 @@ name: Publish to GitHub Packages
 
 on:
   workflow_dispatch:
-  release:
-    types: [ created ]
+  push:
+    tags: [ "*.*.*" ] # Matches version tags like 1.0.0, 0.1.2, etc.
 
 jobs:
   publish:
