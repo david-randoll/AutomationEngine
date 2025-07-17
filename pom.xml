@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.davidrandoll</groupId>
     <artifactId>automation-engine</artifactId>
-    <version>0.0.1-beta</version>
+    <version>0.0.2-beta</version>
     <packaging>pom</packaging>
     <name>Automation Engine</name>
     <description>A powerful, extensible automation engine for Java and Spring Boot. Define and run dynamic, event-driven

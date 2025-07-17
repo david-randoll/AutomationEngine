@@ -34,7 +34,7 @@ To use AutomationEngine with Spring Boot, add the following dependency:
 <dependency>
     <groupId>com.davidrandoll</groupId>
     <artifactId>automation-engine-spring-starter</artifactId>
-    <version>0.0.1-beta</version>
+    <version>0.0.2-beta</version>
 </dependency>
 ```
 

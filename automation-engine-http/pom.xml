@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.davidrandoll</groupId>
         <artifactId>automation-engine</artifactId>
-        <version>0.0.1-beta</version>
+        <version>0.0.2-beta</version>
     </parent>
 
     <artifactId>automation-engine-http</artifactId>
