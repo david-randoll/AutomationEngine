@@ -1,0 +1,44 @@
+name: Publish to Maven Central Repository
+
+on:
+  workflow_dispatch:
+  release:
+    types: [ created ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      GPG_KEYNAME: ${{ secrets.GPG_KEYNAME }}
+      GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+      MAVEN_CENTRAL_REPOSITORY_SONATYPE_USERNAME: ${{ secrets.MAVEN_CENTRAL_REPOSITORY_SONATYPE_USERNAME }}
+      MAVEN_CENTRAL_REPOSITORY_SONATYPE_TOKEN: ${{ secrets.MAVEN_CENTRAL_REPOSITORY_SONATYPE_TOKEN }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          cache: 'maven'
+          server-id: central  # MUST MATCH <publishingServerId>
+          server-username: MAVEN_CENTRAL_REPOSITORY_SONATYPE_USERNAME
+          server-password: MAVEN_CENTRAL_REPOSITORY_SONATYPE_TOKEN
+
+      - name: Import GPG key
+        run: |
+          echo "${{ secrets.GPG_PRIVATE_KEY }}" | gpg --batch --import
+          echo "allow-loopback-pinentry" >> ~/.gnupg/gpg-agent.conf
+          echo "use-agent" >> ~/.gnupg/gpg.conf
+          gpgconf --kill gpg-agent
+          gpgconf --launch gpg-agent
+
+      - name: Deploy to Maven Central
+        run: |
+          mvn --batch-mode clean deploy -Pcentral \
+            -Dgpg.keyname="${GPG_KEYNAME}" \
+            -Dgpg.passphrase="${GPG_PASSPHRASE}"

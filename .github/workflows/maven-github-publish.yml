@@ -1,6 +1,7 @@
-name: Maven Publish to GitHub Packages
+name: Publish to GitHub Packages
 
 on:
+  workflow_dispatch:
   release:
     types: [ created ]
 
@@ -24,6 +25,8 @@ jobs:
           settings-path: ${{ github.workspace }}
 
       - name: Deploy only modules
-        run: mvn -B deploy -pl automation-engine-core,automation-engine-templating,automation-engine-spring-starter,automation-engine-http -am -DskipTests=true -s $GITHUB_WORKSPACE/settings.xml
+        run: |
+          mvn -B deploy -pl automation-engine-core,automation-engine-templating,automation-engine-spring-starter,automation-engine-http -am \
+          -DskipTests=true -Pgithub -s $GITHUB_WORKSPACE/settings.xml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

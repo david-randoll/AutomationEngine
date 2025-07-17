@@ -74,14 +74,18 @@ AutomationCreator factory;// inject from spring context
 
 String yaml = "...";
 Automation automation = factory.createAutomation("yaml", yaml);
-engine.register(automation);
+engine.
+
+register(automation);
 ```
 
 To publish an event and trigger matching automations:
 
 ```java
 TodoCreateEvent event = new TodoCreateEvent("Buy groceries", "johndoe@example.com", "OPEN");
-engine.publishEvent(event); // This triggers the automation
+engine.
+
+publishEvent(event); // This triggers the automation
 ```
 
 ## Manual Execution
@@ -215,7 +219,11 @@ In YAML:
 ```
 
 # Inspiration
-This project was inspired by [Home Assistant](https://github.com/home-assistant/core) an open-source platform for home automation that allows users to define automations in YAML based on triggers, conditions, and actions. AutomationEngine brings a similar declarative approach to the Java and Spring ecosystem, making it easy to build dynamic workflows across backend services and business domains.
+
+This project was inspired by [Home Assistant](https://github.com/home-assistant/core) an open-source platform for home
+automation that allows users to define automations in YAML based on triggers, conditions, and actions. AutomationEngine
+brings a similar declarative approach to the Java and Spring ecosystem, making it easy to build dynamic workflows across
+backend services and business domains.
 
 ## Contributing
 
@@ -232,10 +240,6 @@ To contribute:
 Please ensure your code follows the existing style and passes any automated checks.
 
 Thank you for helping improve this project!
-
-## License
-
-MIT License
 
 ---
 

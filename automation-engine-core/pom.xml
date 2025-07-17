@@ -10,6 +10,7 @@
     </parent>
 
     <artifactId>automation-engine-core</artifactId>
+    <name>Automation Engine Core</name>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>

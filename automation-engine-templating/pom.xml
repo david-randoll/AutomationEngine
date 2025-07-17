@@ -10,6 +10,7 @@
     </parent>
 
     <artifactId>automation-engine-templating</artifactId>
+    <name>Automation Engine Templating</name>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>

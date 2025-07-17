@@ -10,6 +10,7 @@
     </parent>
 
     <artifactId>automation-engine-http</artifactId>
+    <name>Automation Engine Http</name>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
