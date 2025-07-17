@@ -26,7 +26,7 @@ jobs:
 
       - name: Deploy only modules
         run: |
-          mvn -B deploy -pl automation-engine-core,automation-engine-templating,automation-engine-spring-starter,automation-engine-http -am \
-          -DskipTests=true -Pgithub -s $GITHUB_WORKSPACE/settings.xml
+          mvn --batch-mode clean deploy \
+              -DskipTests=true -Pgithub -s $GITHUB_WORKSPACE/settings.xml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
