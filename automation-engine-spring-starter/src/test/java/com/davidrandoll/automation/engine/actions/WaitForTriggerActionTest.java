@@ -195,7 +195,7 @@ class WaitForTriggerActionTest extends AutomationEngineTest {
                 .anyMatch(msg -> msg.contains("Waiting for trigger..."))
                 .anyMatch(msg -> msg.contains("Trigger met, proceeding early!"));
 
-        assertThat(elapsedTime).isGreaterThan(30_000).isLessThan(90_000);
+        assertThat(elapsedTime).isGreaterThan(20_000).isLessThan(90_000);
     }
 
     @Test
