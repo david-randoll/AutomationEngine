@@ -3,7 +3,7 @@ package com.davidrandoll.automation.engine.config;
 import com.davidrandoll.automation.engine.AutomationEngine;
 import com.davidrandoll.automation.engine.core.AutomationHandler;
 import com.davidrandoll.automation.engine.core.events.publisher.IEventPublisher;
-import com.davidrandoll.automation.engine.creator.AutomationCreator;
+import com.davidrandoll.automation.engine.creator.AutomationFactory;
 import com.davidrandoll.automation.engine.creator.AutomationProcessor;
 import com.davidrandoll.automation.engine.creator.actions.ActionBuilder;
 import com.davidrandoll.automation.engine.creator.conditions.ConditionBuilder;
@@ -27,7 +27,7 @@ public class CoreConfig {
 
     @Bean
     @ConditionalOnMissingBean
-    public AutomationEngine automationEngine(AutomationHandler handler, AutomationCreator creator, EventFactory eventFactory) {
+    public AutomationEngine automationEngine(AutomationHandler handler, AutomationFactory creator, EventFactory eventFactory) {
         return new AutomationEngine(handler, creator, eventFactory);
     }
 
@@ -49,7 +49,7 @@ public class CoreConfig {
 
     @Bean
     @ConditionalOnMissingBean
-    public AutomationCreator automationCreator(ManualAutomationBuilder builder, AutomationParserRouter router) {
-        return new AutomationCreator(builder, router);
+    public AutomationFactory automationCreator(ManualAutomationBuilder builder, AutomationParserRouter router) {
+        return new AutomationFactory(builder, router);
     }
 }

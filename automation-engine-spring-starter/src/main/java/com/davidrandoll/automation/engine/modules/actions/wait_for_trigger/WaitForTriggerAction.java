@@ -1,7 +1,7 @@
 package com.davidrandoll.automation.engine.modules.actions.wait_for_trigger;
 
 import com.davidrandoll.automation.engine.core.events.EventContext;
-import com.davidrandoll.automation.engine.creator.triggers.Trigger;
+import com.davidrandoll.automation.engine.creator.triggers.TriggerDefinition;
 import com.davidrandoll.automation.engine.provider.AEConfigProvider;
 import com.davidrandoll.automation.engine.spi.PluggableAction;
 import lombok.RequiredArgsConstructor;
@@ -77,6 +77,6 @@ public class WaitForTriggerAction extends PluggableAction<WaitForTriggerActionCo
         }
     }
 
-    private record WaitingAction(List<Trigger> triggers, CompletableFuture<Boolean> future) {
+    private record WaitingAction(List<TriggerDefinition> triggers, CompletableFuture<Boolean> future) {
     }
 }

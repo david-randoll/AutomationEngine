@@ -8,11 +8,11 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RequiredArgsConstructor
-public class AutomationCreator {
+public class AutomationFactory {
     private final ManualAutomationBuilder builder;
     private final AutomationParserRouter router;
 
-    public Automation createAutomation(CreateAutomationRequest createRequest) {
+    public Automation createAutomation(AutomationDefinition createRequest) {
         return builder.create(createRequest);
     }
 

@@ -1,7 +1,7 @@
 package com.davidrandoll.automation.engine.modules.actions.sequence;
 
 import com.davidrandoll.automation.engine.core.actions.IActionContext;
-import com.davidrandoll.automation.engine.creator.actions.Action;
+import com.davidrandoll.automation.engine.creator.actions.ActionDefinition;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,5 +16,5 @@ import java.util.List;
 public class SequenceActionContext implements IActionContext {
     private String alias;
     private String description;
-    private List<Action> actions;
+    private List<ActionDefinition> actions;
 }

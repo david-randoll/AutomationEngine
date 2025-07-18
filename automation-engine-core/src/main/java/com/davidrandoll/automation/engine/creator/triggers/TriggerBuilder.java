@@ -19,12 +19,12 @@ public class TriggerBuilder {
     private final ITriggerSupplier supplier;
     private final List<ITriggerInterceptor> triggerInterceptors;
 
-    public BaseTriggerList resolve(List<Trigger> triggers) {
+    public BaseTriggerList resolve(List<TriggerDefinition> triggers) {
         var result = new BaseTriggerList();
 
         if (isNull(triggers)) return result;
 
-        for (Trigger trigger : triggers) {
+        for (TriggerDefinition trigger : triggers) {
             IBaseTrigger newTriggerInstance = buildTrigger(trigger);
             result.add(newTriggerInstance);
         }
@@ -32,7 +32,7 @@ public class TriggerBuilder {
         return result;
     }
 
-    private IBaseTrigger buildTrigger(Trigger trigger) {
+    private IBaseTrigger buildTrigger(TriggerDefinition trigger) {
         ITrigger triggerInstance = Optional.ofNullable(supplier.getTrigger(trigger.getTrigger()))
                 .orElseThrow(() -> new TriggerNotFoundException(trigger.getTrigger()));
 
@@ -43,17 +43,17 @@ public class TriggerBuilder {
     }
 
 
-    public boolean anyTriggersTriggered(EventContext eventContext, List<Trigger> triggers) {
+    public boolean anyTriggersTriggered(EventContext eventContext, List<TriggerDefinition> triggers) {
         BaseTriggerList resolvedTriggers = resolve(triggers);
         return resolvedTriggers.anyTriggered(eventContext);
     }
 
-    public boolean allTriggersTriggered(EventContext eventContext, List<Trigger> triggers) {
+    public boolean allTriggersTriggered(EventContext eventContext, List<TriggerDefinition> triggers) {
         BaseTriggerList resolvedTriggers = resolve(triggers);
         return resolvedTriggers.allTriggered(eventContext);
     }
 
-    public boolean noneTriggersTriggered(EventContext eventContext, List<Trigger> triggers) {
+    public boolean noneTriggersTriggered(EventContext eventContext, List<TriggerDefinition> triggers) {
         BaseTriggerList resolvedTriggers = resolve(triggers);
         return resolvedTriggers.noneTriggered(eventContext);
     }

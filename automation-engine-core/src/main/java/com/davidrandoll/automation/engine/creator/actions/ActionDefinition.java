@@ -1,9 +1,10 @@
-package com.davidrandoll.automation.engine.creator.variables;
+package com.davidrandoll.automation.engine.creator.actions;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,11 +17,11 @@ import java.util.Map;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Variable {
+public class ActionDefinition {
     private String alias;
-
-    @JsonAlias({"variable", "type"})
-    private String variable = "basic";
+    @NotEmpty
+    @JsonAlias({"action", "type"})
+    private String action;
 
     @JsonIgnore
     @JsonAnyGetter

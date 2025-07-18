@@ -7,18 +7,18 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import java.io.IOException;
 
-public class ResultDeserializer extends JsonDeserializer<Result> {
+public class ResultDeserializer extends JsonDeserializer<ResultDefinition> {
 
     @Override
-    public Result deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+    public ResultDefinition deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
         JsonNode node = p.getCodec().readTree(p);
 
         if (node.isObject() && !node.isEmpty()) {
             // let jackson handle the deserialization
-            return p.getCodec().treeToValue(node, Result.class);
+            return p.getCodec().treeToValue(node, ResultDefinition.class);
         } else {
             // can be primitive, text or array
-            Result result = new Result();
+            ResultDefinition result = new ResultDefinition();
             result.setParams(node);
             return result;
         }

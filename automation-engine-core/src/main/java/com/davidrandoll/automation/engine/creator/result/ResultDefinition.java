@@ -1,30 +1,27 @@
-package com.davidrandoll.automation.engine.creator.actions;
+package com.davidrandoll.automation.engine.creator.result;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.validation.constraints.NotEmpty;
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.HashMap;
-import java.util.Map;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Action {
+public class ResultDefinition {
     private String alias;
-    @NotEmpty
-    @JsonAlias({"action", "type"})
-    private String action;
+
+    @JsonAlias({"result", "return", "type"})
+    private String result = "basic";
 
     @JsonIgnore
     @JsonAnyGetter
     @JsonAnySetter
-    private Map<String, Object> params = new HashMap<>();
+    private JsonNode params;
 }

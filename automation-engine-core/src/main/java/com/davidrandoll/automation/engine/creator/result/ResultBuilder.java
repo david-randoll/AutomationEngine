@@ -16,7 +16,7 @@ public class ResultBuilder {
     private final IResultSupplier supplier;
     private final List<IResultInterceptor> interceptors;
 
-    public IBaseResult resolve(Result result) {
+    public IBaseResult resolve(ResultDefinition result) {
         IResult instance = Optional.ofNullable(supplier.getResult(result.getResult()))
                 .orElseThrow(() -> new ResultNotFoundException(result.getResult()));
 
@@ -26,7 +26,7 @@ public class ResultBuilder {
         return ec -> interceptingResult.getExecutionSummary(ec, resultContext);
     }
 
-    public Object resolveResult(EventContext eventContext, Result result) {
+    public Object resolveResult(EventContext eventContext, ResultDefinition result) {
         IBaseResult resolvedResult = resolve(result);
         return resolvedResult.getExecutionSummary(eventContext);
     }

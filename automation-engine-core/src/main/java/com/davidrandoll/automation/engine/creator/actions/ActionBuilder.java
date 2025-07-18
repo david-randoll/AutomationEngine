@@ -20,7 +20,7 @@ public class ActionBuilder {
     private final IActionSupplier supplier;
     private final List<IActionInterceptor> actionInterceptors;
 
-    public BaseActionList resolve(List<Action> actions) {
+    public BaseActionList resolve(List<ActionDefinition> actions) {
         var result = new BaseActionList();
 
         if (isNull(actions)) return result;
@@ -34,7 +34,7 @@ public class ActionBuilder {
         return result;
     }
 
-    private IBaseAction buildAction(Action action) {
+    private IBaseAction buildAction(ActionDefinition action) {
         IAction actionInstance = Optional.ofNullable(supplier.getAction(action.getAction()))
                 .orElseThrow(() -> new ActionNotFoundException(action.getAction()));
 
@@ -44,17 +44,17 @@ public class ActionBuilder {
         return eventContext -> interceptingAction.execute(eventContext, actionContext);
     }
 
-    public void executeActions(EventContext eventContext, List<Action> actions) {
+    public void executeActions(EventContext eventContext, List<ActionDefinition> actions) {
         BaseActionList resolvedActions = resolve(actions);
         resolvedActions.executeAll(eventContext);
     }
 
-    public void executeActionsAsync(EventContext eventContext, List<Action> actions) {
+    public void executeActionsAsync(EventContext eventContext, List<ActionDefinition> actions) {
         BaseActionList resolvedActions = resolve(actions);
         resolvedActions.executeAllAsync(eventContext);
     }
 
-    public void executeActionsAsync(EventContext eventContext, List<Action> actions, Executor executor) {
+    public void executeActionsAsync(EventContext eventContext, List<ActionDefinition> actions, Executor executor) {
         BaseActionList resolvedActions = resolve(actions);
         resolvedActions.executeAllAsync(eventContext, executor);
     }

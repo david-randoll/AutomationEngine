@@ -1,7 +1,7 @@
 package com.davidrandoll.automation.engine.creator.parsers.yaml;
 
 import com.davidrandoll.automation.engine.core.Automation;
-import com.davidrandoll.automation.engine.creator.CreateAutomationRequest;
+import com.davidrandoll.automation.engine.creator.AutomationDefinition;
 import com.davidrandoll.automation.engine.creator.parsers.IAutomationFormatParser;
 import com.davidrandoll.automation.engine.creator.parsers.ManualAutomationBuilder;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +13,7 @@ public class YamlAutomationParser implements IAutomationFormatParser<String> {
 
     @Override
     public Automation create(String yaml) {
-        CreateAutomationRequest createRequest = converter.convert(yaml, CreateAutomationRequest.class);
+        AutomationDefinition createRequest = converter.convert(yaml, AutomationDefinition.class);
         return builder.create(createRequest);
     }
 }

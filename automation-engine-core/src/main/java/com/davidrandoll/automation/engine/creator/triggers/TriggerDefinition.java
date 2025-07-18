@@ -1,4 +1,4 @@
-package com.davidrandoll.automation.engine.creator.conditions;
+package com.davidrandoll.automation.engine.creator.triggers;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
@@ -17,11 +17,11 @@ import java.util.Map;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Condition {
+public class TriggerDefinition {
     private String alias;
     @NotEmpty
-    @JsonAlias({"type", "condition"})
-    private String condition;
+    @JsonAlias({"type", "trigger"})
+    private String trigger;
 
     @JsonIgnore
     @JsonAnyGetter

@@ -19,12 +19,12 @@ public class VariableBuilder {
     private final IVariableSupplier supplier;
     private final List<IVariableInterceptor> variableInterceptors;
 
-    public BaseVariableList resolve(List<Variable> variables) {
+    public BaseVariableList resolve(List<VariableDefinition> variables) {
         var result = new BaseVariableList();
 
         if (isNull(variables)) return result;
 
-        for (Variable variable : variables) {
+        for (VariableDefinition variable : variables) {
             IBaseVariable newVariableInstance = buildVariable(variable);
             result.add(newVariableInstance);
         }
@@ -32,7 +32,7 @@ public class VariableBuilder {
         return result;
     }
 
-    private IBaseVariable buildVariable(Variable variable) {
+    private IBaseVariable buildVariable(VariableDefinition variable) {
         IVariable variableInstance = Optional.ofNullable(supplier.getVariable(variable.getVariable()))
                 .orElseThrow(() -> new VariableNotFoundException(variable.getVariable()));
 
@@ -43,7 +43,7 @@ public class VariableBuilder {
     }
 
 
-    public void resolveVariables(EventContext eventContext, List<Variable> variables) {
+    public void resolveVariables(EventContext eventContext, List<VariableDefinition> variables) {
         BaseVariableList resolvedVariables = resolve(variables);
         resolvedVariables.resolveAll(eventContext);
     }
