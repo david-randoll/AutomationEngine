@@ -1,8 +1,8 @@
 package com.davidrandoll.automation.engine.modules.actions.repeat;
 
 import com.davidrandoll.automation.engine.core.actions.IActionContext;
-import com.davidrandoll.automation.engine.creator.actions.Action;
-import com.davidrandoll.automation.engine.creator.conditions.Condition;
+import com.davidrandoll.automation.engine.creator.actions.ActionDefinition;
+import com.davidrandoll.automation.engine.creator.conditions.ConditionDefinition;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -23,16 +23,16 @@ public class RepeatActionContext implements IActionContext {
     private long count;
 
     @JsonProperty("while")
-    private List<Condition> whileConditions;
+    private List<ConditionDefinition> whileConditions;
 
     @JsonProperty("until")
-    private List<Condition> untilConditions;
+    private List<ConditionDefinition> untilConditions;
 
     @JsonProperty("for_each")
     private List<Object> forEach;
 
     // actions to repeat
-    private List<Action> actions;
+    private List<ActionDefinition> actions;
 
     public boolean hasWhileConditions() {
         return !ObjectUtils.isEmpty(whileConditions);

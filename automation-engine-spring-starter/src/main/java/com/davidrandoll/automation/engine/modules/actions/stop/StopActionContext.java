@@ -1,7 +1,7 @@
 package com.davidrandoll.automation.engine.modules.actions.stop;
 
 import com.davidrandoll.automation.engine.core.actions.IActionContext;
-import com.davidrandoll.automation.engine.creator.conditions.Condition;
+import com.davidrandoll.automation.engine.creator.conditions.ConditionDefinition;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,7 +15,7 @@ import org.springframework.util.ObjectUtils;
 public class StopActionContext implements IActionContext {
     private String alias;
     private String description;
-    private Condition condition;
+    private ConditionDefinition condition;
     private boolean stopActionSequence;
     private boolean stopAutomation;
     private String stopMessage;

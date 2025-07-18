@@ -19,7 +19,7 @@ public class ConditionBuilder {
     private final IConditionSupplier supplier;
     private final List<IConditionInterceptor> conditionInterceptors;
 
-    public BaseConditionList resolve(List<Condition> conditions) {
+    public BaseConditionList resolve(List<ConditionDefinition> conditions) {
         var result = new BaseConditionList();
 
         if (isNull(conditions)) return result;
@@ -33,7 +33,7 @@ public class ConditionBuilder {
         return result;
     }
 
-    private IBaseCondition buildCondition(Condition condition) {
+    private IBaseCondition buildCondition(ConditionDefinition condition) {
         ICondition conditionInstance = Optional.ofNullable(supplier.getCondition(condition.getCondition()))
                 .orElseThrow(() -> new ConditionNotFoundException(condition.getCondition()));
 
@@ -43,17 +43,17 @@ public class ConditionBuilder {
         return eventContext -> interceptingCondition.isSatisfied(eventContext, conditionContext);
     }
 
-    public boolean allConditionsSatisfied(EventContext eventContext, List<Condition> conditions) {
+    public boolean allConditionsSatisfied(EventContext eventContext, List<ConditionDefinition> conditions) {
         BaseConditionList resolvedConditions = resolve(conditions);
         return resolvedConditions.allSatisfied(eventContext);
     }
 
-    public boolean anyConditionSatisfied(EventContext eventContext, List<Condition> conditions) {
+    public boolean anyConditionSatisfied(EventContext eventContext, List<ConditionDefinition> conditions) {
         BaseConditionList resolvedConditions = resolve(conditions);
         return resolvedConditions.anySatisfied(eventContext);
     }
 
-    public boolean noneConditionSatisfied(EventContext eventContext, List<Condition> conditions) {
+    public boolean noneConditionSatisfied(EventContext eventContext, List<ConditionDefinition> conditions) {
         BaseConditionList resolvedConditions = resolve(conditions);
         return resolvedConditions.noneSatisfied(eventContext);
     }

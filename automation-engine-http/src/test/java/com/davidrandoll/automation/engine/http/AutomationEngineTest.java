@@ -2,7 +2,7 @@ package com.davidrandoll.automation.engine.http;
 
 import ch.qos.logback.classic.Logger;
 import com.davidrandoll.automation.engine.AutomationEngine;
-import com.davidrandoll.automation.engine.creator.AutomationCreator;
+import com.davidrandoll.automation.engine.creator.AutomationFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInstance;
@@ -23,7 +23,7 @@ public class AutomationEngineTest {
     protected AutomationEngine engine;
 
     @Autowired
-    protected AutomationCreator factory;
+    protected AutomationFactory factory;
 
     protected TestLogAppender logAppender;
 

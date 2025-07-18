@@ -1,8 +1,8 @@
 package com.davidrandoll.automation.engine.modules.actions.if_then_else;
 
 import com.davidrandoll.automation.engine.core.actions.IActionContext;
-import com.davidrandoll.automation.engine.creator.actions.Action;
-import com.davidrandoll.automation.engine.creator.conditions.Condition;
+import com.davidrandoll.automation.engine.creator.actions.ActionDefinition;
+import com.davidrandoll.automation.engine.creator.conditions.ConditionDefinition;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -21,16 +21,16 @@ public class IfThenElseActionContext implements IActionContext {
     private String description;
 
     @JsonProperty("if")
-    private List<Condition> ifConditions = new ArrayList<>();
+    private List<ConditionDefinition> ifConditions = new ArrayList<>();
 
     @JsonProperty("then")
-    private List<Action> thenActions = new ArrayList<>();
+    private List<ActionDefinition> thenActions = new ArrayList<>();
 
     @JsonProperty("ifs")
     private List<IfThenBlock> ifThenBlocks = new ArrayList<>();
 
     @JsonProperty("else")
-    private List<Action> elseActions = new ArrayList<>();
+    private List<ActionDefinition> elseActions = new ArrayList<>();
 
     @Data
     @AllArgsConstructor
@@ -40,9 +40,9 @@ public class IfThenElseActionContext implements IActionContext {
         private String alias;
 
         @JsonProperty("if")
-        private List<Condition> ifConditions = new ArrayList<>();
+        private List<ConditionDefinition> ifConditions = new ArrayList<>();
 
         @JsonProperty("then")
-        private List<Action> thenActions = new ArrayList<>();
+        private List<ActionDefinition> thenActions = new ArrayList<>();
     }
 }

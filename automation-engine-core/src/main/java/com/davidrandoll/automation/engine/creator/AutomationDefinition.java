@@ -1,11 +1,11 @@
 package com.davidrandoll.automation.engine.creator;
 
-import com.davidrandoll.automation.engine.creator.actions.Action;
-import com.davidrandoll.automation.engine.creator.conditions.Condition;
-import com.davidrandoll.automation.engine.creator.result.Result;
+import com.davidrandoll.automation.engine.creator.actions.ActionDefinition;
+import com.davidrandoll.automation.engine.creator.conditions.ConditionDefinition;
+import com.davidrandoll.automation.engine.creator.result.ResultDefinition;
 import com.davidrandoll.automation.engine.creator.result.ResultDeserializer;
-import com.davidrandoll.automation.engine.creator.triggers.Trigger;
-import com.davidrandoll.automation.engine.creator.variables.Variable;
+import com.davidrandoll.automation.engine.creator.triggers.TriggerDefinition;
+import com.davidrandoll.automation.engine.creator.variables.VariableDefinition;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -24,36 +24,36 @@ import java.util.Optional;
 @NoArgsConstructor
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class CreateAutomationRequest {
+public class AutomationDefinition {
     @Getter
     private String alias;
-    private List<Variable> variables = new ArrayList<>();
-    private List<Trigger> triggers = new ArrayList<>();
-    private List<Condition> conditions = new ArrayList<>();
-    private List<Action> actions = new ArrayList<>();
+    private List<VariableDefinition> variables = new ArrayList<>();
+    private List<TriggerDefinition> triggers = new ArrayList<>();
+    private List<ConditionDefinition> conditions = new ArrayList<>();
+    private List<ActionDefinition> actions = new ArrayList<>();
 
     @JsonAlias({"execution_summary", "result", "summary", "executionResult", "return"})
     @JsonDeserialize(using = ResultDeserializer.class)
-    private Result result = new Result();
+    private ResultDefinition result = new ResultDefinition();
 
-    public List<Variable> getVariables() {
+    public List<VariableDefinition> getVariables() {
         return getNonNullList(variables);
     }
 
-    public List<Trigger> getTriggers() {
+    public List<TriggerDefinition> getTriggers() {
         return getNonNullList(triggers);
     }
 
-    public List<Condition> getConditions() {
+    public List<ConditionDefinition> getConditions() {
         return getNonNullList(conditions);
     }
 
-    public List<Action> getActions() {
+    public List<ActionDefinition> getActions() {
         return getNonNullList(actions);
     }
 
-    public Result getResult() {
-        return Optional.ofNullable(result).orElse(new Result());
+    public ResultDefinition getResult() {
+        return Optional.ofNullable(result).orElse(new ResultDefinition());
     }
 
     private <T> List<T> getNonNullList(List<T> list) {

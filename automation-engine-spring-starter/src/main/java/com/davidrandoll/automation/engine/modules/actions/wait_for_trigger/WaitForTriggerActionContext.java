@@ -1,7 +1,7 @@
 package com.davidrandoll.automation.engine.modules.actions.wait_for_trigger;
 
 import com.davidrandoll.automation.engine.core.actions.IActionContext;
-import com.davidrandoll.automation.engine.creator.triggers.Trigger;
+import com.davidrandoll.automation.engine.creator.triggers.TriggerDefinition;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,6 +17,6 @@ import java.util.List;
 public class WaitForTriggerActionContext implements IActionContext {
     private String alias;
     private String description;
-    private List<Trigger> triggers;
+    private List<TriggerDefinition> triggers;
     private Duration timeout;
 }

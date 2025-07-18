@@ -5,7 +5,7 @@ import com.davidrandoll.automation.engine.core.AutomationHandler;
 import com.davidrandoll.automation.engine.core.events.EventContext;
 import com.davidrandoll.automation.engine.core.events.IEvent;
 import com.davidrandoll.automation.engine.core.result.AutomationResult;
-import com.davidrandoll.automation.engine.creator.AutomationCreator;
+import com.davidrandoll.automation.engine.creator.AutomationFactory;
 import com.davidrandoll.automation.engine.creator.events.EventFactory;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +13,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AutomationEngine {
     private final AutomationHandler handler;
-    private final AutomationCreator factory;
+    private final AutomationFactory factory;
 
     @Getter
     private final EventFactory eventFactory;
