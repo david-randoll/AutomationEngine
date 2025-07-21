@@ -33,8 +33,8 @@ To use AutomationEngine with Spring Boot, add the following dependency:
 
 <dependency>
     <groupId>com.davidrandoll</groupId>
-    <artifactId>automation-engine-spring-starter</artifactId>
-    <version>1.0.0</version>
+    <artifactId>spring-boot-starter-automation-engine</artifactId>
+    <version>1.1.0</version>
 </dependency>
 ```
 
@@ -72,20 +72,20 @@ actions:
 AutomationEngine engine; // inject from spring context
 AutomationCreator factory;// inject from spring context
 
-String yaml = "...";
-Automation automation = factory.createAutomation("yaml", yaml);
-engine.
-
-register(automation);
+public void run() {
+    String yaml = "...";
+    Automation automation = factory.createAutomation("yaml", yaml);
+    engine.register(automation);
+}
 ```
 
 To publish an event and trigger matching automations:
 
 ```java
-TodoCreateEvent event = new TodoCreateEvent("Buy groceries", "johndoe@example.com", "OPEN");
-engine.
-
-publishEvent(event); // This triggers the automation
+public void run() {
+    TodoCreateEvent event = new TodoCreateEvent("Buy groceries", "johndoe@example.com", "OPEN");
+    engine.publishEvent(event); // This triggers the automation
+}
 ```
 
 ## Manual Execution
@@ -220,10 +220,10 @@ In YAML:
 
 # Inspiration
 
-This project was inspired by [Home Assistant](https://github.com/home-assistant/core) an open-source platform for home
-automation that allows users to define automations in YAML based on triggers, conditions, and actions. AutomationEngine
-brings a similar declarative approach to the Java and Spring ecosystem, making it easy to build dynamic workflows across
-backend services and business domains.
+This project is inspired by [Home Assistant](https://github.com/home-assistant/core), an open-source platform for home
+automation that uses YAML to define automations through triggers, conditions, and actions. AutomationEngine brings that
+same declarative philosophy to the Java and Spring ecosystem, enabling developers to easily create dynamic, event-driven
+workflows across backend services and business logic domains.
 
 ## Contributing
 

@@ -53,7 +53,7 @@ public class SendHttpRequestAction extends PluggableAction<SendHttpRequestAction
     @Override
     public void doExecute(EventContext ec, SendHttpRequestActionContext ac) {
         log.debug("Executing SendHttpRequestAction: {}", ac.getAlias());
-        var webClient = WebClient.builder()
+        WebClient webClient = WebClient.builder()
                 .baseUrl(ac.getUrl())
                 .defaultHeaders(headers -> {
                     if (ObjectUtils.isEmpty(ac.getHeaders())) return;
