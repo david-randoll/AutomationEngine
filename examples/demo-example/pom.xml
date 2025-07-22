@@ -30,7 +30,7 @@
         </dependency>
         <dependency>
             <groupId>com.davidrandoll</groupId>
-            <artifactId>automation-engine-http</artifactId>
+            <artifactId>automation-engine-spring-web</artifactId>
             <version>${automation-engine.version}</version>
         </dependency>
 

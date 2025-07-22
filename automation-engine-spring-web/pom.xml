@@ -9,7 +9,7 @@
         <version>1.1.0</version>
     </parent>
 
-    <artifactId>automation-engine-http</artifactId>
+    <artifactId>automation-engine-spring-web</artifactId>
     <name>Automation Engine Http</name>
     <description>
         This module provides HTTP support for the Automation Engine.
@@ -45,11 +45,6 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-web</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>

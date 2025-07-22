@@ -2,7 +2,7 @@
   <configuration default="false" name="Run All Tests" type="Multirun" separateTabs="true" reuseTabsWithFailures="false" startOneByOne="true" markFailedProcess="true" hideSuccessProcess="false" delayTime="0.0">
     <runConfiguration name="All in spring-boot-starter-automation-engine" type="JUnit" />
     <runConfiguration name="All in automation-engine-templating" type="JUnit" />
-    <runConfiguration name="All in automation-engine-http" type="JUnit" />
+    <runConfiguration name="All in automation-engine-spring-web" type="JUnit" />
     <runConfiguration name="All in demo-example" type="JUnit" />
     <runConfiguration name="All in todo-example" type="JUnit" />
     <method v="2" />

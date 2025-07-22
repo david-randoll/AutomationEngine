@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="All in automation-engine-http" type="JUnit" factoryName="JUnit" nameIsGenerated="true">
+  <configuration default="false" name="All in automation-engine-spring-web" type="JUnit" factoryName="JUnit">
     <module name="automation-engine-spring-web" />
     <extension name="software.aws.toolkits.jetbrains.core.execution.JavaAwsConnectionExtension">
       <option name="credential" />
