@@ -1,1 +1,1 @@
-com.davidrandoll.automation.engine.http.AutomationEngineHttpAutoConfiguration
+com.davidrandoll.automation.engine.spring.web.AutomationEngineHttpAutoConfiguration

@@ -10,10 +10,10 @@
     </parent>
 
     <artifactId>automation-engine-spring-web</artifactId>
-    <name>Automation Engine Http</name>
+    <name>Automation Engine Spring Web</name>
     <description>
-        This module provides HTTP support for the Automation Engine.
-        It includes the necessary dependencies and configurations to enable HTTP-based automation tasks.
+        This module provides Spring Web support for the Automation Engine, enabling web-based automation tasks and
+        workflows.
     </description>
 
     <properties>
