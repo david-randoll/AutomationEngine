@@ -39,6 +39,7 @@
         <module>spring-boot-starter-automation-engine</module>
         <module>automation-engine-spring-web</module>
         <module>automation-engine-spring-events</module>
+        <module>automation-engine-test</module>
     </modules>
     <properties>
         <java.version>21</java.version>

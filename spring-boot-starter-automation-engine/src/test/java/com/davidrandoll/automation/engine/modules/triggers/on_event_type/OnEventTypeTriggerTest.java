@@ -1,12 +1,12 @@
 package com.davidrandoll.automation.engine.modules.triggers.on_event_type;
 
-import com.davidrandoll.automation.engine.AutomationEngineTest;
+import com.davidrandoll.automation.engine.test.AutomationEngineTest;
 import com.davidrandoll.automation.engine.core.Automation;
 import com.davidrandoll.automation.engine.creator.events.JsonEvent;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.Test;
 
-import static com.davidrandoll.automation.engine.JsonTestUtils.json;
+import static com.davidrandoll.automation.engine.test.JsonTestUtils.json;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class OnEventTypeTriggerTest extends AutomationEngineTest {

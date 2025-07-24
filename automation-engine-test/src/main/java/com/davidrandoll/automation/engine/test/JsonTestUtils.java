@@ -1,4 +1,4 @@
-package com.davidrandoll.automation.engine;
+package com.davidrandoll.automation.engine.test;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.experimental.UtilityClass;

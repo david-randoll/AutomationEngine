@@ -9,11 +9,9 @@
         <version>1.1.0</version>
     </parent>
 
-    <artifactId>automation-engine-spring-events</artifactId>
-    <name>Automation Engine Spring Events</name>
-    <description>
-        A Spring Boot starter for the Automation Engine, providing event handling capabilities.
-    </description>
+    <artifactId>automation-engine-test</artifactId>
+    <name>Automation Engine Test</name>
+    <description>Test module for the Automation Engine</description>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
@@ -24,20 +22,25 @@
     <dependencies>
         <dependency>
             <groupId>com.davidrandoll</groupId>
-            <artifactId>spring-boot-starter-automation-engine</artifactId>
+            <artifactId>automation-engine-core</artifactId>
             <version>${project.version}</version>
-            <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-autoconfigure</artifactId>
-            <scope>provided</scope>
+            <artifactId>spring-boot-starter-test</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
         </dependency>
     </dependencies>
 
