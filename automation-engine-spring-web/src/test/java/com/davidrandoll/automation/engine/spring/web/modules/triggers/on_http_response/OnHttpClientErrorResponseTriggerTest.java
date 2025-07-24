@@ -1,8 +1,8 @@
 package com.davidrandoll.automation.engine.spring.web.modules.triggers.on_http_response;
 
 import com.davidrandoll.automation.engine.core.events.EventContext;
-import com.davidrandoll.automation.engine.spring.web.AutomationEngineTest;
-import com.davidrandoll.automation.engine.spring.web.JsonTestUtils;
+import com.davidrandoll.automation.engine.test.AutomationEngineTest;
+import com.davidrandoll.automation.engine.test.JsonTestUtils;
 import com.davidrandoll.automation.engine.spring.web.events.AEHttpResponseEvent;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
