@@ -1,14 +1,18 @@
-package com.davidrandoll.automation.engine.spring.web;
+package com.davidrandoll.automation.engine.test;
 
 import com.davidrandoll.automation.engine.creator.parsers.yaml.IYamlConverter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.cfg.CoercionAction;
+import com.fasterxml.jackson.databind.cfg.CoercionInputShape;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Service;
 import org.yaml.snakeyaml.LoaderOptions;
 
 @Service
+@RequiredArgsConstructor
 public class YamlConverterWith100MBLimit implements IYamlConverter {
     @Override
     public <T> T convert(String yaml, Class<T> clazz) {
@@ -26,10 +30,16 @@ public class YamlConverterWith100MBLimit implements IYamlConverter {
         var factory = YAMLFactory.builder()
                 .loaderOptions(options)
                 .build();
-        return Jackson2ObjectMapperBuilder
+        var mapper = Jackson2ObjectMapperBuilder
                 .yaml()
                 .factory(factory)
                 .build();
+
+        // Handle coercion of empty strings to null
+        mapper.coercionConfigDefaults()
+                .setCoercion(CoercionInputShape.EmptyString, CoercionAction.AsNull);
+
+        return mapper;
     }
 
     public static class AutomationEngineInvalidYamlException extends RuntimeException {

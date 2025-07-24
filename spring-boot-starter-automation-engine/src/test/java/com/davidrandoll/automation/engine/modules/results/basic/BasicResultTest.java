@@ -1,9 +1,9 @@
 package com.davidrandoll.automation.engine.modules.results.basic;
 
-import com.davidrandoll.automation.engine.test.AutomationEngineTest;
 import com.davidrandoll.automation.engine.core.events.EventContext;
 import com.davidrandoll.automation.engine.core.result.AutomationResult;
 import com.davidrandoll.automation.engine.modules.events.time_based.TimeBasedEvent;
+import com.davidrandoll.automation.engine.test.AutomationEngineTest;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.Test;
 
@@ -577,7 +577,7 @@ class BasicResultTest extends AutomationEngineTest {
         var yaml = """
                 alias: return-empty-variables
                 variables:
-                  - 
+                  -
                 triggers:
                   - trigger: alwaysTrue
                 actions:
