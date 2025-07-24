@@ -10,7 +10,18 @@ import lombok.extern.slf4j.Slf4j;
 public class EventFactory {
     private final ObjectMapper mapper;
 
-    public JsonEvent createEvent(JsonNode body) {
-        return new JsonEvent(body);
+    public JsonEvent createEvent(JsonNode event) {
+        return new JsonEvent(event);
+    }
+
+    public JsonEvent createEvent(Object event) {
+        if (event == null) {
+            throw new IllegalArgumentException("Cannot create event from null object");
+        }
+        log.debug("Creating event from object: {}", event.getClass().getSimpleName());
+        JsonNode jsonNode = mapper.valueToTree(event);
+        var result = new JsonEvent(jsonNode);
+        result.setEventType(event.getClass().getName());
+        return result;
     }
 }
