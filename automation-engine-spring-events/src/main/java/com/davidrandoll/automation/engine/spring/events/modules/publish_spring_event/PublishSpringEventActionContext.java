@@ -1,6 +1,7 @@
 package com.davidrandoll.automation.engine.spring.events.modules.publish_spring_event;
 
 import com.davidrandoll.automation.engine.core.actions.IActionContext;
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -19,6 +20,9 @@ public class PublishSpringEventActionContext implements IActionContext {
     private String description;
 
     private String className;
+
+    @JsonAlias({"publishToAE", "publishToAutomationEngine", "ae"})
+    private boolean publishToAutomationEngine = false;
 
     @JsonAnySetter
     @JsonAnyGetter

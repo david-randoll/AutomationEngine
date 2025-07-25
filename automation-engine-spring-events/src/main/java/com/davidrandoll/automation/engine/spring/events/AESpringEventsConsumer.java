@@ -31,7 +31,7 @@ public class AESpringEventsConsumer {
         var shouldPublish = properties.getAllowedEventTypes().stream()
                 .noneMatch(pattern -> event.getClass().getName().matches(pattern));
         if (shouldPublish) return;
-        IEvent iEvent = engine.getEventFactory().createEvent(event);
+        var iEvent = engine.getEventFactory().createEvent(event);
         //engine.publishEvent(iEvent);
     }
 }
