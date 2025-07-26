@@ -3,6 +3,7 @@ package com.davidrandoll.automation.engine.spring.events;
 import com.davidrandoll.automation.engine.AutomationEngine;
 import com.davidrandoll.automation.engine.core.events.EventContext;
 import com.davidrandoll.automation.engine.core.events.IEvent;
+import com.davidrandoll.automation.engine.spring.events.modules.publish_spring_event.AutomationOrigin;
 import com.davidrandoll.automation.engine.spring.events.properties.AESpringEventsEnabled;
 import com.davidrandoll.automation.engine.spring.events.properties.AESpringEventsProperties;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +28,8 @@ public class AESpringEventsConsumer {
      */
     @EventListener
     public void consumeAllEvents(Object event) {
-        if (event instanceof IEvent || event instanceof EventContext) return; // already handled by AutomationEngine
+        if (event instanceof IEvent || event instanceof EventContext || event instanceof AutomationOrigin)
+            return; // already handled by AutomationEngine
         var shouldPublish = properties.getAllowedEventTypes().stream()
                 .noneMatch(pattern -> event.getClass().getName().matches(pattern));
         if (shouldPublish) return;

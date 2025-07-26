@@ -4,6 +4,7 @@ import com.davidrandoll.automation.engine.AutomationEngine;
 import com.davidrandoll.automation.engine.core.events.EventContext;
 import com.davidrandoll.automation.engine.spi.PluggableAction;
 import com.davidrandoll.automation.engine.spring.events.properties.AESpringEventsEnabled;
+import com.davidrandoll.automation.engine.utils.AutomationProxyUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,8 +37,10 @@ public class PublishSpringEventAction extends PluggableAction<PublishSpringEvent
             event = new PublishSpringEvent(ac.getData());
         }
 
-        publisher.publishEvent(event);
-        log.info("Published Spring event of type: {}", event.getClass().getName());
+        var eventProxy = AutomationProxyUtil.markWithAutomationOriginOrThrow(event, AutomationOrigin.class);
+
+        publisher.publishEvent(eventProxy);
+        log.info("Published Spring event of type: {}", eventProxy.getClass().getName());
 
         if (ac.isPublishToAutomationEngine()) {
             var iEvent = engine.getEventFactory().createEvent(event);
