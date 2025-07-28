@@ -1,14 +1,10 @@
 package com.davidrandoll.automation.engine.spring.events;
 
 import com.davidrandoll.automation.engine.AutomationEngine;
-import com.davidrandoll.automation.engine.core.events.EventContext;
-import com.davidrandoll.automation.engine.core.events.IEvent;
-import com.davidrandoll.automation.engine.spring.events.modules.publish_spring_event.AutomationOrigin;
 import com.davidrandoll.automation.engine.spring.events.properties.AESpringEventsEnabled;
 import com.davidrandoll.automation.engine.spring.events.properties.AESpringEventsProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Conditional;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -26,14 +22,14 @@ public class AESpringEventsConsumer {
      *
      * @param event the event to consume
      */
-    @EventListener
-    public void consumeAllEvents(Object event) {
-        if (event instanceof IEvent || event instanceof EventContext || event instanceof AutomationOrigin)
-            return; // already handled by AutomationEngine
-        var shouldPublish = properties.getAllowedEventTypes().stream()
-                .noneMatch(pattern -> event.getClass().getName().matches(pattern));
-        if (shouldPublish) return;
-        var iEvent = engine.getEventFactory().createEvent(event);
-        //engine.publishEvent(iEvent);
-    }
+//    @EventListener
+//    public void consumeAllEvents(Object event) {
+//        if (event instanceof IEvent || event instanceof EventContext || event instanceof AutomationOrigin)
+//            return; // already handled by AutomationEngine
+//        var shouldPublish = properties.getAllowedEventTypes().stream()
+//                .noneMatch(pattern -> event.getClass().getName().matches(pattern));
+//        if (shouldPublish) return;
+//        var iEvent = engine.getEventFactory().createEvent(event);
+//        engine.publishEvent(iEvent);
+//    }
 }
