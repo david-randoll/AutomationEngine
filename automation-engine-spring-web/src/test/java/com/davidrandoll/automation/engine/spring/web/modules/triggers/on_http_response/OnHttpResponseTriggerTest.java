@@ -2,8 +2,8 @@ package com.davidrandoll.automation.engine.spring.web.modules.triggers.on_http_r
 
 import com.davidrandoll.automation.engine.core.Automation;
 import com.davidrandoll.automation.engine.core.events.EventContext;
-import com.davidrandoll.automation.engine.spring.web.AutomationEngineTest;
-import com.davidrandoll.automation.engine.spring.web.JsonTestUtils;
+import com.davidrandoll.automation.engine.test.AutomationEngineTest;
+import com.davidrandoll.automation.engine.test.JsonTestUtils;
 import com.davidrandoll.automation.engine.spring.web.events.AEHttpResponseEvent;
 import com.davidrandoll.spring_web_captor.event.HttpMethodEnum;
 import com.fasterxml.jackson.databind.ObjectMapper;

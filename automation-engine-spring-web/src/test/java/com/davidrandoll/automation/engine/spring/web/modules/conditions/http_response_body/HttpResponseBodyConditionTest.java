@@ -1,11 +1,11 @@
 package com.davidrandoll.automation.engine.spring.web.modules.conditions.http_response_body;
 
 import com.davidrandoll.automation.engine.core.events.EventContext;
-import com.davidrandoll.automation.engine.spring.web.AutomationEngineTest;
+import com.davidrandoll.automation.engine.test.AutomationEngineTest;
 import com.davidrandoll.automation.engine.spring.web.events.AEHttpResponseEvent;
 import org.junit.jupiter.api.Test;
 
-import static com.davidrandoll.automation.engine.spring.web.JsonTestUtils.json;
+import static com.davidrandoll.automation.engine.test.JsonTestUtils.json;
 import static org.assertj.core.api.Assertions.assertThat;
 
 

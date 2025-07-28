@@ -1,7 +1,7 @@
 package com.davidrandoll.automation.engine.spring.web.modules.triggers.on_http_path_exists;
 
 import com.davidrandoll.automation.engine.core.events.EventContext;
-import com.davidrandoll.automation.engine.spring.web.AutomationEngineTest;
+import com.davidrandoll.automation.engine.test.AutomationEngineTest;
 import com.davidrandoll.spring_web_captor.event.HttpMethodEnum;
 import com.davidrandoll.automation.engine.spring.web.events.AEHttpRequestEvent;
 import org.junit.jupiter.api.Test;

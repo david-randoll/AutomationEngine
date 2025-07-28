@@ -1,4 +1,4 @@
-package com.davidrandoll.automation.engine.spring.web;
+package com.davidrandoll.automation.engine.test;
 
 import ch.qos.logback.classic.Logger;
 import com.davidrandoll.automation.engine.AutomationEngine;
@@ -14,7 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.web.servlet.MockMvc;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = AutomationEngineHttpApplication.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = AutomationEngineApplication.class)
 @AutoConfigureMockMvc
 @AutoConfigureWebTestClient
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)

@@ -1,8 +1,8 @@
 package com.davidrandoll.automation.engine.spring.web.modules.conditions.http_request_body;
 
 import com.davidrandoll.automation.engine.core.events.EventContext;
-import com.davidrandoll.automation.engine.spring.web.AutomationEngineTest;
-import com.davidrandoll.automation.engine.spring.web.JsonTestUtils;
+import com.davidrandoll.automation.engine.test.AutomationEngineTest;
+import com.davidrandoll.automation.engine.test.JsonTestUtils;
 import com.davidrandoll.automation.engine.spring.web.events.AEHttpRequestEvent;
 import org.junit.jupiter.api.Test;
 

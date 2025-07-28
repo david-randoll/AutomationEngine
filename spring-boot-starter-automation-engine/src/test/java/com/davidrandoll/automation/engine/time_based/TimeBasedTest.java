@@ -1,6 +1,6 @@
 package com.davidrandoll.automation.engine.time_based;
 
-import com.davidrandoll.automation.engine.AutomationEngineTest;
+import com.davidrandoll.automation.engine.test.AutomationEngineTest;
 import com.davidrandoll.automation.engine.core.Automation;
 import com.davidrandoll.automation.engine.core.events.EventContext;
 import com.davidrandoll.automation.engine.modules.events.time_based.TimeBasedEvent;

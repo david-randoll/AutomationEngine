@@ -1,6 +1,6 @@
 package com.davidrandoll.automation.engine.actions;
 
-import com.davidrandoll.automation.engine.AutomationEngineTest;
+import com.davidrandoll.automation.engine.test.AutomationEngineTest;
 import com.davidrandoll.automation.engine.core.Automation;
 import com.davidrandoll.automation.engine.modules.actions.parallel.ParallelAction;
 import com.davidrandoll.automation.engine.modules.actions.wait_for_trigger.WaitForTriggerAction;

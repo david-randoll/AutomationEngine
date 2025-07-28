@@ -2,7 +2,7 @@ package com.davidrandoll.automation.engine.spring.web.modules.conditions.http_me
 
 import com.davidrandoll.automation.engine.core.events.EventContext;
 import com.davidrandoll.automation.engine.core.events.IEvent;
-import com.davidrandoll.automation.engine.spring.web.AutomationEngineTest;
+import com.davidrandoll.automation.engine.test.AutomationEngineTest;
 import com.davidrandoll.automation.engine.spring.web.events.AEHttpRequestEvent;
 import com.davidrandoll.automation.engine.spring.web.events.AEHttpResponseEvent;
 import com.davidrandoll.spring_web_captor.event.HttpMethodEnum;

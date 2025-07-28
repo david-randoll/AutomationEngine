@@ -33,6 +33,12 @@
         </dependency>
         <dependency>
             <groupId>com.davidrandoll</groupId>
+            <artifactId>automation-engine-test</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.davidrandoll</groupId>
             <artifactId>spring-web-captor</artifactId>
             <version>${spring-web-captor.version}</version>
             <scope>compile</scope>

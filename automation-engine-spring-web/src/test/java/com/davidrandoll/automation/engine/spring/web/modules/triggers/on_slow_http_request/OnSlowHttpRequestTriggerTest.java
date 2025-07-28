@@ -1,7 +1,7 @@
 package com.davidrandoll.automation.engine.spring.web.modules.triggers.on_slow_http_request;
 
 import com.davidrandoll.automation.engine.core.events.EventContext;
-import com.davidrandoll.automation.engine.spring.web.AutomationEngineTest;
+import com.davidrandoll.automation.engine.test.AutomationEngineTest;
 import com.davidrandoll.automation.engine.spring.web.events.AEHttpResponseEvent;
 import com.davidrandoll.automation.engine.modules.events.time_based.TimeBasedEvent;
 import org.junit.jupiter.api.Test;
