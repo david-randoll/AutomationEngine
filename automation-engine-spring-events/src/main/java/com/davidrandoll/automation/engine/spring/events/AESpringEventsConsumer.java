@@ -22,6 +22,7 @@ public class AESpringEventsConsumer {
      *
      * @param event the event to consume
      */
+    // TODO: come back to this. There is essentially an infinite loop with the tests and events getting resubmitted back into the automation engine.
 //    @EventListener
 //    public void consumeAllEvents(Object event) {
 //        if (event instanceof IEvent || event instanceof EventContext || event instanceof AutomationOrigin)
