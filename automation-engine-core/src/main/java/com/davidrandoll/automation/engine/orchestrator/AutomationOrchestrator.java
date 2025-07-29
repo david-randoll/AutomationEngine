@@ -1,5 +1,6 @@
-package com.davidrandoll.automation.engine.core;
+package com.davidrandoll.automation.engine.orchestrator;
 
+import com.davidrandoll.automation.engine.core.Automation;
 import com.davidrandoll.automation.engine.core.events.EventContext;
 import com.davidrandoll.automation.engine.core.events.IEvent;
 import com.davidrandoll.automation.engine.core.events.publisher.*;
@@ -13,26 +14,35 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 @Slf4j
 @RequiredArgsConstructor
-public class AutomationHandler {
+public class AutomationOrchestrator implements IAEOrchestrator {
     private final IEventPublisher publisher;
     private final List<Automation> automations = new CopyOnWriteArrayList<>();
 
+    @Override
+    public List<Automation> getAutomations() {
+        return new ArrayList<>(automations); // Return a copy to avoid concurrent modification issues
+    }
+
+    @Override
     public void registerAutomation(Automation automation) {
         automations.add(automation);
         publisher.publishEvent(new AutomationEngineRegisterEvent(automation));
     }
 
+    @Override
     public void removeAutomation(Automation automation) {
         automations.remove(automation);
         publisher.publishEvent(new AutomationEngineRemoveEvent(automation));
     }
 
+    @Override
     public void removeAllAutomations() {
         var automationsCopy = new ArrayList<>(automations);
         automations.clear();
         publisher.publishEvent(new AutomationEngineRemoveAllEvent(automationsCopy));
     }
 
+    @Override
     public void handleEventContext(EventContext eventContext) {
         if (eventContext == null) throw new IllegalArgumentException("EventContext cannot be null");
         for (Automation automation : automations) {
@@ -42,6 +52,7 @@ public class AutomationHandler {
         publisher.publishEvent(eventContext); //publish the context
     }
 
+    @Override
     public void handleEvent(IEvent event) {
         if (event == null) throw new IllegalArgumentException("Event cannot be null");
         for (Automation automation : automations) {
@@ -51,8 +62,8 @@ public class AutomationHandler {
         publisher.publishEvent(EventContext.of(event)); //publish the context
     }
 
+    @Override
     public AutomationResult executeAutomation(Automation automation, EventContext eventContext) {
-        log.debug("Processing automation: {}", automation.getAlias());
         AutomationResult result;
         automation.resolveVariables(eventContext);
         if (automation.anyTriggerActivated(eventContext) && automation.allConditionsMet(eventContext)) {
@@ -65,7 +76,6 @@ public class AutomationHandler {
             result = AutomationResult.skipped(automation, eventContext);
         }
         publisher.publishEvent(new AutomationEngineProcessedEvent(automation, eventContext, result));
-        log.debug("Done processing automation: {}", automation.getAlias());
         return result;
     }
 }

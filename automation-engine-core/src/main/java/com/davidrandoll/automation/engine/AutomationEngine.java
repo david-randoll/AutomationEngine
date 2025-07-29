@@ -1,25 +1,25 @@
 package com.davidrandoll.automation.engine;
 
 import com.davidrandoll.automation.engine.core.Automation;
-import com.davidrandoll.automation.engine.core.AutomationHandler;
 import com.davidrandoll.automation.engine.core.events.EventContext;
 import com.davidrandoll.automation.engine.core.events.IEvent;
 import com.davidrandoll.automation.engine.core.result.AutomationResult;
 import com.davidrandoll.automation.engine.creator.AutomationFactory;
 import com.davidrandoll.automation.engine.creator.events.EventFactory;
+import com.davidrandoll.automation.engine.orchestrator.IAEOrchestrator;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class AutomationEngine {
-    private final AutomationHandler handler;
+    private final IAEOrchestrator orchestrator;
     private final AutomationFactory factory;
 
     @Getter
     private final EventFactory eventFactory;
 
     public void register(Automation automation) {
-        handler.registerAutomation(automation);
+        orchestrator.registerAutomation(automation);
     }
 
     public void registerWithYaml(String yaml) {
@@ -33,28 +33,28 @@ public class AutomationEngine {
     }
 
     public void remove(Automation automation) {
-        handler.removeAutomation(automation);
+        orchestrator.removeAutomation(automation);
     }
 
     public void removeAll() {
-        handler.removeAllAutomations();
+        orchestrator.removeAllAutomations();
     }
 
     public void publishEvent(EventContext eventContext) {
-        handler.handleEventContext(eventContext);
+        orchestrator.handleEventContext(eventContext);
     }
 
     public void publishEvent(IEvent event) {
-        handler.handleEvent(event);
+        orchestrator.handleEvent(event);
     }
 
     public AutomationResult executeAutomation(Automation automation, EventContext eventContext) {
-        return handler.executeAutomation(automation, eventContext);
+        return orchestrator.executeAutomation(automation, eventContext);
     }
 
     public AutomationResult executeAutomationWithYaml(String yaml, EventContext eventContext) {
         var automation = factory.createAutomation("yaml", yaml);
-        return handler.executeAutomation(automation, eventContext);
+        return orchestrator.executeAutomation(automation, eventContext);
     }
 
     public AutomationResult executeAutomationWithYaml(String yaml, IEvent event) {
@@ -63,7 +63,7 @@ public class AutomationEngine {
 
     public AutomationResult executeAutomationWithJson(String json, EventContext eventContext) {
         var automation = factory.createAutomation("json", json);
-        return handler.executeAutomation(automation, eventContext);
+        return orchestrator.executeAutomation(automation, eventContext);
     }
 
     public AutomationResult executeAutomationWithJson(String json, IEvent event) {
