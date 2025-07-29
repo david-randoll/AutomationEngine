@@ -7,7 +7,6 @@ import com.davidrandoll.automation.engine.core.result.AutomationResult;
 
 import java.util.List;
 import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
 
 public interface IAEOrchestrator {
     List<Automation> getAutomations();
@@ -16,6 +15,6 @@ public interface IAEOrchestrator {
     void removeAllAutomations();
     void handleEventContext(EventContext eventContext);
     void handleEvent(IEvent event);
-    void handleEvent(EventContext eventContext,BiConsumer<Automation, EventContext> executionFunction);
+    void handleEvent(EventContext eventContext, BiConsumer<Automation, EventContext> executionFunction);
     AutomationResult executeAutomation(Automation automation, EventContext eventContext);
 }
