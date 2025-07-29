@@ -3,18 +3,17 @@ package com.davidrandoll.automation.engine.orchestrator.interceptors;
 import com.davidrandoll.automation.engine.core.Automation;
 import com.davidrandoll.automation.engine.core.events.EventContext;
 import com.davidrandoll.automation.engine.core.events.IEvent;
-import com.davidrandoll.automation.engine.core.events.publisher.IEventPublisher;
 import com.davidrandoll.automation.engine.core.result.AutomationResult;
 import com.davidrandoll.automation.engine.orchestrator.IAEOrchestrator;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
+import java.util.function.BiConsumer;
 
 @RequiredArgsConstructor
 public class InterceptingAutomationOrchestrator implements IAEOrchestrator {
     private final IAEOrchestrator delegate;
     private final List<IAutomationExecutionInterceptor> interceptors;
-    private final IEventPublisher publisher;
 
     @Override
     public List<Automation> getAutomations() {
@@ -38,22 +37,17 @@ public class InterceptingAutomationOrchestrator implements IAEOrchestrator {
 
     @Override
     public void handleEventContext(EventContext eventContext) {
-        if (eventContext == null) throw new IllegalArgumentException("EventContext cannot be null");
-        for (Automation automation : getAutomations()) {
-            executeAutomation(automation, eventContext);
-        }
-        publisher.publishEvent(eventContext.getEvent()); //publish the event
-        publisher.publishEvent(eventContext); //publish the context
+        this.handleEvent(eventContext, this::executeAutomation);
     }
 
     @Override
     public void handleEvent(IEvent event) {
-        if (event == null) throw new IllegalArgumentException("Event cannot be null");
-        for (Automation automation : getAutomations()) {
-            executeAutomation(automation, EventContext.of(event));
-        }
-        publisher.publishEvent(event); //publish the event
-        publisher.publishEvent(EventContext.of(event)); //publish the context
+        this.handleEvent(EventContext.of(event), this::executeAutomation);
+    }
+
+    @Override
+    public void handleEvent(EventContext eventContext, BiConsumer<Automation, EventContext> executionFunction) {
+        delegate.handleEvent(eventContext, executionFunction);
     }
 
     @Override

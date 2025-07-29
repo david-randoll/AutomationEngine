@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.BiConsumer;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -44,22 +45,23 @@ public class AutomationOrchestrator implements IAEOrchestrator {
 
     @Override
     public void handleEventContext(EventContext eventContext) {
-        if (eventContext == null) throw new IllegalArgumentException("EventContext cannot be null");
-        for (Automation automation : automations) {
-            executeAutomation(automation, eventContext);
-        }
-        publisher.publishEvent(eventContext.getEvent()); //publish the event
-        publisher.publishEvent(eventContext); //publish the context
+        this.handleEvent(eventContext, this::executeAutomation);
     }
 
     @Override
     public void handleEvent(IEvent event) {
-        if (event == null) throw new IllegalArgumentException("Event cannot be null");
+        this.handleEvent(EventContext.of(event), this::executeAutomation);
+    }
+
+    @Override
+    public void handleEvent(EventContext eventContext, BiConsumer<Automation, EventContext> executionFunction) {
+        if (eventContext == null) throw new IllegalArgumentException("EventContext cannot be null");
+        if (eventContext.getEvent() == null) throw new IllegalArgumentException("Event cannot be null");
         for (Automation automation : automations) {
-            executeAutomation(automation, EventContext.of(event));
+            executionFunction.accept(automation, eventContext);
         }
-        publisher.publishEvent(event); //publish the event
-        publisher.publishEvent(EventContext.of(event)); //publish the context
+        publisher.publishEvent(eventContext.getEvent()); //publish the event
+        publisher.publishEvent(eventContext); //publish the context
     }
 
     @Override

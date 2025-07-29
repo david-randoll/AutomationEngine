@@ -36,7 +36,7 @@ public class CoreConfig {
     @ConditionalOnMissingBean
     public IAEOrchestrator automationOrchestrator(IEventPublisher publisher, List<IAutomationExecutionInterceptor> interceptors) {
         var orchestrator = new AutomationOrchestrator(publisher);
-        return new InterceptingAutomationOrchestrator(orchestrator, interceptors, publisher);
+        return new InterceptingAutomationOrchestrator(orchestrator, interceptors);
     }
 
     @Bean
