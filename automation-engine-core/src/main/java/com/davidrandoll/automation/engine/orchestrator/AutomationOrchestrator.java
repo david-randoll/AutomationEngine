@@ -18,19 +18,7 @@ import java.util.function.BiConsumer;
 public class AutomationOrchestrator implements IAEOrchestrator {
     private final IEventPublisher publisher;
     private final List<Automation> automations = new CopyOnWriteArrayList<>();
-
-    /**
-     * Retrieves a copy of the list of automations.
-     * <p>
-     * This method is thread-safe because the underlying list is a {@link CopyOnWriteArrayList},
-     * which ensures safe concurrent access. A copy of the list is returned to prevent
-     * accidental modifications to the original list by the caller.
-     * <p>
-     * An unmodifiable view was not chosen because the caller might need to perform operations
-     * on the returned list without affecting the original list.
-     *
-     * @return A copy of the list of automations.
-     */
+    
     @Override
     public List<Automation> getAutomations() {
         return new ArrayList<>(automations);
