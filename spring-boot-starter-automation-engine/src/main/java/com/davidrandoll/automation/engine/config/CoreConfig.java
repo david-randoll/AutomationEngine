@@ -1,7 +1,6 @@
 package com.davidrandoll.automation.engine.config;
 
 import com.davidrandoll.automation.engine.AutomationEngine;
-import com.davidrandoll.automation.engine.core.AutomationHandler;
 import com.davidrandoll.automation.engine.core.events.publisher.IEventPublisher;
 import com.davidrandoll.automation.engine.creator.AutomationFactory;
 import com.davidrandoll.automation.engine.creator.AutomationProcessor;
@@ -13,22 +12,43 @@ import com.davidrandoll.automation.engine.creator.parsers.ManualAutomationBuilde
 import com.davidrandoll.automation.engine.creator.result.ResultBuilder;
 import com.davidrandoll.automation.engine.creator.triggers.TriggerBuilder;
 import com.davidrandoll.automation.engine.creator.variables.VariableBuilder;
+import com.davidrandoll.automation.engine.orchestrator.AutomationOrchestrator;
+import com.davidrandoll.automation.engine.orchestrator.IAEOrchestrator;
+import com.davidrandoll.automation.engine.orchestrator.interceptors.*;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.List;
+
 @Configuration
 public class CoreConfig {
+
     @Bean
     @ConditionalOnMissingBean
-    public AutomationHandler automationHandler(IEventPublisher publisher) {
-        return new AutomationHandler(publisher);
+    public IAutomationExecutionInterceptor loggingExecutionInterceptor() {
+        return new LoggingExecutionInterceptor();
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public AutomationEngine automationEngine(AutomationHandler handler, AutomationFactory creator, EventFactory eventFactory) {
-        return new AutomationEngine(handler, creator, eventFactory);
+    public IAutomationHandleEventInterceptor loggingHandleEventInterceptor() {
+        return new LoggingHandleEventInterceptor();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public IAEOrchestrator automationOrchestrator(IEventPublisher publisher,
+                                                  List<IAutomationExecutionInterceptor> executionInterceptors,
+                                                  List<IAutomationHandleEventInterceptor> handleEventInterceptors) {
+        var orchestrator = new AutomationOrchestrator(publisher);
+        return new InterceptingAutomationOrchestrator(orchestrator, executionInterceptors, handleEventInterceptors);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public AutomationEngine automationEngine(IAEOrchestrator orchestrator, AutomationFactory creator, EventFactory eventFactory) {
+        return new AutomationEngine(orchestrator, creator, eventFactory);
     }
 
     @Bean

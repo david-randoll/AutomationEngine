@@ -1,9 +1,9 @@
 package com.davidrandoll.automation.engine.conditions;
 
-import com.davidrandoll.automation.engine.test.AutomationEngineTest;
 import com.davidrandoll.automation.engine.core.Automation;
 import com.davidrandoll.automation.engine.core.events.EventContext;
 import com.davidrandoll.automation.engine.modules.events.time_based.TimeBasedEvent;
+import com.davidrandoll.automation.engine.test.AutomationEngineTest;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalTime;
@@ -70,7 +70,11 @@ class OrConditionTest extends AutomationEngineTest {
         assertThat(logAppender.getLoggedMessages())
                 .anyMatch(msg -> msg.contains("Automation triggered when one condition was met at 10:37 PM"))
                 .noneMatch(msg -> msg.contains("Automation triggered when one condition was met at 10:20 PM"))
-                .noneMatch(msg -> msg.contains("Automation triggered when one condition was met at 11:05 PM"));
+                .noneMatch(msg -> msg.contains("Automation triggered when one condition was met at 11:05 PM"))
+                .anyMatch(msg -> msg.contentEquals("Starting execution of automation: Or Condition Automation Test"))
+                .anyMatch(msg -> msg.contentEquals("Finished execution of automation: Or Condition Automation Test"))
+                .anyMatch(msg -> msg.contentEquals("Handling event: TimeBasedEvent"))
+                .anyMatch(msg -> msg.contentEquals("Finished handling event: TimeBasedEvent"));
     }
 
     @Test
