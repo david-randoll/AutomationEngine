@@ -38,19 +38,18 @@ public class InterceptingAutomationOrchestrator implements IAEOrchestrator {
 
     @Override
     public void handleEventContext(EventContext eventContext) {
-        IAutomationHandleEventChain chain = buildHandleEventChain(0);
-        chain.proceed(eventContext);
+        this.handleEvent(eventContext, this::executeAutomation);
     }
 
     @Override
     public void handleEvent(IEvent event) {
-        IAutomationHandleEventChain chain = buildHandleEventChain(0);
-        chain.proceed(EventContext.of(event));
+        this.handleEvent(EventContext.of(event), this::executeAutomation);
     }
 
     @Override
     public void handleEvent(EventContext eventContext, BiConsumer<Automation, EventContext> executionFunction) {
-        delegate.handleEvent(eventContext, executionFunction);
+        IAutomationHandleEventChain chain = buildHandleEventChain(0, executionFunction);
+        chain.proceed(eventContext);
     }
 
     @Override
@@ -69,13 +68,13 @@ public class InterceptingAutomationOrchestrator implements IAEOrchestrator {
         return (automation, context) -> interceptor.intercept(automation, context, next);
     }
 
-    private IAutomationHandleEventChain buildHandleEventChain(int index) {
+    private IAutomationHandleEventChain buildHandleEventChain(int index, BiConsumer<Automation, EventContext> executionFunction) {
         if (index >= handleEventInterceptors.size()) {
-            return eventContext -> delegate.handleEvent(eventContext, this::executeAutomation);
+            return eventContext -> delegate.handleEvent(eventContext, executionFunction);
         }
 
         IAutomationHandleEventInterceptor interceptor = handleEventInterceptors.get(index);
-        IAutomationHandleEventChain next = buildHandleEventChain(index + 1);
+        IAutomationHandleEventChain next = buildHandleEventChain(index + 1, executionFunction);
         return eventContext -> interceptor.intercept(eventContext, next);
     }
 }

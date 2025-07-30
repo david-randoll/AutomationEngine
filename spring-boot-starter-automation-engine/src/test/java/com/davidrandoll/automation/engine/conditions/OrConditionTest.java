@@ -72,7 +72,9 @@ class OrConditionTest extends AutomationEngineTest {
                 .noneMatch(msg -> msg.contains("Automation triggered when one condition was met at 10:20 PM"))
                 .noneMatch(msg -> msg.contains("Automation triggered when one condition was met at 11:05 PM"))
                 .anyMatch(msg -> msg.contentEquals("Starting execution of automation: Or Condition Automation Test"))
-                .anyMatch(msg -> msg.contentEquals("Finished execution of automation: Or Condition Automation Test"));
+                .anyMatch(msg -> msg.contentEquals("Finished execution of automation: Or Condition Automation Test"))
+                .anyMatch(msg -> msg.contentEquals("Handling event: TimeBasedEvent"))
+                .anyMatch(msg -> msg.contentEquals("Finished handling event: TimeBasedEvent"));
     }
 
     @Test

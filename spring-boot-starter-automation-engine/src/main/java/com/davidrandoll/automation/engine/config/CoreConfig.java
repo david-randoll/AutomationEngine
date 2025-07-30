@@ -14,10 +14,7 @@ import com.davidrandoll.automation.engine.creator.triggers.TriggerBuilder;
 import com.davidrandoll.automation.engine.creator.variables.VariableBuilder;
 import com.davidrandoll.automation.engine.orchestrator.AutomationOrchestrator;
 import com.davidrandoll.automation.engine.orchestrator.IAEOrchestrator;
-import com.davidrandoll.automation.engine.orchestrator.interceptors.IAutomationExecutionInterceptor;
-import com.davidrandoll.automation.engine.orchestrator.interceptors.IAutomationHandleEventInterceptor;
-import com.davidrandoll.automation.engine.orchestrator.interceptors.InterceptingAutomationOrchestrator;
-import com.davidrandoll.automation.engine.orchestrator.interceptors.LoggingExecutionInterceptor;
+import com.davidrandoll.automation.engine.orchestrator.interceptors.*;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,6 +28,12 @@ public class CoreConfig {
     @ConditionalOnMissingBean
     public IAutomationExecutionInterceptor loggingExecutionInterceptor() {
         return new LoggingExecutionInterceptor();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public IAutomationHandleEventInterceptor loggingHandleEventInterceptor() {
+        return new LoggingHandleEventInterceptor();
     }
 
     @Bean
