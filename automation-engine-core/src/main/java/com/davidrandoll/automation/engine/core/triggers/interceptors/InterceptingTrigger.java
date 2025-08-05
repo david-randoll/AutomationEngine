@@ -18,17 +18,17 @@ public class InterceptingTrigger implements ITrigger {
 
     @Override
     public boolean isTriggered(EventContext eventContext, TriggerContext triggerContext) {
-        ITrigger chain = buildChain(0);
+        ITriggerChain chain = buildChain(0);
         return chain.isTriggered(eventContext, triggerContext);
     }
 
-    private ITrigger buildChain(int index) {
+    private ITriggerChain buildChain(int index) {
         if (index >= interceptors.size()) {
-            return delegate;
+            return this.delegate::isTriggered;
         }
 
         ITriggerInterceptor interceptor = interceptors.get(index);
-        ITrigger next = buildChain(index + 1);
+        ITriggerChain next = buildChain(index + 1);
         return (ec, tc) -> interceptor.intercept(ec, tc, next);
     }
 }

@@ -28,8 +28,4 @@ public class EvaluatableTrigger implements IBaseTrigger {
     public ITrigger getRawTrigger() {
         return delegate;
     }
-
-    public TriggerContext getRawContext() {
-        return triggerContext;
-    }
 }

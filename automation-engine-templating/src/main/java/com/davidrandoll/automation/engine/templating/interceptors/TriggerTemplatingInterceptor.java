@@ -1,8 +1,8 @@
 package com.davidrandoll.automation.engine.templating.interceptors;
 
 import com.davidrandoll.automation.engine.core.events.EventContext;
-import com.davidrandoll.automation.engine.core.triggers.ITrigger;
 import com.davidrandoll.automation.engine.core.triggers.TriggerContext;
+import com.davidrandoll.automation.engine.core.triggers.interceptors.ITriggerChain;
 import com.davidrandoll.automation.engine.core.triggers.interceptors.ITriggerInterceptor;
 import com.davidrandoll.automation.engine.creator.triggers.EvaluatableTrigger;
 import com.davidrandoll.automation.engine.templating.TemplateProcessor;
@@ -35,7 +35,7 @@ public class TriggerTemplatingInterceptor implements ITriggerInterceptor {
 
     @Override
     @SneakyThrows
-    public boolean intercept(EventContext eventContext, TriggerContext triggerContext, ITrigger trigger) {
+    public boolean intercept(EventContext eventContext, TriggerContext triggerContext, ITriggerChain trigger) {
         log.debug("TriggerTemplatingInterceptor: Processing trigger data...");
         if (trigger instanceof EvaluatableTrigger et && !et.getRawTrigger().autoEvaluateExpression()) {
             return trigger.isTriggered(eventContext, triggerContext);
