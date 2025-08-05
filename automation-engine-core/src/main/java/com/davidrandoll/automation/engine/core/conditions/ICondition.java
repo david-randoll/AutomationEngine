@@ -9,4 +9,8 @@ public interface ICondition {
     }
 
     boolean isSatisfied(EventContext context, ConditionContext conditionContext);
+
+    default boolean autoEvaluateExpression() {
+        return true;
+    }
 }

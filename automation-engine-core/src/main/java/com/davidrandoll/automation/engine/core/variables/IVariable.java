@@ -9,4 +9,8 @@ public interface IVariable {
     }
 
     void resolve(EventContext context, VariableContext variableContext);
+
+    default boolean autoEvaluateExpression() {
+        return true;
+    }
 }

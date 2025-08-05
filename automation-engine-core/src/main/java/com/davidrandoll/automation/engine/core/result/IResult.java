@@ -9,4 +9,8 @@ public interface IResult {
     }
 
     Object getExecutionSummary(EventContext context, ResultContext resultContext);
+
+    default boolean autoEvaluateExpression() {
+        return true;
+    }
 }
