@@ -24,11 +24,14 @@ public class InterceptingTrigger implements ITrigger {
 
     private ITriggerChain buildChain(int index) {
         if (index >= interceptors.size()) {
-            return this.delegate::isTriggered;
+            return new TriggerChain(this.delegate::isTriggered, delegate);
         }
 
         ITriggerInterceptor interceptor = interceptors.get(index);
         ITriggerChain next = buildChain(index + 1);
-        return (ec, tc) -> interceptor.intercept(ec, tc, next);
+        return new TriggerChain(
+                (ec, tc) -> interceptor.intercept(ec, tc, next),
+                delegate
+        );
     }
 }

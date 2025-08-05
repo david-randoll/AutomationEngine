@@ -1,9 +1,7 @@
 package com.davidrandoll.automation.engine.core.triggers.interceptors;
 
-import com.davidrandoll.automation.engine.core.events.EventContext;
-import com.davidrandoll.automation.engine.core.triggers.TriggerContext;
+import com.davidrandoll.automation.engine.core.triggers.ITrigger;
 
 @FunctionalInterface
-public interface ITriggerChain {
-    boolean isTriggered(EventContext eventContext, TriggerContext triggerContext);
+public interface ITriggerChain extends ITrigger {
 }
