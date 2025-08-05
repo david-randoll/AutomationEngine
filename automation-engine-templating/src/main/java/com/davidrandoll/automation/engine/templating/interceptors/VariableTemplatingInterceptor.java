@@ -1,8 +1,8 @@
 package com.davidrandoll.automation.engine.templating.interceptors;
 
 import com.davidrandoll.automation.engine.core.events.EventContext;
-import com.davidrandoll.automation.engine.core.variables.IVariable;
 import com.davidrandoll.automation.engine.core.variables.VariableContext;
+import com.davidrandoll.automation.engine.core.variables.interceptors.IVariableChain;
 import com.davidrandoll.automation.engine.core.variables.interceptors.IVariableInterceptor;
 import com.davidrandoll.automation.engine.templating.TemplateProcessor;
 import com.davidrandoll.automation.engine.templating.utils.JsonNodeVariableProcessor;
@@ -43,20 +43,20 @@ public class VariableTemplatingInterceptor implements IVariableInterceptor {
      *
      * @param eventContext    the event context providing data for template replacement
      * @param variableContext the variable context containing data to process
-     * @param variable        the variable to set after processing
+     * @param chain           the variable to set after processing
      */
 
     @Override
     @SneakyThrows
-    public void intercept(EventContext eventContext, VariableContext variableContext, IVariable variable) {
+    public void intercept(EventContext eventContext, VariableContext variableContext, IVariableChain chain) {
         log.debug("VariableTemplatingInterceptor: Processing variable data...");
         var eventData = eventContext.getEventData(objectMapper);
         if (ObjectUtils.isEmpty(variableContext.getData()) || ObjectUtils.isEmpty(eventData)) {
-            variable.resolve(eventContext, variableContext);
+            chain.resolve(eventContext, variableContext);
         }
 
         var mapCopy = processor.processIfNotAutomation(eventData, variableContext.getData());
-        variable.resolve(eventContext, new VariableContext(mapCopy));
+        chain.resolve(eventContext, new VariableContext(mapCopy));
         log.debug("VariableTemplatingInterceptor done.");
     }
 

@@ -1,7 +1,7 @@
 package com.davidrandoll.automation.engine.templating.interceptors;
 
 import com.davidrandoll.automation.engine.core.actions.ActionContext;
-import com.davidrandoll.automation.engine.core.actions.IAction;
+import com.davidrandoll.automation.engine.core.actions.interceptors.IActionChain;
 import com.davidrandoll.automation.engine.core.actions.interceptors.IActionInterceptor;
 import com.davidrandoll.automation.engine.core.events.EventContext;
 import com.davidrandoll.automation.engine.templating.TemplateProcessor;
@@ -42,19 +42,19 @@ public class ActionTemplatingInterceptor implements IActionInterceptor {
      *
      * @param eventContext  the event context providing data for template replacement
      * @param actionContext the action context containing data to process
-     * @param action        the action to be executed after processing
+     * @param chain         the action to be executed after processing
      */
 
     @Override
-    public void intercept(EventContext eventContext, ActionContext actionContext, IAction action) {
+    public void intercept(EventContext eventContext, ActionContext actionContext, IActionChain chain) {
         log.debug("ActionTemplatingInterceptor: Processing action data...");
         var eventData = eventContext.getEventData(objectMapper);
         if (ObjectUtils.isEmpty(actionContext.getData()) || ObjectUtils.isEmpty(eventData)) {
-            action.execute(eventContext, actionContext);
+            chain.execute(eventContext, actionContext);
         }
 
         var mapCopy = processor.processIfNotAutomation(eventData, actionContext.getData());
-        action.execute(eventContext, new ActionContext(mapCopy));
+        chain.execute(eventContext, new ActionContext(mapCopy));
         log.debug("ActionTemplatingInterceptor done.");
     }
 

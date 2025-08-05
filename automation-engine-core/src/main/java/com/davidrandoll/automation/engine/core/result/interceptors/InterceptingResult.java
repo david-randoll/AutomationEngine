@@ -19,16 +19,20 @@ public class InterceptingResult implements IResult {
 
     @Override
     public Object getExecutionSummary(EventContext eventContext, ResultContext resultContext) {
-        IResult current = delegate;
+        IResultChain chain = buildChain(0);
+        return chain.getExecutionSummary(eventContext, resultContext);
+    }
 
-        // Wrap each interceptor backwards
-        for (int i = interceptors.size() - 1; i >= 0; i--) {
-            IResultInterceptor interceptor = interceptors.get(i);
-            IResult next = current;
-
-            current = (ec, rc) -> interceptor.intercept(ec, rc, next);
+    private IResultChain buildChain(int index) {
+        if (index >= interceptors.size()) {
+            return new ResultChain(this.delegate::getExecutionSummary, delegate);
         }
 
-        return current.getExecutionSummary(eventContext, resultContext);
+        IResultInterceptor interceptor = interceptors.get(index);
+        IResultChain next = buildChain(index + 1);
+        return new ResultChain(
+                (ec, rc) -> interceptor.intercept(ec, rc, next),
+                delegate
+        );
     }
 }

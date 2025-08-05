@@ -1,8 +1,8 @@
 package com.davidrandoll.automation.engine.templating.interceptors;
 
 import com.davidrandoll.automation.engine.core.events.EventContext;
-import com.davidrandoll.automation.engine.core.result.IResult;
 import com.davidrandoll.automation.engine.core.result.ResultContext;
+import com.davidrandoll.automation.engine.core.result.interceptors.IResultChain;
 import com.davidrandoll.automation.engine.core.result.interceptors.IResultInterceptor;
 import com.davidrandoll.automation.engine.templating.TemplateProcessor;
 import com.davidrandoll.automation.engine.templating.utils.JsonNodeVariableProcessor;
@@ -33,17 +33,17 @@ public class ResultTemplatingInterceptor implements IResultInterceptor {
     private final ObjectMapper objectMapper;
 
     @Override
-    public Object intercept(EventContext eventContext, ResultContext resultContext, IResult result) {
+    public Object intercept(EventContext eventContext, ResultContext resultContext, IResultChain chain) {
         log.debug("ConditionTemplatingInterceptor: Processing result data...");
         var eventData = eventContext.getEventData(objectMapper);
         if (ObjectUtils.isEmpty(resultContext.getData()) || ObjectUtils.isEmpty(eventData)) {
-            return result.getExecutionSummary(eventContext, resultContext);
+            return chain.getExecutionSummary(eventContext, resultContext);
         }
 
         JsonNode jsonNodeCopy = objectMapper.valueToTree(resultContext.getData()); // Create a copy of the data
         jsonNodeCopy = processor.processIfNotAutomation(eventData, jsonNodeCopy);
 
-        var res = result.getExecutionSummary(eventContext, new ResultContext(jsonNodeCopy));
+        var res = chain.getExecutionSummary(eventContext, new ResultContext(jsonNodeCopy));
         log.debug("ConditionTemplatingInterceptor: Condition data processed successfully.");
         return res;
     }
