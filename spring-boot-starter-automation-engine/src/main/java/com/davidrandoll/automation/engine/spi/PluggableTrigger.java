@@ -10,11 +10,19 @@ public abstract class PluggableTrigger<T extends ITriggerContext> implements Typ
     private ITypeConverter typeConverter;
 
     @Autowired
+    private IExpressionResolver expressionResolver;
+
+    @Autowired
     @Delegate
     private AutomationProcessor processor;
 
     @Override
     public ITypeConverter getTypeConverter() {
         return typeConverter;
+    }
+
+    @Override
+    public IExpressionResolver getExpressionResolver() {
+        return expressionResolver;
     }
 }

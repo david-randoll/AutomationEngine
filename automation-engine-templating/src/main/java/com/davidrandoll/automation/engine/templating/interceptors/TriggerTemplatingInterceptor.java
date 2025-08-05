@@ -12,7 +12,6 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.core.annotation.Order;
-import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 
 /**
@@ -24,7 +23,7 @@ import org.springframework.util.ObjectUtils;
  * </p>
  */
 @Slf4j
-@Component("triggerTemplatingInterceptor")
+//@Component("triggerTemplatingInterceptor")
 @RequiredArgsConstructor
 @Order(-1)
 @ConditionalOnMissingBean(name = "triggerTemplatingInterceptor", ignored = TriggerTemplatingInterceptor.class)

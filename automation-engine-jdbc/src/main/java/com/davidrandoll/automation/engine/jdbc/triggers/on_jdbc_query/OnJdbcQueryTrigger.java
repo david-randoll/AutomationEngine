@@ -40,4 +40,9 @@ public class OnJdbcQueryTrigger extends PluggableTrigger<OnJdbcQueryTriggerConte
             throw new RuntimeException("Error processing expression: " + tc.getExpression(), e);
         }
     }
+
+    @Override
+    public boolean autoEvaluateExpression() {
+        return false;
+    }
 }
