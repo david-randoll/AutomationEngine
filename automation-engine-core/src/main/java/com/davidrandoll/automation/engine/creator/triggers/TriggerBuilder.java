@@ -6,6 +6,7 @@ import com.davidrandoll.automation.engine.core.triggers.IBaseTrigger;
 import com.davidrandoll.automation.engine.core.triggers.ITrigger;
 import com.davidrandoll.automation.engine.core.triggers.TriggerContext;
 import com.davidrandoll.automation.engine.core.triggers.interceptors.ITriggerInterceptor;
+import com.davidrandoll.automation.engine.core.triggers.interceptors.InterceptingTrigger;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
@@ -35,8 +36,9 @@ public class TriggerBuilder {
         ITrigger triggerInstance = Optional.ofNullable(supplier.getTrigger(trigger.getTrigger()))
                 .orElseThrow(() -> new TriggerNotFoundException(trigger.getTrigger()));
 
+        var interceptingTrigger = new InterceptingTrigger(triggerInstance, triggerInterceptors);
         var triggerContext = new TriggerContext(trigger.getParams());
-        return new EvaluatableTrigger(triggerInstance, triggerContext, triggerInterceptors);
+        return event -> interceptingTrigger.isTriggered(event, triggerContext);
     }
 
 
