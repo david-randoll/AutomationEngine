@@ -35,26 +35,20 @@ public class TriggerTemplatingInterceptor implements ITriggerInterceptor {
 
     @Override
     @SneakyThrows
-    public void intercept(EventContext eventContext, TriggerContext triggerContext, ITrigger trigger) {
+    public boolean intercept(EventContext eventContext, TriggerContext triggerContext, ITrigger trigger) {
         log.debug("TriggerTemplatingInterceptor: Processing trigger data...");
         if (trigger instanceof EvaluatableTrigger et && !et.getRawTrigger().autoEvaluateExpression()) {
-            trigger.isTriggered(eventContext, triggerContext);
-            return;
+            return trigger.isTriggered(eventContext, triggerContext);
         }
 
         var eventData = eventContext.getEventData(objectMapper);
         if (ObjectUtils.isEmpty(triggerContext.getData()) || ObjectUtils.isEmpty(eventData)) {
-            trigger.isTriggered(eventContext, triggerContext);
+            return trigger.isTriggered(eventContext, triggerContext);
         }
 
         var mapCopy = processor.processIfNotAutomation(eventData, triggerContext.getData());
-        trigger.isTriggered(eventContext, new TriggerContext(mapCopy));
+        var result = trigger.isTriggered(eventContext, new TriggerContext(mapCopy));
         log.debug("TriggerTemplatingInterceptor: Trigger data processed successfully.");
-    }
-
-    public static class AutomationEngineProcessingException extends RuntimeException {
-        public AutomationEngineProcessingException(Throwable cause) {
-            super(cause);
-        }
+        return result;
     }
 }
