@@ -9,4 +9,8 @@ public interface ITrigger {
     }
 
     boolean isTriggered(EventContext eventContext, TriggerContext triggerContext);
+
+    default boolean autoEvaluateExpression() {
+        return true;
+    }
 }

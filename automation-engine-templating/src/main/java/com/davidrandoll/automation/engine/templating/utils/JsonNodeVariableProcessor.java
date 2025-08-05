@@ -1,8 +1,6 @@
 package com.davidrandoll.automation.engine.templating.utils;
 
-import com.davidrandoll.automation.engine.core.events.EventContext;
 import com.davidrandoll.automation.engine.core.result.ResultContext;
-import com.davidrandoll.automation.engine.spi.IExpressionResolver;
 import com.davidrandoll.automation.engine.templating.TemplateProcessor;
 import com.davidrandoll.automation.engine.templating.interceptors.ResultTemplatingInterceptor;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -14,7 +12,6 @@ import com.fasterxml.jackson.databind.node.TextNode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ObjectUtils;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -24,19 +21,10 @@ import java.util.Set;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class JsonNodeVariableProcessor implements IExpressionResolver {
+public class JsonNodeVariableProcessor {
     private final TemplateProcessor templateProcessor;
     private final ObjectMapper mapper;
     private static final Set<String> AUTOMATION_FIELDS = Set.of("action", "variable", "condition", "trigger", "result");
-
-    @Override
-    public Map<String, Object> resolve(EventContext eventContext, Map<String, Object> context) {
-        if (ObjectUtils.isEmpty(context)) return Map.of();
-        if (ObjectUtils.isEmpty(eventContext)) return Map.of();
-        Map<String, Object> eventData = eventContext.getEventData(mapper);
-        if (ObjectUtils.isEmpty(eventData)) return Map.of();
-        return processIfNotAutomation(eventData, context);
-    }
 
     public Map<String, Object> processIfNotAutomation(Map<String, Object> eventData, Map<String, Object> map) {
         JsonNode node = mapper.valueToTree(map);
