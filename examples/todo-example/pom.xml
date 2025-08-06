@@ -14,7 +14,7 @@
     <name>todo-example</name>
     <description>Demo project for Spring Boot</description>
     <properties>
-        <automation-engine.version>1.1.0</automation-engine.version>
+        <automation-engine.version>1.2.0</automation-engine.version>
 
         <java.version>21</java.version>
     </properties>

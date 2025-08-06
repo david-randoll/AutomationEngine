@@ -1,7 +1,7 @@
 package com.davidrandoll.automation.engine.templating.interceptors;
 
 import com.davidrandoll.automation.engine.core.conditions.ConditionContext;
-import com.davidrandoll.automation.engine.core.conditions.ICondition;
+import com.davidrandoll.automation.engine.core.conditions.interceptors.IConditionChain;
 import com.davidrandoll.automation.engine.core.conditions.interceptors.IConditionInterceptor;
 import com.davidrandoll.automation.engine.core.events.EventContext;
 import com.davidrandoll.automation.engine.templating.TemplateProcessor;
@@ -14,6 +14,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
+
+import static org.apache.commons.lang3.BooleanUtils.isFalse;
 
 /**
  * Interceptor for processing condition data using templating.
@@ -34,21 +36,20 @@ public class ConditionTemplatingInterceptor implements IConditionInterceptor {
 
     @Override
     @SneakyThrows
-    public void intercept(EventContext eventContext, ConditionContext conditionContext, ICondition condition) {
+    public boolean intercept(EventContext eventContext, ConditionContext conditionContext, IConditionChain chain) {
         log.debug("ConditionTemplatingInterceptor: Processing condition data...");
+        if (isFalse(chain.autoEvaluateExpression())) {
+            return chain.isSatisfied(eventContext, conditionContext);
+        }
+
         var eventData = eventContext.getEventData(objectMapper);
         if (ObjectUtils.isEmpty(conditionContext.getData()) || ObjectUtils.isEmpty(eventData)) {
-            condition.isSatisfied(eventContext, conditionContext);
+            return chain.isSatisfied(eventContext, conditionContext);
         }
 
         var mapCopy = processor.processIfNotAutomation(eventData, conditionContext.getData());
-        condition.isSatisfied(eventContext, new ConditionContext(mapCopy));
+        var result = chain.isSatisfied(eventContext, new ConditionContext(mapCopy));
         log.debug("ConditionTemplatingInterceptor: Condition data processed successfully.");
-    }
-
-    public static class AutomationEngineProcessingException extends RuntimeException {
-        public AutomationEngineProcessingException(Throwable cause) {
-            super(cause);
-        }
+        return result;
     }
 }

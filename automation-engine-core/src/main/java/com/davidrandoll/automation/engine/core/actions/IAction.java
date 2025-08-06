@@ -11,4 +11,8 @@ public interface IAction {
     }
 
     void execute(EventContext context, ActionContext actionContext) throws StopActionSequenceException, StopAutomationException;
+
+    default boolean autoEvaluateExpression() {
+        return true;
+    }
 }

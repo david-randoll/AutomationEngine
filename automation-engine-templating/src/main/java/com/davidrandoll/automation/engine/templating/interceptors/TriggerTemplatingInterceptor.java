@@ -1,8 +1,8 @@
 package com.davidrandoll.automation.engine.templating.interceptors;
 
 import com.davidrandoll.automation.engine.core.events.EventContext;
-import com.davidrandoll.automation.engine.core.triggers.ITrigger;
 import com.davidrandoll.automation.engine.core.triggers.TriggerContext;
+import com.davidrandoll.automation.engine.core.triggers.interceptors.ITriggerChain;
 import com.davidrandoll.automation.engine.core.triggers.interceptors.ITriggerInterceptor;
 import com.davidrandoll.automation.engine.templating.TemplateProcessor;
 import com.davidrandoll.automation.engine.templating.utils.JsonNodeVariableProcessor;
@@ -14,6 +14,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
+
+import static org.apache.commons.lang3.BooleanUtils.isFalse;
 
 /**
  * Interceptor for processing trigger data using templating.
@@ -34,21 +36,20 @@ public class TriggerTemplatingInterceptor implements ITriggerInterceptor {
 
     @Override
     @SneakyThrows
-    public void intercept(EventContext eventContext, TriggerContext triggerContext, ITrigger trigger) {
+    public boolean intercept(EventContext eventContext, TriggerContext triggerContext, ITriggerChain chain) {
         log.debug("TriggerTemplatingInterceptor: Processing trigger data...");
+        if (isFalse(chain.autoEvaluateExpression())) {
+            return chain.isTriggered(eventContext, triggerContext);
+        }
+
         var eventData = eventContext.getEventData(objectMapper);
         if (ObjectUtils.isEmpty(triggerContext.getData()) || ObjectUtils.isEmpty(eventData)) {
-            trigger.isTriggered(eventContext, triggerContext);
+            return chain.isTriggered(eventContext, triggerContext);
         }
 
         var mapCopy = processor.processIfNotAutomation(eventData, triggerContext.getData());
-        trigger.isTriggered(eventContext, new TriggerContext(mapCopy));
+        var result = chain.isTriggered(eventContext, new TriggerContext(mapCopy));
         log.debug("TriggerTemplatingInterceptor: Trigger data processed successfully.");
-    }
-
-    public static class AutomationEngineProcessingException extends RuntimeException {
-        public AutomationEngineProcessingException(Throwable cause) {
-            super(cause);
-        }
+        return result;
     }
 }

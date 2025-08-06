@@ -18,19 +18,20 @@ public class InterceptingCondition implements ICondition {
 
     @Override
     public boolean isSatisfied(EventContext eventContext, ConditionContext context) {
-        return executeInterceptors(0, eventContext, context);
+        IConditionChain chain = buildChain(0);
+        return chain.isSatisfied(eventContext, context);
     }
 
-    private boolean executeInterceptors(int index, EventContext eventContext, ConditionContext context) {
-        if (index < interceptors.size()) {
-            IConditionInterceptor interceptor = interceptors.get(index);
-            final boolean[] resultHolder = {false};
-            ICondition condition = (ec, cc) -> resultHolder[0] = this.executeInterceptors(index + 1, ec, cc);
-            interceptor.intercept(eventContext, context, condition);
-            return resultHolder[0];
-        } else {
-            // All interceptors processed, execute the delegate
-            return delegate.isSatisfied(eventContext, context);
+    private IConditionChain buildChain(int index) {
+        if (index >= interceptors.size()) {
+            return new ConditionChain(this.delegate::isSatisfied, delegate);
         }
+
+        IConditionInterceptor interceptor = interceptors.get(index);
+        IConditionChain next = buildChain(index + 1);
+        return new ConditionChain(
+                (ec, cc) -> interceptor.intercept(ec, cc, next),
+                delegate
+        );
     }
 }

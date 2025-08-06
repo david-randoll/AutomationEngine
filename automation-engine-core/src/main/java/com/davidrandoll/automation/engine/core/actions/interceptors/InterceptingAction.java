@@ -18,17 +18,20 @@ public class InterceptingAction implements IAction {
 
     @Override
     public void execute(EventContext eventContext, ActionContext actionContext) {
-        executeInterceptors(0, eventContext, actionContext);
+        IActionChain chain = buildChain(0);
+        chain.execute(eventContext, actionContext);
     }
 
-    private void executeInterceptors(int index, EventContext eventContext, ActionContext actionContext) {
-        if (index < interceptors.size()) {
-            IActionInterceptor interceptor = interceptors.get(index);
-            IAction action = (ec, ac) -> this.executeInterceptors(index + 1, ec, ac);
-            interceptor.intercept(eventContext, actionContext, action);
-        } else {
-            // All interceptors have been processed, execute the delegate
-            delegate.execute(eventContext, actionContext);
+    private IActionChain buildChain(int index) {
+        if (index >= interceptors.size()) {
+            return new ActionChain(this.delegate::execute, delegate);
         }
+
+        IActionInterceptor interceptor = interceptors.get(index);
+        IActionChain next = buildChain(index + 1);
+        return new ActionChain(
+                (ec, ac) -> interceptor.intercept(ec, ac, next),
+                delegate
+        );
     }
 }

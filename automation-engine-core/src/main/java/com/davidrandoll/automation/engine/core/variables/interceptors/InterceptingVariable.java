@@ -18,17 +18,20 @@ public class InterceptingVariable implements IVariable {
 
     @Override
     public void resolve(EventContext eventContext, VariableContext variableContext) {
-        executeInterceptors(0, eventContext, variableContext);
+        IVariableChain chain = buildChain(0);
+        chain.resolve(eventContext, variableContext);
     }
 
-    private void executeInterceptors(int index, EventContext eventContext, VariableContext variableContext) {
-        if (index < interceptors.size()) {
-            IVariableInterceptor interceptor = interceptors.get(index);
-            IVariable action = (ec, ac) -> this.executeInterceptors(index + 1, ec, ac);
-            interceptor.intercept(eventContext, variableContext, action);
-        } else {
-            // All interceptors have been processed, execute the delegate
-            delegate.resolve(eventContext, variableContext);
+    private IVariableChain buildChain(int index) {
+        if (index >= interceptors.size()) {
+            return new VariableChain(this.delegate::resolve, delegate);
         }
+
+        IVariableInterceptor interceptor = interceptors.get(index);
+        IVariableChain next = buildChain(index + 1);
+        return new VariableChain(
+                (ec, vc) -> interceptor.intercept(ec, vc, next),
+                delegate
+        );
     }
 }

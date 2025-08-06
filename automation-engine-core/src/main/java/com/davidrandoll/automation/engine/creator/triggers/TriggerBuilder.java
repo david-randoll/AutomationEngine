@@ -38,7 +38,6 @@ public class TriggerBuilder {
 
         var interceptingTrigger = new InterceptingTrigger(triggerInstance, triggerInterceptors);
         var triggerContext = new TriggerContext(trigger.getParams());
-
         return event -> interceptingTrigger.isTriggered(event, triggerContext);
     }
 
