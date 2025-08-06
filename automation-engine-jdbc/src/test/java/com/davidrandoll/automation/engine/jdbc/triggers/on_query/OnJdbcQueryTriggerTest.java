@@ -1,4 +1,4 @@
-package com.davidrandoll.automation.engine.jdbc.triggers.on_jdbc_query;
+package com.davidrandoll.automation.engine.jdbc.triggers.on_query;
 
 import com.davidrandoll.automation.engine.core.Automation;
 import com.davidrandoll.automation.engine.core.events.EventContext;

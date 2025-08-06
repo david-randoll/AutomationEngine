@@ -1,7 +1,7 @@
-package com.davidrandoll.automation.engine.jdbc.triggers.on_jdbc_query;
+package com.davidrandoll.automation.engine.jdbc.conditions.on_query;
 
 import com.davidrandoll.automation.engine.core.events.EventContext;
-import com.davidrandoll.automation.engine.spi.PluggableTrigger;
+import com.davidrandoll.automation.engine.spi.PluggableCondition;
 import com.davidrandoll.automation.engine.templating.TemplateProcessor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -13,35 +13,35 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Component("onJdbcQueryTrigger")
+@Component("onJdbcQueryCondition")
 @RequiredArgsConstructor
-@ConditionalOnMissingBean(name = "onJdbcQueryTrigger", ignored = OnJdbcQueryTrigger.class)
+@ConditionalOnMissingBean(name = "onJdbcQueryCondition", ignored = OnJdbcQueryCondition.class)
 @ConditionalOnClass(NamedParameterJdbcTemplate.class)
-public class OnJdbcQueryTrigger extends PluggableTrigger<OnJdbcQueryTriggerContext> {
+public class OnJdbcQueryCondition extends PluggableCondition<OnJdbcQueryConditionContext> {
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final TemplateProcessor pebble;
 
     @Override
-    public boolean isTriggered(EventContext ec, OnJdbcQueryTriggerContext tc) {
-        if (tc.getQuery() == null || tc.getExpression() == null) {
+    public boolean autoEvaluateExpression() {
+        return false;
+    }
+
+    @Override
+    public boolean isSatisfied(EventContext ec, OnJdbcQueryConditionContext cc) {
+        if (cc.getQuery() == null || cc.getExpression() == null) {
             return false;
         }
 
-        List<Map<String, Object>> queryResult = jdbcTemplate.queryForList(tc.getQuery(), tc.getParams());
+        List<Map<String, Object>> queryResult = jdbcTemplate.queryForList(cc.getQuery(), cc.getParams());
         Map<String, Object> context = new HashMap<>();
         context.put("result", queryResult);
         context.put("event", ec);
 
         try {
-            String result = pebble.process(tc.getExpression(), context);
+            String result = pebble.process(cc.getExpression(), context);
             return Boolean.TRUE.toString().equalsIgnoreCase(result);
         } catch (Exception e) {
-            throw new RuntimeException("Error processing expression: " + tc.getExpression(), e);
+            throw new RuntimeException("Error processing expression: " + cc.getExpression(), e);
         }
-    }
-
-    @Override
-    public boolean autoEvaluateExpression() {
-        return false;
     }
 }
