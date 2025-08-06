@@ -1,4 +1,4 @@
-package com.davidrandoll.automation.engine.jdbc.conditions;
+package com.davidrandoll.automation.engine.jdbc.conditions.on_jdbc_query;
 
 import com.davidrandoll.automation.engine.core.events.EventContext;
 import com.davidrandoll.automation.engine.spi.PluggableCondition;
@@ -9,7 +9,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,7 +40,7 @@ public class OnJdbcQueryCondition extends PluggableCondition<OnJdbcQueryConditio
         try {
             String result = pebble.process(cc.getExpression(), context);
             return Boolean.TRUE.toString().equalsIgnoreCase(result);
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new RuntimeException("Error processing expression: " + cc.getExpression(), e);
         }
     }

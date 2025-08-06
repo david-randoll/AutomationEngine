@@ -1,4 +1,4 @@
-package com.davidrandoll.automation.engine.jdbc.conditions;
+package com.davidrandoll.automation.engine.jdbc.conditions.on_jdbc_query;
 
 import com.davidrandoll.automation.engine.core.conditions.IConditionContext;
 import com.fasterxml.jackson.annotation.JsonAlias;

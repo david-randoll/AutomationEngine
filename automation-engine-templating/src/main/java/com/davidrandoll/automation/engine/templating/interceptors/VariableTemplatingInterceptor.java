@@ -15,6 +15,8 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 
+import static org.apache.commons.lang3.BooleanUtils.isFalse;
+
 /**
  * Interceptor for processing variable data using templating.
  * <p>
@@ -50,6 +52,11 @@ public class VariableTemplatingInterceptor implements IVariableInterceptor {
     @SneakyThrows
     public void intercept(EventContext eventContext, VariableContext variableContext, IVariableChain chain) {
         log.debug("VariableTemplatingInterceptor: Processing variable data...");
+        if (isFalse(chain.autoEvaluateExpression())) {
+            chain.resolve(eventContext, variableContext);
+            return;
+        }
+
         var eventData = eventContext.getEventData(objectMapper);
         if (ObjectUtils.isEmpty(variableContext.getData()) || ObjectUtils.isEmpty(eventData)) {
             chain.resolve(eventContext, variableContext);

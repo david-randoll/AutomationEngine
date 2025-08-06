@@ -2,12 +2,11 @@ package com.davidrandoll.automation.engine.jdbc.triggers.on_jdbc_query;
 
 import com.davidrandoll.automation.engine.core.Automation;
 import com.davidrandoll.automation.engine.core.events.EventContext;
+import com.davidrandoll.automation.engine.jdbc.TestConfig;
 import com.davidrandoll.automation.engine.modules.events.time_based.TimeBasedEvent;
 import com.davidrandoll.automation.engine.test.AutomationEngineTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
@@ -19,22 +18,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@Import(OnJdbcQueryTriggerTest.TestConfig.class)
+@Import(TestConfig.class)
 class OnJdbcQueryTriggerTest extends AutomationEngineTest {
 
     @Autowired
     NamedParameterJdbcTemplate jdbcTemplate;
-
-    @TestConfiguration
-    static class TestConfig {
-        @Bean
-        public NamedParameterJdbcTemplate jdbcTemplate() {
-            return mock(NamedParameterJdbcTemplate.class);
-        }
-    }
 
     @Test
     void testAutomationTriggersWhenQueryResultMatchesExpression() {

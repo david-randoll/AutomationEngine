@@ -15,6 +15,8 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 
+import static org.apache.commons.lang3.BooleanUtils.isFalse;
+
 /**
  * Interceptor for processing condition data using templating.
  * <p>
@@ -36,6 +38,10 @@ public class ConditionTemplatingInterceptor implements IConditionInterceptor {
     @SneakyThrows
     public boolean intercept(EventContext eventContext, ConditionContext conditionContext, IConditionChain chain) {
         log.debug("ConditionTemplatingInterceptor: Processing condition data...");
+        if (isFalse(chain.autoEvaluateExpression())) {
+            return chain.isSatisfied(eventContext, conditionContext);
+        }
+
         var eventData = eventContext.getEventData(objectMapper);
         if (ObjectUtils.isEmpty(conditionContext.getData()) || ObjectUtils.isEmpty(eventData)) {
             return chain.isSatisfied(eventContext, conditionContext);

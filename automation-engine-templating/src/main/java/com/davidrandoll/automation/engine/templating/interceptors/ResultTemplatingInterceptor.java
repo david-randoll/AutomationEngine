@@ -15,6 +15,8 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 
+import static org.apache.commons.lang3.BooleanUtils.isFalse;
+
 /**
  * Interceptor for processing result data using templating.
  * <p>
@@ -35,6 +37,10 @@ public class ResultTemplatingInterceptor implements IResultInterceptor {
     @Override
     public Object intercept(EventContext eventContext, ResultContext resultContext, IResultChain chain) {
         log.debug("ConditionTemplatingInterceptor: Processing result data...");
+        if (isFalse(chain.autoEvaluateExpression())) {
+            return chain.getExecutionSummary(eventContext, resultContext);
+        }
+
         var eventData = eventContext.getEventData(objectMapper);
         if (ObjectUtils.isEmpty(resultContext.getData()) || ObjectUtils.isEmpty(eventData)) {
             return chain.getExecutionSummary(eventContext, resultContext);

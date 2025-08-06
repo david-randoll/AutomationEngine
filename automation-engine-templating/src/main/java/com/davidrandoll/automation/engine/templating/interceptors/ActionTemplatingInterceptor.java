@@ -14,6 +14,8 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 
+import static org.apache.commons.lang3.BooleanUtils.isFalse;
+
 /**
  * Interceptor for processing action data using templating.
  * <p>
@@ -48,6 +50,11 @@ public class ActionTemplatingInterceptor implements IActionInterceptor {
     @Override
     public void intercept(EventContext eventContext, ActionContext actionContext, IActionChain chain) {
         log.debug("ActionTemplatingInterceptor: Processing action data...");
+        if (isFalse(chain.autoEvaluateExpression())) {
+            chain.execute(eventContext, actionContext);
+            return;
+        }
+
         var eventData = eventContext.getEventData(objectMapper);
         if (ObjectUtils.isEmpty(actionContext.getData()) || ObjectUtils.isEmpty(eventData)) {
             chain.execute(eventContext, actionContext);
