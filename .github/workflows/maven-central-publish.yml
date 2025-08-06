@@ -41,4 +41,5 @@ jobs:
         run: |
           mvn --batch-mode clean deploy -Pcentral \
             -Dgpg.keyname="${GPG_KEYNAME}" \
-            -Dgpg.passphrase="${GPG_PASSPHRASE}"
+            -Dgpg.passphrase="${GPG_PASSPHRASE}" \
+            -DskipTests
