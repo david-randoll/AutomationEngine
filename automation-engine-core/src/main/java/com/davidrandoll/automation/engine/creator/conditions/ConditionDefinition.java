@@ -19,6 +19,8 @@ import java.util.Map;
 @Builder
 public class ConditionDefinition {
     private String alias;
+    private String description;
+
     @NotEmpty
     @JsonAlias({"type", "condition"})
     private String condition;

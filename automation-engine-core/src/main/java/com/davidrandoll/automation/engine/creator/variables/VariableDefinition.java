@@ -18,6 +18,7 @@ import java.util.Map;
 @Builder
 public class VariableDefinition {
     private String alias;
+    private String description;
 
     @JsonAlias({"variable", "type"})
     private String variable = "basic";

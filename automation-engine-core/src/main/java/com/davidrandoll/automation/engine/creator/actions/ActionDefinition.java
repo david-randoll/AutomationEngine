@@ -19,6 +19,8 @@ import java.util.Map;
 @Builder
 public class ActionDefinition {
     private String alias;
+    private String description;
+
     @NotEmpty
     @JsonAlias({"action", "type"})
     private String action;

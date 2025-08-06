@@ -36,8 +36,9 @@ public class IfThenElseActionContext implements IActionContext {
     @AllArgsConstructor
     @NoArgsConstructor
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public static class IfThenBlock {
+    public static class IfThenBlock implements IActionContext {
         private String alias;
+        private String description;
 
         @JsonProperty("if")
         private List<ConditionDefinition> ifConditions = new ArrayList<>();

@@ -19,6 +19,8 @@ import java.util.Map;
 @Builder
 public class TriggerDefinition {
     private String alias;
+    private String description;
+
     @NotEmpty
     @JsonAlias({"type", "trigger"})
     private String trigger;

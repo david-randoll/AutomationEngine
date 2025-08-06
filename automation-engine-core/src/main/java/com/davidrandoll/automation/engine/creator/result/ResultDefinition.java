@@ -16,6 +16,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class ResultDefinition {
     private String alias;
+    private String description;
 
     @JsonAlias({"result", "return", "type"})
     private String result = "basic";
