@@ -194,4 +194,72 @@ class JdbcQueryActionTest extends AutomationEngineTest {
 
         verify(jdbcTemplate, never()).queryForList(anyString(), anyMap());
     }
+
+    @Test
+    void testQueryResultUsedInPebbleExpression() {
+        var yaml = """
+                alias: Use query result in Pebble expression
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: jdbcQuery
+                    query: "SELECT id, name FROM users"
+                    mode: list
+                    variable: usersList
+                  - action: logger
+                    message: "First user is {{ usersList[0].name }}"
+                """;
+
+        List<Map<String, Object>> mockResult = List.of(
+                Map.of("id", 1, "name", "Alice"),
+                Map.of("id", 2, "name", "Bob")
+        );
+
+        when(jdbcTemplate.queryForList(anyString(), anyMap())).thenReturn(mockResult);
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        EventContext ctx = EventContext.of(new TimeBasedEvent(LocalTime.of(10, 35)));
+        engine.publishEvent(ctx);
+
+        assertThat(ctx.getMetadata()).containsKey("usersList");
+        assertThat(ctx.getMetadata("usersList")).isEqualTo(mockResult);
+        assertThat(logAppender.getLoggedMessages())
+                .anyMatch(msg -> msg.contains("First user is Alice"));
+    }
+
+    @Test
+    void testSingleQueryResultUsedInPebbleExpression() {
+        var yaml = """
+                alias: Use single query result in Pebble expression
+                triggers:
+                  - trigger: alwaysTrue
+                actions:
+                  - action: jdbcQuery
+                    query: "SELECT id, name FROM users WHERE id = 1"
+                    mode: single
+                    variable: user
+                  - action: logger
+                    message: "Queried user is {{ user.name }}"
+                """;
+
+        Map<String, Object> mockRow = Map.of("id", 1, "name", "Alice");
+
+        // Return a single row in the list
+        when(jdbcTemplate.queryForList(anyString(), anyMap())).thenReturn(List.of(mockRow));
+
+        Automation automation = factory.createAutomation("yaml", yaml);
+        engine.register(automation);
+
+        EventContext ctx = EventContext.of(new TimeBasedEvent(LocalTime.of(10, 40)));
+        engine.publishEvent(ctx);
+
+        assertThat(ctx.getMetadata()).containsKey("user");
+        assertThat(ctx.getMetadata("user")).isEqualTo(mockRow);
+        assertThat(logAppender.getLoggedMessages())
+                .anyMatch(msg -> msg.contains("Queried user is Alice"));
+    }
+
+
 }
