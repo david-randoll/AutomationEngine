@@ -5,6 +5,7 @@ import com.davidrandoll.automation.engine.core.events.EventContext;
 import com.davidrandoll.automation.engine.jdbc.TestConfig;
 import com.davidrandoll.automation.engine.modules.events.time_based.TimeBasedEvent;
 import com.davidrandoll.automation.engine.test.AutomationEngineTest;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
@@ -18,6 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
 @Import(TestConfig.class)
@@ -25,6 +27,11 @@ class OnJdbcQueryConditionTest extends AutomationEngineTest {
 
     @Autowired
     NamedParameterJdbcTemplate jdbcTemplate;
+
+    @BeforeEach
+    void resetMocks() {
+        reset(jdbcTemplate);
+    }
 
     @Test
     void shouldExecuteAction_whenJdbcQueryConditionEvaluatesTrue() {
