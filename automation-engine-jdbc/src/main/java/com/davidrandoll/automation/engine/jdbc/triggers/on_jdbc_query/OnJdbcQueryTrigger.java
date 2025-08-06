@@ -9,7 +9,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,7 +35,7 @@ public class OnJdbcQueryTrigger extends PluggableTrigger<OnJdbcQueryTriggerConte
         try {
             String result = pebble.process(tc.getExpression(), context);
             return Boolean.TRUE.toString().equalsIgnoreCase(result);
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new RuntimeException("Error processing expression: " + tc.getExpression(), e);
         }
     }
