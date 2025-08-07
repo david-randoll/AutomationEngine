@@ -15,6 +15,7 @@ public class JsonSchemaConfig {
         SchemaGeneratorConfigBuilder configBuilder = new SchemaGeneratorConfigBuilder(SchemaVersion.DRAFT_2020_12, OptionPreset.PLAIN_JSON);
         configBuilder.with(jakartaValidationModule);
         configBuilder.with(jacksonModule);
+        configBuilder.with(new JsonAnyGetterAsAdditionalPropsModule());
         SchemaGeneratorConfig config = configBuilder.build();
         return new SchemaGenerator(config);
     }
