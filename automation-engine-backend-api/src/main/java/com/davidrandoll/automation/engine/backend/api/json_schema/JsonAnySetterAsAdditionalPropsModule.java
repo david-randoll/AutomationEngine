@@ -9,7 +9,7 @@ import java.lang.reflect.*;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
-public class JsonAnyGetterAsAdditionalPropsModule implements Module {
+public class JsonAnySetterAsAdditionalPropsModule implements Module {
     @Override
     public void applyToConfigBuilder(SchemaGeneratorConfigBuilder builder) {
         builder.forTypesInGeneral()
