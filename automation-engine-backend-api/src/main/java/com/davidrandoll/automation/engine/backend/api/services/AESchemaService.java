@@ -22,7 +22,7 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
-public class AutomationEngineService {
+public class AESchemaService {
     private final JsonSchemaService jsonSchemaService;
     private final ApplicationContext application;
 

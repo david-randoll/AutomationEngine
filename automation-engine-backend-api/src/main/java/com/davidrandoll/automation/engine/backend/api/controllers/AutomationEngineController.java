@@ -3,7 +3,7 @@ package com.davidrandoll.automation.engine.backend.api.controllers;
 import com.davidrandoll.automation.engine.backend.api.dtos.AllModuleWithSchema;
 import com.davidrandoll.automation.engine.backend.api.dtos.ModuleType;
 import com.davidrandoll.automation.engine.backend.api.dtos.ModulesByType;
-import com.davidrandoll.automation.engine.backend.api.services.AutomationEngineService;
+import com.davidrandoll.automation.engine.backend.api.services.AESchemaService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/automation-engine")
 @RequiredArgsConstructor
 public class AutomationEngineController {
-    private final AutomationEngineService service;
+    private final AESchemaService service;
 
     @GetMapping("module/{type}")
     public ModulesByType getModulesByType(@PathVariable String type,
