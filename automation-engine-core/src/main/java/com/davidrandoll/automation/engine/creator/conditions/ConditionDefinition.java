@@ -3,6 +3,7 @@ package com.davidrandoll.automation.engine.creator.conditions;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,6 +25,7 @@ public class ConditionDefinition {
     @JsonAlias({"type", "condition"})
     private String condition;
 
+    @JsonIgnore
     @JsonAnyGetter
     @JsonAnySetter
     private Map<String, Object> params = new HashMap<>();
