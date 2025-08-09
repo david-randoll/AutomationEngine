@@ -2,6 +2,7 @@ package com.davidrandoll.automation.engine.backend.api.json_schema;
 
 import com.davidrandoll.automation.engine.creator.actions.ActionDefinition;
 import com.davidrandoll.automation.engine.creator.conditions.ConditionDefinition;
+import com.davidrandoll.automation.engine.creator.result.ResultDefinition;
 import com.davidrandoll.automation.engine.creator.triggers.TriggerDefinition;
 import com.davidrandoll.automation.engine.creator.variables.VariableDefinition;
 import com.github.victools.jsonschema.generator.Module;
@@ -31,6 +32,7 @@ public class BlockTypeDefinitionModule implements Module {
         if (ConditionDefinition.class.isAssignableFrom(type)) return "condition";
         if (ActionDefinition.class.isAssignableFrom(type)) return "action";
         if (VariableDefinition.class.isAssignableFrom(type)) return "variable";
+        if (ResultDefinition.class.isAssignableFrom(type)) return "result";
         return null;
     }
 }
