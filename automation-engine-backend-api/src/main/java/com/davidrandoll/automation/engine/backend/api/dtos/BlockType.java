@@ -1,6 +1,6 @@
 package com.davidrandoll.automation.engine.backend.api.dtos;
 
-import com.davidrandoll.automation.engine.core.IModule;
+import com.davidrandoll.automation.engine.core.IBlock;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Data;
@@ -9,7 +9,7 @@ import org.springframework.lang.Nullable;
 
 @Data
 @NoArgsConstructor
-public class ModuleType {
+public class BlockType {
     private String name;
     private String label;
     private String description;
@@ -17,7 +17,7 @@ public class ModuleType {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private JsonNode schema;
 
-    public ModuleType(String name, IModule module, @Nullable JsonNode schema) {
+    public BlockType(String name, IBlock module, @Nullable JsonNode schema) {
         this.name = name;
         this.label = module.getModuleLabel();
         this.description = module.getModuleDescription();

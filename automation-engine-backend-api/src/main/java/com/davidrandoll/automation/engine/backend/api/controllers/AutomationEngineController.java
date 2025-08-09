@@ -1,8 +1,8 @@
 package com.davidrandoll.automation.engine.backend.api.controllers;
 
-import com.davidrandoll.automation.engine.backend.api.dtos.AllModuleWithSchema;
-import com.davidrandoll.automation.engine.backend.api.dtos.ModuleType;
-import com.davidrandoll.automation.engine.backend.api.dtos.ModulesByType;
+import com.davidrandoll.automation.engine.backend.api.dtos.AllBlockWithSchema;
+import com.davidrandoll.automation.engine.backend.api.dtos.BlockType;
+import com.davidrandoll.automation.engine.backend.api.dtos.BlocksByType;
 import com.davidrandoll.automation.engine.backend.api.services.AESchemaService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -14,18 +14,18 @@ public class AutomationEngineController {
     private final AESchemaService service;
 
     @GetMapping("module/{type}")
-    public ModulesByType getModulesByType(@PathVariable String type,
-                                          @RequestParam(required = false) Boolean includeSchema) {
+    public BlocksByType getModulesByType(@PathVariable String type,
+                                         @RequestParam(required = false) Boolean includeSchema) {
         return service.getModulesByType(type, includeSchema);
     }
 
     @GetMapping("module/{name}/schema")
-    public ModuleType getSchemaByBeanName(@PathVariable String name) {
+    public BlockType getSchemaByBeanName(@PathVariable String name) {
         return service.getSchemaByModuleName(name);
     }
 
     @GetMapping("modules/schemas")
-    public AllModuleWithSchema getAllModuleSchemas() {
+    public AllBlockWithSchema getAllModuleSchemas() {
         return service.getAllModuleSchemas();
     }
 }

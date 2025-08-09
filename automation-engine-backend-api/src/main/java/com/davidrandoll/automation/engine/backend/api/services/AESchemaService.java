@@ -1,10 +1,10 @@
 package com.davidrandoll.automation.engine.backend.api.services;
 
-import com.davidrandoll.automation.engine.backend.api.dtos.AllModuleWithSchema;
-import com.davidrandoll.automation.engine.backend.api.dtos.ModuleType;
-import com.davidrandoll.automation.engine.backend.api.dtos.ModulesByType;
+import com.davidrandoll.automation.engine.backend.api.dtos.AllBlockWithSchema;
+import com.davidrandoll.automation.engine.backend.api.dtos.BlockType;
+import com.davidrandoll.automation.engine.backend.api.dtos.BlocksByType;
 import com.davidrandoll.automation.engine.backend.api.json_schema.JsonSchemaService;
-import com.davidrandoll.automation.engine.core.IModule;
+import com.davidrandoll.automation.engine.core.IBlock;
 import com.davidrandoll.automation.engine.core.actions.IAction;
 import com.davidrandoll.automation.engine.core.conditions.ICondition;
 import com.davidrandoll.automation.engine.core.result.IResult;
@@ -26,41 +26,41 @@ public class AESchemaService {
     private final JsonSchemaService jsonSchemaService;
     private final ApplicationContext application;
 
-    public ModulesByType getModulesByType(@PathVariable String moduleType, Boolean includeSchema) {
-        Class<? extends IModule> clazz = getBeanByModule(moduleType);
-        List<ModuleType> types = getModuleByType(clazz, includeSchema);
-        return new ModulesByType(types);
+    public BlocksByType getModulesByType(@PathVariable String moduleType, Boolean includeSchema) {
+        Class<? extends IBlock> clazz = getBeanByModule(moduleType);
+        List<BlockType> types = getModuleByType(clazz, includeSchema);
+        return new BlocksByType(types);
     }
 
-    public ModuleType getSchemaByModuleName(@PathVariable String name) {
+    public BlockType getSchemaByModuleName(@PathVariable String name) {
         Object bean = application.getBean(name);
-        if (!(bean instanceof IModule module)) {
+        if (!(bean instanceof IBlock module)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "%s is not a valid module".formatted(name));
         }
         var schema = jsonSchemaService.generateSchema(module.getContextType());
-        return new ModuleType(name, module, schema);
+        return new BlockType(name, module, schema);
     }
 
-    public AllModuleWithSchema getAllModuleSchemas() {
-        List<ModuleType> types = getModuleByType(IModule.class, true);
-        return new AllModuleWithSchema(types);
+    public AllBlockWithSchema getAllModuleSchemas() {
+        List<BlockType> types = getModuleByType(IBlock.class, true);
+        return new AllBlockWithSchema(types);
     }
 
-    private List<ModuleType> getModuleByType(Class<? extends IModule> clazz, Boolean includeSchema) {
-        Map<String, ? extends IModule> beans = application.getBeansOfType(clazz);
+    private List<BlockType> getModuleByType(Class<? extends IBlock> clazz, Boolean includeSchema) {
+        Map<String, ? extends IBlock> beans = application.getBeansOfType(clazz);
         return beans.entrySet().stream()
                 .map(entry -> {
-                    IModule module = entry.getValue();
+                    IBlock module = entry.getValue();
                     if (includeSchema == null || Boolean.FALSE.equals(includeSchema)) {
-                        return new ModuleType(entry.getKey(), module, null);
+                        return new BlockType(entry.getKey(), module, null);
                     }
                     var schema = jsonSchemaService.generateSchema(module.getContextType());
-                    return new ModuleType(entry.getKey(), module, schema);
+                    return new BlockType(entry.getKey(), module, schema);
                 })
                 .toList();
     }
 
-    private static Class<? extends IModule> getBeanByModule(String type) {
+    private static Class<? extends IBlock> getBeanByModule(String type) {
         return switch (type.toLowerCase()) {
             case "action", "actions" -> IAction.class;
             case "condition", "conditions" -> ICondition.class;

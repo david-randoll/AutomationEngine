@@ -2,7 +2,7 @@ package com.davidrandoll.automation.engine.core;
 
 import com.davidrandoll.automation.engine.core.utils.StringUtils;
 
-public interface IModule {
+public interface IBlock {
     default Class<?> getContextType() {
         return null;
     }

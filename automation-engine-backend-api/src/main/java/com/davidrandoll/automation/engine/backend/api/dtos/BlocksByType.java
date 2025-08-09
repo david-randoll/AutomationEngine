@@ -9,6 +9,6 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AllModuleWithSchema {
-    private List<ModuleType> types;
+public class BlocksByType {
+    private List<BlockType> types;
 }
