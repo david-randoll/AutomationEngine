@@ -4,7 +4,6 @@ import com.davidrandoll.automation.engine.creator.actions.ActionDefinition;
 import com.davidrandoll.automation.engine.creator.conditions.ConditionDefinition;
 import com.davidrandoll.automation.engine.creator.triggers.TriggerDefinition;
 import com.davidrandoll.automation.engine.creator.variables.VariableDefinition;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.github.victools.jsonschema.generator.Module;
 import com.github.victools.jsonschema.generator.SchemaGeneratorConfigBuilder;
 
@@ -22,10 +21,7 @@ public class BlockTypeDefinitionModule implements Module {
                 .withInstanceAttributeOverride((attrs, type, context) -> {
                     String blockType = getBlockType(type.getType().getErasedType());
                     if (blockType != null) {
-                        // Inject x-block-type without removing existing schema attributes
-                        attrs.put("x-block-type", context.getGeneratorConfig()
-                                .getObjectMapper()
-                                .convertValue(blockType, JsonNode.class));
+                        attrs.put("x-block-type", blockType);
                     }
                 });
     }
