@@ -1,3 +1,5 @@
+import yaml from 'js-yaml';
+
 export function simplifyModules(modules: ModuleType[], keyName: string): any[] {
     return modules.map((mod) => {
         const { name, data = {} } = mod;
@@ -36,27 +38,5 @@ export function exportJson(automation: Automation) {
 
 export function exportYaml(automation: Automation) {
     const simplified = simplifyAutomation(automation);
-
-    function toY(obj: any, indent = 0): string {
-        const pad = "  ".repeat(indent);
-        if (Array.isArray(obj)) {
-            if (obj.length === 0) return "[]\n";
-            return (
-                obj
-                    .map((v) => `${pad}- ${typeof v === "object" ? "\n" + toY(v, indent + 1) : String(v) + "\n"}`)
-                    .join("") + (indent === 0 ? "" : "")
-            );
-        }
-        if (obj === null) return "null\n";
-        if (typeof obj === "object") {
-            return Object.entries(obj)
-                .map(([k, v]) =>
-                    typeof v === "object" ? `${pad}${k}:\n${toY(v, indent + 1)}` : `${pad}${k}: ${String(v)}\n`
-                )
-                .join("");
-        }
-        return `${pad}${String(obj)}\n`;
-    }
-
-    return toY(simplified).trim();
+  return yaml.dump(simplified, { indent: 2, noRefs: true });
 }

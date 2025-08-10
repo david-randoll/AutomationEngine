@@ -3,6 +3,7 @@ package com.davidrandoll.automation.engine.modules.variables.basic;
 import com.davidrandoll.automation.engine.core.variables.IVariableContext;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,6 +18,7 @@ public class BasicVariableContext implements IVariableContext {
     private String alias;
     private String description;
 
+    @JsonIgnore
     @JsonAnySetter
     @JsonAnyGetter
     private Map<String, Object> variables = new HashMap<>();
