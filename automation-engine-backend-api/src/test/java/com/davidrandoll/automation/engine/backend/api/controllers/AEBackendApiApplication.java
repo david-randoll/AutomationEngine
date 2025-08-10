@@ -4,8 +4,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class AutomationEngineApplication {
+public class AEBackendApiApplication {
     public static void main(String[] args) {
-        SpringApplication.run(AutomationEngineApplication.class, args);
+        SpringApplication.run(AEBackendApiApplication.class, args);
     }
 }
