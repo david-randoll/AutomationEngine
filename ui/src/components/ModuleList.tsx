@@ -4,17 +4,7 @@ import { FaTrash, FaPlus } from "react-icons/fa";
 import Section from "@/components/Section";
 import ModuleEditor from "@/components/ModuleEditor";
 
-function ModuleList({
-    title,
-    modules,
-    area,
-    onAdd,
-    onEdit,
-    onRemove,
-    editing,
-    setEditing,
-    onUpdateModule,
-}: {
+interface ModuleListProps {
     title: string;
     modules: ModuleType[];
     area: Area;
@@ -24,7 +14,19 @@ function ModuleList({
     editing: { area: Area | null; idx: number } | null;
     setEditing: React.Dispatch<React.SetStateAction<{ area: Area | null; idx: number } | null>>;
     onUpdateModule: (idx: number, module: ModuleType) => void;
-}) {
+}
+
+const ModuleList = ({
+    title,
+    modules,
+    area,
+    onAdd,
+    onEdit,
+    onRemove,
+    editing,
+    setEditing,
+    onUpdateModule,
+}: ModuleListProps) => {
     return (
         <Section
             title={title}
@@ -67,6 +69,6 @@ function ModuleList({
             </div>
         </Section>
     );
-}
+};
 
 export default ModuleList;

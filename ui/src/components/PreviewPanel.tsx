@@ -2,7 +2,11 @@ import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { exportJson, exportYaml } from "@/utils/automation";
 
-function PreviewPanel({ automation }: { automation: Automation }) {
+interface PreviewPanelProps {
+    automation: Automation;
+}
+
+const PreviewPanel = ({ automation }: PreviewPanelProps) => {
     return (
         <Card>
             <CardHeader>
@@ -16,6 +20,6 @@ function PreviewPanel({ automation }: { automation: Automation }) {
             </CardContent>
         </Card>
     );
-}
+};
 
 export default PreviewPanel;

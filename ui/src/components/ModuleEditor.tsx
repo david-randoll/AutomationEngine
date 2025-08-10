@@ -1,12 +1,13 @@
-import React, {  } from "react";
+import React from "react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
-// Editor panel for a selected module instance. It edits 'data' object in-place.
-const ModuleEditor: React.FC<{
-    module: ModuleType & { id?: string; data?: Record<string, any> };
-    onChange: (next: ModuleType & { id?: string; data?: Record<string, any> }) => void;
-}> = ({ module, onChange }) => {
+interface ModuleEditorProps {
+    module: ModuleType;
+    onChange: (next: ModuleType) => void;
+}
+
+const ModuleEditor = ({ module, onChange }: ModuleEditorProps) => {
     const props = module.schema?.properties || {};
 
     function setField(key: string, value: any) {
@@ -90,4 +91,4 @@ const ModuleEditor: React.FC<{
     );
 };
 
-export default ModuleEditor
+export default ModuleEditor;

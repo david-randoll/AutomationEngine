@@ -3,13 +3,14 @@ import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
-// Modal chooser component (re-usable)
-const AddBlockModal: React.FC<{
+interface AddBlockModalProps {
     open: boolean;
     onOpenChange: (v: boolean) => void;
     type: "trigger" | "condition" | "action" | "variable" | "result";
     onSelect: (module: ModuleType) => void;
-}> = ({ open, onOpenChange, type, onSelect }) => {
+}
+
+const AddBlockModal = ({ open, onOpenChange, type, onSelect }: AddBlockModalProps) => {
     const [items, setItems] = useState<ModuleType[]>([]);
     const [loading, setLoading] = useState(false);
     const [filter, setFilter] = useState("");
