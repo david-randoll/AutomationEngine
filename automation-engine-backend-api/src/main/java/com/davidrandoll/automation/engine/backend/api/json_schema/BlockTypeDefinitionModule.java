@@ -36,5 +36,3 @@ public class BlockTypeDefinitionModule implements Module {
         return null;
     }
 }
-
-

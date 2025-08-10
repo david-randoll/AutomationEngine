@@ -27,6 +27,8 @@ import java.util.Optional;
 public class AutomationDefinition {
     @Getter
     private String alias;
+    @Getter
+    private String description;
     private List<VariableDefinition> variables = new ArrayList<>();
     private List<TriggerDefinition> triggers = new ArrayList<>();
     private List<ConditionDefinition> conditions = new ArrayList<>();

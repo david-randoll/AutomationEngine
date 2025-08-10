@@ -3,12 +3,14 @@ package com.davidrandoll.automation.engine.backend.api.dtos;
 import com.davidrandoll.automation.engine.core.IBlock;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.JsonNode;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.lang.Nullable;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class BlockType {
     private String name;
     private String label;

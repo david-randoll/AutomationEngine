@@ -15,7 +15,7 @@ public class AutomationEngineController {
 
     @GetMapping("block/{type}")
     public BlocksByType getBlocksByType(@PathVariable String type,
-                                         @RequestParam(required = false) Boolean includeSchema) {
+                                        @RequestParam(required = false) Boolean includeSchema) {
         return service.getBlocksByType(type, includeSchema);
     }
 
@@ -27,5 +27,10 @@ public class AutomationEngineController {
     @GetMapping("blocks/schemas")
     public AllBlockWithSchema getAllBlockSchemas() {
         return service.getAllBlockSchemas();
+    }
+
+    @GetMapping("automation-definition/schema")
+    public BlockType getAutomationDefinition() {
+        return service.getAutomationDefinition();
     }
 }

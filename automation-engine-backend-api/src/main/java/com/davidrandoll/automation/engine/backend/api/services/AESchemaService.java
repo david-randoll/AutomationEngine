@@ -10,11 +10,11 @@ import com.davidrandoll.automation.engine.core.conditions.ICondition;
 import com.davidrandoll.automation.engine.core.result.IResult;
 import com.davidrandoll.automation.engine.core.triggers.ITrigger;
 import com.davidrandoll.automation.engine.core.variables.IVariable;
+import com.davidrandoll.automation.engine.creator.AutomationDefinition;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -26,13 +26,23 @@ public class AESchemaService {
     private final JsonSchemaService jsonSchemaService;
     private final ApplicationContext application;
 
-    public BlocksByType getBlocksByType(@PathVariable String moduleType, Boolean includeSchema) {
+    public BlockType getAutomationDefinition() {
+        var schema = jsonSchemaService.generateSchema(AutomationDefinition.class);
+        return new BlockType(
+                "AutomationDefinition",
+                "Automation Definition",
+                "The parent block for all automations",
+                schema
+        );
+    }
+
+    public BlocksByType getBlocksByType(String moduleType, Boolean includeSchema) {
         Class<? extends IBlock> clazz = getBeanByModule(moduleType);
         List<BlockType> types = getModuleByType(clazz, includeSchema);
         return new BlocksByType(types);
     }
 
-    public BlockType getSchemaByBlockName(@PathVariable String name) {
+    public BlockType getSchemaByBlockName(String name) {
         Object bean = application.getBean(name);
         if (!(bean instanceof IBlock module)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "%s is not a valid module".formatted(name));
