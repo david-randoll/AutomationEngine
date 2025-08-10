@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import AddBlockModal from "@/components/AddBlockModal";
 import ModuleList from "@/components/ModuleList";
 import PreviewPanel from "@/components/PreviewPanel";
+import { simplifyAutomation } from "@/utils/automation";
 
 // Utility: generate uid
 function uid(prefix = "id") {
@@ -57,7 +58,10 @@ export default function AutomationBuilderPage() {
                         <p className="text-sm text-gray-500">Build automations visually — Home Assistant style.</p>
                     </div>
                     <div className="space-x-2">
-                        <Button onClick={() => navigator.clipboard?.writeText(JSON.stringify(automation, null, 2))}>
+                        <Button
+                            onClick={() =>
+                                navigator.clipboard?.writeText(JSON.stringify(simplifyAutomation(automation), null, 2))
+                            }>
                             Copy JSON
                         </Button>
                         <Button
@@ -92,7 +96,8 @@ export default function AutomationBuilderPage() {
                                     }
                                     return `${pad}${String(obj)}\n`;
                                 }
-                                navigator.clipboard?.writeText(toY(automation).trim());
+                                const text = toY(simplifyAutomation(automation)).trim();
+                                navigator.clipboard?.writeText(text);
                             }}>
                             Copy YAML
                         </Button>
@@ -163,7 +168,7 @@ export default function AutomationBuilderPage() {
                         <div className="space-y-2">
                             <Button
                                 onClick={() => {
-                                    const text = JSON.stringify(automation, null, 2);
+                                    const text = JSON.stringify(simplifyAutomation(automation), null, 2);
                                     navigator.clipboard?.writeText(text);
                                     alert("Copied JSON to clipboard");
                                 }}>
@@ -201,7 +206,7 @@ export default function AutomationBuilderPage() {
                                         }
                                         return `${pad}${String(obj)}\n`;
                                     }
-                                    const text = toY(automation).trim();
+                                    const text = toY(simplifyAutomation(automation)).trim();
                                     navigator.clipboard?.writeText(text);
                                     alert("Copied YAML to clipboard");
                                 }}>
