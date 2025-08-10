@@ -16,7 +16,7 @@ const AddBlockModal: React.FC<{
 
     // Fetch helper for module types
     async function fetchModuleTypes(type: string): Promise<ModuleType[]> {
-        const url = `http://localhost:8085/automation-engine/module/${type}?includeSchema=true`;
+        const url = `http://localhost:8085/automation-engine/block/${type}?includeSchema=true`;
         const res = await fetch(url);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const json = await res.json();

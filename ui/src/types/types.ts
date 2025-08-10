@@ -2,6 +2,7 @@
 type JsonSchema = any;
 
 type ModuleType = {
+    id?: string;
     name: string;
     label?: string;
     description?: string;
@@ -11,7 +12,7 @@ type ModuleType = {
 type Automation = {
     alias?: string;
     description?: string;
-    variables: { name: string; value: any }[];
+    variables: ModuleType[];
     triggers: ModuleType[];
     conditions: ModuleType[];
     actions: ModuleType[];

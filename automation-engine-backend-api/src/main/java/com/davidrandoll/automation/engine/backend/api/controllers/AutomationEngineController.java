@@ -13,19 +13,19 @@ import org.springframework.web.bind.annotation.*;
 public class AutomationEngineController {
     private final AESchemaService service;
 
-    @GetMapping("module/{type}")
-    public BlocksByType getModulesByType(@PathVariable String type,
+    @GetMapping("block/{type}")
+    public BlocksByType getBlocksByType(@PathVariable String type,
                                          @RequestParam(required = false) Boolean includeSchema) {
-        return service.getModulesByType(type, includeSchema);
+        return service.getBlocksByType(type, includeSchema);
     }
 
-    @GetMapping("module/{name}/schema")
+    @GetMapping("block/{name}/schema")
     public BlockType getSchemaByBeanName(@PathVariable String name) {
-        return service.getSchemaByModuleName(name);
+        return service.getSchemaByBlockName(name);
     }
 
-    @GetMapping("modules/schemas")
-    public AllBlockWithSchema getAllModuleSchemas() {
-        return service.getAllModuleSchemas();
+    @GetMapping("blocks/schemas")
+    public AllBlockWithSchema getAllBlockSchemas() {
+        return service.getAllBlockSchemas();
     }
 }

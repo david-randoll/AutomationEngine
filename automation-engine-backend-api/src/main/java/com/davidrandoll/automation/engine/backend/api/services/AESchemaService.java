@@ -26,13 +26,13 @@ public class AESchemaService {
     private final JsonSchemaService jsonSchemaService;
     private final ApplicationContext application;
 
-    public BlocksByType getModulesByType(@PathVariable String moduleType, Boolean includeSchema) {
+    public BlocksByType getBlocksByType(@PathVariable String moduleType, Boolean includeSchema) {
         Class<? extends IBlock> clazz = getBeanByModule(moduleType);
         List<BlockType> types = getModuleByType(clazz, includeSchema);
         return new BlocksByType(types);
     }
 
-    public BlockType getSchemaByModuleName(@PathVariable String name) {
+    public BlockType getSchemaByBlockName(@PathVariable String name) {
         Object bean = application.getBean(name);
         if (!(bean instanceof IBlock module)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "%s is not a valid module".formatted(name));
@@ -41,7 +41,7 @@ public class AESchemaService {
         return new BlockType(name, module, schema);
     }
 
-    public AllBlockWithSchema getAllModuleSchemas() {
+    public AllBlockWithSchema getAllBlockSchemas() {
         List<BlockType> types = getModuleByType(IBlock.class, true);
         return new AllBlockWithSchema(types);
     }
