@@ -9,9 +9,9 @@ interface ModuleListProps {
     modules: ModuleType[];
     area: Area;
     onAdd: () => void;
-    onEdit: (idx: number) => void;
-    onRemove: (idx: number) => void;
-    editing: { area: Area | null; idx: number } | null;
+    onEdit: (index: number) => void;
+    onRemove: (index: number) => void;
+    editing?: { area: Area | null; idx: number } | null;
     setEditing: React.Dispatch<React.SetStateAction<{ area: Area | null; idx: number } | null>>;
     onUpdateModule: (idx: number, module: ModuleType) => void;
 }

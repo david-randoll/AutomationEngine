@@ -42,7 +42,12 @@ const ModuleListItem = ({
             </div>
             {isEditing && (
                 <div className="mt-3">
-                    <ModuleEditor module={mod} onChange={(next) => onUpdateModule(idx, next)} />
+                    <ModuleEditor
+                        module={mod}
+                        onChange={(next) => onUpdateModule(idx, next)}
+                        area={area}
+                        setEditing={setEditing}
+                    />
                     <div className="mt-3 flex gap-2">
                         <Button onClick={() => setEditing(null)}>Close</Button>
                     </div>
