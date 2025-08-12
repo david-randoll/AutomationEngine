@@ -1,17 +1,26 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import AddBlockModal from "@/components/AddBlockModal";
-import ModuleList from "@/components/ModuleList";
 import PreviewPanel from "@/components/PreviewPanel";
 import { useAutomation } from "@/context/AutomationContext";
 import { exportJson, exportYaml } from "@/utils/automation";
+import ModuleEditor from "@/components/ModuleEditor";
 
 export default function AutomationBuilderPage() {
-    const { automation, addModule } = useAutomation();
+    const { automation } = useAutomation();
+    const [automationSchema, setAutomationSchema] = useState<ModuleType>();
 
-    const [modalType, setModalType] = useState<null | Area>(null);
+    async function fetchAutomationSchema(): Promise<ModuleType> {
+        const res = await fetch("http://localhost:8085/automation-engine/automation-definition/schema");
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const json = await res.json();
+        return json as ModuleType;
+    }
+
+    useEffect(() => {
+        fetchAutomationSchema().then(setAutomationSchema);
+    }, []);
 
     return (
         <div className="p-6 bg-gray-50 min-h-screen">
@@ -31,34 +40,13 @@ export default function AutomationBuilderPage() {
 
                 <main className="grid grid-cols-3 gap-6">
                     <section className="col-span-2 space-y-4">
-                        {(["variable", "trigger", "condition", "action", "result"] as Area[]).map((area) => (
-                            <ModuleList
-                                key={area}
-                                title={area.charAt(0).toUpperCase() + area.slice(1) + "s"}
-                                area={area}
-                                modules={(automation as any)[area + "s"]}
-                                onAdd={() => setModalType(area)}
-                            />
-                        ))}
+                        {automationSchema && <ModuleEditor module={automationSchema} />}
                     </section>
 
                     <aside className="col-span-1 space-y-4">
                         <PreviewPanel automation={automation} />
                     </aside>
                 </main>
-
-                <AddBlockModal
-                    open={modalType !== null}
-                    onOpenChange={(v) => {
-                        if (!v) setModalType(null);
-                    }}
-                    type={modalType || "trigger"}
-                    onSelect={(mod) => {
-                        // create instance and add top-level (context handles id)
-                        addModule(modalType!, { ...(mod as ModuleType), id: undefined, data: {} });
-                        setModalType(null);
-                    }}
-                />
             </div>
         </div>
     );
