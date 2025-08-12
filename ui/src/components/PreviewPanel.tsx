@@ -14,9 +14,9 @@ const PreviewPanel = ({ automation }: PreviewPanelProps) => {
             </CardHeader>
             <CardContent>
                 <div className="text-xs text-gray-500 mb-2">JSON</div>
-                <pre className="text-xs bg-gray-100 rounded p-2 max-h-40 overflow-auto">{exportJson(automation)}</pre>
+                <pre className="text-xs bg-gray-100 rounded p-2 max-h-80 overflow-auto">{exportJson(automation)}</pre>
                 <div className="text-xs text-gray-500 my-2">YAML</div>
-                <pre className="text-xs bg-gray-100 rounded p-2 max-h-40 overflow-auto">{exportYaml(automation)}</pre>
+                <pre className="text-xs bg-gray-100 rounded p-2 max-h-80 overflow-auto">{exportYaml(automation)}</pre>
             </CardContent>
         </Card>
     );

@@ -44,16 +44,6 @@ export default function AutomationBuilderPage() {
 
                     <aside className="col-span-1 space-y-4">
                         <PreviewPanel automation={automation} />
-                        <div className="space-y-2">
-                            <Button onClick={() => navigator.clipboard.writeText(exportJson(automation))}>
-                                Copy JSON
-                            </Button>
-                            <Button
-                                variant="outline"
-                                onClick={() => navigator.clipboard.writeText(exportYaml(automation))}>
-                                Copy YAML
-                            </Button>
-                        </div>
                     </aside>
                 </main>
 
