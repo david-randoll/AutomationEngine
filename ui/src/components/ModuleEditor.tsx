@@ -9,6 +9,7 @@ import { useAutomation } from "@/context/AutomationContext";
 
 interface ModuleEditorProps {
     module: ModuleType;
+    path: Path; // path to the module in automation root, for updates
 }
 
 function capitalize(s: string) {
@@ -16,17 +17,14 @@ function capitalize(s: string) {
     return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
-const ModuleEditor = ({ module }: ModuleEditorProps) => {
-    // try to use helpers from context if they exist
-    const { updateModuleById, addChildModule, createModuleInstance, removeChildModule, editingId, setEditingId } =
-        useAutomation();
+const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
+    const { updateModule, automation } = useAutomation();
 
     const [modalOpen, setModalOpen] = useState(false);
     const [modalType, setModalType] = useState<Area | null>(null);
     const [modalFieldPath, setModalFieldPath] = useState<Path | null>(null);
     const [modalTargetIsArray, setModalTargetIsArray] = useState<boolean>(false);
 
-    // --- Path helpers (immutable updates) ---
     function getAtPath(obj: any, path: Path) {
         let cur = obj;
         for (const seg of path) {
@@ -36,88 +34,71 @@ const ModuleEditor = ({ module }: ModuleEditorProps) => {
         return cur;
     }
 
+    function getDataAtPath(obj: any, path: Path) {
+        return path.reduce((acc, key) => (acc ? acc[key] : undefined), obj);
+    }
+
+    // Current data for this module
+    const data = getDataAtPath(automation, path) || {};
+
     function setAtPath(obj: any, path: Path, value: any) {
-        // shallow clone along the path
-        const root = Array.isArray(obj) ? [...obj] : { ...(obj || {}) };
-        let cur: any = root;
-        for (let i = 0; i < path.length; i++) {
-            const seg = path[i];
-            const last = i === path.length - 1;
-            if (last) {
-                // set final
-                if (Array.isArray(cur)) {
-                    (cur as any)[seg as any] = value;
-                } else {
-                    (cur as any)[seg as any] = value;
-                }
-            } else {
-                const nextSeg = path[i + 1];
-                const existing = cur ? cur[seg as any] : undefined;
-                let next;
-                if (existing == null) {
-                    next = typeof nextSeg === "number" ? [] : {};
-                } else {
-                    next = Array.isArray(existing) ? [...existing] : { ...existing };
-                }
-                (cur as any)[seg as any] = next;
-                cur = next;
+        if (path.length === 0) return value;
+        const [head, ...rest] = path;
+        if (typeof head === "number") {
+            const arr = Array.isArray(obj) ? [...obj] : [];
+            if (rest.length === 0) {
+                arr[head] = value;
+                return arr;
             }
+            arr[head] = setAtPath(arr[head], rest, value);
+            return arr;
+        } else {
+            const copy = { ...(obj || {}) };
+            if (rest.length === 0) {
+                copy[head] = value;
+                return copy;
+            }
+            copy[head] = setAtPath(copy[head], rest, value);
+            return copy;
         }
-        return root;
     }
 
-    function updateModuleFieldByPath(path: Path, value: any) {
-        const newData = setAtPath(module.data || {}, path, value);
-        updateModuleById(module.id, { ...module, data: newData });
+    function updateField(pathInData: Path, value: any) {
+        // Compose full path to update = module path + ["data", ...pathInData]
+        updateModule([...path, "data", ...pathInData], value);
     }
 
-    function pushIntoArrayAtPath(path: Path, item: any) {
-        const arr = (getAtPath(module.data || {}, path) as any[]) || [];
-        const newArr = [...arr, item];
-        updateModuleFieldByPath(path, newArr);
+    function pushIntoArrayAtPath(pathInData: Path, item: any) {
+        const arr = (getAtPath(module.data || {}, pathInData) as any[]) || [];
+        updateField(pathInData, [...arr, item]);
     }
 
-    function removeFromArrayAtPath(path: Path, idx: number) {
-        const arr = (getAtPath(module.data || {}, path) as any[]) || [];
+    function removeFromArrayAtPath(pathInData: Path, idx: number) {
+        const arr = (getAtPath(module.data || {}, pathInData) as any[]) || [];
         const newArr = arr.slice(0, idx).concat(arr.slice(idx + 1));
-        updateModuleFieldByPath(path, newArr);
+        updateField(pathInData, newArr);
     }
 
-    // --- Modal flow for adding a nested block ---
-    function onAddClick(path: Path, isArray: boolean, blockType: Area) {
-        setModalFieldPath(path);
+    // Modal flow for adding a nested block
+    function onAddClick(pathInData: Path, isArray: boolean, blockType: Area) {
+        setModalFieldPath(pathInData);
         setModalTargetIsArray(isArray);
         setModalType(blockType);
         setModalOpen(true);
     }
 
-    function onModalSelect(modFromServer: any) {
+    function onModalSelect(modFromServer: ModuleType) {
         if (!modalFieldPath) return;
-
-        // try to use provided factory if available
-        const instance = (createModuleInstance && createModuleInstance(modFromServer)) || {
+        const instance: ModuleType = {
             ...modFromServer,
-            id: `m_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
-            data: {},
+            id: modFromServer.id || `m_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
+            data: modFromServer.data || {},
         };
 
-        // If this path is a simple top-level array field and addChildModule exists, prefer that (keeps old behavior)
-        if (
-            modalTargetIsArray &&
-            modalFieldPath.length === 1 &&
-            typeof modalFieldPath[0] === "string" &&
-            addChildModule
-        ) {
-            // addChildModule is expected to add and assign ID internally
-            addChildModule(module.id, modalFieldPath[0] as string, instance);
+        if (modalTargetIsArray) {
+            pushIntoArrayAtPath(modalFieldPath, instance);
         } else {
-            // otherwise perform a local update using path-aware helpers
-            if (modalTargetIsArray) {
-                pushIntoArrayAtPath(modalFieldPath, instance);
-            } else {
-                // single object slot -> set the object
-                updateModuleFieldByPath(modalFieldPath, instance);
-            }
+            updateField(modalFieldPath, instance);
         }
 
         setModalOpen(false);
@@ -126,7 +107,7 @@ const ModuleEditor = ({ module }: ModuleEditorProps) => {
         setModalTargetIsArray(false);
     }
 
-    // --- Schema $ref resolver ---
+    // Resolve $ref schemas
     function resolveSchema(schema: any, rootSchema: any): any {
         if (schema?.$ref) {
             const refPath = schema.$ref.replace(/^#\//, "").split("/");
@@ -139,13 +120,11 @@ const ModuleEditor = ({ module }: ModuleEditorProps) => {
         return schema;
     }
 
-    // --- Recursive renderer ---
-    function renderField(key: string | number, sch: any, rootSchema: any, path: Path) {
+    function renderField(key: string | number, sch: any, rootSchema: any, pathInData: Path) {
         const resolvedSch = resolveSchema(sch, rootSchema);
         const type = resolvedSch?.type || "string";
-        const val = getAtPath(module.data || {}, path);
+        const val = getAtPath(module.data || {}, pathInData);
 
-        // Array with x-block-type (render as ModuleList)
         if (type === "array" && resolvedSch.items) {
             const itemsSchema = resolveSchema(resolvedSch.items, rootSchema);
 
@@ -157,42 +136,38 @@ const ModuleEditor = ({ module }: ModuleEditorProps) => {
                     <div key={String(key)}>
                         <ModuleList
                             title={capitalize(String(key))}
-                            area={blockType}
+                            area={`${blockType}s` as AreaPlural} // plural to match root keys
                             modules={arr}
-                            onAdd={() => onAddClick(path, true, blockType)}
-                            onEdit={(i) => setEditingId(arr[i].id)}
-                            onRemove={(i) => {
-                                // prefer removeChildModule for top-level arrays if available
-                                if (path.length === 1 && typeof path[0] === "string" && removeChildModule) {
-                                    removeChildModule(module.id, path[0] as string, i);
-                                } else {
-                                    removeFromArrayAtPath(path, i);
-                                }
-                            }}
+                            path={[...path, "data", ...pathInData, key]}
                         />
+                        <button
+                            className="inline-flex items-center px-3 py-1.5 border rounded text-sm bg-white hover:shadow"
+                            onClick={() => onAddClick([...pathInData, key], true, blockType)}>
+                            Add {capitalize(blockType)}
+                        </button>
                     </div>
                 );
             }
 
-            // Generic array of objects/primitives -> iterate and render each item (nested)
             return (
                 <div key={String(key)} className="space-y-2">
                     <label className="block font-medium">{capitalize(String(key))}</label>
                     {((val as any[]) || []).map((item: any, idx: number) => (
                         <div key={idx} className="border p-2 rounded space-y-2">
                             {Object.entries(itemsSchema.properties || {}).map(([childKey, childSchema]) =>
-                                renderField(childKey, childSchema, rootSchema, [...path, idx, childKey])
+                                renderField(childKey, childSchema, rootSchema, [...pathInData, key, idx, childKey])
                             )}
                         </div>
                     ))}
-                    <ButtonSmall onClick={() => pushIntoArrayAtPath(path, {})}>
+                    <button
+                        className="inline-flex items-center px-3 py-1.5 border rounded text-sm bg-white hover:shadow"
+                        onClick={() => pushIntoArrayAtPath([...pathInData, key], {})}>
                         Add {capitalize(String(key))}
-                    </ButtonSmall>
+                    </button>
                 </div>
             );
         }
 
-        // Single object with x-block-type -> treat as nested block slot
         if (type === "object" && resolvedSch["x-block-type"]) {
             const blockType = resolvedSch["x-block-type"] as Area;
             const objVal = val;
@@ -203,51 +178,48 @@ const ModuleEditor = ({ module }: ModuleEditorProps) => {
                     {objVal && objVal.id ? (
                         <ModuleList
                             title={capitalize(String(key))}
-                            area={blockType}
+                            area={`${blockType}s` as AreaPlural}
                             modules={[objVal]}
-                            onAdd={() => onAddClick(path, false, blockType)}
-                            onEdit={() => setEditingId(objVal.id)}
-                            onRemove={() => updateModuleFieldByPath(path, null)}
+                            path={[...path, "data", ...pathInData, key]}
                         />
                     ) : (
                         <div>
                             <div className="text-sm text-gray-500 mb-2">No {String(key)} configured</div>
-                            <ButtonSmall onClick={() => onAddClick(path, false, blockType)}>
+                            <button
+                                className="inline-flex items-center px-3 py-1.5 border rounded text-sm bg-white hover:shadow"
+                                onClick={() => onAddClick([...pathInData, key], false, blockType)}>
                                 Add {capitalize(blockType)}
-                            </ButtonSmall>
+                            </button>
                         </div>
                     )}
                 </div>
             );
         }
 
-        // Generic nested object
         if (type === "object" && resolvedSch.properties) {
             return (
                 <div key={String(key)} className="border p-3 rounded space-y-2">
                     <label className="block font-medium">{capitalize(String(key))}</label>
                     {Object.entries(resolvedSch.properties).map(([childKey, childSchema]) =>
-                        renderField(childKey, childSchema, rootSchema, [...path, childKey])
+                        renderField(childKey, childSchema, rootSchema, [...pathInData, key, childKey])
                     )}
                 </div>
             );
         }
 
-        // Boolean
         if (type === "boolean") {
             return (
                 <label key={String(key)} className="inline-flex items-center space-x-2">
                     <input
                         type="checkbox"
                         checked={Boolean(val)}
-                        onChange={(e) => updateModuleFieldByPath(path, e.target.checked)}
+                        onChange={(e) => updateField([...pathInData, key], e.target.checked)}
                     />
                     <span>{capitalize(String(key))}</span>
                 </label>
             );
         }
 
-        // Number
         if (type === "number" || type === "integer") {
             return (
                 <div key={String(key)}>
@@ -256,15 +228,13 @@ const ModuleEditor = ({ module }: ModuleEditorProps) => {
                         type="number"
                         value={val ?? ""}
                         onChange={(e) =>
-                            updateModuleFieldByPath(path, e.target.value === "" ? null : Number(e.target.value))
+                            updateField([...pathInData, key], e.target.value === "" ? null : Number(e.target.value))
                         }
                     />
                 </div>
             );
         }
 
-        // Fallback primitive (string)
-        // If it's an array/object but we couldn't handle it, show a textarea (keeps previous fallback behavior)
         if (type === "object" || type === "array") {
             return (
                 <div key={String(key)}>
@@ -273,9 +243,9 @@ const ModuleEditor = ({ module }: ModuleEditorProps) => {
                         value={JSON.stringify(val ?? "", null, 2)}
                         onChange={(e) => {
                             try {
-                                updateModuleFieldByPath(path, JSON.parse(e.target.value));
+                                updateField([...pathInData, key], JSON.parse(e.target.value));
                             } catch {
-                                updateModuleFieldByPath(path, e.target.value);
+                                updateField([...pathInData, key], e.target.value);
                             }
                         }}
                     />
@@ -286,12 +256,11 @@ const ModuleEditor = ({ module }: ModuleEditorProps) => {
         return (
             <div key={String(key)}>
                 <label className="block text-sm font-medium">{capitalize(String(key))}</label>
-                <Input value={val ?? ""} onChange={(e) => updateModuleFieldByPath(path, e.target.value)} />
+                <Input value={val ?? ""} onChange={(e) => updateField([...pathInData, key], e.target.value)} />
             </div>
         );
     }
 
-    // initial render: top-level properties map
     const topProps = module.schema?.properties || {};
 
     return (
@@ -316,9 +285,9 @@ const ModuleEditor = ({ module }: ModuleEditorProps) => {
                         setModalFieldPath(null);
                         setModalType(null);
                         setModalTargetIsArray(false);
-                    } else setModalOpen(true);
+                    }
                 }}
-                type={modalType || "trigger"}
+                type={modalType || "action"} // default
                 onSelect={onModalSelect}
             />
         </div>
@@ -326,13 +295,3 @@ const ModuleEditor = ({ module }: ModuleEditorProps) => {
 };
 
 export default ModuleEditor;
-
-function ButtonSmall({ children, onClick }: { children: React.ReactNode; onClick?: () => void }) {
-    return (
-        <button
-            className="inline-flex items-center px-3 py-1.5 border rounded text-sm bg-white hover:shadow"
-            onClick={onClick}>
-            {children}
-        </button>
-    );
-}

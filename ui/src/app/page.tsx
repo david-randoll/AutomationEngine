@@ -9,18 +9,25 @@ import ModuleEditor from "@/components/ModuleEditor";
 
 export default function AutomationBuilderPage() {
     const { automation } = useAutomation();
-    const [automationSchema, setAutomationSchema] = useState<ModuleType>();
+    const [automationSchema, setAutomationSchema] = useState<ModuleType | null>(null);
 
     async function fetchAutomationSchema(): Promise<ModuleType> {
         const res = await fetch("http://localhost:8085/automation-engine/automation-definition/schema");
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const json = await res.json();
-        return json as ModuleType;
+        const definition = json as ModuleType;
+        return definition;
     }
 
     useEffect(() => {
-        fetchAutomationSchema().then(setAutomationSchema);
+        fetchAutomationSchema()
+        .then(setAutomationSchema)
+        .catch(console.error);
     }, []);
+
+    if (!automationSchema) {
+        return <div className="p-6 text-center">Loading schema...</div>;
+    }
 
     return (
         <div className="p-6 bg-gray-50 min-h-screen">
@@ -40,7 +47,8 @@ export default function AutomationBuilderPage() {
 
                 <main className="grid grid-cols-3 gap-6">
                     <section className="col-span-2 space-y-4">
-                        {automationSchema && <ModuleEditor module={automationSchema} />}
+                        {/* Pass root automation as module, path=[] means root */}
+                        <ModuleEditor module={automationSchema} path={[]} />
                     </section>
 
                     <aside className="col-span-1 space-y-4">

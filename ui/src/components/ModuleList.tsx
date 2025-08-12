@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { FaPlus } from "react-icons/fa";
 import Section from "@/components/Section";
@@ -10,10 +10,8 @@ import { useAutomation } from "@/context/AutomationContext";
 interface ModuleListProps {
     title: string;
     modules: ModuleType[];
-    area: Area;
-    onAdd: () => void;
-    onEdit?: (index: number) => void;
-    onRemove?: (index: number) => void;
+    area: AreaPlural; // plural form for root access
+    path: Path; // path to this list in automation object, e.g. ["actions"]
 }
 
 function capitalize(s: string) {
@@ -21,34 +19,48 @@ function capitalize(s: string) {
     return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
-const ModuleList = ({ title, modules, area, onAdd, onEdit, onRemove }: ModuleListProps) => {
-    const { removeModule, setEditingId } = useAutomation();
+const ModuleList = ({ title, modules, area, path }: ModuleListProps) => {
+    const { addModule, removeModule } = useAutomation();
+    const [editingIdx, setEditingIdx] = useState<number | null>(null);
+
+    const handleAdd = () => {
+        const newModule: ModuleType = {
+            id: `new_${Date.now()}`,
+            name: "",
+            data: {},
+        };
+        addModule(path, newModule);
+        setEditingIdx(modules.length); // edit the newly added
+    };
+
+    const handleRemove = (idx: number) => {
+        removeModule([...path, idx]);
+        // Close editing if the item removed was edited
+        if (editingIdx === idx) setEditingIdx(null);
+        else if (editingIdx && editingIdx > idx) setEditingIdx(editingIdx - 1);
+    };
 
     return (
         <Section
             title={title}
             extra={
-                <Button onClick={onAdd}>
-                    <FaPlus /> Add {capitalize(area)}
+                <Button onClick={handleAdd}>
+                    <FaPlus /> Add {capitalize(area.slice(0, -1))}
                 </Button>
             }>
             <div className="space-y-3">
                 {modules.length === 0 && <div className="text-sm text-gray-500">No {title.toLowerCase()} yet.</div>}
-                {modules.map((mod, i) => {
-                    const handleEdit = onEdit ? () => onEdit(i) : () => setEditingId(mod.id);
-                    const handleRemove = onRemove ? () => onRemove(i) : () => removeModule(area, i);
-                    return (
-                        <ModuleListItem
-                            key={mod.id || i}
-                            mod={mod}
-                            idx={i}
-                            area={area}
-                            isEditing={false} // ModuleListItem will decide via context; we pass a prop but we'll rely on context inside item
-                            onEdit={handleEdit}
-                            onRemove={handleRemove}
-                        />
-                    );
-                })}
+                {modules.map((mod, i) => (
+                    <ModuleListItem
+                        key={mod.id}
+                        mod={mod}
+                        isEditing={editingIdx === i}
+                        onEdit={() => setEditingIdx(i)}
+                        onCloseEdit={() => setEditingIdx(null)}
+                        onRemove={() => handleRemove(i)}
+                        path={[...path, i]}
+                    />
+                ))}
             </div>
         </Section>
     );

@@ -7,9 +7,9 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface AddBlockModalProps {
     open: boolean;
-    onOpenChange: (v: boolean) => void;
-    type: "trigger" | "condition" | "action" | "variable" | "result";
-    onSelect: (module: ModuleType) => void;
+    onOpenChange: (open: boolean) => void;
+    type: Area;
+    onSelect: (mod: ModuleType) => void;
 }
 
 const AddBlockModal = ({ open, onOpenChange, type, onSelect }: AddBlockModalProps) => {
@@ -17,23 +17,23 @@ const AddBlockModal = ({ open, onOpenChange, type, onSelect }: AddBlockModalProp
     const [loading, setLoading] = useState(false);
     const [filter, setFilter] = useState("");
 
-    async function fetchModuleTypes(type: string): Promise<ModuleType[]> {
-        const url = `http://localhost:8085/automation-engine/block/${type}?includeSchema=true`;
-        const res = await fetch(url);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const json = await res.json();
-        if (Array.isArray(json)) return json as ModuleType[];
-        if (json && json.types) return json.types as ModuleType[];
-        return [];
-    }
-
     useEffect(() => {
         if (!open) return;
+
         setLoading(true);
-        fetchModuleTypes(type)
-            .then((r) => setItems(r))
+        fetch(`http://localhost:8085/automation-engine/block/${type}?includeSchema=true`)
+            .then((res) => {
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                return res.json();
+            })
+            .then((json) => {
+                if (Array.isArray(json)) return json;
+                if (json?.types) return json.types;
+                return [];
+            })
+            .then(setItems)
             .catch((e) => {
-                console.error("fetch module types", e);
+                console.error(e);
                 setItems([]);
             })
             .finally(() => setLoading(false));
@@ -55,13 +55,11 @@ const AddBlockModal = ({ open, onOpenChange, type, onSelect }: AddBlockModalProp
                 <DialogHeader>
                     <DialogTitle className="flex items-center justify-between">
                         <span>Select {type}</span>
-                        <div className="flex items-center gap-2">
-                            <Input
-                                placeholder={`Search ${type}s...`}
-                                value={filter}
-                                onChange={(e) => setFilter(e.target.value)}
-                            />
-                        </div>
+                        <Input
+                            placeholder={`Search ${type}s...`}
+                            value={filter}
+                            onChange={(e) => setFilter(e.target.value)}
+                        />
                     </DialogTitle>
                 </DialogHeader>
 
