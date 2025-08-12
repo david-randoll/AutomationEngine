@@ -5,9 +5,11 @@ import com.davidrandoll.automation.engine.creator.actions.ActionDefinition;
 import com.davidrandoll.automation.engine.creator.conditions.ConditionDefinition;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.FieldNameConstants;
 import org.springframework.util.ObjectUtils;
 
 import java.util.List;
@@ -16,6 +18,16 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
+@FieldNameConstants
+@JsonPropertyOrder({
+        RepeatActionContext.Fields.alias,
+        RepeatActionContext.Fields.description,
+        RepeatActionContext.Fields.count,
+        RepeatActionContext.Fields.whileConditions,
+        RepeatActionContext.Fields.untilConditions,
+        RepeatActionContext.Fields.forEach,
+        RepeatActionContext.Fields.actions
+})
 public class RepeatActionContext implements IActionContext {
     private String alias;
     private String description;

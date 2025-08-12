@@ -8,10 +8,12 @@ import com.davidrandoll.automation.engine.spring.web.jackson.flexible_method.Fle
 import com.davidrandoll.automation.engine.spring.web.jackson.flexible_multi_value_map.FlexibleMultiValueMap;
 import com.davidrandoll.automation.engine.spring.web.jackson.flexible_string_list.FlexibleStringList;
 import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.FieldNameConstants;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.MultiValueMap;
@@ -22,6 +24,21 @@ import java.util.Map;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@FieldNameConstants
+@JsonPropertyOrder({
+        OnHttpResponseTriggerContext.Fields.alias,
+        OnHttpResponseTriggerContext.Fields.description,
+        OnHttpResponseTriggerContext.Fields.methods,
+        OnHttpResponseTriggerContext.Fields.fullPaths,
+        OnHttpResponseTriggerContext.Fields.paths,
+        OnHttpResponseTriggerContext.Fields.headers,
+        OnHttpResponseTriggerContext.Fields.queryParams,
+        OnHttpResponseTriggerContext.Fields.pathParams,
+        OnHttpResponseTriggerContext.Fields.requestBody,
+        OnHttpResponseTriggerContext.Fields.responseBody,
+        OnHttpResponseTriggerContext.Fields.responseStatuses,
+        OnHttpResponseTriggerContext.Fields.errorDetail
+})
 public class OnHttpResponseTriggerContext implements ITriggerContext {
     private String alias;
     private String description;

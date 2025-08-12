@@ -2,14 +2,25 @@ package com.davidrandoll.automation.engine.jdbc.actions.query;
 
 import com.davidrandoll.automation.engine.core.actions.IActionContext;
 import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.FieldNameConstants;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @Data
 @NoArgsConstructor
+@FieldNameConstants
+@JsonPropertyOrder({
+        JdbcQueryActionContext.Fields.alias,
+        JdbcQueryActionContext.Fields.description,
+        JdbcQueryActionContext.Fields.query,
+        JdbcQueryActionContext.Fields.params,
+        JdbcQueryActionContext.Fields.mode,
+        JdbcQueryActionContext.Fields.variable
+})
 public class JdbcQueryActionContext implements IActionContext {
     private String alias;
     private String description;

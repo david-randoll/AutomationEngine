@@ -5,13 +5,22 @@ import com.davidrandoll.automation.engine.spring.web.jackson.flexible_method.Fle
 import com.davidrandoll.automation.engine.spring.web.jackson.flexible_string_list.FlexibleStringList;
 import com.davidrandoll.spring_web_captor.event.HttpMethodEnum;
 import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.FieldNameConstants;
 
 import java.util.List;
 
 @Data
 @NoArgsConstructor
+@FieldNameConstants
+@JsonPropertyOrder({
+        OnHttpPathExistsConditionContext.Fields.alias,
+        OnHttpPathExistsConditionContext.Fields.description,
+        OnHttpPathExistsConditionContext.Fields.paths,
+        OnHttpPathExistsConditionContext.Fields.methods
+})
 public class OnHttpPathExistsConditionContext implements IConditionContext {
     private String alias;
     private String description;

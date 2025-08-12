@@ -6,9 +6,11 @@ import com.davidrandoll.automation.engine.spring.web.jackson.flexible_method.Fle
 import com.davidrandoll.automation.engine.spring.web.jackson.flexible_multi_value_map.FlexibleMultiValueMap;
 import com.davidrandoll.automation.engine.spring.web.jackson.flexible_string_list.FlexibleStringList;
 import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.FieldNameConstants;
 import org.springframework.http.HttpHeaders;
 import org.springframework.util.MultiValueMap;
 
@@ -16,6 +18,18 @@ import java.util.List;
 
 @Data
 @NoArgsConstructor
+@FieldNameConstants
+@JsonPropertyOrder({
+        OnHttpRequestTriggerContext.Fields.alias,
+        OnHttpRequestTriggerContext.Fields.description,
+        OnHttpRequestTriggerContext.Fields.methods,
+        OnHttpRequestTriggerContext.Fields.fullPaths,
+        OnHttpRequestTriggerContext.Fields.paths,
+        OnHttpRequestTriggerContext.Fields.headers,
+        OnHttpRequestTriggerContext.Fields.queryParams,
+        OnHttpRequestTriggerContext.Fields.pathParams,
+        OnHttpRequestTriggerContext.Fields.requestBody
+})
 public class OnHttpRequestTriggerContext implements ITriggerContext {
     private String alias;
     private String description;
