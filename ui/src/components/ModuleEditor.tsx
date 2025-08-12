@@ -17,17 +17,17 @@ function capitalize(s: string) {
 }
 
 const ModuleEditor = ({ module }: ModuleEditorProps) => {
-    const { updateModuleById, createModuleInstance, addChildModule, removeChildModule, editingId, setEditingId } =
-        useAutomation();
+    const { updateModuleById, addChildModule, removeChildModule, editingId, setEditingId } = useAutomation();
 
     const [modalOpen, setModalOpen] = useState(false);
     const [modalType, setModalType] = useState<Area | null>(null);
     const [modalField, setModalField] = useState<string | null>(null);
 
-    const props = module.schema?.properties || {};
-
     function setField(key: string, value: any) {
-        const updated: ModuleType = { ...module, data: { ...(module.data || {}), [key]: value } };
+        const updated: ModuleType = {
+            ...module,
+            data: { ...(module.data || {}), [key]: value },
+        };
         updateModuleById(module.id, updated);
     }
 
@@ -39,10 +39,163 @@ const ModuleEditor = ({ module }: ModuleEditorProps) => {
 
     function onModalSelect(modFromServer: any) {
         if (!modalField) return;
-        // create instance (context helper) and add as child to the module's field array
-        addChildModule(module.id, modalField, { ...modFromServer, id: undefined, data: {} });
+        addChildModule(module.id, modalField, {
+            ...modFromServer,
+            id: undefined,
+            data: {},
+        });
         setModalOpen(false);
         setModalField(null);
+    }
+
+    // --- Schema helpers ---
+    function resolveSchema(schema: any, rootSchema: any): any {
+        if (schema?.$ref) {
+            const refPath = schema.$ref.replace(/^#\//, "").split("/");
+            let resolved: any = rootSchema;
+            for (const segment of refPath) {
+                resolved = resolved?.[segment];
+            }
+            return { ...resolved, ...schema, $ref: undefined };
+        }
+        return schema;
+    }
+
+    // --- Recursive renderer ---
+    function renderField(key: string, sch: any, val: any, setVal: (v: any) => void, rootSchema: any) {
+        const resolvedSch = resolveSchema(sch, rootSchema);
+        const type = resolvedSch.type || "string";
+
+        // Array with x-block-type
+        if (type === "array" && resolvedSch.items) {
+            const itemsSchema = resolveSchema(resolvedSch.items, rootSchema);
+
+            if (itemsSchema["x-block-type"]) {
+                const blockType = itemsSchema["x-block-type"] as Area;
+                const arr: ModuleType[] = val || [];
+                return (
+                    <ModuleList
+                        key={key}
+                        title={capitalize(key)}
+                        area={blockType}
+                        modules={arr}
+                        onAdd={() => onAddClick(key, blockType)}
+                        onEdit={(i) => setEditingId(arr[i].id)}
+                        onRemove={(i) => removeChildModule(module.id, key, i)}
+                    />
+                );
+            }
+
+            // Generic array of objects
+            return (
+                <div key={key} className="space-y-2">
+                    <label className="block font-medium">{capitalize(key)}</label>
+                    {(val || []).map((item: any, idx: number) => (
+                        <div key={idx} className="border p-2 rounded space-y-2">
+                            {Object.entries(itemsSchema.properties || {}).map(([childKey, childSchema]) =>
+                                renderField(
+                                    childKey,
+                                    childSchema,
+                                    item?.[childKey],
+                                    (v) => {
+                                        const newArr = [...(val || [])];
+                                        newArr[idx] = {
+                                            ...(newArr[idx] || {}),
+                                            [childKey]: v,
+                                        };
+                                        setVal(newArr);
+                                    },
+                                    rootSchema
+                                )
+                            )}
+                        </div>
+                    ))}
+                    <ButtonSmall onClick={() => setVal([...(val || []), {}])}>Add {capitalize(key)}</ButtonSmall>
+                </div>
+            );
+        }
+
+        // Single object with x-block-type
+        if (type === "object" && resolvedSch["x-block-type"]) {
+            const blockType = resolvedSch["x-block-type"] as Area;
+            const objVal = val;
+            return (
+                <div key={key} className="border rounded p-3">
+                    <div className="font-semibold mb-2">{capitalize(key)}</div>
+                    {objVal && objVal.id ? (
+                        <ModuleList
+                            title={capitalize(key)}
+                            area={blockType}
+                            modules={[objVal]}
+                            onAdd={() => onAddClick(key, blockType)}
+                            onEdit={() => setEditingId(objVal.id)}
+                            onRemove={() => setVal(null)}
+                        />
+                    ) : (
+                        <div>
+                            <div className="text-sm text-gray-500 mb-2">No {key} configured</div>
+                            <ButtonSmall onClick={() => onAddClick(key, blockType)}>
+                                Add {capitalize(blockType)}
+                            </ButtonSmall>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        // Generic nested object
+        if (type === "object" && resolvedSch.properties) {
+            return (
+                <div key={key} className="border p-3 rounded space-y-2">
+                    <label className="block font-medium">{capitalize(key)}</label>
+                    {Object.entries(resolvedSch.properties).map(([childKey, childSchema]) =>
+                        renderField(
+                            childKey,
+                            childSchema,
+                            val?.[childKey],
+                            (v) =>
+                                setVal({
+                                    ...(val || {}),
+                                    [childKey]: v,
+                                }),
+                            rootSchema
+                        )
+                    )}
+                </div>
+            );
+        }
+
+        // Boolean
+        if (type === "boolean") {
+            return (
+                <label key={key} className="inline-flex items-center space-x-2">
+                    <input type="checkbox" checked={Boolean(val)} onChange={(e) => setVal(e.target.checked)} />
+                    <span>{capitalize(key)}</span>
+                </label>
+            );
+        }
+
+        // Number
+        if (type === "number" || type === "integer") {
+            return (
+                <div key={key}>
+                    <label className="block text-sm font-medium">{capitalize(key)}</label>
+                    <Input
+                        type="number"
+                        value={val ?? ""}
+                        onChange={(e) => setVal(e.target.value === "" ? null : Number(e.target.value))}
+                    />
+                </div>
+            );
+        }
+
+        // Fallback string
+        return (
+            <div key={key}>
+                <label className="block text-sm font-medium">{capitalize(key)}</label>
+                <Input value={val ?? ""} onChange={(e) => setVal(e.target.value)} />
+            </div>
+        );
     }
 
     return (
@@ -56,116 +209,9 @@ const ModuleEditor = ({ module }: ModuleEditorProps) => {
             </div>
 
             <div className="grid grid-cols-1 gap-3">
-                {Object.entries(props).map(([key, sch]: any) => {
-                    // Array with items that declare x-block-type: render nested ModuleList
-                    if (sch.type === "array" && sch.items?.["x-block-type"]) {
-                        const blockType = sch.items["x-block-type"] as Area;
-                        const arr: ModuleType[] = (module.data && module.data[key]) || [];
-
-                        return (
-                            <div key={key}>
-                                <ModuleList
-                                    title={capitalize(key)}
-                                    area={blockType}
-                                    modules={arr}
-                                    onAdd={() => onAddClick(key, blockType)}
-                                    onEdit={(i) => setEditingId(arr[i].id)}
-                                    onRemove={(i) => removeChildModule(module.id, key, i)}
-                                />
-                            </div>
-                        );
-                    }
-
-                    // Single object with x-block-type -> treat as a single nested block
-                    if (sch.type === "object" && sch["x-block-type"]) {
-                        const blockType = sch["x-block-type"] as Area;
-                        const objVal = module.data?.[key];
-
-                        return (
-                            <div key={key} className="border rounded p-3">
-                                <div className="font-semibold mb-2">{capitalize(key)}</div>
-                                {objVal && objVal.id ? (
-                                    <div>
-                                        {/* render the nested module as a list item so it can edit */}
-                                        <ModuleList
-                                            title={capitalize(key)}
-                                            area={blockType}
-                                            modules={[objVal]}
-                                            onAdd={() => onAddClick(key, blockType)}
-                                            onEdit={() => setEditingId(objVal.id)}
-                                            onRemove={() => setField(key, null)}
-                                        />
-                                    </div>
-                                ) : (
-                                    <div>
-                                        <div className="text-sm text-gray-500 mb-2">No {key} configured</div>
-                                        <ButtonSmall onClick={() => onAddClick(key, blockType)}>
-                                            Add {capitalize(blockType)}
-                                        </ButtonSmall>
-                                    </div>
-                                )}
-                            </div>
-                        );
-                    }
-
-                    // Default primitive handling
-                    const type = sch?.type || "string";
-                    const title = sch?.title || key;
-                    const val = module.data?.[key] ?? sch?.default ?? "";
-
-                    if (type === "boolean") {
-                        return (
-                            <label key={key} className="inline-flex items-center space-x-2">
-                                <input
-                                    type="checkbox"
-                                    checked={Boolean(val)}
-                                    onChange={(e) => setField(key, e.target.checked)}
-                                />
-                                <span>{title}</span>
-                            </label>
-                        );
-                    }
-
-                    if (type === "number" || type === "integer") {
-                        return (
-                            <div key={key}>
-                                <label className="block text-sm font-medium">{title}</label>
-                                <Input
-                                    type="number"
-                                    value={val}
-                                    onChange={(e) =>
-                                        setField(key, e.target.value === "" ? null : Number(e.target.value))
-                                    }
-                                />
-                            </div>
-                        );
-                    }
-
-                    if (type === "object" || type === "array") {
-                        return (
-                            <div key={key}>
-                                <label className="block text-sm font-medium">{title}</label>
-                                <Textarea
-                                    value={JSON.stringify(val, null, 2)}
-                                    onChange={(e) => {
-                                        try {
-                                            setField(key, JSON.parse(e.target.value));
-                                        } catch {
-                                            setField(key, e.target.value);
-                                        }
-                                    }}
-                                />
-                            </div>
-                        );
-                    }
-
-                    return (
-                        <div key={key}>
-                            <label className="block text-sm font-medium">{title}</label>
-                            <Input value={val} onChange={(e) => setField(key, e.target.value)} />
-                        </div>
-                    );
-                })}
+                {Object.entries(module.schema?.properties || {}).map(([key, sch]) =>
+                    renderField(key, sch, module.data?.[key], (v) => setField(key, v), module.schema)
+                )}
             </div>
 
             <AddBlockModal
@@ -185,7 +231,6 @@ const ModuleEditor = ({ module }: ModuleEditorProps) => {
 
 export default ModuleEditor;
 
-/* small Button used inside ModuleEditor for the single-object add CTA */
 function ButtonSmall({ children, onClick }: { children: React.ReactNode; onClick?: () => void }) {
     return (
         <button
