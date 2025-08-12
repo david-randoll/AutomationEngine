@@ -4,8 +4,11 @@ type JsonSchema = any;
 type Area = "variable" | "trigger" | "condition" | "action" | "result";
 type AreaPlural = "variables" | "triggers" | "conditions" | "actions" | "results";
 
+type PathSegment = string | number;
+type Path = PathSegment[];
+
 type ModuleType = {
-    id?: string;
+    id: string;
     name: string;
     label?: string;
     description?: string;

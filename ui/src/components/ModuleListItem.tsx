@@ -1,55 +1,45 @@
+"use client";
+
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { FaTrash } from "react-icons/fa";
 import ModuleEditor from "@/components/ModuleEditor";
+import { useAutomation } from "@/context/AutomationContext";
 
 interface ModuleListItemProps {
     mod: ModuleType;
     idx: number;
     area: Area;
-    isEditing: boolean;
-    onEdit: (idx: number) => void;
-    onRemove: (idx: number) => void;
-    onUpdateModule: (idx: number, module: ModuleType) => void;
-    setEditing: React.Dispatch<React.SetStateAction<{ area: Area | null; idx: number } | null>>;
+    isEditing?: boolean; // optional - we derive from context
+    onEdit: () => void;
+    onRemove: () => void;
 }
 
-const ModuleListItem = ({
-    mod,
-    idx,
-    area,
-    isEditing,
-    onEdit,
-    onRemove,
-    onUpdateModule,
-    setEditing,
-}: ModuleListItemProps) => {
+const ModuleListItem = ({ mod, onEdit, onRemove }: ModuleListItemProps) => {
+    const { editingId, setEditingId } = useAutomation();
+    const isEditing = editingId === mod.id;
+
     return (
-        <div key={mod.id || idx} className="border rounded p-2">
+        <div className="border rounded p-2">
             <div className="flex items-start justify-between">
                 <div>
                     <div className="font-medium">{mod.label || mod.name}</div>
                     {mod.description && <div className="text-sm text-gray-500">{mod.description}</div>}
                 </div>
                 <div className="flex items-center gap-2">
-                    <Button variant="ghost" size="sm" onClick={() => onEdit(idx)}>
+                    <Button variant="ghost" size="sm" onClick={onEdit}>
                         Edit
                     </Button>
-                    <Button variant="destructive" size="sm" onClick={() => onRemove(idx)}>
+                    <Button variant="destructive" size="sm" onClick={onRemove}>
                         <FaTrash />
                     </Button>
                 </div>
             </div>
             {isEditing && (
                 <div className="mt-3">
-                    <ModuleEditor
-                        module={mod}
-                        onChange={(next) => onUpdateModule(idx, next)}
-                        area={area}
-                        setEditing={setEditing}
-                    />
+                    <ModuleEditor module={mod} />
                     <div className="mt-3 flex gap-2">
-                        <Button onClick={() => setEditing(null)}>Close</Button>
+                        <Button onClick={() => setEditingId(null)}>Close</Button>
                     </div>
                 </div>
             )}

@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useEffect, useMemo, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -15,13 +17,11 @@ const AddBlockModal = ({ open, onOpenChange, type, onSelect }: AddBlockModalProp
     const [loading, setLoading] = useState(false);
     const [filter, setFilter] = useState("");
 
-    // Fetch helper for module types
     async function fetchModuleTypes(type: string): Promise<ModuleType[]> {
         const url = `http://localhost:8085/automation-engine/block/${type}?includeSchema=true`;
         const res = await fetch(url);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const json = await res.json();
-        // The endpoint returns either { types: [...] } or an array; adapt
         if (Array.isArray(json)) return json as ModuleType[];
         if (json && json.types) return json.types as ModuleType[];
         return [];
@@ -88,7 +88,6 @@ const AddBlockModal = ({ open, onOpenChange, type, onSelect }: AddBlockModalProp
                                             </div>
                                             <div className="text-sm text-gray-400">{it.name}</div>
                                         </div>
-                                        {/* show a small sample of schema props if available */}
                                         {it.schema?.properties && (
                                             <div className="mt-2 text-xs text-gray-500">
                                                 {Object.keys(it.schema.properties).slice(0, 4).join(", ")}
