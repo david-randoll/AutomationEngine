@@ -18,7 +18,7 @@ function capitalize(s: string) {
 }
 
 const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
-    const { updateModule, automation } = useAutomation();
+    const { updateModule } = useAutomation();
 
     const [modalOpen, setModalOpen] = useState(false);
     const [modalType, setModalType] = useState<Area | null>(null);
@@ -33,13 +33,6 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
         }
         return cur;
     }
-
-    function getDataAtPath(obj: any, path: Path) {
-        return path.reduce((acc, key) => (acc ? acc[key] : undefined), obj);
-    }
-
-    // Current data for this module
-    const data = getDataAtPath(automation, path) || {};
 
     function setAtPath(obj: any, path: Path, value: any) {
         if (path.length === 0) return value;
@@ -64,8 +57,8 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
     }
 
     function updateField(pathInData: Path, value: any) {
-        // Compose full path to update = module path + ["data", ...pathInData]
-        updateModule([...path, "data", ...pathInData], value);
+        console.log("Updating field at path:", [...path, ...pathInData], "with value:", value);
+        updateModule([...path, ...pathInData], value);
     }
 
     function pushIntoArrayAtPath(pathInData: Path, item: any) {

@@ -25,17 +25,7 @@ export const AutomationProvider = ({
     initialAutomation: Automation;
     children: ReactNode;
 }) => {
-    const defaultAutomation: Automation = {
-        alias: "",
-        description: "",
-        triggers: [],
-        conditions: [],
-        actions: [],
-        variables: [],
-        results: [],
-    };
-
-    const [automation, setAutomation] = useState<Automation>(initialAutomation || defaultAutomation);
+    const [automation, setAutomation] = useState<Automation>(initialAutomation);
 
     const updateModule = (path: Path, newData: any) => {
         setAutomation((prev) => {
