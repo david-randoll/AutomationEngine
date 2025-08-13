@@ -34,28 +34,6 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
         return cur;
     }
 
-    function setAtPath(obj: any, path: Path, value: any) {
-        if (path.length === 0) return value;
-        const [head, ...rest] = path;
-        if (typeof head === "number") {
-            const arr = Array.isArray(obj) ? [...obj] : [];
-            if (rest.length === 0) {
-                arr[head] = value;
-                return arr;
-            }
-            arr[head] = setAtPath(arr[head], rest, value);
-            return arr;
-        } else {
-            const copy = { ...(obj || {}) };
-            if (rest.length === 0) {
-                copy[head] = value;
-                return copy;
-            }
-            copy[head] = setAtPath(copy[head], rest, value);
-            return copy;
-        }
-    }
-
     function updateField(pathInData: Path, value: any) {
         console.log("Updating field at path:", [...path, ...pathInData], "with value:", value);
         updateModule([...path, ...pathInData], value);
@@ -64,12 +42,6 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
     function pushIntoArrayAtPath(pathInData: Path, item: any) {
         const arr = (getAtPath(module.data || {}, pathInData) as any[]) || [];
         updateField(pathInData, [...arr, item]);
-    }
-
-    function removeFromArrayAtPath(pathInData: Path, idx: number) {
-        const arr = (getAtPath(module.data || {}, pathInData) as any[]) || [];
-        const newArr = arr.slice(0, idx).concat(arr.slice(idx + 1));
-        updateField(pathInData, newArr);
     }
 
     // Modal flow for adding a nested block
@@ -131,7 +103,7 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
                             title={capitalize(String(key))}
                             area={`${blockType}s` as AreaPlural} // plural to match root keys
                             modules={arr}
-                            path={[...path, "data", ...pathInData, key]}
+                            path={[...path, "data", ...pathInData]} // FIXED: removed duplicated key here
                         />
                         <button
                             className="inline-flex items-center px-3 py-1.5 border rounded text-sm bg-white hover:shadow"
@@ -147,8 +119,9 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
                     <label className="block font-medium">{capitalize(String(key))}</label>
                     {((val as any[]) || []).map((item: any, idx: number) => (
                         <div key={idx} className="border p-2 rounded space-y-2">
-                            {Object.entries(itemsSchema.properties || {}).map(([childKey, childSchema]) =>
-                                renderField(childKey, childSchema, rootSchema, [...pathInData, key, idx, childKey])
+                            {Object.entries(itemsSchema.properties || {}).map(
+                                ([childKey, childSchema]) =>
+                                    renderField(childKey, childSchema, rootSchema, [...pathInData, idx, childKey]) // FIXED: removed duplicated key here
                             )}
                         </div>
                     ))}
@@ -173,7 +146,7 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
                             title={capitalize(String(key))}
                             area={`${blockType}s` as AreaPlural}
                             modules={[objVal]}
-                            path={[...path, "data", ...pathInData, key]}
+                            path={[...path, "data", ...pathInData]} // FIXED: removed duplicated key here
                         />
                     ) : (
                         <div>
@@ -193,8 +166,9 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
             return (
                 <div key={String(key)} className="border p-3 rounded space-y-2">
                     <label className="block font-medium">{capitalize(String(key))}</label>
-                    {Object.entries(resolvedSch.properties).map(([childKey, childSchema]) =>
-                        renderField(childKey, childSchema, rootSchema, [...pathInData, key, childKey])
+                    {Object.entries(resolvedSch.properties).map(
+                        ([childKey, childSchema]) =>
+                            renderField(childKey, childSchema, rootSchema, [...pathInData, childKey]) // FIXED: removed duplicated key here
                     )}
                 </div>
             );
