@@ -4,40 +4,28 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { FaTrash } from "react-icons/fa";
 import ModuleEditor from "./ModuleEditor";
-import { useFormContext } from "react-hook-form";
 
 interface ModuleListItemProps {
-    mod: ModuleType;
+    mod: any;
     isEditing: boolean;
     onEdit: () => void;
     onCloseEdit: () => void;
     path: Path;
+    onRemove: () => void; // passed from ModuleList
 }
 
-const ModuleListItem = ({ mod, isEditing, onEdit, onCloseEdit, path }: ModuleListItemProps) => {
-    const { setValue, getValues } = useFormContext();
-
-    const handleRemove = () => {
-        console.log("Deleting item at path:", path);
-        const arrPath = path.slice(0, -1).join(".");
-        const idx = path[path.length - 1] as number;
-        const arr = getValues(arrPath) || [];
-        const newArr = [...arr];
-        newArr.splice(idx, 1);
-        setValue(arrPath, newArr);
-    };
-
+const ModuleListItem = ({ mod, isEditing, onEdit, onCloseEdit, path, onRemove }: ModuleListItemProps) => {
     return (
         <div className="border rounded p-2 mb-2">
             <div className="flex items-start justify-between">
                 <div>
-                    <div className="font-medium">{mod.label || mod.name || "Unnamed"}</div>
+                    <div className="font-medium">{mod.alias || mod.name || "Unnamed"}</div>
                 </div>
                 <div className="flex items-center gap-2">
                     <Button variant="ghost" size="sm" onClick={onEdit}>
                         {isEditing ? "Editing" : "Edit"}
                     </Button>
-                    <Button variant="destructive" size="sm" onClick={handleRemove}>
+                    <Button variant="destructive" size="sm" onClick={onRemove}>
                         <FaTrash />
                     </Button>
                 </div>

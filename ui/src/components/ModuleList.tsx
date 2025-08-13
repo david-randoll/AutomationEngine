@@ -1,47 +1,75 @@
 "use client";
 
 import React, { useState } from "react";
+import { useFieldArray, useFormContext } from "react-hook-form";
 import ModuleListItem from "./ModuleListItem";
 
 interface ModuleListProps {
-  title: string;
-  modules: ModuleType[];
-  area: AreaPlural;
-  path: Path;
-  onAdd: () => void;
+    title: string;
+    area: AreaPlural;
+    path: Path;
+    blockType: Area; // singular block type of items
+    modules: ModuleType[]; // passed from form state for rendering keys (unused directly because of useFieldArray)
 }
 
 function capitalize(s: string) {
-  if (!s) return s;
-  return s.charAt(0).toUpperCase() + s.slice(1);
+    if (!s) return s;
+    return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
-const ModuleList = ({ title, modules, area, path, onAdd }: ModuleListProps) => {
-  const [editingIdx, setEditingIdx] = useState<number | null>(null);
+const ModuleList = ({ title, area, path, blockType }: ModuleListProps) => {
+    const { control } = useFormContext();
+    const fieldName = path.join(".");
 
-  return (
-    <div className="space-y-3">
-      <div className="flex justify-between items-center">
-        <div className="font-semibold">{title}</div>
-        {/* Add button removed here to avoid duplicates */}
-      </div>
+    const { fields, append, remove } = useFieldArray({
+        control,
+        name: fieldName,
+        keyName: "reactHookFormId", // avoid clash with your own `id`
+    });
 
-      {modules.length === 0 && (
-        <div className="text-sm text-gray-500">No {title.toLowerCase()} yet.</div>
-      )}
+    const [editingIdx, setEditingIdx] = useState<number | null>(null);
 
-      {modules.map((mod, i) => (
-        <ModuleListItem
-          key={mod.id || i}
-          mod={mod}
-          isEditing={editingIdx === i}
-          onEdit={() => setEditingIdx(i)}
-          onCloseEdit={() => setEditingIdx(null)}
-          path={[...path, i]}
-        />
-      ))}
-    </div>
-  );
+    // Append a new empty item, adjust fields for your schema defaults if needed
+    const handleAdd = () => {
+        append({
+            id: `m_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
+            alias: "",
+            description: "",
+            variable: "",
+        });
+        setEditingIdx(fields.length); // open edit mode on newly added
+    };
+
+    return (
+        <div className="space-y-3">
+            <div className="flex justify-between items-center">
+                <div className="font-semibold">{title}</div>
+                <button
+                    className="inline-flex items-center px-3 py-1.5 border rounded text-sm bg-white hover:shadow"
+                    onClick={handleAdd}
+                    type="button">
+                    Add {capitalize(area.slice(0, -1))}
+                </button>
+            </div>
+
+            {fields.length === 0 && <div className="text-sm text-gray-500">No {title.toLowerCase()} yet.</div>}
+
+            {fields.map((field, index) => (
+                <ModuleListItem
+                    key={field.id || field.reactHookFormId || index}
+                    mod={field}
+                    isEditing={editingIdx === index}
+                    onEdit={() => setEditingIdx(index)}
+                    onCloseEdit={() => setEditingIdx(null)}
+                    path={[...path, index]}
+                    onRemove={() => {
+                        remove(index);
+                        setEditingIdx(null);
+                    }}
+                />
+            ))}
+        </div>
+    );
 };
 
 export default ModuleList;
