@@ -5,11 +5,11 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import ModuleList from "@/components/ModuleList";
 import AddBlockModal from "@/components/AddBlockModal";
-import { useAutomation } from "@/context/AutomationContext";
+import { useFormContext, Controller } from "react-hook-form";
 
 interface ModuleEditorProps {
     module: ModuleType;
-    path: Path; // path to the module in automation root, for updates
+    path: Path;
 }
 
 function capitalize(s: string) {
@@ -18,68 +18,18 @@ function capitalize(s: string) {
 }
 
 const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
-    const { updateModule } = useAutomation();
+    const { control, setValue, getValues } = useFormContext();
 
     const [modalOpen, setModalOpen] = useState(false);
     const [modalType, setModalType] = useState<Area | null>(null);
     const [modalFieldPath, setModalFieldPath] = useState<Path | null>(null);
-    const [modalTargetIsArray, setModalTargetIsArray] = useState<boolean>(false);
+    const [modalTargetIsArray, setModalTargetIsArray] = useState(false);
 
-    function getAtPath(obj: any, path: Path) {
-        let cur = obj;
-        for (const seg of path) {
-            if (cur == null) return undefined;
-            cur = cur[seg as any];
-        }
-        return cur;
-    }
-
-    function updateField(pathInData: Path, value: any) {
-        console.log("Updating field at path:", [...path, ...pathInData], "with value:", value);
-        updateModule([...path, ...pathInData], value);
-    }
-
-    function pushIntoArrayAtPath(pathInData: Path, item: any) {
-        const arr = (getAtPath(module.data || {}, pathInData) as any[]) || [];
-        updateField(pathInData, [...arr, item]);
-    }
-
-    // Modal flow for adding a nested block
-    function onAddClick(pathInData: Path, isArray: boolean, blockType: Area) {
-        setModalFieldPath(pathInData);
-        setModalTargetIsArray(isArray);
-        setModalType(blockType);
-        setModalOpen(true);
-    }
-
-    function onModalSelect(modFromServer: ModuleType) {
-        if (!modalFieldPath) return;
-        const instance: ModuleType = {
-            ...modFromServer,
-            id: modFromServer.id || `m_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
-            data: modFromServer.data || {},
-        };
-
-        if (modalTargetIsArray) {
-            pushIntoArrayAtPath(modalFieldPath, instance);
-        } else {
-            updateField(modalFieldPath, instance);
-        }
-
-        setModalOpen(false);
-        setModalFieldPath(null);
-        setModalType(null);
-        setModalTargetIsArray(false);
-    }
-
-    // Resolve $ref schemas
-    function resolveSchema(schema: any, rootSchema: any): any {
+    function resolveSchema(schema: any, rootSchema: any) {
         if (schema?.$ref) {
             const refPath = schema.$ref.replace(/^#\//, "").split("/");
             let resolved: any = rootSchema;
-            for (const segment of refPath) {
-                resolved = resolved?.[segment];
-            }
+            for (const segment of refPath) resolved = resolved?.[segment];
             return { ...resolved, ...schema, $ref: undefined };
         }
         return schema;
@@ -88,26 +38,30 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
     function renderField(key: string | number, sch: any, rootSchema: any, pathInData: Path) {
         const resolvedSch = resolveSchema(sch, rootSchema);
         const type = resolvedSch?.type || "string";
-        const val = getAtPath(module.data || {}, pathInData);
+        const val = getValues(pathInData.join("."));
 
         if (type === "array" && resolvedSch.items) {
             const itemsSchema = resolveSchema(resolvedSch.items, rootSchema);
-
             if (itemsSchema["x-block-type"]) {
                 const blockType = itemsSchema["x-block-type"] as Area;
-                const arr: ModuleType[] = (val as ModuleType[]) || [];
+                const arr: ModuleType[] = val || [];
 
                 return (
                     <div key={String(key)}>
                         <ModuleList
                             title={capitalize(String(key))}
-                            area={`${blockType}s` as AreaPlural} // plural to match root keys
+                            area={`${blockType}s` as AreaPlural}
                             modules={arr}
-                            path={[...path, "data", ...pathInData]} // FIXED: removed duplicated key here
+                            path={pathInData}
                         />
                         <button
                             className="inline-flex items-center px-3 py-1.5 border rounded text-sm bg-white hover:shadow"
-                            onClick={() => onAddClick([...pathInData, key], true, blockType)}>
+                            onClick={() => {
+                                setModalFieldPath(pathInData);
+                                setModalTargetIsArray(true);
+                                setModalType(blockType);
+                                setModalOpen(true);
+                            }}>
                             Add {capitalize(blockType)}
                         </button>
                     </div>
@@ -115,48 +69,49 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
             }
 
             return (
-                <div key={String(key)} className="space-y-2">
-                    <label className="block font-medium">{capitalize(String(key))}</label>
-                    {((val as any[]) || []).map((item: any, idx: number) => (
-                        <div key={idx} className="border p-2 rounded space-y-2">
-                            {Object.entries(itemsSchema.properties || {}).map(
-                                ([childKey, childSchema]) =>
-                                    renderField(childKey, childSchema, rootSchema, [...pathInData, idx, childKey]) // FIXED: removed duplicated key here
-                            )}
-                        </div>
-                    ))}
-                    <button
-                        className="inline-flex items-center px-3 py-1.5 border rounded text-sm bg-white hover:shadow"
-                        onClick={() => pushIntoArrayAtPath([...pathInData, key], {})}>
-                        Add {capitalize(String(key))}
-                    </button>
+                <div key={String(key)}>
+                    <label>{capitalize(String(key))}</label>
+                    <Controller
+                        control={control}
+                        name={pathInData.join(".")}
+                        render={({ field }) => (
+                            <Textarea
+                                value={JSON.stringify(field.value || [], null, 2)}
+                                onChange={(e) => {
+                                    try {
+                                        field.onChange(JSON.parse(e.target.value));
+                                    } catch {
+                                        field.onChange(e.target.value);
+                                    }
+                                }}
+                            />
+                        )}
+                    />
                 </div>
             );
         }
 
         if (type === "object" && resolvedSch["x-block-type"]) {
             const blockType = resolvedSch["x-block-type"] as Area;
-            const objVal = val;
-
             return (
                 <div key={String(key)} className="border rounded p-3">
-                    <div className="font-semibold mb-2">{capitalize(String(key))}</div>
-                    {objVal && objVal.id ? (
-                        <ModuleList
-                            title={capitalize(String(key))}
-                            area={`${blockType}s` as AreaPlural}
-                            modules={[objVal]}
-                            path={[...path, "data", ...pathInData]} // FIXED: removed duplicated key here
-                        />
-                    ) : (
-                        <div>
-                            <div className="text-sm text-gray-500 mb-2">No {String(key)} configured</div>
-                            <button
-                                className="inline-flex items-center px-3 py-1.5 border rounded text-sm bg-white hover:shadow"
-                                onClick={() => onAddClick([...pathInData, key], false, blockType)}>
-                                Add {capitalize(blockType)}
-                            </button>
-                        </div>
+                    <ModuleList
+                        title={capitalize(String(key))}
+                        area={`${blockType}s` as AreaPlural}
+                        modules={val ? [val] : []}
+                        path={pathInData}
+                    />
+                    {!val && (
+                        <button
+                            className="inline-flex items-center px-3 py-1.5 border rounded text-sm bg-white hover:shadow"
+                            onClick={() => {
+                                setModalFieldPath(pathInData);
+                                setModalTargetIsArray(false);
+                                setModalType(blockType);
+                                setModalOpen(true);
+                            }}>
+                            Add {capitalize(blockType)}
+                        </button>
                     )}
                 </div>
             );
@@ -166,9 +121,8 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
             return (
                 <div key={String(key)} className="border p-3 rounded space-y-2">
                     <label className="block font-medium">{capitalize(String(key))}</label>
-                    {Object.entries(resolvedSch.properties).map(
-                        ([childKey, childSchema]) =>
-                            renderField(childKey, childSchema, rootSchema, [...pathInData, childKey]) // FIXED: removed duplicated key here
+                    {Object.entries(resolvedSch.properties).map(([childKey, childSchema]) =>
+                        renderField(childKey, childSchema, rootSchema, [...pathInData, childKey])
                     )}
                 </div>
             );
@@ -180,52 +134,42 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
                     <input
                         type="checkbox"
                         checked={Boolean(val)}
-                        onChange={(e) => updateField([...pathInData, key], e.target.checked)}
+                        onChange={(e) => setValue(pathInData.join("."), e.target.checked)}
                     />
                     <span>{capitalize(String(key))}</span>
                 </label>
             );
         }
 
-        if (type === "number" || type === "integer") {
-            return (
-                <div key={String(key)}>
-                    <label className="block text-sm font-medium">{capitalize(String(key))}</label>
-                    <Input
-                        type="number"
-                        value={val ?? ""}
-                        onChange={(e) =>
-                            updateField([...pathInData, key], e.target.value === "" ? null : Number(e.target.value))
-                        }
-                    />
-                </div>
-            );
-        }
-
-        if (type === "object" || type === "array") {
-            return (
-                <div key={String(key)}>
-                    <label className="block text-sm font-medium">{capitalize(String(key))}</label>
-                    <Textarea
-                        value={JSON.stringify(val ?? "", null, 2)}
-                        onChange={(e) => {
-                            try {
-                                updateField([...pathInData, key], JSON.parse(e.target.value));
-                            } catch {
-                                updateField([...pathInData, key], e.target.value);
-                            }
-                        }}
-                    />
-                </div>
-            );
-        }
-
         return (
             <div key={String(key)}>
                 <label className="block text-sm font-medium">{capitalize(String(key))}</label>
-                <Input value={val ?? ""} onChange={(e) => updateField([...pathInData, key], e.target.value)} />
+                <Input value={val ?? ""} onChange={(e) => setValue(pathInData.join("."), e.target.value)} />
             </div>
         );
+    }
+
+    function onModalSelect(modFromServer: ModuleType) {
+        if (!modalFieldPath) return;
+
+        const instance: ModuleType = {
+            ...modFromServer,
+            id: modFromServer.id || `m_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
+            data: modFromServer.data || {},
+        };
+
+        const current = getValues(modalFieldPath.join("."));
+
+        if (modalTargetIsArray) {
+            setValue(modalFieldPath.join("."), [...(current || []), instance]);
+        } else {
+            setValue(modalFieldPath.join("."), instance);
+        }
+
+        setModalOpen(false);
+        setModalFieldPath(null);
+        setModalType(null);
+        setModalTargetIsArray(false);
     }
 
     const topProps = module.schema?.properties || {};
@@ -254,7 +198,7 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
                         setModalTargetIsArray(false);
                     }
                 }}
-                type={modalType || "action"} // default
+                type={modalType || "action"}
                 onSelect={onModalSelect}
             />
         </div>

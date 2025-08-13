@@ -29,19 +29,9 @@ export const AutomationProvider = ({
 
     const updateModule = (path: Path, newData: any) => {
         setAutomation((prev) => {
-            if (!prev) {
-                console.warn("updateModule called but automation state is undefined");
-                return prev; // or defaultAutomation here
-            }
             const updated = structuredClone(prev);
             let target: any = updated;
-            for (let i = 0; i < path.length - 1; i++) {
-                target = target[path[i]];
-                if (!target) {
-                    console.warn("Invalid path while updating module:", path);
-                    return prev;
-                }
-            }
+            for (let i = 0; i < path.length - 1; i++) target = target[path[i]];
             target[path[path.length - 1]] = newData;
             return updated;
         });
@@ -51,14 +41,9 @@ export const AutomationProvider = ({
         setAutomation((prev) => {
             const updated = structuredClone(prev);
             let target: any = updated;
-            for (let i = 0; i < path.length - 1; i++) {
-                target = target[path[i]];
-            }
-            if (Array.isArray(target)) {
-                target.splice(path[path.length - 1] as number, 1);
-            } else {
-                delete target[path[path.length - 1]];
-            }
+            for (let i = 0; i < path.length - 1; i++) target = target[path[i]];
+            if (Array.isArray(target)) target.splice(path[path.length - 1] as number, 1);
+            else delete target[path[path.length - 1]];
             return updated;
         });
     };
@@ -67,27 +52,15 @@ export const AutomationProvider = ({
         setAutomation((prev) => {
             const updated = structuredClone(prev);
             let target: any = updated;
-            for (let i = 0; i < path.length; i++) {
-                target = target[path[i]];
-            }
-            if (Array.isArray(target)) {
-                target.push(newData);
-            } else {
-                console.warn("Target for addModule is not an array", path);
-            }
+            for (let i = 0; i < path.length; i++) target = target[path[i]];
+            if (Array.isArray(target)) target.push(newData);
+            else console.warn("Target for addModule is not an array", path);
             return updated;
         });
     };
 
     return (
-        <AutomationContext.Provider
-            value={{
-                automation,
-                setAutomation,
-                updateModule,
-                removeModule,
-                addModule,
-            }}>
+        <AutomationContext.Provider value={{ automation, setAutomation, updateModule, removeModule, addModule }}>
             {children}
         </AutomationContext.Provider>
     );

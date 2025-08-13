@@ -26,11 +26,7 @@ const AddBlockModal = ({ open, onOpenChange, type, onSelect }: AddBlockModalProp
                 if (!res.ok) throw new Error(`HTTP ${res.status}`);
                 return res.json();
             })
-            .then((json) => {
-                if (Array.isArray(json)) return json;
-                if (json?.types) return json.types;
-                return [];
-            })
+            .then((json) => (Array.isArray(json) ? json : json?.types || []))
             .then(setItems)
             .catch((e) => {
                 console.error(e);
