@@ -25,14 +25,23 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
     const [modalFieldPath, setModalFieldPath] = useState<Path | null>(null);
     const [modalTargetIsArray, setModalTargetIsArray] = useState(false);
 
+    // Resolve $ref from schema
     function resolveSchema(schema: any, rootSchema: any) {
         if (schema?.$ref) {
             const refPath = schema.$ref.replace(/^#\//, "").split("/");
             let resolved: any = rootSchema;
             for (const segment of refPath) resolved = resolved?.[segment];
-            return { ...resolved, ...schema, $ref: undefined };
+            return resolved; // Return resolved schema without merging to avoid conflicts
         }
         return schema;
+    }
+
+    // Handle Add button click passed to ModuleList
+    function onAddBlock(blockType: Area, pathInData: Path, targetIsArray: boolean) {
+        setModalFieldPath(pathInData);
+        setModalTargetIsArray(targetIsArray);
+        setModalType(blockType);
+        setModalOpen(true);
     }
 
     function renderField(key: string | number, sch: any, rootSchema: any, pathInData: Path) {
@@ -42,6 +51,7 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
 
         if (type === "array" && resolvedSch.items) {
             const itemsSchema = resolveSchema(resolvedSch.items, rootSchema);
+
             if (itemsSchema["x-block-type"]) {
                 const blockType = itemsSchema["x-block-type"] as Area;
                 const arr: ModuleType[] = val || [];
@@ -53,21 +63,19 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
                             area={`${blockType}s` as AreaPlural}
                             modules={arr}
                             path={pathInData}
+                            onAdd={() => onAddBlock(blockType, pathInData, true)}
                         />
                         <button
-                            className="inline-flex items-center px-3 py-1.5 border rounded text-sm bg-white hover:shadow"
-                            onClick={() => {
-                                setModalFieldPath(pathInData);
-                                setModalTargetIsArray(true);
-                                setModalType(blockType);
-                                setModalOpen(true);
-                            }}>
+                            className="inline-flex items-center px-3 py-1.5 border rounded text-sm bg-white hover:shadow mt-2"
+                            onClick={() => onAddBlock(blockType, pathInData, true)}
+                            type="button">
                             Add {capitalize(blockType)}
                         </button>
                     </div>
                 );
             }
 
+            // Array without x-block-type, fallback to JSON textarea editing
             return (
                 <div key={String(key)}>
                     <label>{capitalize(String(key))}</label>
@@ -93,23 +101,23 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
 
         if (type === "object" && resolvedSch["x-block-type"]) {
             const blockType = resolvedSch["x-block-type"] as Area;
+            const objVal = val ?? null;
+
             return (
-                <div key={String(key)} className="border rounded p-3">
+                <div key={String(key)} className="border rounded p-3 mb-4">
                     <ModuleList
                         title={capitalize(String(key))}
                         area={`${blockType}s` as AreaPlural}
-                        modules={val ? [val] : []}
+                        modules={objVal ? [objVal] : []}
                         path={pathInData}
+                        onAdd={() => onAddBlock(blockType, pathInData, false)}
                     />
-                    {!val && (
+
+                    {!objVal && (
                         <button
-                            className="inline-flex items-center px-3 py-1.5 border rounded text-sm bg-white hover:shadow"
-                            onClick={() => {
-                                setModalFieldPath(pathInData);
-                                setModalTargetIsArray(false);
-                                setModalType(blockType);
-                                setModalOpen(true);
-                            }}>
+                            className="inline-flex items-center px-3 py-1.5 border rounded text-sm bg-white hover:shadow mt-2"
+                            onClick={() => onAddBlock(blockType, pathInData, false)}
+                            type="button">
                             Add {capitalize(blockType)}
                         </button>
                     )}
@@ -119,7 +127,7 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
 
         if (type === "object" && resolvedSch.properties) {
             return (
-                <div key={String(key)} className="border p-3 rounded space-y-2">
+                <div key={String(key)} className="border p-3 rounded space-y-2 mb-4">
                     <label className="block font-medium">{capitalize(String(key))}</label>
                     {Object.entries(resolvedSch.properties).map(([childKey, childSchema]) =>
                         renderField(childKey, childSchema, rootSchema, [...pathInData, childKey])
@@ -141,27 +149,29 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
             );
         }
 
+        // Default: string input fields
         return (
             <div key={String(key)}>
                 <label className="block text-sm font-medium">{capitalize(String(key))}</label>
-                <Input value={val ?? ""} onChange={(e) => setValue(pathInData.join("."), e.target.value)} />
+                <Input value={val ?? ""} onChange={(e) => setValue(pathInData.join("."), e.target.value)} type="text" />
             </div>
         );
     }
 
+    // Modal select handler: insert new block in form state immutably
     function onModalSelect(modFromServer: ModuleType) {
-        if (!modalFieldPath) return;
+        if (!modalFieldPath || !modalType) return;
 
+        // Assign unique id and defaults here:
         const instance: ModuleType = {
             ...modFromServer,
             id: modFromServer.id || `m_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
             data: modFromServer.data || {},
         };
 
-        const current = getValues(modalFieldPath.join("."));
-
         if (modalTargetIsArray) {
-            setValue(modalFieldPath.join("."), [...(current || []), instance]);
+            const current: ModuleType[] = getValues(modalFieldPath.join(".")) || [];
+            setValue(modalFieldPath.join("."), [...current, instance]);
         } else {
             setValue(modalFieldPath.join("."), instance);
         }
@@ -188,10 +198,11 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
                 {Object.entries(topProps).map(([key, sch]) => renderField(key, sch, module.schema, [key]))}
             </div>
 
+            {/* Modal to pick blocks to add */}
             <AddBlockModal
                 open={modalOpen}
-                onOpenChange={(v) => {
-                    if (!v) {
+                onOpenChange={(open: boolean) => {
+                    if (!open) {
                         setModalOpen(false);
                         setModalFieldPath(null);
                         setModalType(null);

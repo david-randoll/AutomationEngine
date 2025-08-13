@@ -21,12 +21,13 @@ const ModuleListItem = ({ mod, isEditing, onEdit, onCloseEdit, path }: ModuleLis
         const arrPath = path.slice(0, -1).join(".");
         const idx = path[path.length - 1] as number;
         const arr = getValues(arrPath) || [];
-        arr.splice(idx, 1);
-        setValue(arrPath, [...arr]);
+        const newArr = [...arr];
+        newArr.splice(idx, 1);
+        setValue(arrPath, newArr);
     };
 
     return (
-        <div className="border rounded p-2">
+        <div className="border rounded p-2 mb-2">
             <div className="flex items-start justify-between">
                 <div>
                     <div className="font-medium">{mod.label || mod.name || "Unnamed"}</div>
@@ -40,6 +41,7 @@ const ModuleListItem = ({ mod, isEditing, onEdit, onCloseEdit, path }: ModuleLis
                     </Button>
                 </div>
             </div>
+
             {isEditing && (
                 <div className="mt-3">
                     <ModuleEditor module={mod} path={path} />

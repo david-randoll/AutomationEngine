@@ -1,8 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { FaPlus } from "react-icons/fa";
 import ModuleListItem from "./ModuleListItem";
 
 interface ModuleListProps {
@@ -10,6 +8,7 @@ interface ModuleListProps {
     modules: ModuleType[];
     area: AreaPlural;
     path: Path;
+    onAdd: () => void; // callback to open add modal in parent component
 }
 
 function capitalize(s: string) {
@@ -17,28 +16,27 @@ function capitalize(s: string) {
     return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
-const ModuleList = ({ title, modules, area, path }: ModuleListProps) => {
+const ModuleList = ({ title, modules, area, path, onAdd }: ModuleListProps) => {
     const [editingIdx, setEditingIdx] = useState<number | null>(null);
 
     return (
         <div className="space-y-3">
             <div className="flex justify-between items-center">
                 <div className="font-semibold">{title}</div>
-                <Button
-                    onClick={() => {
-                        // Initialize empty module array if undefined
-                        modules.push({ id: `new_${Date.now()}`, name: "", data: {} });
-                        setEditingIdx(modules.length - 1);
-                    }}>
-                    <FaPlus /> Add {capitalize(area.slice(0, -1))}
-                </Button>
+                {/* Add button moved here */}
+                <button
+                    className="inline-flex items-center px-3 py-1.5 border rounded text-sm bg-white hover:shadow"
+                    onClick={onAdd}
+                    type="button">
+                    Add {capitalize(area.slice(0, -1))}
+                </button>
             </div>
 
             {modules.length === 0 && <div className="text-sm text-gray-500">No {title.toLowerCase()} yet.</div>}
 
             {modules.map((mod, i) => (
                 <ModuleListItem
-                    key={mod.id}
+                    key={mod.id || i}
                     mod={mod}
                     isEditing={editingIdx === i}
                     onEdit={() => setEditingIdx(i)}
