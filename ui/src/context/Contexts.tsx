@@ -1,35 +1,22 @@
 "use client";
+
 import React from "react";
-import { AutomationProvider } from "./AutomationContext";
 import { useForm, FormProvider } from "react-hook-form";
 
-const Contexts = ({ children }: Readonly<{ children: React.ReactNode }>) => {
-    const methods = useForm({
-        defaultValues: {
-            alias: "",
-            description: "",
-            triggers: [],
-            conditions: [],
-            actions: [],
-            variables: [],
-            results: [],
-        },
-    });
+const defaultValues = {
+    alias: "",
+    description: "",
+    triggers: [],
+    conditions: [],
+    actions: [],
+    variables: [],
+    result: [],
+};
 
-    return (
-        <AutomationProvider
-            initialAutomation={{
-                alias: "",
-                description: "",
-                triggers: [],
-                conditions: [],
-                actions: [],
-                variables: [],
-                results: [],
-            }}>
-            <FormProvider {...methods}>{children}</FormProvider>
-        </AutomationProvider>
-    );
+const Contexts = ({ children }: { children: React.ReactNode }) => {
+    const methods = useForm({ defaultValues });
+
+    return <FormProvider {...methods}>{children}</FormProvider>;
 };
 
 export default Contexts;

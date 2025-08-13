@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import ModuleList from "@/components/ModuleList";
 import AddBlockModal from "@/components/AddBlockModal";
-import { useFormContext, Controller } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
 
 interface ModuleEditorProps {
     module: ModuleType;
@@ -18,25 +18,24 @@ function capitalize(s: string) {
 }
 
 const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
-    const { control, setValue, getValues } = useFormContext();
+    const { setValue, getValues } = useFormContext();
 
     const [modalOpen, setModalOpen] = useState(false);
     const [modalType, setModalType] = useState<Area | null>(null);
     const [modalFieldPath, setModalFieldPath] = useState<Path | null>(null);
     const [modalTargetIsArray, setModalTargetIsArray] = useState(false);
 
-    // Resolve $ref from schema
     function resolveSchema(schema: any, rootSchema: any) {
         if (schema?.$ref) {
             const refPath = schema.$ref.replace(/^#\//, "").split("/");
             let resolved: any = rootSchema;
             for (const segment of refPath) resolved = resolved?.[segment];
-            return resolved; // Return resolved schema without merging to avoid conflicts
+            return resolved; // Don't merge to avoid conflicts
         }
         return schema;
     }
 
-    // Handle Add button click passed to ModuleList
+    // Called when Add button is clicked
     function onAddBlock(blockType: Area, pathInData: Path, targetIsArray: boolean) {
         setModalFieldPath(pathInData);
         setModalTargetIsArray(targetIsArray);
@@ -75,25 +74,19 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
                 );
             }
 
-            // Array without x-block-type, fallback to JSON textarea editing
+            // Non-block array fallback to JSON textarea
             return (
                 <div key={String(key)}>
                     <label>{capitalize(String(key))}</label>
-                    <Controller
-                        control={control}
-                        name={pathInData.join(".")}
-                        render={({ field }) => (
-                            <Textarea
-                                value={JSON.stringify(field.value || [], null, 2)}
-                                onChange={(e) => {
-                                    try {
-                                        field.onChange(JSON.parse(e.target.value));
-                                    } catch {
-                                        field.onChange(e.target.value);
-                                    }
-                                }}
-                            />
-                        )}
+                    <Textarea
+                        value={JSON.stringify(val || [], null, 2)}
+                        onChange={(e) => {
+                            try {
+                                setValue(pathInData.join("."), JSON.parse(e.target.value));
+                            } catch {
+                                setValue(pathInData.join("."), e.target.value);
+                            }
+                        }}
                     />
                 </div>
             );
@@ -149,7 +142,7 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
             );
         }
 
-        // Default: string input fields
+        // String input
         return (
             <div key={String(key)}>
                 <label className="block text-sm font-medium">{capitalize(String(key))}</label>
@@ -158,11 +151,9 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
         );
     }
 
-    // Modal select handler: insert new block in form state immutably
     function onModalSelect(modFromServer: ModuleType) {
         if (!modalFieldPath || !modalType) return;
 
-        // Assign unique id and defaults here:
         const instance: ModuleType = {
             ...modFromServer,
             id: modFromServer.id || `m_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
@@ -198,7 +189,6 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
                 {Object.entries(topProps).map(([key, sch]) => renderField(key, sch, module.schema, [key]))}
             </div>
 
-            {/* Modal to pick blocks to add */}
             <AddBlockModal
                 open={modalOpen}
                 onOpenChange={(open: boolean) => {

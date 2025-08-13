@@ -18,6 +18,7 @@ const ModuleListItem = ({ mod, isEditing, onEdit, onCloseEdit, path }: ModuleLis
     const { setValue, getValues } = useFormContext();
 
     const handleRemove = () => {
+        console.log("Deleting item at path:", path);
         const arrPath = path.slice(0, -1).join(".");
         const idx = path[path.length - 1] as number;
         const arr = getValues(arrPath) || [];
