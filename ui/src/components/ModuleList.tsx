@@ -44,12 +44,6 @@ const ModuleList = ({ title, area, path, blockType }: ModuleListProps) => {
         <div className="space-y-3">
             <div className="flex justify-between items-center">
                 <div className="font-semibold">{title}</div>
-                <button
-                    className="inline-flex items-center px-3 py-1.5 border rounded text-sm bg-white hover:shadow"
-                    onClick={handleAdd}
-                    type="button">
-                    Add {capitalize(area.slice(0, -1))}
-                </button>
             </div>
 
             {fields.length === 0 && <div className="text-sm text-gray-500">No {title.toLowerCase()} yet.</div>}
