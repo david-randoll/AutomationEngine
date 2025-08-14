@@ -15,7 +15,7 @@ const AutomationBuilderPage = ({ automationSchema }: AutomationBuilderPageProps)
     const { getValues } = useFormContext();
 
     // Current live form data
-    const automation = getValues() as Automation;
+    const automation = getValues();
 
     return (
         <div className="p-6 bg-gray-50 min-h-screen">
@@ -38,7 +38,9 @@ const AutomationBuilderPage = ({ automationSchema }: AutomationBuilderPageProps)
                         <ModuleEditor module={automationSchema} path={[]} />
                     </section>
 
-                    <aside className="col-span-1 space-y-4">{/* <PreviewPanel automation={automation} /> */}</aside>
+                    <aside className="col-span-1 space-y-4">
+                        <PreviewPanel />
+                    </aside>
                 </main>
             </div>
         </div>
