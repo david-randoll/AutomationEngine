@@ -3,15 +3,7 @@
 import React from "react";
 import { useForm, FormProvider } from "react-hook-form";
 
-const defaultValues = {
-    alias: "",
-    description: "",
-    variables: [],
-    triggers: [],
-    conditions: [],
-    actions: [],
-    result: null,
-};
+const defaultValues = {};
 
 const Contexts = ({ children }: { children: React.ReactNode }) => {
     const methods = useForm({ defaultValues });
