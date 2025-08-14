@@ -7,9 +7,9 @@ import ModuleListItem from "./ModuleListItem";
 interface ModuleListProps {
     title: string;
     area: AreaPlural;
-    path: Path;
-    blockType: Area; // singular block type of items
-    modules: ModuleType[]; // passed from form state for rendering keys (unused directly because of useFieldArray)
+    path: (string | number)[];
+    blockType: Area;
+    modules: ModuleType[];
 }
 
 function capitalize(s: string) {
@@ -24,20 +24,20 @@ const ModuleList = ({ title, area, path, blockType }: ModuleListProps) => {
     const { fields, append, remove } = useFieldArray({
         control,
         name: fieldName,
-        keyName: "reactHookFormId", // avoid clash with your own `id`
+        keyName: "reactHookFormId", // avoids collision with your id
     });
 
     const [editingIdx, setEditingIdx] = useState<number | null>(null);
 
-    // Append a new empty item, adjust fields for your schema defaults if needed
     const handleAdd = () => {
         append({
             id: `m_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
             alias: "",
             description: "",
             variable: "",
+            // add other default fields as needed per your schema
         });
-        setEditingIdx(fields.length); // open edit mode on newly added
+        setEditingIdx(fields.length);
     };
 
     return (

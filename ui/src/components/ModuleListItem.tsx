@@ -10,8 +10,8 @@ interface ModuleListItemProps {
     isEditing: boolean;
     onEdit: () => void;
     onCloseEdit: () => void;
-    path: Path;
-    onRemove: () => void; // passed from ModuleList
+    path: (string | number)[];
+    onRemove: () => void;
 }
 
 const ModuleListItem = ({ mod, isEditing, onEdit, onCloseEdit, path, onRemove }: ModuleListItemProps) => {

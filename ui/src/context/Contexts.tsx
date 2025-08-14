@@ -10,14 +10,11 @@ const defaultValues = {
     triggers: [],
     conditions: [],
     actions: [],
-    result: [],
+    result: null,
 };
 
 const Contexts = ({ children }: { children: React.ReactNode }) => {
-    const methods = useForm({
-        defaultValues,
-        mode: "all", // optional: enables validation and updates on change
-    });
+    const methods = useForm({ defaultValues });
 
     return <FormProvider {...methods}>{children}</FormProvider>;
 };
