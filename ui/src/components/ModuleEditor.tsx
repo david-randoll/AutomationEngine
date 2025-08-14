@@ -6,8 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import ModuleList from "@/components/ModuleList";
 import AddBlockModal from "@/components/AddBlockModal";
 import { useFormContext, Controller, useFieldArray } from "react-hook-form";
-import { Button } from "./ui/button";
-import { FaTrash } from "react-icons/fa";
+import { FiEdit, FiTrash2 } from "react-icons/fi";
 
 interface ModuleEditorProps {
     module: ModuleType;
@@ -45,7 +44,7 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
     }
 
     /**
-     * Custom component to render arrays of primitives using RHF useFieldArray.
+     * Array of primitives with Edit and Delete buttons styled like ModuleListItem.
      */
     const ArrayOfPrimitives = ({
         name,
@@ -62,44 +61,60 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
             <div className="space-y-2">
                 <label className="block font-medium">{capitalize(title)}</label>
                 {fields.map((field, index) => (
-                    <div key={field.id} className="flex items-center space-x-2">
-                        <Controller
-                            control={control}
-                            name={`${name}.${index}`}
-                            render={({ field }) => {
-                                if (itemsType === "boolean") {
+                    <div
+                        key={field.id}
+                        className="flex items-center justify-between space-x-3 border rounded p-2 hover:bg-gray-50">
+                        <div className="flex-grow">
+                            <Controller
+                                control={control}
+                                name={`${name}.${index}`}
+                                render={({ field }) => {
+                                    if (itemsType === "boolean") {
+                                        return (
+                                            <input
+                                                type="checkbox"
+                                                checked={Boolean(field.value)}
+                                                onChange={(e) => field.onChange(e.target.checked)}
+                                            />
+                                        );
+                                    }
                                     return (
-                                        <input
-                                            type="checkbox"
-                                            checked={Boolean(field.value)}
-                                            onChange={(e) => field.onChange(e.target.checked)}
+                                        <Input
+                                            type={itemsType === "number" ? "number" : "text"}
+                                            {...field}
+                                            value={field.value ?? ""}
+                                            onChange={(e) => {
+                                                if (itemsType === "number") {
+                                                    const val = e.target.value;
+                                                    field.onChange(val === "" ? "" : +val);
+                                                } else {
+                                                    field.onChange(e.target.value);
+                                                }
+                                            }}
                                         />
                                     );
-                                }
-                                return (
-                                    <Input
-                                        type={itemsType === "number" ? "number" : "text"}
-                                        {...field}
-                                        value={field.value ?? ""}
-                                        onChange={(e) => {
-                                            if (itemsType === "number") {
-                                                const val = e.target.value;
-                                                field.onChange(val === "" ? "" : +val);
-                                            } else {
-                                                field.onChange(e.target.value);
-                                            }
-                                        }}
-                                    />
-                                );
-                            }}
-                        />
-                        <button
-                            type="button"
-                            onClick={() => remove(index)}
-                            className="text-red-500"
-                            aria-label={`Remove ${title} item`}>
-                            Remove
-                        </button>
+                                }}
+                            />
+                        </div>
+                        <div className="flex space-x-2">
+                            <button
+                                type="button"
+                                aria-label="Edit item"
+                                className="p-1 hover:text-blue-600"
+                                onClick={() => {
+                                    // Example edit behavior: for primitives this might focus input or open modal if desired
+                                    // (Currently does nothing by default)
+                                }}>
+                                <FiEdit size={16} />
+                            </button>
+                            <button
+                                type="button"
+                                aria-label="Remove item"
+                                className="p-1 hover:text-red-600"
+                                onClick={() => remove(index)}>
+                                <FiTrash2 size={16} />
+                            </button>
+                        </div>
                     </div>
                 ))}
                 <button
@@ -120,7 +135,7 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
     };
 
     /**
-     * Custom component to render arrays of objects without x-block-type using RHF useFieldArray.
+     * Array of objects without x-block-type styled with Edit and Delete buttons.
      */
     const ArrayOfObjects = ({
         name,
@@ -139,24 +154,36 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
             <div className="space-y-3 border p-3 rounded">
                 <label className="block font-medium">{capitalize(title)}</label>
                 {fields.map((field, index) => (
-                    <div key={field.id} className="border p-2 rounded space-y-2">
+                    <div key={field.id} className="flex flex-col border rounded p-3 space-y-3 hover:shadow">
+                        <div className="flex justify-end space-x-2">
+                            <button
+                                type="button"
+                                aria-label="Edit item"
+                                className="p-1 hover:text-blue-600"
+                                onClick={() => {
+                                    // Implement edit logic here if you want (like open modal or autofocus)
+                                }}>
+                                <FiEdit size={16} />
+                            </button>
+                            <button
+                                type="button"
+                                aria-label="Remove item"
+                                className="p-1 hover:text-red-600"
+                                onClick={() => remove(index)}>
+                                <FiTrash2 size={16} />
+                            </button>
+                        </div>
+
+                        {/* Render object properties */}
                         {Object.entries(itemsSchema.properties || {}).map(([childKey, childSchema]) =>
                             renderField(childKey, childSchema, module.schema, [...pathInData, index, childKey])
                         )}
-                        <button
-                            type="button"
-                            onClick={() => remove(index)}
-                            className="text-red-500"
-                            aria-label={`Remove ${title} item`}>
-                            Remove
-                        </button>
                     </div>
                 ))}
                 <button
                     type="button"
                     className="px-3 py-1 text-sm border rounded bg-white hover:shadow"
                     onClick={() => {
-                        // Initialize an empty item with null values for all properties
                         const newItem: any = {};
                         Object.entries(itemsSchema.properties || {}).forEach(([k]) => {
                             newItem[k] = null;
@@ -170,7 +197,7 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
     };
 
     /**
-     * Main recursive function to render a field based on its schema.
+     * Recursive function to render fields depending on type.
      */
     function renderField(key: string | number, sch: any, rootSchema: any, pathInData: (string | number)[]) {
         const resolvedSch = resolveSchema(sch, rootSchema);
@@ -183,7 +210,6 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
             const itemsType = itemsSchema.type || "string";
 
             if (itemsSchema["x-block-type"]) {
-                // Array with x-block-type: show ModuleList + Add button
                 const blockType = itemsSchema["x-block-type"] as Area;
                 const arr: ModuleType[] = getValues(name) || [];
 
@@ -207,7 +233,6 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
             }
 
             if (["string", "number", "boolean"].includes(itemsType)) {
-                // Array of primitives
                 return (
                     <ArrayOfPrimitives
                         key={name}
@@ -219,7 +244,6 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
             }
 
             if (itemsType === "object") {
-                // Array of objects without x-block-type
                 return (
                     <ArrayOfObjects
                         key={name}
@@ -313,7 +337,6 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
             );
         }
 
-        // Default string input field
         return (
             <div key={name}>
                 <label className="block text-sm font-medium">{capitalize(title)}</label>
