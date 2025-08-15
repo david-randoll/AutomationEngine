@@ -14,9 +14,6 @@ interface AutomationBuilderPageProps {
 const AutomationBuilderPage = ({ automationSchema }: AutomationBuilderPageProps) => {
     const { getValues } = useFormContext();
 
-    // Current live form data
-    const automation = getValues();
-
     return (
         <div className="p-6 bg-gray-50 min-h-screen">
             <div className="max-w-6xl mx-auto">
@@ -26,8 +23,15 @@ const AutomationBuilderPage = ({ automationSchema }: AutomationBuilderPageProps)
                         <p className="text-sm text-gray-500">Build automations visually — Home Assistant style.</p>
                     </div>
                     <div className="space-x-2">
-                        <Button onClick={() => navigator.clipboard.writeText(exportJson(automation))}>Copy JSON</Button>
-                        <Button variant="outline" onClick={() => navigator.clipboard.writeText(exportYaml(automation))}>
+                        <Button
+                            className="cursor-pointer"
+                            onClick={() => navigator.clipboard.writeText(exportJson(getValues()))}>
+                            Copy JSON
+                        </Button>
+                        <Button
+                            className="cursor-pointer"
+                            variant="outline"
+                            onClick={() => navigator.clipboard.writeText(exportYaml(getValues()))}>
                             Copy YAML
                         </Button>
                     </div>
@@ -38,9 +42,7 @@ const AutomationBuilderPage = ({ automationSchema }: AutomationBuilderPageProps)
                         <ModuleEditor module={automationSchema} path={[]} />
                     </section>
 
-                    <aside className="col-span-1 space-y-4">
-                        <PreviewPanel />
-                    </aside>
+                    <aside className="col-span-1 space-y-4">{/* <PreviewPanel /> */}</aside>
                 </main>
             </div>
         </div>

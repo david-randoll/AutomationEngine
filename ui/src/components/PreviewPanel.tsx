@@ -1,31 +1,9 @@
 "use client";
 
 import React from "react";
-import yaml from "js-yaml";
 import { useFormContext } from "react-hook-form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-
-/**
- * Utility to export JSON string from form values
- */
-function exportJson(data: any): string {
-    try {
-        return JSON.stringify(data, null, 2);
-    } catch (e) {
-        return `Error serializing JSON: ${(e as Error).message}`;
-    }
-}
-
-/**
- * Utility to export YAML string from form values
- */
-function exportYaml(data: any): string {
-    try {
-        return yaml.dump(data, { noRefs: true });
-    } catch (e) {
-        return `Error serializing YAML: ${(e as Error).message}`;
-    }
-}
+import { exportJson, exportYaml } from "@/utils/automation";
 
 const PreviewPanel = () => {
     // Get current form data from react-hook-form context

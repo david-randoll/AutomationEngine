@@ -52,6 +52,7 @@ const AddBlockModal = ({ open, onOpenChange, type, onSelect }: AddBlockModalProp
                     <DialogTitle className="flex items-center justify-between">
                         <span>Select {type}</span>
                         <Input
+                            className="w-64 mr-4"
                             placeholder={`Search ${type}s...`}
                             value={filter}
                             onChange={(e) => setFilter(e.target.value)}

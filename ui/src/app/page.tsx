@@ -12,7 +12,7 @@ export default function AutomationApp() {
             .catch(console.error);
     }, []);
 
-    if (!automationSchema) return <div>Loading schema...</div>;
+    if (!automationSchema) return <div>Loading schema...</div>
 
     return <AutomationBuilderPage automationSchema={automationSchema} />;
 }
