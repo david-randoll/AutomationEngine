@@ -42,7 +42,9 @@ const AutomationBuilderPage = ({ automationSchema }: AutomationBuilderPageProps)
                         <ModuleEditor module={automationSchema} path={[]} />
                     </section>
 
-                    <aside className="col-span-1 space-y-4">{/* <PreviewPanel /> */}</aside>
+                    <aside className="col-span-1 space-y-4">
+                        <PreviewPanel />{" "}
+                    </aside>
                 </main>
             </div>
         </div>

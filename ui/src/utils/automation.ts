@@ -4,6 +4,7 @@ import yaml from "js-yaml";
  * Utility to export JSON string from form values
  */
 export function exportJson(data: any): string {
+    console.log("Exporting JSON", data);
     try {
         return JSON.stringify(data, null, 2);
     } catch (e) {

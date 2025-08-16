@@ -6,22 +6,14 @@ import ModuleListItem from "./ModuleListItem";
 
 interface ModuleListProps {
     title: string;
-    area: AreaPlural;
     path: (string | number)[];
-    blockType: Area;
-    modules: ModuleType[];
 }
 
-function capitalize(s: string) {
-    if (!s) return s;
-    return s.charAt(0).toUpperCase() + s.slice(1);
-}
-
-const ModuleList = ({ title, area, path, blockType }: ModuleListProps) => {
+const ModuleList = ({ title, path }: ModuleListProps) => {
     const { control } = useFormContext();
     const fieldName = path.join(".");
 
-    const { fields, append, remove } = useFieldArray({
+    const { fields, remove } = useFieldArray({
         control,
         name: fieldName,
         keyName: "reactHookFormId", // avoids collision with your id
@@ -29,28 +21,15 @@ const ModuleList = ({ title, area, path, blockType }: ModuleListProps) => {
 
     const [editingIdx, setEditingIdx] = useState<number | null>(null);
 
-    const handleAdd = () => {
-        append({
-            id: `m_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
-            alias: "",
-            description: "",
-            variable: "",
-            // add other default fields as needed per your schema
-        });
-        setEditingIdx(fields.length);
-    };
-
     return (
         <div className="space-y-3">
             <div className="flex justify-between items-center">
                 <div className="font-semibold">{title}</div>
             </div>
-
             {fields.length === 0 && <div className="text-sm text-gray-500">No {title.toLowerCase()} yet.</div>}
-
             {fields.map((field, index) => (
                 <ModuleListItem
-                    key={field.id || field.reactHookFormId || index}
+                    key={field.reactHookFormId || index}
                     mod={field}
                     isEditing={editingIdx === index}
                     onEdit={() => setEditingIdx(index)}

@@ -211,17 +211,10 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
 
             if (itemsSchema["x-block-type"]) {
                 const blockType = itemsSchema["x-block-type"] as Area;
-                const arr: ModuleType[] = getValues(name) || [];
 
                 return (
                     <div key={name}>
-                        <ModuleList
-                            title={capitalize(title)}
-                            area={`${blockType}s` as AreaPlural}
-                            path={pathInData}
-                            blockType={blockType}
-                            modules={arr}
-                        />
+                        <ModuleList title={capitalize(title)} path={pathInData} />
                         <button
                             className="inline-flex items-center px-3 py-1.5 border rounded text-sm bg-white hover:shadow mt-2"
                             onClick={() => onAddBlock(blockType, pathInData, true)}
@@ -287,13 +280,7 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
 
             return (
                 <div key={name} className="border rounded p-3 mb-4">
-                    <ModuleList
-                        title={capitalize(title)}
-                        area={`${blockType}s` as AreaPlural}
-                        path={pathInData}
-                        blockType={blockType}
-                        modules={val ? [val] : []}
-                    />
+                    <ModuleList title={capitalize(title)} path={pathInData} />
                     {!val && (
                         <button
                             className="inline-flex items-center px-3 py-1.5 border rounded text-sm bg-white hover:shadow mt-2"
@@ -362,7 +349,6 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
         const instance: ModuleType = {
             ...modFromServer,
             id: modFromServer.id || `m_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
-            data: modFromServer.data || {},
         };
 
         if (modalTargetIsArray) {
