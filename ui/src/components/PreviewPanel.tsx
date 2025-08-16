@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useWatch } from "react-hook-form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { exportJson, exportYaml } from "@/utils/automation";
@@ -8,8 +8,8 @@ import { exportJson, exportYaml } from "@/utils/automation";
 const PreviewPanel = () => {
     const formData = useWatch();
 
-    const [jsonData, setJsonData] = React.useState("");
-    const [yamlData, setYamlData] = React.useState("");
+    const [jsonData, setJsonData] = useState("");
+    const [yamlData, setYamlData] = useState("");
 
     useEffect(() => {
         setJsonData(exportJson(formData));
