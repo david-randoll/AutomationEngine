@@ -8,7 +8,7 @@ import ModuleEditor from "@/components/ModuleEditor";
 import { exportJson, exportYaml } from "@/utils/automation";
 
 interface AutomationBuilderPageProps {
-    automationSchema: ModuleType; // pass fetched schema as prop
+    automationSchema: ModuleType;
 }
 
 const AutomationBuilderPage = ({ automationSchema }: AutomationBuilderPageProps) => {
@@ -43,7 +43,7 @@ const AutomationBuilderPage = ({ automationSchema }: AutomationBuilderPageProps)
                     </section>
 
                     <aside className="col-span-1 space-y-4">
-                        <PreviewPanel />{" "}
+                        <PreviewPanel />
                     </aside>
                 </main>
             </div>
