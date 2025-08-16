@@ -20,6 +20,7 @@ const AutomationBuilderPage = ({ automationSchema }: AutomationBuilderPageProps)
             await navigator.clipboard.writeText(exportJson(getValues()));
             toast.success("JSON copied to clipboard!");
         } catch (error) {
+            console.error("Failed to copy JSON:", error);
             toast.error("Failed to copy JSON.");
         }
     };
@@ -29,6 +30,7 @@ const AutomationBuilderPage = ({ automationSchema }: AutomationBuilderPageProps)
             await navigator.clipboard.writeText(exportYaml(getValues()));
             toast.success("YAML copied to clipboard!");
         } catch (error) {
+            console.error("Failed to copy YAML:", error);
             toast.error("Failed to copy YAML.");
         }
     };
