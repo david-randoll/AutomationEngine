@@ -67,9 +67,10 @@ const AddBlockModal = ({ open, onOpenChange, type, onSelect }: AddBlockModalProp
                         <ScrollArea className="h-96">
                             <div className="grid grid-cols-1 gap-3">
                                 {filtered.map((it) => (
-                                    <div
+                                    <button
                                         key={it.name}
-                                        className="border rounded p-3 hover:shadow cursor-pointer"
+                                        type="button"
+                                        className="border rounded p-3 hover:shadow cursor-pointer text-left w-full"
                                         onClick={() => {
                                             onSelect(it);
                                             onOpenChange(false);
@@ -88,7 +89,7 @@ const AddBlockModal = ({ open, onOpenChange, type, onSelect }: AddBlockModalProp
                                                 {Object.keys(it.schema.properties).slice(0, 4).join(", ")}
                                             </div>
                                         )}
-                                    </div>
+                                    </button>
                                 ))}
                                 {filtered.length === 0 && (
                                     <div className="p-6 text-center text-gray-500">No results</div>
