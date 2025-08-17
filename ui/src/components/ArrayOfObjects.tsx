@@ -73,7 +73,7 @@ const ArrayOfObjects = ({
                     });
                     append(newItem);
                 }}>
-                Add {capitalize(title)}s
+                Add {capitalize(title)}
             </button>
         </div>
     );

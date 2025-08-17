@@ -27,20 +27,24 @@ const ModuleList = ({ title, path }: ModuleListProps) => {
                 <div className="font-semibold">{title}</div>
             </div>
             {fields.length === 0 && <div className="text-sm text-gray-500">No {title.toLowerCase()} yet.</div>}
-            {fields.map((field, index) => (
-                <ModuleListItem
-                    key={field.reactHookFormId || index}
-                    mod={field}
-                    isEditing={editingIdx === index}
-                    onEdit={() => setEditingIdx(index)}
-                    onCloseEdit={() => setEditingIdx(null)}
-                    path={[...path, index]}
-                    onRemove={() => {
-                        remove(index);
-                        setEditingIdx(null);
-                    }}
-                />
-            ))}
+            {fields.map((field, index) => {
+                //convert the Record<"reactHookFormId", string> to ModuleType
+                const { reactHookFormId, ...mod } = field;
+                return (
+                    <ModuleListItem
+                        key={reactHookFormId || index}
+                        mod={mod as ModuleType}
+                        isEditing={editingIdx === index}
+                        onEdit={() => setEditingIdx(index)}
+                        onCloseEdit={() => setEditingIdx(null)}
+                        path={[...path, index]}
+                        onRemove={() => {
+                            remove(index);
+                            setEditingIdx(null);
+                        }}
+                    />
+                );
+            })}
         </div>
     );
 };

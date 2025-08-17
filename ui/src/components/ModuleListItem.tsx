@@ -6,7 +6,7 @@ import { FaTrash } from "react-icons/fa";
 import ModuleEditor from "./ModuleEditor";
 
 interface ModuleListItemProps {
-    mod: any;
+    mod: ModuleType;
     isEditing: boolean;
     onEdit: () => void;
     onCloseEdit: () => void;
@@ -19,7 +19,7 @@ const ModuleListItem = ({ mod, isEditing, onEdit, onCloseEdit, path, onRemove }:
         <div className="border rounded p-2 mb-2">
             <div className="flex items-start justify-between">
                 <div>
-                    <div className="font-medium">{mod.alias || mod.name || "Unnamed"}</div>
+                    <div className="font-medium">{mod.label || mod.name || "Unnamed"}</div>
                 </div>
                 <div className="flex items-center gap-2">
                     <Button variant="ghost" size="sm" onClick={onEdit}>
