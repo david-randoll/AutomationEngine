@@ -5,45 +5,45 @@ import { Button } from "@/components/ui/button";
 import { FaTrash } from "react-icons/fa";
 import ModuleEditor from "./ModuleEditor";
 import { useFormContext } from "react-hook-form";
+import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/components/ui/collapsible";
+import { ChevronDown, ChevronRight } from "lucide-react";
 
 interface ModuleListItemProps {
     index: number;
     isEditing: boolean;
-    onEdit: () => void;
-    onCloseEdit: () => void;
+    onToggle: () => void;
     path: (string | number)[];
     onRemove: () => void;
 }
 
-const ModuleListItem = ({ index, isEditing, onEdit, onCloseEdit, path, onRemove }: ModuleListItemProps) => {
+const ModuleListItem = ({ index, isEditing, onToggle, path, onRemove }: ModuleListItemProps) => {
     const { getValues } = useFormContext();
-    const mod = getValues(path.join(".")) as ModuleType; // fetch current values at this path
+    const mod = getValues(path.join(".")) as ModuleType;
 
     return (
-        <div className="border rounded p-2 mb-2">
-            <div className="flex items-start justify-between">
-                <div>
-                    <div className="font-medium">{mod?.label || mod?.name || "Unnamed"}</div>
-                </div>
-                <div className="flex items-center gap-2">
-                    <Button variant="ghost" size="sm" onClick={onEdit}>
-                        {isEditing ? "Editing" : "Edit"}
-                    </Button>
-                    <Button variant="destructive" size="sm" onClick={onRemove}>
+        <Collapsible open={isEditing} onOpenChange={onToggle}>
+            <div className="border rounded-lg p-3 mb-2 shadow-sm bg-white">
+                <div className="flex items-center justify-between">
+                    <CollapsibleTrigger asChild>
+                        <button className="flex items-center gap-2 text-left w-full hover:text-blue-600 transition-colors">
+                            {isEditing ? (
+                                <ChevronDown className="h-4 w-4 shrink-0" />
+                            ) : (
+                                <ChevronRight className="h-4 w-4 shrink-0" />
+                            )}
+                            <span className="font-medium">{mod?.label || mod?.name || "Unnamed"}</span>
+                        </button>
+                    </CollapsibleTrigger>
+                    <Button variant="destructive" size="sm" onClick={onRemove} className="shrink-0">
                         <FaTrash />
                     </Button>
                 </div>
-            </div>
 
-            {isEditing && (
-                <div className="mt-3">
+                <CollapsibleContent className="mt-3 space-y-3">
                     <ModuleEditor module={mod} path={path} />
-                    <div className="mt-3 flex gap-2">
-                        <Button onClick={onCloseEdit}>Close</Button>
-                    </div>
-                </div>
-            )}
-        </div>
+                </CollapsibleContent>
+            </div>
+        </Collapsible>
     );
 };
 
