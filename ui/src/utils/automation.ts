@@ -23,7 +23,6 @@ function removeSchema(data: any): any {
  * Utility to export JSON string from form values
  */
 export function exportJson(data: any): string {
-    console.log("Exporting JSON", data);
     try {
         const cleaned = removeSchema(data);
         return JSON.stringify(cleaned, null, 2);

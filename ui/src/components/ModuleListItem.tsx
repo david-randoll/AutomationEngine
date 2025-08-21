@@ -15,12 +15,13 @@ interface ModuleListItemProps {
 
 const ModuleListItem = ({ index, path, onRemove }: ModuleListItemProps) => {
     const { getValues } = useFormContext();
-    const mod = getValues(path.join(".")) as ModuleType;
+    const mod = getValues(path.join("."));
+    console.log("moduleListitem", mod);
 
     return (
         <AccordionItem value={`${index}`} className="border rounded-lg bg-white shadow-sm">
             <AccordionTrigger className="flex items-center justify-between px-4 py-4 font-medium text-left hover:text-blue-600 transition-colors">
-                <span>{mod?.label || mod?.name || "Unnamed"}</span>
+                <span>{mod?.alias || mod?.label || mod?.name || "Unnamed"}</span>
             </AccordionTrigger>
 
             <AccordionContent className="px-4 pb-4 mt-2">
