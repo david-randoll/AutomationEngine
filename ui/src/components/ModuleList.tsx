@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { useFieldArray, useFormContext } from "react-hook-form";
 import ModuleListItem from "./ModuleListItem";
+import { Accordion } from "@/components/ui/accordion";
 
 interface ModuleListProps {
     title: string;
@@ -19,29 +20,22 @@ const ModuleList = ({ title, path }: ModuleListProps) => {
         keyName: "reactHookFormId",
     });
 
-    const [editingIdx, setEditingIdx] = useState<number | null>(null);
-
     return (
         <div className="space-y-3">
-            <div className="flex justify-between items-center">
-                <div className="font-semibold text-lg">{title}</div>
-            </div>
+            <div className="font-semibold text-lg">{title}</div>
 
             {fields.length === 0 && <div className="text-sm text-gray-500">No {title.toLowerCase()} yet.</div>}
 
-            {fields.map((field, index) => (
-                <ModuleListItem
-                    key={field.reactHookFormId}
-                    index={index}
-                    path={[...path, index]}
-                    isEditing={editingIdx === index}
-                    onToggle={() => setEditingIdx(editingIdx === index ? null : index)}
-                    onRemove={() => {
-                        remove(index);
-                        setEditingIdx(null);
-                    }}
-                />
-            ))}
+            <Accordion type="single" collapsible className="space-y-2">
+                {fields.map((field, index) => (
+                    <ModuleListItem
+                        key={field.reactHookFormId}
+                        index={index}
+                        path={[...path, index]}
+                        onRemove={() => remove(index)}
+                    />
+                ))}
+            </Accordion>
         </div>
     );
 };
