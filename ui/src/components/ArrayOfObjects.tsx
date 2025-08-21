@@ -1,14 +1,13 @@
 "use client";
 
 import React from "react";
-import { useFormContext, useFieldArray } from "react-hook-form";
-import { FiEdit, FiTrash2 } from "react-icons/fi";
+import { useFormContext, useFieldArray, useWatch } from "react-hook-form";
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
+import { Button } from "@/components/ui/button";
+import { FaTrash } from "react-icons/fa";
 import { capitalize } from "@/lib/utils";
 import FieldRenderer from "./FieldRenderer";
 
-/**
- * Array of objects without x-block-type styled with Edit and Delete buttons.
- */
 const ArrayOfObjects = ({
     name,
     title,
@@ -27,45 +26,57 @@ const ArrayOfObjects = ({
     const { control } = useFormContext();
     const { fields, append, remove } = useFieldArray({ control, name });
 
-    return (
-        <div className="space-y-3 border p-3 rounded">
-            <label className="block font-medium">{capitalize(title)}</label>
-            {fields.map((field, index) => (
-                <div key={field.id} className="flex flex-col border rounded p-3 space-y-3 hover:shadow">
-                    <div className="flex justify-end space-x-2">
-                        <button
-                            type="button"
-                            aria-label="Edit item"
-                            className="p-1 hover:text-blue-600"
-                            onClick={() => {
-                                // Implement edit logic here if you want (like open modal or autofocus)
-                            }}>
-                            <FiEdit size={16} />
-                        </button>
-                        <button
-                            type="button"
-                            aria-label="Remove item"
-                            className="p-1 hover:text-red-600"
-                            onClick={() => remove(index)}>
-                            <FiTrash2 size={16} />
-                        </button>
-                    </div>
+    // ✅ Watch the entire array once
+    const values = useWatch({ control, name }) || [];
 
-                    {Object.entries(itemsSchema.properties || {}).map(([childKey, childSchema]) => (
-                        <FieldRenderer
-                            key={`${name}-${index}-${childKey}`}
-                            fieldKey={childKey}
-                            schema={childSchema}
-                            rootSchema={rootSchema}
-                            pathInData={[...pathInData, index, childKey]}
-                            onAddBlock={onAddBlock}
-                        />
-                    ))}
-                </div>
-            ))}
-            <button
+    return (
+        <div className="space-y-3 border p-3 rounded bg-white shadow-sm">
+            <label className="block font-medium text-lg">{capitalize(title)}</label>
+
+            <Accordion type="single" collapsible className="w-full">
+                {fields.map((field, index) => {
+                    const itemPath = [...pathInData, index];
+                    const item = values[index]; // ✅ Safe, no hook inside loop
+
+                    return (
+                        <AccordionItem key={field.id} value={`${index}`} className="border rounded-lg shadow-sm">
+                            <AccordionTrigger className="flex items-center justify-between px-4 py-3 font-medium hover:text-blue-600 transition-colors">
+                                <span>
+                                    {item?.alias || item?.label || item?.name || `${capitalize(title)} ${index + 1}`}
+                                </span>
+                            </AccordionTrigger>
+
+                            <AccordionContent className="px-4 pb-4 mt-2 space-y-3">
+                                {Object.entries(itemsSchema.properties || {}).map(([childKey, childSchema]) => (
+                                    <FieldRenderer
+                                        key={`${name}-${index}-${childKey}`}
+                                        fieldKey={childKey}
+                                        schema={childSchema}
+                                        rootSchema={rootSchema}
+                                        pathInData={[...pathInData, index, childKey]}
+                                        onAddBlock={onAddBlock}
+                                    />
+                                ))}
+                                <div className="flex justify-end mt-4">
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        className="flex items-center gap-1 px-2 py-1 text-red-700"
+                                        onClick={() => remove(index)}>
+                                        <FaTrash /> Delete
+                                    </Button>
+                                </div>
+                            </AccordionContent>
+                        </AccordionItem>
+                    );
+                })}
+            </Accordion>
+
+            <Button
                 type="button"
-                className="px-3 py-1 text-sm border rounded bg-white hover:shadow"
+                variant="outline"
+                size="sm"
+                className="mt-2"
                 onClick={() => {
                     const newItem: any = {};
                     Object.entries(itemsSchema.properties || {}).forEach(([k]) => {
@@ -73,8 +84,8 @@ const ArrayOfObjects = ({
                     });
                     append(newItem);
                 }}>
-                Add {capitalize(title)}
-            </button>
+                + Add {capitalize(title)}
+            </Button>
         </div>
     );
 };
