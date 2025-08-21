@@ -4,7 +4,7 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { FaTrash } from "react-icons/fa";
 import ModuleEditor from "./ModuleEditor";
-import { useFormContext } from "react-hook-form";
+import { useFormContext, useWatch } from "react-hook-form";
 import { AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 
 interface ModuleListItemProps {
@@ -14,9 +14,11 @@ interface ModuleListItemProps {
 }
 
 const ModuleListItem = ({ index, path, onRemove }: ModuleListItemProps) => {
-    const { getValues } = useFormContext();
-    const mod = getValues(path.join("."));
-    console.log("moduleListitem", mod);
+    const { control } = useFormContext();
+    const mod = useWatch({
+        control,
+        name: path.join("."),
+    });
 
     return (
         <AccordionItem value={`${index}`} className="border rounded-lg bg-white shadow-sm">
