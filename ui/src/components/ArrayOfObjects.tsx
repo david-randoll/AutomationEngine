@@ -35,8 +35,7 @@ const ArrayOfObjects = ({
 
             <Accordion type="single" collapsible className="w-full">
                 {fields.map((field, index) => {
-                    const itemPath = [...pathInData, index];
-                    const item = values[index]; // ✅ Safe, no hook inside loop
+                    const item = values[index];
 
                     return (
                         <AccordionItem key={field.id} value={`${index}`} className="border rounded-lg shadow-sm">
