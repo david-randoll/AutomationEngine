@@ -8,6 +8,7 @@ import ArrayOfObjects from "./ArrayOfObjects";
 import { capitalize } from "@/lib/utils";
 import ModuleListItem from "./ModuleListItem";
 import { Accordion } from "./ui/accordion";
+import { Button } from "./ui/button";
 
 interface FieldRendererProps {
     fieldKey: string | number;
@@ -45,12 +46,15 @@ const FieldRenderer = ({ fieldKey, schema, rootSchema, pathInData, onAddBlock }:
             return (
                 <div key={name}>
                     <ModuleList title={capitalize(title)} path={pathInData} />
-                    <button
-                        className="inline-flex items-center px-3 py-1.5 border rounded text-sm bg-white hover:shadow mt-2"
+                    <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="mt-2"
                         onClick={() => onAddBlock(blockType, pathInData, true)}
-                        type="button">
-                        Add {capitalize(blockType)}
-                    </button>
+                        >
+                        + Add {capitalize(blockType)}
+                    </Button>
                 </div>
             );
         }
@@ -117,12 +121,14 @@ const FieldRenderer = ({ fieldKey, schema, rootSchema, pathInData, onAddBlock }:
                 {!val && (
                     <>
                         <div className="text-sm text-gray-500">No {title.toLowerCase()} yet.</div>
-                        <button
-                            className="inline-flex items-center px-3 py-1.5 border rounded text-sm bg-white hover:shadow mt-2"
-                            onClick={() => onAddBlock(blockType, pathInData, false)}
-                            type="button">
-                            Add {capitalize(blockType)}
-                        </button>
+                        <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            className="mt-2"
+                            onClick={() => onAddBlock(blockType, pathInData, false)}>
+                            + Add {capitalize(blockType)}
+                        </Button>
                     </>
                 )}
             </Accordion>

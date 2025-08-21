@@ -30,7 +30,7 @@ const ArrayOfObjects = ({
     const values = useWatch({ control, name }) || [];
 
     return (
-        <div className="space-y-3 border p-3 rounded bg-white shadow-sm">
+        <div className="space-y-3">
             <label className="block font-medium text-lg">{capitalize(title)}</label>
 
             <Accordion type="single" collapsible className="w-full">
