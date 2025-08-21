@@ -30,7 +30,6 @@ const ModuleList = ({ title, path }: ModuleListProps) => {
                 {fields.map((field, index) => (
                     <ModuleListItem
                         key={field.reactHookFormId}
-                        index={index}
                         path={[...path, index]}
                         onRemove={() => remove(index)}
                     />

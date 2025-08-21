@@ -6,6 +6,8 @@ import ModuleList from "@/components/ModuleList";
 import ArrayOfPrimitives from "./ArrayOfPrimitives";
 import ArrayOfObjects from "./ArrayOfObjects";
 import { capitalize } from "@/lib/utils";
+import ModuleListItem from "./ModuleListItem";
+import { Accordion } from "./ui/accordion";
 
 interface FieldRendererProps {
     fieldKey: string | number;
@@ -104,21 +106,26 @@ const FieldRenderer = ({ fieldKey, schema, rootSchema, pathInData, onAddBlock }:
     }
 
     if (type === "object" && resolvedSch["x-block-type"]) {
+        const { resetField } = useFormContext();
         const blockType = resolvedSch["x-block-type"] as Area;
         const val = getValues(name) ?? null;
 
         return (
-            <div key={name} className="border rounded p-3 mb-4">
-                <ModuleList title={capitalize(title)} path={pathInData} />
+            <Accordion type="single" collapsible className="space-y-2">
+                <div className="font-semibold text-lg">{capitalize(title)}</div>
+                {val && <ModuleListItem key={name} path={pathInData} onRemove={() => resetField(name)} />}
                 {!val && (
-                    <button
-                        className="inline-flex items-center px-3 py-1.5 border rounded text-sm bg-white hover:shadow mt-2"
-                        onClick={() => onAddBlock(blockType, pathInData, false)}
-                        type="button">
-                        Add {capitalize(blockType)}
-                    </button>
+                    <>
+                        <div className="text-sm text-gray-500">No {title.toLowerCase()} yet.</div>
+                        <button
+                            className="inline-flex items-center px-3 py-1.5 border rounded text-sm bg-white hover:shadow mt-2"
+                            onClick={() => onAddBlock(blockType, pathInData, false)}
+                            type="button">
+                            Add {capitalize(blockType)}
+                        </button>
+                    </>
                 )}
-            </div>
+            </Accordion>
         );
     }
 

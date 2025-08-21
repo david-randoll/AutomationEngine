@@ -8,12 +8,11 @@ import { useFormContext, useWatch } from "react-hook-form";
 import { AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 
 interface ModuleListItemProps {
-    index: number;
     path: (string | number)[];
     onRemove: () => void;
 }
 
-const ModuleListItem = ({ index, path, onRemove }: ModuleListItemProps) => {
+const ModuleListItem = ({ path, onRemove }: ModuleListItemProps) => {
     const { control } = useFormContext();
     const mod = useWatch({
         control,
@@ -21,7 +20,7 @@ const ModuleListItem = ({ index, path, onRemove }: ModuleListItemProps) => {
     });
 
     return (
-        <AccordionItem value={`${index}`} className="border rounded-lg bg-white shadow-sm">
+        <AccordionItem value={`${path}`} className="border rounded-lg bg-white shadow-sm">
             <AccordionTrigger className="flex items-center justify-between px-4 py-4 font-medium text-left hover:text-blue-600 transition-colors">
                 <span>{mod?.alias || mod?.label || mod?.name || "Unnamed"}</span>
             </AccordionTrigger>
