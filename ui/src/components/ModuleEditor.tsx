@@ -28,8 +28,9 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
     function onModalSelect(modFromServer: ModuleType) {
         if (!modalFieldPath || !modalType) return;
 
+        const { description, ...mod } = modFromServer;
         const instance: ModuleType = {
-            ...modFromServer,
+            ...mod,
             id: modFromServer.id || `m_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
         };
 
@@ -58,14 +59,6 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
 
     return (
         <div className="space-y-3">
-            <div className="flex items-center justify-between">
-                <div>
-                    <div className="text-lg font-semibold">{module.label || module.name}</div>
-                    {module.description && <div className="text-sm text-gray-500">{module.description}</div>}
-                </div>
-                <div className="text-sm text-gray-400">{module.name}</div>
-            </div>
-
             <div className="grid grid-cols-1 gap-3">
                 {Object.entries(props).map(([key, sch]) => (
                     <FieldRenderer
