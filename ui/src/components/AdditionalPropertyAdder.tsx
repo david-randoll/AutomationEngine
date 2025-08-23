@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useFormContext } from "react-hook-form";
 
-// Accepts current path and the schema object so it can update the properties object in form
 interface AdditionalPropertyAdderProps {
     path: (string | number)[];
 }
@@ -10,7 +9,7 @@ const AdditionalPropertyAdder = ({ path }: AdditionalPropertyAdderProps) => {
     const { getValues, setValue } = useFormContext();
 
     const [keyName, setKeyName] = useState("");
-    const [typeName, setTypeName] = useState("string"); // You can expand this to choose type
+    const [typeName, setTypeName] = useState("string");
     const [error, setError] = useState("");
 
     const onAddProperty = () => {
@@ -19,22 +18,18 @@ const AdditionalPropertyAdder = ({ path }: AdditionalPropertyAdderProps) => {
             return;
         }
 
-        // Get current properties object from form
         const currentProperties = getValues([...path, "schema", "properties"].join(".")) || {};
 
-        // If key already exists, error
         if (keyName in currentProperties) {
             setError("Key already exists");
             return;
         }
 
-        // We add a simple schema for property, e.g., { type: "string" }
         const updatedProperties = {
             ...currentProperties,
             [keyName]: { type: typeName },
         };
 
-        // Update form value with new properties object
         setValue([...path, "schema", "properties"].join("."), updatedProperties, {
             shouldValidate: true,
             shouldDirty: true,
