@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import AddBlockModal from "@/components/AddBlockModal";
 import { useFormContext } from "react-hook-form";
 import FieldRenderer from "./FieldRenderer";
+import AdditionalPropertyAdder from "./AdditionalPropertyAdder";
 
 interface ModuleEditorProps {
     module: ModuleType;
@@ -71,6 +72,8 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
                     />
                 ))}
             </div>
+
+            {module.schema?.additionalProperties && <AdditionalPropertyAdder path={path} />}
 
             <AddBlockModal
                 open={modalOpen}
