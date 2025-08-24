@@ -51,8 +51,7 @@ const FieldRenderer = ({ fieldKey, schema, rootSchema, pathInData, onAddBlock }:
                         variant="outline"
                         size="sm"
                         className="mt-2"
-                        onClick={() => onAddBlock(blockType, pathInData, true)}
-                        >
+                        onClick={() => onAddBlock(blockType, pathInData, true)}>
                         + Add {capitalize(blockType)}
                     </Button>
                 </div>
@@ -78,7 +77,6 @@ const FieldRenderer = ({ fieldKey, schema, rootSchema, pathInData, onAddBlock }:
                     title={title}
                     itemsSchema={itemsSchema}
                     pathInData={pathInData}
-                    onAddBlock={onAddBlock}
                     rootSchema={rootSchema}
                 />
             );

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { FaTrash } from "react-icons/fa";
 import { capitalize } from "@/lib/utils";
 import FieldRenderer from "./FieldRenderer";
+import ModuleEditor from "./ModuleEditor";
 
 const ArrayOfObjects = ({
     name,
@@ -14,20 +15,30 @@ const ArrayOfObjects = ({
     itemsSchema,
     pathInData,
     rootSchema,
-    onAddBlock,
 }: {
     name: string;
     title: string;
     itemsSchema: any;
     pathInData: (string | number)[];
     rootSchema: any;
-    onAddBlock: (blockType: Area, pathInData: (string | number)[], targetIsArray: boolean) => void;
 }) => {
     const { control } = useFormContext();
     const { fields, append, remove } = useFieldArray({ control, name });
 
     // ✅ Watch the entire array once
     const values = useWatch({ control, name }) || [];
+
+    console.log("itemsSchema", itemsSchema);
+    console.log("rootSchema", rootSchema);
+
+    const module = {
+        schema: {
+            ...rootSchema,
+            ...itemsSchema, // override the root schema with item schema
+        },
+    } as ModuleType;
+
+    console.log("module", module);
 
     return (
         <div className="space-y-3">
@@ -46,16 +57,7 @@ const ArrayOfObjects = ({
                             </AccordionTrigger>
 
                             <AccordionContent className="px-4 pb-4 mt-2 space-y-3">
-                                {Object.entries(itemsSchema.properties || {}).map(([childKey, childSchema]) => (
-                                    <FieldRenderer
-                                        key={`${name}-${index}-${childKey}`}
-                                        fieldKey={childKey}
-                                        schema={childSchema}
-                                        rootSchema={rootSchema}
-                                        pathInData={[...pathInData, index, childKey]}
-                                        onAddBlock={onAddBlock}
-                                    />
-                                ))}
+                                <ModuleEditor module={module} path={[...pathInData, index]} />
                                 <div className="flex justify-end mt-4">
                                     <Button
                                         variant="outline"
