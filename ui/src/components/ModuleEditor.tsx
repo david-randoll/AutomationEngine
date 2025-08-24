@@ -44,7 +44,11 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
     function switchToUIMode() {
         try {
             const parsed = editMode === "json" ? JSON.parse(rawText) : yaml.load(rawText);
-            setValue(path.join("."), parsed, { shouldValidate: true, shouldDirty: true, shouldTouch: true });
+            setValue(path.join("."), parsed, {
+                shouldValidate: true,
+                shouldDirty: true,
+                shouldTouch: true,
+            });
             setEditMode("ui");
         } catch (err) {
             alert("Invalid JSON/YAML, cannot switch to UI mode.");

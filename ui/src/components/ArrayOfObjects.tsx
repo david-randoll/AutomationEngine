@@ -6,7 +6,6 @@ import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/
 import { Button } from "@/components/ui/button";
 import { FaTrash } from "react-icons/fa";
 import { capitalize } from "@/lib/utils";
-import FieldRenderer from "./FieldRenderer";
 import ModuleEditor from "./ModuleEditor";
 
 const ArrayOfObjects = ({
@@ -24,12 +23,7 @@ const ArrayOfObjects = ({
 }) => {
     const { control } = useFormContext();
     const { fields, append, remove } = useFieldArray({ control, name });
-
-    // ✅ Watch the entire array once
     const values = useWatch({ control, name }) || [];
-
-    console.log("itemsSchema", itemsSchema);
-    console.log("rootSchema", rootSchema);
 
     const module = {
         schema: {
@@ -37,8 +31,6 @@ const ArrayOfObjects = ({
             ...itemsSchema, // override the root schema with item schema
         },
     } as ModuleType;
-
-    console.log("module", module);
 
     return (
         <div className="space-y-3">

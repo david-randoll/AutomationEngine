@@ -6,7 +6,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { exportJson, exportYaml } from "@/utils/automation";
 
 const PreviewPanel = () => {
-    const formData = useWatch();
+    const formData = useWatch({
+        name: "root",
+    });
 
     const [jsonData, setJsonData] = useState("");
     const [yamlData, setYamlData] = useState("");

@@ -17,7 +17,7 @@ const AutomationBuilderPage = ({ automationSchema }: AutomationBuilderPageProps)
 
     const handleCopyJson = async () => {
         try {
-            await navigator.clipboard.writeText(exportJson(getValues()));
+            await navigator.clipboard.writeText(exportJson(getValues("root")));
             toast.success("JSON copied to clipboard!");
         } catch (error) {
             console.error("Failed to copy JSON:", error);
@@ -27,7 +27,7 @@ const AutomationBuilderPage = ({ automationSchema }: AutomationBuilderPageProps)
 
     const handleCopyYaml = async () => {
         try {
-            await navigator.clipboard.writeText(exportYaml(getValues()));
+            await navigator.clipboard.writeText(exportYaml(getValues("root")));
             toast.success("YAML copied to clipboard!");
         } catch (error) {
             console.error("Failed to copy YAML:", error);
