@@ -8,6 +8,7 @@ import AdditionalPropertyAdder from "./AdditionalPropertyAdder";
 
 import MonacoEditor from "@monaco-editor/react"; // make sure to install this package
 import yaml from "js-yaml";
+import { Button } from "./ui/button";
 
 interface ModuleEditorProps {
     module: ModuleType;
@@ -67,34 +68,41 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
     }
 
     function renderModeButtons() {
+        if (editMode === "ui") {
+            return (
+                <div className="mb-4 flex space-x-3">
+                    <Button variant="outline" size="sm" onClick={() => setEditMode("json")}>
+                        Edit JSON
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={() => setEditMode("yaml")}>
+                        Edit YAML
+                    </Button>
+                </div>
+            );
+        }
+
+        if (editMode === "json") {
+            return (
+                <div className="mb-4 flex space-x-3">
+                    <Button onClick={switchToUIMode} variant="outline" size="sm">
+                        Edit UI
+                    </Button>
+                    <Button onClick={() => setEditMode("yaml")} variant="outline" size="sm">
+                        Edit YAML
+                    </Button>
+                </div>
+            );
+        }
+
+        // editMode === "yaml"
         return (
-            <div className="mb-3 flex space-x-2">
-                <button
-                    onClick={() => setEditMode("json")}
-                    className={`btn ${editMode === "json" ? "btn-primary" : "btn-outline"}`}>
+            <div className="mb-4 flex space-x-3">
+                <Button onClick={switchToUIMode}  variant="outline" size="sm" >
+                    Edit UI
+                </Button>
+                <Button onClick={() => setEditMode("json")}  variant="outline" size="sm" >
                     Edit JSON
-                </button>
-                <button
-                    onClick={() => setEditMode("yaml")}
-                    className={`btn ${editMode === "yaml" ? "btn-primary" : "btn-outline"}`}>
-                    Edit YAML
-                </button>
-                {(editMode === "json" || editMode === "yaml") && (
-                    <button onClick={switchToUIMode} className="btn btn-secondary">
-                        Edit in UI
-                    </button>
-                )}
-                {editMode === "ui" && (
-                    <button
-                        onClick={() => {
-                            const val = getValues(path.join("."));
-                            setRawText(JSON.stringify(val, null, 2));
-                            setEditMode("json");
-                        }}
-                        className="btn btn-secondary">
-                        Edit as JSON/YAML
-                    </button>
-                )}
+                </Button>
             </div>
         );
     }
