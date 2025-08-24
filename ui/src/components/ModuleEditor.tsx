@@ -6,7 +6,7 @@ import { useFormContext } from "react-hook-form";
 import FieldRenderer from "./FieldRenderer";
 import AdditionalPropertyAdder from "./AdditionalPropertyAdder";
 
-import MonacoEditor from "@monaco-editor/react"; // make sure to install this package
+import MonacoEditor from "@monaco-editor/react";
 import yaml from "js-yaml";
 import { Button } from "./ui/button";
 
@@ -14,8 +14,6 @@ interface ModuleEditorProps {
     module: ModuleType;
     path: (string | number)[];
 }
-
-type EditMode = "json" | "yaml" | "ui";
 
 const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
     const { setValue, getValues } = useFormContext();
@@ -51,7 +49,7 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
             });
             setEditMode("ui");
         } catch (err) {
-            alert("Invalid JSON/YAML, cannot switch to UI mode.");
+            console.error("Failed to switch to UI mode:", err);
         }
     }
 

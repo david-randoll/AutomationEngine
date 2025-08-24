@@ -11,3 +11,4 @@ type ModuleType = {
     description?: string;
     schema?: JsonSchema;
 };
+type EditMode = "json" | "yaml" | "ui";
