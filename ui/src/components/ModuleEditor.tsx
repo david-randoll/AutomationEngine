@@ -69,98 +69,6 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
         }
     }
 
-    function renderModeButtons() {
-        if (editMode === "ui") {
-            return (
-                <div className="mb-4 flex space-x-3">
-                    <Button variant="outline" size="sm" onClick={() => setEditMode("json")}>
-                        Edit JSON
-                    </Button>
-                    <Button variant="outline" size="sm" onClick={() => setEditMode("yaml")}>
-                        Edit YAML
-                    </Button>
-                </div>
-            );
-        }
-
-        if (editMode === "json") {
-            return (
-                <div className="mb-4 flex space-x-3">
-                    <Button onClick={switchToUIMode} variant="outline" size="sm">
-                        Edit UI
-                    </Button>
-                    <Button onClick={() => setEditMode("yaml")} variant="outline" size="sm">
-                        Edit YAML
-                    </Button>
-                </div>
-            );
-        }
-
-        // editMode === "yaml"
-        return (
-            <div className="mb-4 flex space-x-3">
-                <Button onClick={switchToUIMode} variant="outline" size="sm">
-                    Edit UI
-                </Button>
-                <Button onClick={() => setEditMode("json")} variant="outline" size="sm">
-                    Edit JSON
-                </Button>
-            </div>
-        );
-    }
-
-    function renderEditor() {
-        if (editMode === "json" || editMode === "yaml") {
-            return (
-                <MonacoEditor
-                    key={editMode}
-                    height="400px"
-                    defaultLanguage={editMode}
-                    value={rawText}
-                    onChange={onEditorChange}
-                    options={{
-                        minimap: { enabled: false },
-                        tabSize: 2,
-                        formatOnType: true,
-                        formatOnPaste: true,
-                    }}
-                />
-            );
-        }
-
-        const props = module.schema?.properties || {};
-        return (
-            <div className="space-y-3">
-                <div className="grid grid-cols-1 gap-3">
-                    {Object.entries(props).map(([key, sch]) => (
-                        <FieldRenderer
-                            key={key}
-                            fieldKey={key}
-                            schema={sch}
-                            rootSchema={module.schema}
-                            pathInData={[...path, key]}
-                            onAddBlock={onAddBlock}
-                        />
-                    ))}
-                </div>
-                {module.schema?.additionalProperties && <AdditionalPropertyAdder path={path} />}
-                <AddBlockModal
-                    open={modalOpen}
-                    onOpenChange={(open: boolean) => {
-                        if (!open) {
-                            setModalOpen(false);
-                            setModalFieldPath(null);
-                            setModalType(null);
-                            setModalTargetIsArray(false);
-                        }
-                    }}
-                    type={modalType || "action"}
-                    onSelect={onModalSelect}
-                />
-            </div>
-        );
-    }
-
     function onAddBlock(blockType: Area, pathInData: (string | number)[], targetIsArray: boolean) {
         setModalFieldPath(pathInData);
         setModalTargetIsArray(targetIsArray);
@@ -198,10 +106,73 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
         setModalTargetIsArray(false);
     }
 
+    const props = module.schema?.properties || {};
     return (
         <div>
-            {renderModeButtons()}
-            {renderEditor()}
+            <div className="mb-4 flex space-x-3">
+                {editMode !== "ui" && (
+                    <Button onClick={switchToUIMode} variant="outline" size="sm">
+                        Edit UI
+                    </Button>
+                )}
+                {editMode !== "json" && (
+                    <Button onClick={() => setEditMode("json")} variant="outline" size="sm">
+                        Edit JSON
+                    </Button>
+                )}
+                {editMode !== "yaml" && (
+                    <Button onClick={() => setEditMode("yaml")} variant="outline" size="sm">
+                        Edit YAML
+                    </Button>
+                )}
+            </div>
+
+            {(editMode === "json" || editMode === "yaml") && (
+                <MonacoEditor
+                    key={editMode}
+                    height="400px"
+                    defaultLanguage={editMode}
+                    value={rawText}
+                    onChange={onEditorChange}
+                    options={{
+                        minimap: { enabled: false },
+                        tabSize: 2,
+                        formatOnType: true,
+                        formatOnPaste: true,
+                    }}
+                />
+            )}
+
+            {editMode === "ui" && (
+                <div className="space-y-3">
+                    <div className="grid grid-cols-1 gap-3">
+                        {Object.entries(props).map(([key, sch]) => (
+                            <FieldRenderer
+                                key={key}
+                                fieldKey={key}
+                                schema={sch}
+                                rootSchema={module.schema}
+                                pathInData={[...path, key]}
+                                onAddBlock={onAddBlock}
+                            />
+                        ))}
+                    </div>
+                    {module.schema?.additionalProperties && <AdditionalPropertyAdder path={path} />}
+                    <AddBlockModal
+                        open={modalOpen}
+                        onOpenChange={(open: boolean) => {
+                            if (!open) {
+                                setModalOpen(false);
+                                setModalFieldPath(null);
+                                setModalType(null);
+                                setModalTargetIsArray(false);
+                            }
+                        }}
+                        type={modalType || "action"}
+                        onSelect={onModalSelect}
+                    />
+                </div>
+            )}
         </div>
     );
 };
