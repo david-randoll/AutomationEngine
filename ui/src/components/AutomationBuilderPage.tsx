@@ -14,10 +14,11 @@ interface AutomationBuilderPageProps {
 
 const AutomationBuilderPage = ({ automationSchema }: AutomationBuilderPageProps) => {
     const { getValues } = useFormContext();
+    const rootPath = ["root"];
 
     const handleCopyJson = async () => {
         try {
-            await navigator.clipboard.writeText(exportJson(getValues("root")));
+            await navigator.clipboard.writeText(exportJson(getValues(rootPath.join("."))));
             toast.success("JSON copied to clipboard!");
         } catch (error) {
             console.error("Failed to copy JSON:", error);
@@ -27,7 +28,7 @@ const AutomationBuilderPage = ({ automationSchema }: AutomationBuilderPageProps)
 
     const handleCopyYaml = async () => {
         try {
-            await navigator.clipboard.writeText(exportYaml(getValues("root")));
+            await navigator.clipboard.writeText(exportYaml(getValues(rootPath.join("."))));
             toast.success("YAML copied to clipboard!");
         } catch (error) {
             console.error("Failed to copy YAML:", error);
@@ -55,11 +56,11 @@ const AutomationBuilderPage = ({ automationSchema }: AutomationBuilderPageProps)
 
                 <main className="grid grid-cols-3 gap-6">
                     <section className="col-span-2 space-y-4">
-                        <ModuleEditor module={automationSchema} path={["root"]} />
+                        <ModuleEditor module={automationSchema} path={rootPath} />
                     </section>
 
                     <aside className="col-span-1 space-y-4">
-                        <PreviewPanel />
+                        <PreviewPanel path={rootPath} />
                     </aside>
                 </main>
             </div>

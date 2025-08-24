@@ -5,9 +5,13 @@ import { useWatch } from "react-hook-form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { exportJson, exportYaml } from "@/utils/automation";
 
-const PreviewPanel = () => {
+interface PreviewPanelProps {
+    path: (string | number)[];
+}
+
+const PreviewPanel = ({ path }: PreviewPanelProps) => {
     const formData = useWatch({
-        name: "root",
+        name: path.join("."),
     });
 
     const [jsonData, setJsonData] = useState("");
