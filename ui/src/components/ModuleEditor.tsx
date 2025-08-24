@@ -97,10 +97,10 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
         // editMode === "yaml"
         return (
             <div className="mb-4 flex space-x-3">
-                <Button onClick={switchToUIMode}  variant="outline" size="sm" >
+                <Button onClick={switchToUIMode} variant="outline" size="sm">
                     Edit UI
                 </Button>
-                <Button onClick={() => setEditMode("json")}  variant="outline" size="sm" >
+                <Button onClick={() => setEditMode("json")} variant="outline" size="sm">
                     Edit JSON
                 </Button>
             </div>
@@ -111,6 +111,7 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
         if (editMode === "json" || editMode === "yaml") {
             return (
                 <MonacoEditor
+                    key={editMode}
                     height="400px"
                     defaultLanguage={editMode}
                     value={rawText}

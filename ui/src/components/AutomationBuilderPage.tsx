@@ -55,7 +55,7 @@ const AutomationBuilderPage = ({ automationSchema }: AutomationBuilderPageProps)
 
                 <main className="grid grid-cols-3 gap-6">
                     <section className="col-span-2 space-y-4">
-                        <ModuleEditor module={automationSchema} path={[]} />
+                        <ModuleEditor module={automationSchema} path={["root"]} />
                     </section>
 
                     <aside className="col-span-1 space-y-4">
