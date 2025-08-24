@@ -4,6 +4,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { agent } from "@/lib/agent";
 
 interface AddBlockModalProps {
     open: boolean;
@@ -21,11 +22,8 @@ const AddBlockModal = ({ open, onOpenChange, type, onSelect }: AddBlockModalProp
         if (!open) return;
 
         setLoading(true);
-        fetch(`http://localhost:8085/automation-engine/block/${type}?includeSchema=true`)
-            .then((res) => {
-                if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                return res.json();
-            })
+        agent
+            .get<{ types: ModuleType[] }>(`/automation-engine/block/${type}?includeSchema=true`)
             .then((json) => (Array.isArray(json) ? json : json?.types || []))
             .then(setItems)
             .catch((e) => {

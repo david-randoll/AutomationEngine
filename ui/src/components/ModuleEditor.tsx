@@ -28,6 +28,8 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
         return JSON.stringify(getValues(path.join(".")), null, 2);
     });
 
+    const schema = module.schema;
+
     useEffect(() => {
         if (editMode !== "ui") {
             const val = getValues(path.join("."));
@@ -106,7 +108,6 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
         setModalTargetIsArray(false);
     }
 
-    const props = module.schema?.properties || {};
     return (
         <div>
             <div className="mb-4 flex space-x-3">
@@ -146,18 +147,18 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
             {editMode === "ui" && (
                 <div className="space-y-3">
                     <div className="grid grid-cols-1 gap-3">
-                        {Object.entries(props).map(([key, sch]) => (
+                        {Object.entries(schema?.properties || {}).map(([key, sch]) => (
                             <FieldRenderer
                                 key={key}
                                 fieldKey={key}
                                 schema={sch}
-                                rootSchema={module.schema}
+                                rootSchema={schema}
                                 pathInData={[...path, key]}
                                 onAddBlock={onAddBlock}
                             />
                         ))}
                     </div>
-                    {module.schema?.additionalProperties && <AdditionalPropertyAdder path={path} />}
+                    {schema?.additionalProperties && <AdditionalPropertyAdder path={path} />}
                     <AddBlockModal
                         open={modalOpen}
                         onOpenChange={(open: boolean) => {
