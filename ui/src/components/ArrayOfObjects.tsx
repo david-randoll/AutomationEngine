@@ -18,7 +18,7 @@ const ArrayOfObjects = ({
     name: string;
     title: string;
     itemsSchema: any;
-    pathInData: (string | number)[];
+    pathInData: Path;
     rootSchema: any;
 }) => {
     const { control } = useFormContext();

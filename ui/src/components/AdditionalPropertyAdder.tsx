@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useFormContext } from "react-hook-form";
 
 interface AdditionalPropertyAdderProps {
-    path: (string | number)[];
+    path: Path;
 }
 
 const AdditionalPropertyAdder = ({ path }: AdditionalPropertyAdderProps) => {

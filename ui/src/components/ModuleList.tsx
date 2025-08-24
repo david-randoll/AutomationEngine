@@ -7,7 +7,7 @@ import { Accordion } from "@/components/ui/accordion";
 
 interface ModuleListProps {
     title: string;
-    path: (string | number)[];
+    path: Path;
 }
 
 const ModuleList = ({ title, path }: ModuleListProps) => {

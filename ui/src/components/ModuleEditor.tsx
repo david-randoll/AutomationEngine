@@ -12,14 +12,14 @@ import { Button } from "./ui/button";
 
 interface ModuleEditorProps {
     module: ModuleType;
-    path: (string | number)[];
+    path: Path;
 }
 
 const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
     const { setValue, getValues } = useFormContext();
     const [modalOpen, setModalOpen] = useState(false);
     const [modalType, setModalType] = useState<Area | null>(null);
-    const [modalFieldPath, setModalFieldPath] = useState<(string | number)[] | null>(null);
+    const [modalFieldPath, setModalFieldPath] = useState<Path | null>(null);
     const [modalTargetIsArray, setModalTargetIsArray] = useState(false);
 
     const [editMode, setEditMode] = useState<EditMode>("ui");

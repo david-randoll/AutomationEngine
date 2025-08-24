@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { exportJson, exportYaml } from "@/utils/automation";
 
 interface PreviewPanelProps {
-    path: (string | number)[];
+    path: Path;
 }
 
 const PreviewPanel = ({ path }: PreviewPanelProps) => {

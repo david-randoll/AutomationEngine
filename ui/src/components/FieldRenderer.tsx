@@ -14,8 +14,8 @@ interface FieldRendererProps {
     fieldKey: string | number;
     schema: any;
     rootSchema: any;
-    pathInData: (string | number)[];
-    onAddBlock: (blockType: Area, pathInData: (string | number)[], targetIsArray: boolean) => void;
+    pathInData: Path;
+    onAddBlock: (blockType: Area, pathInData: Path, targetIsArray: boolean) => void;
 }
 
 const FieldRenderer = ({ fieldKey, schema, rootSchema, pathInData, onAddBlock }: FieldRendererProps) => {

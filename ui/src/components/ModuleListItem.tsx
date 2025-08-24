@@ -8,7 +8,7 @@ import { useFormContext, useWatch } from "react-hook-form";
 import { AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 
 interface ModuleListItemProps {
-    path: (string | number)[];
+    path: Path;
     onRemove: () => void;
 }
 

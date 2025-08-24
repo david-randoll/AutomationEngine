@@ -12,3 +12,5 @@ type ModuleType = {
     schema?: JsonSchema;
 };
 type EditMode = "json" | "yaml" | "ui";
+
+type Path = (string | number)[];

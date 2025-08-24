@@ -14,7 +14,7 @@ interface AutomationBuilderPageProps {
 
 const AutomationBuilderPage = ({ automationSchema }: AutomationBuilderPageProps) => {
     const { getValues } = useFormContext();
-    const rootPath = ["root"];
+    const rootPath: Path = ["root"];
 
     const handleCopyJson = async () => {
         try {
