@@ -21,6 +21,9 @@ public class AutomationEngineController {
 
     @GetMapping("block/{name}/schema")
     public BlockType getSchemaByBeanName(@PathVariable String name) {
+        if (AESchemaService.AUTOMATION_DEFINITION.equals(name)) {
+            return service.getAutomationDefinition();
+        }
         return service.getSchemaByBlockName(name);
     }
 

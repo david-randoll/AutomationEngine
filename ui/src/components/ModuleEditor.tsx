@@ -9,6 +9,8 @@ import AdditionalPropertyAdder from "./AdditionalPropertyAdder";
 import MonacoEditor from "@monaco-editor/react";
 import yaml from "js-yaml";
 import { Button } from "./ui/button";
+import { agent } from "@/lib/agent";
+import { areaToName, nameToArea } from "@/lib/utils";
 
 interface ModuleEditorProps {
     module: ModuleType;
@@ -28,7 +30,25 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
         return JSON.stringify(getValues(path.join(".")), null, 2);
     });
 
-    const schema = module.schema;
+    const [schema, setSchema] = useState<JsonSchema>();
+
+    useEffect(() => {
+        const moduleName = module.name ?? areaToName(module);
+        console.log("ModuleEditor: fetching schema for", moduleName);
+        if (moduleName) {
+            agent
+                .get<ModuleType>(`/automation-engine/block/${moduleName}/schema`)
+                .then((x) => {
+                    setSchema(x.schema);
+                })
+                .catch((e) => {
+                    console.log("No schema with name:", moduleName);
+                    setEditMode("json");
+                });
+        } else {
+            setSchema(module.schema);
+        }
+    }, []);
 
     useEffect(() => {
         if (editMode !== "ui") {
@@ -81,10 +101,9 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
     function onModalSelect(modFromServer: ModuleType) {
         if (!modalFieldPath || !modalType) return;
 
-        const { description, ...mod } = modFromServer;
+        const { name } = modFromServer;
         const instance: ModuleType = {
-            ...mod,
-            id: modFromServer.id || `m_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
+            ...nameToArea(name),
         };
 
         if (modalTargetIsArray) {

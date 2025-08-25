@@ -23,13 +23,14 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 public class AESchemaService {
+    public static final String AUTOMATION_DEFINITION = "AutomationDefinition";
     private final JsonSchemaService jsonSchemaService;
     private final ApplicationContext application;
 
     public BlockType getAutomationDefinition() {
         var schema = jsonSchemaService.generateSchema(AutomationDefinition.class);
         return new BlockType(
-                "AutomationDefinition",
+                AUTOMATION_DEFINITION,
                 "Automation Definition",
                 "The parent block for all automations",
                 schema
@@ -43,6 +44,11 @@ public class AESchemaService {
     }
 
     public BlockType getSchemaByBlockName(String name) {
+        //check if bean exists
+        if (!application.containsBean(name)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No module found with name: " + name);
+        }
+
         Object bean = application.getBean(name);
         if (!(bean instanceof IBlock module)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "%s is not a valid module".formatted(name));
