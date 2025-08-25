@@ -2,12 +2,11 @@ import React, { useState } from "react";
 import { useFormContext } from "react-hook-form";
 
 interface AdditionalPropertyAdderProps {
-    path: Path;
+    properties: Record<string, any>;
+    setProperties: React.Dispatch<React.SetStateAction<Record<string, any>>>;
 }
 
-const AdditionalPropertyAdder = ({ path }: AdditionalPropertyAdderProps) => {
-    const { getValues, setValue } = useFormContext();
-
+const AdditionalPropertyAdder = ({ properties, setProperties }: AdditionalPropertyAdderProps) => {
     const [keyName, setKeyName] = useState("");
     const [typeName, setTypeName] = useState("string");
     const [error, setError] = useState("");
@@ -18,23 +17,17 @@ const AdditionalPropertyAdder = ({ path }: AdditionalPropertyAdderProps) => {
             return;
         }
 
-        const currentProperties = getValues([...path, "schema", "properties"].join(".")) || {};
-
-        if (keyName in currentProperties) {
+        if (keyName in properties) {
             setError("Key already exists");
             return;
         }
 
         const updatedProperties = {
-            ...currentProperties,
+            ...properties,
             [keyName]: { type: typeName },
         };
 
-        setValue([...path, "schema", "properties"].join("."), updatedProperties, {
-            shouldValidate: true,
-            shouldDirty: true,
-            shouldTouch: true,
-        });
+        setProperties(updatedProperties);
 
         setKeyName("");
         setError("");

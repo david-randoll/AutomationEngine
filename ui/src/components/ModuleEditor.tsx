@@ -32,6 +32,8 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
 
     const [schema, setSchema] = useState<JsonSchema>();
 
+    const [customProperties, setCustomProperties] = useState<Record<string, any>>({});
+
     useEffect(() => {
         const moduleName = module.name ?? areaToName(module);
         console.log("ModuleEditor: fetching schema for", moduleName);
@@ -176,8 +178,20 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
                                 onAddBlock={onAddBlock}
                             />
                         ))}
+                        {Object.entries(customProperties || {}).map(([key, sch]) => (
+                            <FieldRenderer
+                                key={key}
+                                fieldKey={key}
+                                schema={sch}
+                                rootSchema={schema}
+                                pathInData={[...path, key]}
+                                onAddBlock={onAddBlock}
+                            />
+                        ))}
                     </div>
-                    {schema?.additionalProperties && <AdditionalPropertyAdder path={path} />}
+                    {schema?.additionalProperties && (
+                        <AdditionalPropertyAdder properties={customProperties} setProperties={setCustomProperties} />
+                    )}
                     <AddBlockModal
                         open={modalOpen}
                         onOpenChange={(open: boolean) => {
