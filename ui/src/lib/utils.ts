@@ -10,13 +10,14 @@ export function capitalize(s: string) {
     return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
+const areas: Area[] = ["variable", "trigger", "condition", "action", "result"];
+
 /**
  * Convert a PascalCase/camelCase name with area suffix into an object.
  * Example: "basicVariable" → { variable: "basic" }
  */
 export function nameToArea(name?: string): Record<Area, string> | null {
     if (!name) return null;
-    const areas: Area[] = ["variable", "trigger", "condition", "action", "result"];
 
     for (const area of areas) {
         if (name.toLowerCase().endsWith(area)) {
@@ -37,8 +38,6 @@ export function nameToArea(name?: string): Record<Area, string> | null {
  * Example: { variable: "basic" } → "basicVariable"
  */
 export function areaToName(obj: Partial<Record<string, unknown>>): string | null {
-    const areas: Area[] = ["variable", "trigger", "condition", "action", "result"];
-
     for (const area of areas) {
         const value = obj[area];
         if (typeof value === "string" && value.length > 0) {
@@ -47,4 +46,39 @@ export function areaToName(obj: Partial<Record<string, unknown>>): string | null
         }
     }
     return null;
+}
+
+/**
+ * Convert a module to JSON schema properties object
+ * Example: { hello: somevalue } → { "hello": { "type": "string" } }
+ * Can exclude properties based on a JSON Schema properties object
+ */
+export function moduleToJsonSchema(module: ModuleType, exclude: Record<string, any> = {}) {
+    const properties: Record<string, { type: string }> = {};
+
+    const { name, label, description, schema, ...moduleWithoutMeta } = module;
+
+    for (const [key, value] of Object.entries(moduleWithoutMeta)) {
+        if (key in exclude) {
+            continue; // skip properties that exist in the exclude schema
+        }
+
+        // Skip properties that match an area
+        if (areas.includes(key as Area)) continue;
+
+        let type: string;
+        if (typeof value === "string") {
+            type = "string";
+        } else if (typeof value === "number") {
+            type = "number";
+        } else if (typeof value === "boolean") {
+            type = "boolean";
+        } else {
+            type = "object";
+        }
+
+        properties[key] = { type };
+    }
+
+    return properties;
 }

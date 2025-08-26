@@ -10,7 +10,7 @@ import MonacoEditor from "@monaco-editor/react";
 import yaml from "js-yaml";
 import { Button } from "./ui/button";
 import { agent } from "@/lib/agent";
-import { areaToName, nameToArea } from "@/lib/utils";
+import { areaToName, moduleToJsonSchema, nameToArea } from "@/lib/utils";
 
 interface ModuleEditorProps {
     module: ModuleType;
@@ -32,7 +32,15 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
 
     const [schema, setSchema] = useState<JsonSchema>();
 
-    const [customProperties, setCustomProperties] = useState<Record<string, any>>({});
+    const [properties, setProperties] = useState<Record<string, any>>({});
+
+    useEffect(() => {
+        const prop = moduleToJsonSchema(module, schema?.properties);
+        setProperties({
+            ...schema?.properties,
+            ...prop,
+        });
+    }, [module, schema]);
 
     useEffect(() => {
         const moduleName = module.name ?? areaToName(module);
@@ -168,17 +176,7 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
             {editMode === "ui" && (
                 <div className="space-y-3">
                     <div className="grid grid-cols-1 gap-3">
-                        {Object.entries(schema?.properties || {}).map(([key, sch]) => (
-                            <FieldRenderer
-                                key={key}
-                                fieldKey={key}
-                                schema={sch}
-                                rootSchema={schema}
-                                pathInData={[...path, key]}
-                                onAddBlock={onAddBlock}
-                            />
-                        ))}
-                        {Object.entries(customProperties || {}).map(([key, sch]) => (
+                        {Object.entries(properties || {}).map(([key, sch]) => (
                             <FieldRenderer
                                 key={key}
                                 fieldKey={key}
@@ -190,7 +188,7 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
                         ))}
                     </div>
                     {schema?.additionalProperties && (
-                        <AdditionalPropertyAdder properties={customProperties} setProperties={setCustomProperties} />
+                        <AdditionalPropertyAdder properties={properties} setProperties={setProperties} />
                     )}
                     <AddBlockModal
                         open={modalOpen}

@@ -4,7 +4,6 @@ type JsonSchema = any;
 type Area = "variable" | "trigger" | "condition" | "action" | "result";
 
 type ModuleType = {
-    id?: string;
     name?: string;
     label?: string;
     description?: string;
