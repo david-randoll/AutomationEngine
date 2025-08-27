@@ -35,12 +35,11 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
     const [properties, setProperties] = useState<Record<string, any>>({});
 
     useEffect(() => {
-        const currentProperties = Object.entries(properties).length === 0 ? schema?.properties : properties;
-        const prop = moduleToJsonSchema(module, currentProperties);
+        const prop = moduleToJsonSchema(module, schema?.properties);
         setProperties({
             ...prop,
         });
-        console.log("Schema properties: ", currentProperties);
+        console.log("Schema properties: ", schema?.properties);
         console.log("ModuleEditor: updating properties: ", prop);
     }, [schema?.properties]);
 
