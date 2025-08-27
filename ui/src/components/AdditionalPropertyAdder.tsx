@@ -1,6 +1,4 @@
 import React, { useState } from "react";
-import { useFormContext } from "react-hook-form";
-
 interface AdditionalPropertyAdderProps {
     properties: Record<string, any>;
     setProperties: React.Dispatch<React.SetStateAction<Record<string, any>>>;

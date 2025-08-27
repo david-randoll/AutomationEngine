@@ -1,20 +1,25 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import PreviewPanel from "@/components/PreviewPanel";
 import ModuleEditor from "@/components/ModuleEditor";
 import { exportJson, exportYaml } from "@/utils/automation";
 import { toast } from "sonner";
+import { agent } from "@/lib/agent";
 
-interface AutomationBuilderPageProps {
-    automationSchema: ModuleType;
-}
-
-const AutomationBuilderPage = ({ automationSchema }: AutomationBuilderPageProps) => {
+const AutomationBuilderPage = () => {
     const { getValues } = useFormContext();
     const rootPath: Path = ["root"];
+    const [automationSchema, setAutomationSchema] = useState<ModuleType | null>(null);
+
+    useEffect(() => {
+        agent
+            .get<ModuleType>("/automation-engine/automation-definition/schema")
+            .then(setAutomationSchema)
+            .catch(console.error);
+    }, []);
 
     const handleCopyJson = async () => {
         try {
@@ -36,6 +41,8 @@ const AutomationBuilderPage = ({ automationSchema }: AutomationBuilderPageProps)
         }
     };
 
+    if (!automationSchema) return <div>Loading schema...</div>;
+
     return (
         <div className="p-6 bg-gray-50 min-h-screen">
             <div className="max-w-6xl mx-auto">
@@ -56,7 +63,12 @@ const AutomationBuilderPage = ({ automationSchema }: AutomationBuilderPageProps)
 
                 <main className="grid grid-cols-3 gap-6">
                     <section className="col-span-2 space-y-4">
-                        <ModuleEditor module={automationSchema} path={rootPath} />
+                        <ModuleEditor
+                            module={{
+                                schema: automationSchema.schema,
+                            }}
+                            path={rootPath}
+                        />
                     </section>
 
                     <aside className="col-span-1 space-y-4">

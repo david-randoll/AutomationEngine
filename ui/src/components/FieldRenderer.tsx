@@ -171,6 +171,26 @@ const FieldRenderer = ({ fieldKey, schema, rootSchema, pathInData, onAddBlock }:
         );
     }
 
+    if (type === "number") {
+        return (
+            <div key={name}>
+                <label className="block text-sm font-medium">{capitalize(title)}</label>
+                <Controller
+                    control={control}
+                    name={name}
+                    render={({ field }) => (
+                        <Input
+                            {...field}
+                            type="number"
+                            onChange={(e) => field.onChange(e.target.value)}
+                            value={field.value || ""}
+                        />
+                    )}
+                />
+            </div>
+        );
+    }
+
     return (
         <div key={name}>
             <label className="block text-sm font-medium">{capitalize(title)}</label>

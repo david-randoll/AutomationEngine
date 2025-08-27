@@ -56,9 +56,8 @@ export function areaToName(obj: Partial<Record<string, unknown>>): string | null
 export function moduleToJsonSchema(module: ModuleType, exclude: Record<string, any> = {}) {
     const properties: Record<string, { type: string }> = {};
 
-    const { name, label, description, schema, ...moduleWithoutMeta } = module;
-
-    for (const [key, value] of Object.entries(moduleWithoutMeta)) {
+    const { schema, ...mod } = module;
+    for (const [key, value] of Object.entries(mod)) {
         if (key in exclude) {
             continue; // skip properties that exist in the exclude schema
         }

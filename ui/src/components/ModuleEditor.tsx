@@ -40,6 +40,7 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
             ...schema?.properties,
             ...prop,
         });
+        console.log("ModuleEditor: updating properties: ", properties);
     }, [module, schema]);
 
     useEffect(() => {
