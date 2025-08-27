@@ -34,26 +34,19 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
     const { getSchema } = useAutomationEngine();
     const [schema, setSchema] = useState<JsonSchema>();
 
-    const [properties, setProperties] = useState<Record<string, any>>({});
-
-    useEffect(() => {
-        const prop = moduleToJsonSchema(module, schema?.properties);
-        setProperties({
-            ...prop,
-        });
-        console.log("Schema properties: ", schema?.properties);
-        console.log("ModuleEditor: updating properties: ", prop);
-    }, [schema?.properties]);
-
     useEffect(() => {
         const moduleName = module.name ?? areaToName(module);
         console.log("ModuleEditor: fetching schema for", moduleName);
+        const pathKey = path.join(".");
+
         if (!moduleName) {
-            setSchema(module.schema);
+            getSchema(pathKey, async () => {
+                return module.schema;
+            }).then((schema) => {
+                setSchema(schema);
+            });
             return;
         }
-
-        const pathKey = path.join(".");
 
         getSchema(pathKey, async () => {
             console.log("ModuleEditor: fetching schema for", moduleName);
@@ -65,7 +58,7 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
                 console.log("No schema with name:", moduleName);
                 setEditMode("json");
             });
-    }, [path, module]);
+    }, [path]);
 
     useEffect(() => {
         if (editMode !== "ui") {
@@ -144,6 +137,15 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
         setModalTargetIsArray(false);
     }
 
+    const setProperties = (props: Record<string, any>) => {
+        //mutate the schema.properties
+        setSchema((prev: any) => ({
+            ...prev,
+            properties: props,
+        }));
+        schema.properties = props;
+    };
+
     return (
         <div>
             <div className="mb-4 flex space-x-3">
@@ -183,7 +185,7 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
             {editMode === "ui" && (
                 <div className="space-y-3">
                     <div className="grid grid-cols-1 gap-3">
-                        {Object.entries(properties || {}).map(([key, sch]) => (
+                        {Object.entries(schema?.properties || {}).map(([key, sch]) => (
                             <FieldRenderer
                                 key={key}
                                 fieldKey={key}
@@ -195,7 +197,7 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
                         ))}
                     </div>
                     {schema?.additionalProperties && (
-                        <AdditionalPropertyAdder properties={properties} setProperties={setProperties} />
+                        <AdditionalPropertyAdder properties={schema?.properties || {}} setProperties={setProperties} />
                     )}
                     <AddBlockModal
                         open={modalOpen}
