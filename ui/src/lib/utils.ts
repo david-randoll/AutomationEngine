@@ -54,7 +54,7 @@ export function areaToName(obj: Partial<Record<string, unknown>>): string | null
  * Will add new properties into the provided schema object
  */
 export function moduleToJsonSchema(module: ModuleType, target: Record<string, any> = {}) {
-    const properties: Record<string, { type: string }> = { ...target };
+    const properties: Record<string, any> = { ...target };
 
     const { schema, ...mod } = module;
     for (const [key, value] of Object.entries(mod)) {
@@ -70,8 +70,16 @@ export function moduleToJsonSchema(module: ModuleType, target: Record<string, an
                 type = "number";
             } else if (typeof value === "boolean") {
                 type = "boolean";
-            } else {
+            } else if (Array.isArray(value)) {
+                type = "array";
+            } else if (value instanceof Date) {
+                type = "string";
+                properties[key] = { type, format: "date-time" };
+                continue;
+            } else if (typeof value === "object") {
                 type = "object";
+            } else {
+                type = "unknown";
             }
 
             properties[key] = { type };

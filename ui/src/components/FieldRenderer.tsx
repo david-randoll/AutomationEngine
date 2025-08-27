@@ -9,6 +9,7 @@ import { capitalize } from "@/lib/utils";
 import ModuleListItem from "./ModuleListItem";
 import { Accordion } from "./ui/accordion";
 import { Button } from "./ui/button";
+import ModuleEditor from "./ModuleEditor";
 
 interface FieldRendererProps {
     fieldKey: string | number;
@@ -151,6 +152,22 @@ const FieldRenderer = ({ fieldKey, schema, rootSchema, pathInData, onAddBlock }:
         );
     }
 
+    if (type === "object") {
+        // there is no properties to render so we'll render back ModuleEditor with a custom schema
+        // that'll allow us to add additional properties
+        const additionalPropSchema: ModuleType = {
+            schema: {
+                additionalProperties: {},
+            },
+        };
+        return (
+            <div key={name} className="border p-3 rounded space-y-2 mb-4">
+                <label className="block font-medium">{capitalize(title)}</label>
+                <ModuleEditor path={pathInData} module={additionalPropSchema} />
+            </div>
+        );
+    }
+
     if (type === "boolean") {
         return (
             <label key={name} className="inline-flex items-center space-x-2">
@@ -182,8 +199,8 @@ const FieldRenderer = ({ fieldKey, schema, rootSchema, pathInData, onAddBlock }:
                         <Input
                             {...field}
                             type="number"
-                            onChange={(e) => field.onChange(e.target.value)}
-                            value={field.value || ""}
+                            onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                            value={field.value}
                         />
                     )}
                 />
