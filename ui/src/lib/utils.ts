@@ -51,32 +51,31 @@ export function areaToName(obj: Partial<Record<string, unknown>>): string | null
 /**
  * Convert a module to JSON schema properties object
  * Example: { hello: somevalue } → { "hello": { "type": "string" } }
- * Can exclude properties based on a JSON Schema properties object
+ * Will add new properties into the provided schema object
  */
-export function moduleToJsonSchema(module: ModuleType, exclude: Record<string, any> = {}) {
-    const properties: Record<string, { type: string }> = {};
+export function moduleToJsonSchema(module: ModuleType, target: Record<string, any> = {}) {
+    const properties: Record<string, { type: string }> = { ...target };
 
     const { schema, ...mod } = module;
     for (const [key, value] of Object.entries(mod)) {
-        if (key in exclude) {
-            continue; // skip properties that exist in the exclude schema
-        }
-
         // Skip properties that match an area
         if (areas.includes(key as Area)) continue;
 
-        let type: string;
-        if (typeof value === "string") {
-            type = "string";
-        } else if (typeof value === "number") {
-            type = "number";
-        } else if (typeof value === "boolean") {
-            type = "boolean";
-        } else {
-            type = "object";
-        }
+        // Only add if not already in target
+        if (!(key in properties)) {
+            let type: string;
+            if (typeof value === "string") {
+                type = "string";
+            } else if (typeof value === "number") {
+                type = "number";
+            } else if (typeof value === "boolean") {
+                type = "boolean";
+            } else {
+                type = "object";
+            }
 
-        properties[key] = { type };
+            properties[key] = { type };
+        }
     }
 
     return properties;

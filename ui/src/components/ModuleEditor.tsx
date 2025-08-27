@@ -37,11 +37,10 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
     useEffect(() => {
         const prop = moduleToJsonSchema(module, schema?.properties);
         setProperties({
-            ...schema?.properties,
             ...prop,
         });
         console.log("ModuleEditor: updating properties: ", properties);
-    }, [module, schema]);
+    }, [schema]);
 
     useEffect(() => {
         const moduleName = module.name ?? areaToName(module);
