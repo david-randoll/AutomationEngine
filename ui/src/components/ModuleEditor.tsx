@@ -11,6 +11,7 @@ import yaml from "js-yaml";
 import { Button } from "./ui/button";
 import { agent } from "@/lib/agent";
 import { areaToName, moduleToJsonSchema, nameToArea } from "@/lib/utils";
+import { useAutomationEngine } from "@/providers/AutomationEngineProvider";
 
 interface ModuleEditorProps {
     module: ModuleType;
@@ -30,6 +31,7 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
         return JSON.stringify(getValues(path.join(".")), null, 2);
     });
 
+    const { getSchema } = useAutomationEngine();
     const [schema, setSchema] = useState<JsonSchema>();
 
     const [properties, setProperties] = useState<Record<string, any>>({});
@@ -46,20 +48,24 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
     useEffect(() => {
         const moduleName = module.name ?? areaToName(module);
         console.log("ModuleEditor: fetching schema for", moduleName);
-        if (moduleName) {
-            agent
-                .get<ModuleType>(`/automation-engine/block/${moduleName}/schema`)
-                .then((x) => {
-                    setSchema(x.schema);
-                })
-                .catch((e) => {
-                    console.log("No schema with name:", moduleName);
-                    setEditMode("json");
-                });
-        } else {
+        if (!moduleName) {
             setSchema(module.schema);
+            return;
         }
-    }, []);
+
+        const pathKey = path.join(".");
+
+        getSchema(pathKey, async () => {
+            console.log("ModuleEditor: fetching schema for", moduleName);
+            const x = await agent.get<ModuleType>(`/automation-engine/block/${moduleName}/schema`);
+            return x.schema;
+        })
+            .then((schema) => setSchema(schema))
+            .catch((e) => {
+                console.log("No schema with name:", moduleName);
+                setEditMode("json");
+            });
+    }, [path, module]);
 
     useEffect(() => {
         if (editMode !== "ui") {
