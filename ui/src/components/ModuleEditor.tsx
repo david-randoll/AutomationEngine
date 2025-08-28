@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import AddBlockModal from "@/components/AddBlockModal";
-import { set, useFormContext } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
 import FieldRenderer from "./FieldRenderer";
 import AdditionalPropertyAdder from "./AdditionalPropertyAdder";
 
@@ -10,7 +10,7 @@ import MonacoEditor from "@monaco-editor/react";
 import yaml from "js-yaml";
 import { Button } from "./ui/button";
 import { agent } from "@/lib/agent";
-import { areaToName, moduleToJsonSchema, nameToArea } from "@/lib/utils";
+import { areaToName, nameToArea } from "@/lib/utils";
 import { useAutomationEngine } from "@/providers/AutomationEngineProvider";
 
 interface ModuleEditorProps {
