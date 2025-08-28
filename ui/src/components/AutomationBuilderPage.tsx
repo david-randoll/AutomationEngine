@@ -22,7 +22,7 @@ const AutomationBuilderPage = () => {
 
     return (
         <div className="p-6 bg-gray-50 min-h-screen">
-            <div className="max-w-6xl mx-auto">
+            <div className="max-w-7xl mx-auto">
                 <header className="flex items-start justify-between mb-6">
                     <div>
                         <h1 className="text-2xl font-bold">Automation Builder</h1>
@@ -40,7 +40,7 @@ const AutomationBuilderPage = () => {
                         />
                     </section>
 
-                    <aside className="col-span-1 space-y-4">
+                    <aside className="col-span-1 space-y-4 flex flex-col h-[calc(95vh-6rem)]">
                         <PreviewPanel path={rootPath} />
                     </aside>
                 </main>
