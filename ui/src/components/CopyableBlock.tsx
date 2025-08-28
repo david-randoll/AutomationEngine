@@ -67,7 +67,7 @@ const CopyableBlock = ({ label, content, language }: CopyableBlockProps) => {
                         scrollBeyondLastLine: false,
                         renderLineHighlight: "none",
                         contextmenu: false,
-                        fontSize: 13,
+                        fontSize: 12,
                         wordWrap: "on",
                     }}
                 />

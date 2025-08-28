@@ -183,8 +183,12 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
                     options={{
                         minimap: { enabled: false },
                         tabSize: 2,
+                        fontSize: 14,
                         formatOnType: true,
                         formatOnPaste: true,
+                        wordWrap: "on",
+                        automaticLayout: true,
+                        scrollBeyondLastLine: false,
                     }}
                 />
             )}
