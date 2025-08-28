@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import AddBlockModal from "@/components/AddBlockModal";
-import { useFormContext } from "react-hook-form";
+import { set, useFormContext } from "react-hook-form";
 import FieldRenderer from "./FieldRenderer";
 import AdditionalPropertyAdder from "./AdditionalPropertyAdder";
 
@@ -50,14 +50,19 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
 
         getSchema(pathKey, async () => {
             console.log("ModuleEditor: fetching schema for", moduleName);
-            const x = await agent.get<ModuleType>(`/automation-engine/block/${moduleName}/schema`);
-            return x.schema;
-        })
-            .then((schema) => setSchema(schema))
-            .catch((e) => {
+            const res = await agent.getHttp<ModuleType>(`/automation-engine/block/${moduleName}/schema`);
+            if (res.success) {
+                return res.data?.schema;
+            } else {
+                console.log("Failed to fetch schema:", res.error?.message);
+                return null;
+            }
+        }).then((schema) => {
+            if (!schema) {
                 console.log("No schema with name:", moduleName);
                 setEditMode("json");
-            });
+            } else setSchema(schema);
+        });
     }, [path]);
 
     useEffect(() => {

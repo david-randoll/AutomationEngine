@@ -2,6 +2,15 @@
 
 export type HttpMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
 
+export interface ApiResponse<T = any> {
+    success: boolean;
+    data?: T;
+    error?: {
+        status: number;
+        message: string;
+    };
+}
+
 export interface RequestOptions<T = any> {
     method?: HttpMethod;
     headers?: Record<string, string>;
@@ -10,10 +19,10 @@ export interface RequestOptions<T = any> {
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "";
 
-async function request<TResponse = any, TBody = any>(
+async function requestHttp<TResponse = any, TBody = any>(
     endpoint: string,
     options: RequestOptions<TBody> = {}
-): Promise<TResponse> {
+): Promise<ApiResponse<TResponse>> {
     const { method = "GET", headers = {}, body } = options;
 
     try {
@@ -28,34 +37,74 @@ async function request<TResponse = any, TBody = any>(
 
         if (!res.ok) {
             const errorText = await res.text();
-            throw new Error(`HTTP error! status: ${res.status}, message: ${errorText}`);
+            return {
+                success: false,
+                error: {
+                    status: res.status,
+                    message: errorText || res.statusText,
+                },
+            };
         }
 
         // try parsing JSON, fallback to text
         const contentType = res.headers.get("content-type");
-        if (contentType && contentType.includes("application/json")) {
-            return (await res.json()) as TResponse;
-        } else {
-            return (await res.text()) as TResponse;
-        }
-    } catch (err) {
-        console.error("HTTP Request failed:", err);
-        throw err;
+        const parsed = contentType?.includes("application/json") ? await res.json() : await res.text();
+        return {
+            success: true,
+            data: parsed as TResponse,
+        };
+    } catch (err: any) {
+        return {
+            success: false,
+            error: {
+                status: 0,
+                message: err?.message || "Unknown error",
+            },
+        };
     }
 }
 
+/**
+ * Wrapper that unwraps ApiResponse<T>, throwing on error
+ */
+async function request<TResponse = any, TBody = any>(
+    endpoint: string,
+    options: RequestOptions<TBody> = {}
+): Promise<TResponse> {
+    const res = await requestHttp<TResponse, TBody>(endpoint, options);
+    if (!res.success) {
+        throw new Error(`HTTP error! status: ${res.error?.status}, message: ${res.error?.message}`);
+    }
+    return res.data as TResponse;
+}
+
 export const agent = {
+    // GET
+    getHttp: <T>(endpoint: string, headers?: Record<string, string>) =>
+        requestHttp<T>(endpoint, { method: "GET", headers }),
     get: <T>(endpoint: string, headers?: Record<string, string>) => request<T>(endpoint, { method: "GET", headers }),
 
+    // POST
+    postHttp: <T, B>(endpoint: string, body: B, headers?: Record<string, string>) =>
+        requestHttp<T, B>(endpoint, { method: "POST", body, headers }),
     post: <T, B>(endpoint: string, body: B, headers?: Record<string, string>) =>
         request<T, B>(endpoint, { method: "POST", body, headers }),
 
+    // PUT
+    putHttp: <T, B>(endpoint: string, body: B, headers?: Record<string, string>) =>
+        requestHttp<T, B>(endpoint, { method: "PUT", body, headers }),
     put: <T, B>(endpoint: string, body: B, headers?: Record<string, string>) =>
         request<T, B>(endpoint, { method: "PUT", body, headers }),
 
+    // PATCH
+    patchHttp: <T, B>(endpoint: string, body: B, headers?: Record<string, string>) =>
+        requestHttp<T, B>(endpoint, { method: "PATCH", body, headers }),
     patch: <T, B>(endpoint: string, body: B, headers?: Record<string, string>) =>
         request<T, B>(endpoint, { method: "PATCH", body, headers }),
 
+    // DELETE
+    deleteHttp: <T>(endpoint: string, headers?: Record<string, string>) =>
+        requestHttp<T>(endpoint, { method: "DELETE", headers }),
     delete: <T>(endpoint: string, headers?: Record<string, string>) =>
         request<T>(endpoint, { method: "DELETE", headers }),
 };

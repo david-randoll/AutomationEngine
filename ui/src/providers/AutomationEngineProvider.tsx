@@ -28,16 +28,9 @@ export const AutomationEngineProvider = ({ children }: { children: ReactNode }) 
 
     const hasSchema = (path: string) => cache.has(path);
 
-    const contextValue = React.useMemo(
-        () => ({ getSchema, setSchema, hasSchema }),
-        [getSchema, setSchema, hasSchema]
-    );
+    const contextValue = React.useMemo(() => ({ getSchema, setSchema, hasSchema }), [getSchema, setSchema, hasSchema]);
 
-    return (
-        <AutomationEngineContext.Provider value={contextValue}>
-            {children}
-        </AutomationEngineContext.Provider>
-    );
+    return <AutomationEngineContext.Provider value={contextValue}>{children}</AutomationEngineContext.Provider>;
 };
 
 export const useAutomationEngine = () => {
