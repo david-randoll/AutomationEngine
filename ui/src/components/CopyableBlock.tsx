@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FiCheck, FiCopy } from "react-icons/fi";
 import MonacoEditor from "@monaco-editor/react";
-import { cn } from "@/lib/utils";
 
 interface CopyableBlockProps {
     label: string;
