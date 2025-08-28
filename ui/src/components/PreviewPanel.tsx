@@ -29,8 +29,8 @@ const PreviewPanel = ({ path }: PreviewPanelProps) => {
                 <CardTitle className="text-lg font-semibold">Preview</CardTitle>
             </CardHeader>
             <CardContent>
-                <CopyableBlock label="JSON" content={jsonData} />
-                <CopyableBlock label="YAML" content={yamlData} />
+                <CopyableBlock label="JSON" content={jsonData} language="json" />
+                <CopyableBlock label="YAML" content={yamlData} language="yaml" />
             </CardContent>
         </Card>
     );

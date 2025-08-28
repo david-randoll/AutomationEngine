@@ -4,8 +4,15 @@ import { cn } from "@/lib/utils";
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FiCheck, FiCopy } from "react-icons/fi";
+import MonacoEditor from "@monaco-editor/react";
 
-const CopyableBlock = ({ label, content }: { label: string; content: string }) => {
+interface CopyableBlockProps {
+    label: string;
+    content: string;
+    language?: EditMode;
+}
+
+const CopyableBlock = ({ label, content, language }: CopyableBlockProps) => {
     const [copied, setCopied] = useState(false);
 
     const handleCopy = async () => {
@@ -21,7 +28,22 @@ const CopyableBlock = ({ label, content }: { label: string; content: string }) =
     return (
         <div className="relative group mb-4">
             <div className="text-xs text-gray-500 mb-2">{label}</div>
-            <pre className="text-xs bg-gray-100 rounded p-2 max-h-80 overflow-auto pr-10">{content}</pre>
+            <MonacoEditor
+                height="200px"
+                language={language}
+                value={content}
+                theme="vs-light" // or "vs-dark"
+                options={{
+                    readOnly: true,
+                    lineNumbers: "off",
+                    minimap: { enabled: false },
+                    folding: false,
+                    scrollBeyondLastLine: false,
+                    renderLineHighlight: "none",
+                    contextmenu: false,
+                    fontSize: 12,
+                }}
+            />
 
             {/* Hover copy button */}
             <button

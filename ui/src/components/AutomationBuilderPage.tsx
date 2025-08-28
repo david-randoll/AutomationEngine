@@ -2,11 +2,8 @@
 
 import React, { useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
-import { Button } from "@/components/ui/button";
 import PreviewPanel from "@/components/PreviewPanel";
 import ModuleEditor from "@/components/ModuleEditor";
-import { exportJson, exportYaml } from "@/utils/automation";
-import { toast } from "sonner";
 import { agent } from "@/lib/agent";
 
 const AutomationBuilderPage = () => {
@@ -20,26 +17,6 @@ const AutomationBuilderPage = () => {
             .then(setAutomationSchema)
             .catch(console.error);
     }, []);
-
-    const handleCopyJson = async () => {
-        try {
-            await navigator.clipboard.writeText(exportJson(getValues(rootPath.join("."))));
-            toast.success("JSON copied to clipboard!");
-        } catch (error) {
-            console.error("Failed to copy JSON:", error);
-            toast.error("Failed to copy JSON.");
-        }
-    };
-
-    const handleCopyYaml = async () => {
-        try {
-            await navigator.clipboard.writeText(exportYaml(getValues(rootPath.join("."))));
-            toast.success("YAML copied to clipboard!");
-        } catch (error) {
-            console.error("Failed to copy YAML:", error);
-            toast.error("Failed to copy YAML.");
-        }
-    };
 
     if (!automationSchema) return <div>Loading schema...</div>;
 
