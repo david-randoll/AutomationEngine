@@ -7,7 +7,7 @@ import ArrayOfPrimitives from "./ArrayOfPrimitives";
 import ArrayOfObjects from "./ArrayOfObjects";
 import { capitalize } from "@/lib/utils";
 import ModuleListItem from "./ModuleListItem";
-import { Accordion } from "./ui/accordion";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "./ui/accordion";
 import { Button } from "./ui/button";
 import ModuleEditor from "./ModuleEditor";
 
@@ -161,10 +161,16 @@ const FieldRenderer = ({ fieldKey, schema, rootSchema, pathInData, onAddBlock }:
             },
         };
         return (
-            <div key={name} className="border p-3 rounded space-y-2 mb-4">
-                <label className="block font-medium">{capitalize(title)}</label>
-                <ModuleEditor path={pathInData} module={additionalPropSchema} />
-            </div>
+            <Accordion type="single" collapsible className="w-full">
+                <AccordionItem key={name} value={name} className="border rounded-lg shadow-sm">
+                    <AccordionTrigger className="flex items-center justify-between px-4 py-3 font-medium hover:text-blue-600 transition-colors">
+                        {capitalize(title)}
+                    </AccordionTrigger>
+                    <AccordionContent className="px-4 pb-4 mt-2 space-y-3">
+                        <ModuleEditor path={pathInData} module={additionalPropSchema} />
+                    </AccordionContent>
+                </AccordionItem>
+            </Accordion>
         );
     }
 

@@ -31,7 +31,7 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
         return JSON.stringify(getValues(path.join(".")), null, 2);
     });
 
-    const { getSchema } = useAutomationEngine();
+    const { getSchema, setSchema: setAutomationSchema } = useAutomationEngine();
     const [schema, setSchema] = useState<JsonSchema>();
 
     useEffect(() => {
@@ -139,11 +139,13 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
 
     const setProperties = (props: Record<string, any>) => {
         //mutate the schema.properties
-        setSchema((prev: any) => ({
-            ...prev,
+        const newSchema = {
+            ...schema,
             properties: props,
-        }));
-        schema.properties = props;
+        };
+
+        setSchema(newSchema);
+        setAutomationSchema(path.join("."), newSchema);
     };
 
     return (
