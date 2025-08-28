@@ -27,7 +27,33 @@ const CopyableBlock = ({ label, content, language }: CopyableBlockProps) => {
 
     return (
         <div className="flex flex-col flex-1 h-full">
-            <div className="text-xs text-gray-500 mb-2">{label}</div>
+            <div className="flex items-center justify-between text-xs text-gray-500 mb-2">
+                <span>{label}</span>
+                <button onClick={handleCopy} className="bg-white hover:shadow-md rounded-full p-1.5 hover:bg-gray-50">
+                    <AnimatePresence mode="wait" initial={false}>
+                        {copied ? (
+                            <motion.div
+                                key="check"
+                                initial={{ scale: 0.5, opacity: 0 }}
+                                animate={{ scale: 1.2, opacity: 1 }}
+                                exit={{ scale: 0.5, opacity: 0 }}
+                                transition={{ type: "spring", stiffness: 500, damping: 25 }}>
+                                <FiCheck className="h-4 w-4 text-green-500" />
+                            </motion.div>
+                        ) : (
+                            <motion.div
+                                key="copy"
+                                initial={{ scale: 0.5, opacity: 0 }}
+                                animate={{ scale: 1, opacity: 1 }}
+                                exit={{ scale: 0.5, opacity: 0 }}
+                                transition={{ type: "spring", stiffness: 500, damping: 25 }}>
+                                <FiCopy className="h-4 w-4 text-gray-600" />
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                </button>
+            </div>
+
             <div className="flex-1">
                 <MonacoEditor
                     height="100%"
@@ -46,35 +72,6 @@ const CopyableBlock = ({ label, content, language }: CopyableBlockProps) => {
                     }}
                 />
             </div>
-
-            <button
-                onClick={handleCopy}
-                className={cn(
-                    "absolute top-8 right-3 opacity-0 group-hover:opacity-100 transition-opacity",
-                    "bg-white shadow-md rounded-full p-1.5 hover:bg-gray-50"
-                )}>
-                <AnimatePresence mode="wait" initial={false}>
-                    {copied ? (
-                        <motion.div
-                            key="check"
-                            initial={{ scale: 0.5, opacity: 0 }}
-                            animate={{ scale: 1.2, opacity: 1 }}
-                            exit={{ scale: 0.5, opacity: 0 }}
-                            transition={{ type: "spring", stiffness: 500, damping: 25 }}>
-                            <FiCheck className="h-4 w-4 text-green-500" />
-                        </motion.div>
-                    ) : (
-                        <motion.div
-                            key="copy"
-                            initial={{ scale: 0.5, opacity: 0 }}
-                            animate={{ scale: 1, opacity: 1 }}
-                            exit={{ scale: 0.5, opacity: 0 }}
-                            transition={{ type: "spring", stiffness: 500, damping: 25 }}>
-                            <FiCopy className="h-4 w-4 text-gray-600" />
-                        </motion.div>
-                    )}
-                </AnimatePresence>
-            </button>
         </div>
     );
 };
