@@ -51,14 +51,6 @@ const AutomationBuilderPage = () => {
                         <h1 className="text-2xl font-bold">Automation Builder</h1>
                         <p className="text-sm text-gray-500">Build automations visually — Home Assistant style.</p>
                     </div>
-                    <div className="space-x-2">
-                        <Button className="cursor-pointer" onClick={handleCopyJson}>
-                            Copy JSON
-                        </Button>
-                        <Button className="cursor-pointer" variant="outline" onClick={handleCopyYaml}>
-                            Copy YAML
-                        </Button>
-                    </div>
                 </header>
 
                 <main className="grid grid-cols-3 gap-6">
