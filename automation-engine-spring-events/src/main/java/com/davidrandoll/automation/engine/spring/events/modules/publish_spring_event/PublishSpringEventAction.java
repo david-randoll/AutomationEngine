@@ -3,21 +3,14 @@ package com.davidrandoll.automation.engine.spring.events.modules.publish_spring_
 import com.davidrandoll.automation.engine.AutomationEngine;
 import com.davidrandoll.automation.engine.core.events.EventContext;
 import com.davidrandoll.automation.engine.spi.PluggableAction;
-import com.davidrandoll.automation.engine.spring.events.properties.AESpringEventsEnabled;
 import com.davidrandoll.automation.engine.utils.AutomationProxyUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.annotation.Conditional;
-import org.springframework.stereotype.Component;
 
 @Slf4j
-@Component("publishSpringEventAction")
 @RequiredArgsConstructor
-@ConditionalOnMissingBean(name = "publishSpringEventAction", ignored = PublishSpringEventAction.class)
-@Conditional(AESpringEventsEnabled.class)
 public class PublishSpringEventAction extends PluggableAction<PublishSpringEventActionContext> {
     private final AutomationEngine engine;
     private final ApplicationEventPublisher publisher;
