@@ -1,16 +1,9 @@
 package com.davidrandoll.automation.engine.core.result;
 
+import com.davidrandoll.automation.engine.core.IBlock;
 import com.davidrandoll.automation.engine.core.events.EventContext;
 
 @FunctionalInterface
-public interface IResult {
-    default Class<?> getContextType() {
-        return null;
-    }
-
+public interface IResult extends IBlock {
     Object getExecutionSummary(EventContext context, ResultContext resultContext);
-
-    default boolean autoEvaluateExpression() {
-        return true;
-    }
 }

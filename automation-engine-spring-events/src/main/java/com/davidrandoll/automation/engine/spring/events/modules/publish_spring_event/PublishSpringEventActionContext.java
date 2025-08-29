@@ -1,13 +1,11 @@
 package com.davidrandoll.automation.engine.spring.events.modules.publish_spring_event;
 
 import com.davidrandoll.automation.engine.core.actions.IActionContext;
-import com.fasterxml.jackson.annotation.JsonAlias;
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.FieldNameConstants;
 
 import java.util.Map;
 
@@ -15,6 +13,14 @@ import java.util.Map;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
+@FieldNameConstants
+@JsonPropertyOrder({
+        PublishSpringEventActionContext.Fields.alias,
+        PublishSpringEventActionContext.Fields.description,
+        PublishSpringEventActionContext.Fields.className,
+        PublishSpringEventActionContext.Fields.publishToAutomationEngine,
+        PublishSpringEventActionContext.Fields.data
+})
 public class PublishSpringEventActionContext implements IActionContext {
     private String alias;
     private String description;

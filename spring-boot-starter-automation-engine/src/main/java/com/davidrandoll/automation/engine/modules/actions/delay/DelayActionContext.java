@@ -2,9 +2,11 @@ package com.davidrandoll.automation.engine.modules.actions.delay;
 
 import com.davidrandoll.automation.engine.core.actions.IActionContext;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.FieldNameConstants;
 
 import java.time.Duration;
 
@@ -12,6 +14,12 @@ import java.time.Duration;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
+@FieldNameConstants
+@JsonPropertyOrder({
+        DelayActionContext.Fields.alias,
+        DelayActionContext.Fields.description,
+        DelayActionContext.Fields.duration
+})
 public class DelayActionContext implements IActionContext {
     private String alias;
     private String description;

@@ -5,9 +5,11 @@ import com.davidrandoll.automation.engine.creator.actions.ActionDefinition;
 import com.davidrandoll.automation.engine.creator.conditions.ConditionDefinition;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.FieldNameConstants;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +18,15 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
+@FieldNameConstants
+@JsonPropertyOrder({
+        IfThenElseActionContext.Fields.alias,
+        IfThenElseActionContext.Fields.description,
+        IfThenElseActionContext.Fields.ifConditions,
+        IfThenElseActionContext.Fields.thenActions,
+        IfThenElseActionContext.Fields.ifThenBlocks,
+        IfThenElseActionContext.Fields.elseActions
+})
 public class IfThenElseActionContext implements IActionContext {
     private String alias;
     private String description;
@@ -36,8 +47,16 @@ public class IfThenElseActionContext implements IActionContext {
     @AllArgsConstructor
     @NoArgsConstructor
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public static class IfThenBlock {
+    @FieldNameConstants
+    @JsonPropertyOrder({
+            IfThenBlock.Fields.alias,
+            IfThenBlock.Fields.description,
+            IfThenBlock.Fields.ifConditions,
+            IfThenBlock.Fields.thenActions
+    })
+    public static class IfThenBlock implements IActionContext {
         private String alias;
+        private String description;
 
         @JsonProperty("if")
         private List<ConditionDefinition> ifConditions = new ArrayList<>();

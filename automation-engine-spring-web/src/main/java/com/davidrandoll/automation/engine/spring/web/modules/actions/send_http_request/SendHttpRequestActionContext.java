@@ -6,8 +6,10 @@ import com.davidrandoll.automation.engine.spring.web.events.AEHttpResponseEvent;
 import com.davidrandoll.automation.engine.spring.web.jackson.flexible_multi_value_map.FlexibleMultiValueMap;
 import com.davidrandoll.automation.engine.modules.triggers.always_true.AlwaysTrueTrigger;
 import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.FieldNameConstants;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
@@ -22,6 +24,18 @@ import static org.springframework.http.MediaType.MULTIPART_FORM_DATA;
 
 @Data
 @NoArgsConstructor
+@FieldNameConstants
+@JsonPropertyOrder({
+        SendHttpRequestActionContext.Fields.alias,
+        SendHttpRequestActionContext.Fields.description,
+        SendHttpRequestActionContext.Fields.url,
+        SendHttpRequestActionContext.Fields.method,
+        SendHttpRequestActionContext.Fields.headers,
+        SendHttpRequestActionContext.Fields.contentType,
+        SendHttpRequestActionContext.Fields.body,
+        SendHttpRequestActionContext.Fields.storeToVariable,
+        SendHttpRequestActionContext.Fields.allowHttpEvent
+})
 public class SendHttpRequestActionContext implements IActionContext {
     private String alias;
     private String description;

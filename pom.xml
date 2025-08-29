@@ -41,6 +41,7 @@
         <module>automation-engine-spring-events</module>
         <module>automation-engine-test</module>
         <module>automation-engine-jdbc</module>
+        <module>automation-engine-backend-api</module>
     </modules>
     <properties>
         <java.version>21</java.version>

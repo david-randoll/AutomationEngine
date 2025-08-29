@@ -69,6 +69,7 @@ public class WaitForTriggerAction extends PluggableAction<WaitForTriggerActionCo
 
     @EventListener
     public void handleEvent(EventContext eventContext) {
+        if (ObjectUtils.isEmpty(waitingActions)) return;
         log.debug("WaitForTriggerAction received event: {}", eventContext.getEvent());
         for (WaitingAction action : waitingActions) {
             if (!action.future.isDone() && processor.anyTriggersTriggered(eventContext, action.triggers)) {

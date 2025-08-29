@@ -8,11 +8,13 @@ import com.davidrandoll.automation.engine.creator.triggers.TriggerDefinition;
 import com.davidrandoll.automation.engine.creator.variables.VariableDefinition;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.experimental.FieldNameConstants;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,9 +26,21 @@ import java.util.Optional;
 @NoArgsConstructor
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
+@FieldNameConstants
+@JsonPropertyOrder({
+        AutomationDefinition.Fields.alias,
+        AutomationDefinition.Fields.description,
+        AutomationDefinition.Fields.variables,
+        AutomationDefinition.Fields.triggers,
+        AutomationDefinition.Fields.conditions,
+        AutomationDefinition.Fields.actions,
+        AutomationDefinition.Fields.result
+})
 public class AutomationDefinition {
     @Getter
     private String alias;
+    @Getter
+    private String description;
     private List<VariableDefinition> variables = new ArrayList<>();
     private List<TriggerDefinition> triggers = new ArrayList<>();
     private List<ConditionDefinition> conditions = new ArrayList<>();
