@@ -1,14 +1,12 @@
 package com.davidrandoll.automation.engine.spring.web.modules.triggers.on_slow_http_request;
 
 import com.davidrandoll.automation.engine.core.events.EventContext;
-import com.davidrandoll.automation.engine.spring.web.events.AEHttpResponseEvent;
 import com.davidrandoll.automation.engine.spi.PluggableTrigger;
+import com.davidrandoll.automation.engine.spring.web.events.AEHttpResponseEvent;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
 
 import java.time.Duration;
 
-@Component("onSlowHttpRequestTrigger")
 @RequiredArgsConstructor
 public class OnSlowHttpRequestTrigger extends PluggableTrigger<OnSlowHttpRequestContext> {
     @Override

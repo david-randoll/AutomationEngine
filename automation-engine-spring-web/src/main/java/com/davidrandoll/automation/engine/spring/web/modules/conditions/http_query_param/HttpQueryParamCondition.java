@@ -1,18 +1,14 @@
 package com.davidrandoll.automation.engine.spring.web.modules.conditions.http_query_param;
 
 import com.davidrandoll.automation.engine.core.events.EventContext;
+import com.davidrandoll.automation.engine.spi.PluggableCondition;
 import com.davidrandoll.automation.engine.spring.web.events.AEHttpRequestEvent;
 import com.davidrandoll.automation.engine.spring.web.events.AEHttpResponseEvent;
 import com.davidrandoll.automation.engine.spring.web.utils.StringMatcher;
-import com.davidrandoll.automation.engine.spi.PluggableCondition;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.stereotype.Component;
 
-@Component("httpQueryParamCondition")
 @RequiredArgsConstructor
-@ConditionalOnMissingBean(name = "httpQueryParamCondition", ignored = HttpQueryParamCondition.class)
 public class HttpQueryParamCondition extends PluggableCondition<HttpQueryParamConditionContext> {
     private final ObjectMapper objectMapper;
 

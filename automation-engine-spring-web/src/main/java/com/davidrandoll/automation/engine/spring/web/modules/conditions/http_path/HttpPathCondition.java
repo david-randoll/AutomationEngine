@@ -1,18 +1,14 @@
 package com.davidrandoll.automation.engine.spring.web.modules.conditions.http_path;
 
 import com.davidrandoll.automation.engine.core.events.EventContext;
+import com.davidrandoll.automation.engine.spi.PluggableCondition;
 import com.davidrandoll.automation.engine.spring.web.events.AEHttpRequestEvent;
 import com.davidrandoll.automation.engine.spring.web.events.AEHttpResponseEvent;
 import com.davidrandoll.automation.engine.spring.web.utils.StringMatcher;
-import com.davidrandoll.automation.engine.spi.PluggableCondition;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.stereotype.Component;
 
-@Component("httpPathCondition")
 @RequiredArgsConstructor
-@ConditionalOnMissingBean(name = "httpPathCondition", ignored = HttpPathCondition.class)
 public class HttpPathCondition extends PluggableCondition<HttpPathConditionContext> {
     private final ObjectMapper objectMapper;
 
