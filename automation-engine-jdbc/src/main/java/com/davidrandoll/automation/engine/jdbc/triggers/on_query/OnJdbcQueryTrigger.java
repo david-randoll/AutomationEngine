@@ -4,19 +4,13 @@ import com.davidrandoll.automation.engine.core.events.EventContext;
 import com.davidrandoll.automation.engine.spi.PluggableTrigger;
 import com.davidrandoll.automation.engine.templating.TemplateProcessor;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Component("onJdbcQueryTrigger")
 @RequiredArgsConstructor
-@ConditionalOnMissingBean(name = "onJdbcQueryTrigger", ignored = OnJdbcQueryTrigger.class)
-@ConditionalOnClass(NamedParameterJdbcTemplate.class)
 public class OnJdbcQueryTrigger extends PluggableTrigger<OnJdbcQueryTriggerContext> {
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final TemplateProcessor pebble;

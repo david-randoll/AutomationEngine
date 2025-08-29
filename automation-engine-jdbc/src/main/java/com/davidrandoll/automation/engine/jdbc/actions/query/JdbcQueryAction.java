@@ -4,19 +4,13 @@ import com.davidrandoll.automation.engine.core.events.EventContext;
 import com.davidrandoll.automation.engine.spi.PluggableAction;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
 
 @Slf4j
-@Component("jdbcQueryAction")
 @RequiredArgsConstructor
-@ConditionalOnMissingBean(name = "jdbcQueryAction", ignored = JdbcQueryAction.class)
-@ConditionalOnClass(NamedParameterJdbcTemplate.class)
 public class JdbcQueryAction extends PluggableAction<JdbcQueryActionContext> {
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
