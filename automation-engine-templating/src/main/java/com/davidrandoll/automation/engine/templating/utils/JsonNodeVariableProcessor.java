@@ -11,7 +11,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -19,7 +18,6 @@ import java.util.Map;
 import java.util.Set;
 
 @Slf4j
-@Service
 @RequiredArgsConstructor
 public class JsonNodeVariableProcessor {
     private final TemplateProcessor templateProcessor;
