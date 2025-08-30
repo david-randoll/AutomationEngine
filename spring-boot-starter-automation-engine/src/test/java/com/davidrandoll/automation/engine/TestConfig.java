@@ -1,6 +1,5 @@
 package com.davidrandoll.automation.engine;
 
-import com.davidrandoll.automation.engine.provider.AEConfigProvider;
 import io.pebbletemplates.boot.autoconfigure.PebbleProperties;
 import io.pebbletemplates.pebble.PebbleEngine;
 import io.pebbletemplates.pebble.attributes.methodaccess.MethodAccessValidator;

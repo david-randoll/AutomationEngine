@@ -4,14 +4,10 @@ import io.pebbletemplates.pebble.error.PebbleException;
 import io.pebbletemplates.pebble.extension.Filter;
 import io.pebbletemplates.pebble.template.EvaluationContext;
 import io.pebbletemplates.pebble.template.PebbleTemplate;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
 
-@Component("int")
-@ConditionalOnMissingBean(name = "int", ignored = IntegerFilter.class)
 public class IntegerFilter implements Filter {
     @Override
     public List<String> getArgumentNames() {

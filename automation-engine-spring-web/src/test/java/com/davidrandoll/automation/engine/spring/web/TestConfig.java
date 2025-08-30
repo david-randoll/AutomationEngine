@@ -1,6 +1,6 @@
 package com.davidrandoll.automation.engine.spring.web;
 
-import com.davidrandoll.automation.engine.provider.AEConfigProvider;
+import com.davidrandoll.automation.engine.AEConfigProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;

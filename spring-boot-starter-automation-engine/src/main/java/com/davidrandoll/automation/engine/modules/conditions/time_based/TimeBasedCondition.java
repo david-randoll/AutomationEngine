@@ -4,13 +4,9 @@ package com.davidrandoll.automation.engine.modules.conditions.time_based;
 import com.davidrandoll.automation.engine.core.events.EventContext;
 import com.davidrandoll.automation.engine.modules.events.time_based.TimeBasedEvent;
 import com.davidrandoll.automation.engine.spi.PluggableCondition;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.stereotype.Component;
 
 import java.time.LocalTime;
 
-@Component("timeCondition")
-@ConditionalOnMissingBean(name = "timeCondition", ignored = TimeBasedCondition.class)
 public class TimeBasedCondition extends PluggableCondition<TimeBasedConditionContext> {
 
     @Override

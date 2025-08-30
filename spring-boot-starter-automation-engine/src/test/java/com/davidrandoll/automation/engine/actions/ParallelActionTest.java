@@ -5,7 +5,7 @@ import com.davidrandoll.automation.engine.core.Automation;
 import com.davidrandoll.automation.engine.modules.actions.parallel.ParallelAction;
 import com.davidrandoll.automation.engine.modules.actions.wait_for_trigger.WaitForTriggerAction;
 import com.davidrandoll.automation.engine.modules.events.time_based.TimeBasedEvent;
-import com.davidrandoll.automation.engine.provider.AEConfigProvider;
+import com.davidrandoll.automation.engine.AEConfigProvider;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.util.ReflectionTestUtils;

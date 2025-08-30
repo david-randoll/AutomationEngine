@@ -1,13 +1,21 @@
 package com.davidrandoll.automation.engine.templating;
 
+import com.davidrandoll.automation.engine.templating.extensions.CustomExtension;
+import com.davidrandoll.automation.engine.templating.extensions.filters.IntegerFilter;
+import com.davidrandoll.automation.engine.templating.extensions.filters.NumberFormatFilter;
+import com.davidrandoll.automation.engine.templating.extensions.filters.TimeFormatFilter;
 import com.davidrandoll.automation.engine.templating.interceptors.*;
 import com.davidrandoll.automation.engine.templating.utils.JsonNodeVariableProcessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.pebbletemplates.pebble.PebbleEngine;
+import io.pebbletemplates.pebble.extension.AbstractExtension;
+import io.pebbletemplates.pebble.extension.Filter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+
+import java.util.Map;
 
 @Configuration
 public class AETemplatingConfig {
@@ -56,5 +64,32 @@ public class AETemplatingConfig {
     @ConditionalOnMissingBean(name = "templateProcessor", ignored = TemplateProcessor.class)
     public TemplateProcessor templateProcessor(PebbleEngine pebbleEngine) {
         return new TemplateProcessor(pebbleEngine);
+    }
+
+    /*
+     * Filters
+     */
+    @Bean("int")
+    @ConditionalOnMissingBean(name = "int", ignored = IntegerFilter.class)
+    public Filter integerFilter() {
+        return new IntegerFilter();
+    }
+
+    @Bean("number_format")
+    @ConditionalOnMissingBean(name = "number_format", ignored = NumberFormatFilter.class)
+    public Filter numberFormatFilter() {
+        return new NumberFormatFilter();
+    }
+
+    @Bean("time_format")
+    @ConditionalOnMissingBean(name = "time_format", ignored = TimeFormatFilter.class)
+    public Filter timeFormatFilter() {
+        return new TimeFormatFilter();
+    }
+
+    @Bean("customExtension")
+    @ConditionalOnMissingBean(name = "customExtension", ignored = CustomExtension.class)
+    public AbstractExtension customExtension(Map<String, Filter> filters) {
+        return new CustomExtension(filters);
     }
 }

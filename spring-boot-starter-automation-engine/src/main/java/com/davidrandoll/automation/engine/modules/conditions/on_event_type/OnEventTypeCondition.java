@@ -4,13 +4,9 @@ import com.davidrandoll.automation.engine.core.events.EventContext;
 import com.davidrandoll.automation.engine.spi.PluggableCondition;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.stereotype.Component;
 
 @Slf4j
-@Component("onEventTypeCondition")
 @RequiredArgsConstructor
-@ConditionalOnMissingBean(name = "onEventTypeCondition", ignored = OnEventTypeCondition.class)
 public class OnEventTypeCondition extends PluggableCondition<OnEventTypeConditionContext> {
     @Override
     public boolean isSatisfied(EventContext ec, OnEventTypeConditionContext cc) {
