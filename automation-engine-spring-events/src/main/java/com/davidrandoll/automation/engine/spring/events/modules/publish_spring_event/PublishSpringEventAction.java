@@ -2,8 +2,8 @@ package com.davidrandoll.automation.engine.spring.events.modules.publish_spring_
 
 import com.davidrandoll.automation.engine.AutomationEngine;
 import com.davidrandoll.automation.engine.core.events.EventContext;
-import com.davidrandoll.automation.engine.spi.PluggableAction;
-import com.davidrandoll.automation.engine.utils.AutomationProxyUtil;
+import com.davidrandoll.automation.engine.spring.spi.PluggableAction;
+import com.davidrandoll.automation.engine.spring.utils.AutomationProxyUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -1,7 +1,7 @@
 package com.davidrandoll.automation.engine.spring.web.modules.triggers.on_http_path_exists;
 
 import com.davidrandoll.automation.engine.core.events.EventContext;
-import com.davidrandoll.automation.engine.spi.PluggableTrigger;
+import com.davidrandoll.automation.engine.spring.spi.PluggableTrigger;
 import com.davidrandoll.automation.engine.spring.web.events.AEHttpRequestEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.util.ObjectUtils;

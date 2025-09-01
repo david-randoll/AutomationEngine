@@ -1,7 +1,7 @@
 package com.davidrandoll.automation.engine.todo_example.automation_flow.actions.change_assignee;
 
 import com.davidrandoll.automation.engine.core.events.EventContext;
-import com.davidrandoll.automation.engine.spi.PluggableAction;
+import com.davidrandoll.automation.engine.spring.spi.PluggableAction;
 import com.davidrandoll.automation.engine.todo_example.db.repository.TodoAssigneeRepository;
 import com.davidrandoll.automation.engine.todo_example.db.repository.TodoItemRepository;
 import com.davidrandoll.automation.engine.todo_example.db.table.TodoAssignee;

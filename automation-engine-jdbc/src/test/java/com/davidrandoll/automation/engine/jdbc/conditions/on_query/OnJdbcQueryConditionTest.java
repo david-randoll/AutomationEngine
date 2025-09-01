@@ -3,7 +3,7 @@ package com.davidrandoll.automation.engine.jdbc.conditions.on_query;
 import com.davidrandoll.automation.engine.core.Automation;
 import com.davidrandoll.automation.engine.core.events.EventContext;
 import com.davidrandoll.automation.engine.jdbc.TestConfig;
-import com.davidrandoll.automation.engine.modules.events.time_based.TimeBasedEvent;
+import com.davidrandoll.automation.engine.spring.modules.events.time_based.TimeBasedEvent;
 import com.davidrandoll.automation.engine.test.AutomationEngineTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

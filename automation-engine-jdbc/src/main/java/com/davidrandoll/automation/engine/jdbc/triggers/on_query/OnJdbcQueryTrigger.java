@@ -1,7 +1,7 @@
 package com.davidrandoll.automation.engine.jdbc.triggers.on_query;
 
 import com.davidrandoll.automation.engine.core.events.EventContext;
-import com.davidrandoll.automation.engine.spi.PluggableTrigger;
+import com.davidrandoll.automation.engine.spring.spi.PluggableTrigger;
 import com.davidrandoll.automation.engine.templating.TemplateProcessor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;

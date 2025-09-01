@@ -1,6 +1,6 @@
 package com.davidrandoll.automation.engine.spring.events.modules.publish_spring_event;
 
-import com.davidrandoll.automation.engine.modules.events.DefaultEvent;
+import com.davidrandoll.automation.engine.spring.modules.events.DefaultEvent;
 import com.davidrandoll.automation.engine.test.AutomationEngineTest;
 import com.davidrandoll.automation.engine.test.EventCaptureListener;
 import org.junit.jupiter.api.BeforeEach;

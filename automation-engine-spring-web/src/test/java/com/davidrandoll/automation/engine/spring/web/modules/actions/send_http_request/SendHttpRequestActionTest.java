@@ -1,7 +1,7 @@
 package com.davidrandoll.automation.engine.spring.web.modules.actions.send_http_request;
 
 import com.davidrandoll.automation.engine.core.events.EventContext;
-import com.davidrandoll.automation.engine.modules.events.time_based.TimeBasedEvent;
+import com.davidrandoll.automation.engine.spring.modules.events.time_based.TimeBasedEvent;
 import com.davidrandoll.automation.engine.spring.web.utils.JsonNodeMatcher;
 import com.davidrandoll.automation.engine.test.AutomationEngineTest;
 import com.fasterxml.jackson.databind.JsonNode;

@@ -23,7 +23,7 @@
     <dependencies>
         <dependency>
             <groupId>com.davidrandoll</groupId>
-            <artifactId>spring-boot-starter-automation-engine</artifactId>
+            <artifactId>automation-engine-spring</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>

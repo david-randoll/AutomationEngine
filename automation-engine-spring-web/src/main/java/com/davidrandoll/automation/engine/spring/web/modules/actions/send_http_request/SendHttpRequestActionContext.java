@@ -4,7 +4,7 @@ import com.davidrandoll.automation.engine.core.actions.IActionContext;
 import com.davidrandoll.automation.engine.spring.web.events.AEHttpRequestEvent;
 import com.davidrandoll.automation.engine.spring.web.events.AEHttpResponseEvent;
 import com.davidrandoll.automation.engine.spring.web.jackson.flexible_multi_value_map.FlexibleMultiValueMap;
-import com.davidrandoll.automation.engine.modules.triggers.always_true.AlwaysTrueTrigger;
+import com.davidrandoll.automation.engine.spring.modules.triggers.always_true.AlwaysTrueTrigger;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Data;
