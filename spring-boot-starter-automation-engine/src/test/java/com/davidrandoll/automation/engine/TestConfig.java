@@ -11,9 +11,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
 
-@TestConfiguration
-public class TestConfig {
-    // public cors
+    // Configure security to allow all requests for testing
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
