@@ -36,7 +36,7 @@ jobs:
           gpgconf --launch gpg-agent
 
       - name: Build and Sign with Maven
-        run: mvn -B clean verify -Dgpg.passphrase="${{ secrets.GPG_PASSPHRASE }}" -Dgpg.keyname="${{ secrets.GPG_KEYNAME }}"
+        run: mvn -B clean verify -Pcentral -Dgpg.passphrase="${{ secrets.GPG_PASSPHRASE }}" -Dgpg.keyname="${{ secrets.GPG_KEYNAME }}"
 
       - name: Upload JARs
         uses: actions/upload-artifact@v4

@@ -6,10 +6,12 @@
     <parent>
         <groupId>com.davidrandoll</groupId>
         <artifactId>automation-engine</artifactId>
-        <version>1.3.0</version>
+        <version>1.3.1</version>
     </parent>
 
     <artifactId>automation-engine-spring</artifactId>
+    <name>Automation Engine Spring</name>
+    <description>Spring Boot integration for Automation Engine</description>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
