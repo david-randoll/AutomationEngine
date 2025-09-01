@@ -26,7 +26,31 @@
             <groupId>com.davidrandoll</groupId>
             <artifactId>automation-engine-spring</artifactId>
             <version>${project.version}</version>
-            <scope>provided</scope>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.davidrandoll</groupId>
+            <artifactId>automation-engine-spring-events</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.davidrandoll</groupId>
+            <artifactId>automation-engine-spring-web</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.davidrandoll</groupId>
+            <artifactId>automation-engine-jdbc</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.davidrandoll</groupId>
+            <artifactId>automation-engine-test</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

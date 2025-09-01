@@ -1,14 +1,13 @@
 package com.davidrandoll.automation.engine.spring;
 
-import com.davidrandoll.automation.engine.spring.AEConfigProvider;
-import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
 import java.time.Duration;
 
-@TestConfiguration
+@Configuration
 public class TestConfig {
     @Bean
     @Primary
