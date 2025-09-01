@@ -3,13 +3,9 @@ package com.davidrandoll.automation.engine.modules.actions.if_then_else;
 import com.davidrandoll.automation.engine.core.events.EventContext;
 import com.davidrandoll.automation.engine.spi.PluggableAction;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 
-@Component("ifThenElseAction")
 @RequiredArgsConstructor
-@ConditionalOnMissingBean(name = "ifThenElseAction", ignored = IfThenElseAction.class)
 public class IfThenElseAction extends PluggableAction<IfThenElseActionContext> {
 
     @Override

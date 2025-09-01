@@ -1,16 +1,12 @@
 package com.davidrandoll.automation.engine.spring.web.modules.triggers.on_http_path_exists;
 
 import com.davidrandoll.automation.engine.core.events.EventContext;
-import com.davidrandoll.automation.engine.spring.web.events.AEHttpRequestEvent;
 import com.davidrandoll.automation.engine.spi.PluggableTrigger;
+import com.davidrandoll.automation.engine.spring.web.events.AEHttpRequestEvent;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 
-@Component("onHttpPathExistsTrigger")
 @RequiredArgsConstructor
-@ConditionalOnMissingBean(name = "onHttpPathExistsTrigger", ignored = OnHttpPathExistsTrigger.class)
 public class OnHttpPathExistsTrigger extends PluggableTrigger<OnHttpPathExistsTriggerContext> {
     @Override
     public boolean isTriggered(EventContext ec, OnHttpPathExistsTriggerContext tc) {

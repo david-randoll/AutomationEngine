@@ -1,11 +1,9 @@
 package com.davidrandoll.automation.engine.spring.events;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
-import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Import;
 
 @AutoConfiguration
-@ComponentScan
-@ConfigurationPropertiesScan
+@Import(AESpringEventsConfig.class)
 public class AESpringEventsAutoConfiguration {
 }

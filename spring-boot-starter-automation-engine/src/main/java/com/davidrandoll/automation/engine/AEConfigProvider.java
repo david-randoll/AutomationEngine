@@ -1,4 +1,4 @@
-package com.davidrandoll.automation.engine.provider;
+package com.davidrandoll.automation.engine;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

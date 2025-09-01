@@ -1,15 +1,11 @@
 package com.davidrandoll.automation.engine.spring.web.modules.triggers.on_http_response;
 
 import com.davidrandoll.automation.engine.core.events.EventContext;
-import com.davidrandoll.automation.engine.spring.web.events.AEHttpResponseEvent;
 import com.davidrandoll.automation.engine.spi.PluggableTrigger;
+import com.davidrandoll.automation.engine.spring.web.events.AEHttpResponseEvent;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.stereotype.Component;
 
-@Component("onHttpServerErrorResponseTrigger")
 @RequiredArgsConstructor
-@ConditionalOnMissingBean(name = "onHttpServerErrorResponseTrigger", ignored = OnHttpServerErrorResponseTrigger.class)
 public class OnHttpServerErrorResponseTrigger extends PluggableTrigger<OnHttpResponseTriggerContext> {
     private final OnHttpResponseTrigger onHttpResponseTrigger;
 

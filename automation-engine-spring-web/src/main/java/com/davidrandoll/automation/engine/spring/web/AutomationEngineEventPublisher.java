@@ -9,10 +9,8 @@ import com.davidrandoll.spring_web_captor.event.HttpResponseEvent;
 import com.davidrandoll.spring_web_captor.publisher.IWebCaptorEventPublisher;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 
 @Slf4j
-@Component
 @RequiredArgsConstructor
 public class AutomationEngineEventPublisher implements IWebCaptorEventPublisher {
     private final AutomationEngine publisher;

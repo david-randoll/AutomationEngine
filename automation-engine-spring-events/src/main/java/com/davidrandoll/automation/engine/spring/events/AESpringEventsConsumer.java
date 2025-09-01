@@ -1,15 +1,10 @@
 package com.davidrandoll.automation.engine.spring.events;
 
 import com.davidrandoll.automation.engine.AutomationEngine;
-import com.davidrandoll.automation.engine.spring.events.properties.AESpringEventsEnabled;
 import com.davidrandoll.automation.engine.spring.events.properties.AESpringEventsProperties;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Conditional;
-import org.springframework.stereotype.Component;
 
-@Component
 @RequiredArgsConstructor
-@Conditional(AESpringEventsEnabled.class)
 public class AESpringEventsConsumer {
     private final AutomationEngine engine;
     private final AESpringEventsProperties properties;

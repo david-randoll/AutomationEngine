@@ -3,7 +3,8 @@ package com.davidrandoll.automation.engine.backend.api.controllers;
 import com.davidrandoll.automation.engine.backend.api.dtos.AllBlockWithSchema;
 import com.davidrandoll.automation.engine.backend.api.dtos.BlockType;
 import com.davidrandoll.automation.engine.backend.api.dtos.BlocksByType;
-import com.davidrandoll.automation.engine.backend.api.services.AESchemaService;
+import com.davidrandoll.automation.engine.backend.api.services.IAESchemaService;
+import com.davidrandoll.automation.engine.creator.AutomationDefinition;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/automation-engine")
 @RequiredArgsConstructor
 public class AutomationEngineController {
-    private final AESchemaService service;
+    private final IAESchemaService service;
 
     @GetMapping("block/{type}")
     public BlocksByType getBlocksByType(@PathVariable String type,
@@ -21,7 +22,7 @@ public class AutomationEngineController {
 
     @GetMapping("block/{name}/schema")
     public BlockType getSchemaByBeanName(@PathVariable String name) {
-        if (AESchemaService.AUTOMATION_DEFINITION.equals(name)) {
+        if (AutomationDefinition.class.getSimpleName().equals(name)) {
             return service.getAutomationDefinition();
         }
         return service.getSchemaByBlockName(name);

@@ -1,18 +1,14 @@
 package com.davidrandoll.automation.engine.spring.web.modules.triggers.on_http_request;
 
 import com.davidrandoll.automation.engine.core.events.EventContext;
-import com.davidrandoll.automation.engine.spring.web.utils.HttpServletUtils;
-import com.davidrandoll.automation.engine.spring.web.utils.JsonNodeMatcher;
 import com.davidrandoll.automation.engine.spi.PluggableTrigger;
 import com.davidrandoll.automation.engine.spring.web.events.AEHttpRequestEvent;
+import com.davidrandoll.automation.engine.spring.web.utils.HttpServletUtils;
+import com.davidrandoll.automation.engine.spring.web.utils.JsonNodeMatcher;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.stereotype.Component;
 
-@Component("onHttpRequestTrigger")
 @RequiredArgsConstructor
-@ConditionalOnMissingBean(name = "onHttpRequestTrigger", ignored = OnHttpRequestTrigger.class)
 public class OnHttpRequestTrigger extends PluggableTrigger<OnHttpRequestTriggerContext> {
     private final ObjectMapper objectMapper;
 

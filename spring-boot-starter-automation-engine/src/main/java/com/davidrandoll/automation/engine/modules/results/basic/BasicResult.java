@@ -6,15 +6,11 @@ import com.davidrandoll.automation.engine.spi.PluggableResult;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 
 import java.util.Optional;
 
 @Slf4j
-@Component("basicResult")
-@ConditionalOnMissingBean(name = "basicResult", ignored = BasicResult.class)
 public class BasicResult extends PluggableResult<BasicResultContext> {
 
     @Override

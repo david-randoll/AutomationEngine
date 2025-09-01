@@ -4,16 +4,10 @@ import com.davidrandoll.automation.engine.core.events.EventContext;
 import com.davidrandoll.automation.engine.spi.PluggableAction;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.stereotype.Component;
 
 @Slf4j
-@Component("jdbcExecuteAction")
 @RequiredArgsConstructor
-@ConditionalOnMissingBean(name = "jdbcExecuteAction", ignored = JdbcExecuteAction.class)
-@ConditionalOnClass(NamedParameterJdbcTemplate.class)
 public class JdbcExecuteAction extends PluggableAction<JdbcExecuteActionContext> {
     private final NamedParameterJdbcTemplate jdbcTemplate;
 

@@ -9,9 +9,6 @@ import com.davidrandoll.automation.engine.templating.utils.JsonNodeVariableProce
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.core.annotation.Order;
-import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 
 import static org.apache.commons.lang3.BooleanUtils.isFalse;
@@ -25,10 +22,7 @@ import static org.apache.commons.lang3.BooleanUtils.isFalse;
  * </p>
  */
 @Slf4j
-@Component("actionTemplatingInterceptor")
 @RequiredArgsConstructor
-@Order(-1)
-@ConditionalOnMissingBean(name = "actionTemplatingInterceptor", ignored = ActionTemplatingInterceptor.class)
 public class ActionTemplatingInterceptor implements IActionInterceptor {
     private final JsonNodeVariableProcessor processor;
     private final ObjectMapper objectMapper;

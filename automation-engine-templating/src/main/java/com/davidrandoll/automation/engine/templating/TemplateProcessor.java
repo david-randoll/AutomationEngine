@@ -4,8 +4,6 @@ package com.davidrandoll.automation.engine.templating;
 import io.pebbletemplates.pebble.PebbleEngine;
 import io.pebbletemplates.pebble.template.PebbleTemplate;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -18,9 +16,7 @@ import java.util.Map;
  * It uses the PebbleEngine to evaluate the template and return the rendered result.
  * </p>
  */
-@Service("templateProcessor")
 @RequiredArgsConstructor
-@ConditionalOnMissingBean(name = "templateProcessor", ignored = TemplateProcessor.class)
 public class TemplateProcessor {
     private final PebbleEngine pebbleEngine;
 

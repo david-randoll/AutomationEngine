@@ -1,19 +1,16 @@
 package com.davidrandoll.automation.engine.spring.web.modules.actions.send_http_request;
 
 import com.davidrandoll.automation.engine.core.events.EventContext;
+import com.davidrandoll.automation.engine.spi.PluggableAction;
 import com.davidrandoll.automation.engine.spring.web.events.AEHttpRequestEvent;
 import com.davidrandoll.automation.engine.spring.web.events.AEHttpResponseEvent;
 import com.davidrandoll.automation.engine.spring.web.utils.HttpServletUtils;
-import com.davidrandoll.automation.engine.spi.PluggableAction;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -22,10 +19,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import static org.apache.commons.lang3.BooleanUtils.isFalse;
 
 @Slf4j
-@Component("sendHttpRequestAction")
 @RequiredArgsConstructor
-@ConditionalOnMissingBean(name = "sendHttpRequestAction", ignored = SendHttpRequestAction.class)
-@ConditionalOnClass(WebClient.class)
 public class SendHttpRequestAction extends PluggableAction<SendHttpRequestActionContext> {
     private final ObjectMapper mapper;
 

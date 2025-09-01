@@ -1,19 +1,15 @@
 package com.davidrandoll.automation.engine.spring.web.modules.conditions.http_response_status;
 
 import com.davidrandoll.automation.engine.core.events.EventContext;
+import com.davidrandoll.automation.engine.spi.PluggableCondition;
 import com.davidrandoll.automation.engine.spring.web.events.AEHttpResponseEvent;
 import com.davidrandoll.automation.engine.spring.web.utils.StringMatcher;
-import com.davidrandoll.automation.engine.spi.PluggableCondition;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-@Component("httpResponseStatusCondition")
 @RequiredArgsConstructor
-@ConditionalOnMissingBean(name = "httpResponseStatusCondition", ignored = HttpResponseStatusCondition.class)
 public class HttpResponseStatusCondition extends PluggableCondition<HttpResponseStatusConditionContext> {
     private final ObjectMapper objectMapper;
 
