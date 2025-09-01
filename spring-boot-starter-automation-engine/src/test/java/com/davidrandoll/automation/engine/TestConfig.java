@@ -1,4 +1,4 @@
-package com.davidrandoll.automation.engine.backend.api.controllers;
+package com.davidrandoll.automation.engine;
 
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
