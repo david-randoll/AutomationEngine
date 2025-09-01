@@ -18,7 +18,7 @@ public class TestConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .csrf(AbstractHttpConfigurer::disable) // Disable CSRF if you’re using APIs
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .anyRequest().permitAll()
                 );
@@ -29,11 +29,11 @@ public class TestConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(List.of("*")); // allow all origins
-        configuration.setAllowedMethods(List.of("*"));        // allow all methods (GET, POST, etc.)
-        configuration.setAllowedHeaders(List.of("*"));        // allow all headers
-        configuration.setAllowCredentials(true);              // if you need cookies/auth headers
-        configuration.setMaxAge(3600L);                       // cache preflight response for 1h
+        configuration.setAllowedOriginPatterns(List.of("*"));
+        configuration.setAllowedMethods(List.of("*"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowCredentials(false);
+        configuration.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
