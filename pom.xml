@@ -40,7 +40,7 @@
         <module>automation-engine-spring-web</module>
         <module>automation-engine-spring-events</module>
         <module>automation-engine-test</module>
-        <module>automation-engine-jdbc</module>
+        <module>automation-engine-spring-jdbc</module>
         <module>automation-engine-backend-api</module>
         <module>automation-engine-spring</module>
     </modules>
