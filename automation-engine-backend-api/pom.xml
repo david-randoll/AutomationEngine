@@ -9,7 +9,6 @@
         <version>1.2.0</version>
     </parent>
 
-    <groupId>com.davidrandoll.automation.engine.backend.api</groupId>
     <artifactId>automation-engine-backend-api</artifactId>
 
     <properties>
@@ -23,7 +22,7 @@
     <dependencies>
         <dependency>
             <groupId>com.davidrandoll</groupId>
-            <artifactId>spring-boot-starter-automation-engine</artifactId>
+            <artifactId>automation-engine-core</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
@@ -63,11 +62,5 @@
             <artifactId>spring-boot-starter-web</artifactId>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-security</artifactId>
-            <scope>test</scope>
-        </dependency>
-
     </dependencies>
 </project>

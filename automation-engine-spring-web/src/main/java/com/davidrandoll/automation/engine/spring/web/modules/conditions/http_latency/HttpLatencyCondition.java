@@ -1,7 +1,7 @@
 package com.davidrandoll.automation.engine.spring.web.modules.conditions.http_latency;
 
 import com.davidrandoll.automation.engine.core.events.EventContext;
-import com.davidrandoll.automation.engine.spi.PluggableCondition;
+import com.davidrandoll.automation.engine.spring.spi.PluggableCondition;
 import com.davidrandoll.automation.engine.spring.web.events.AEHttpResponseEvent;
 import com.davidrandoll.automation.engine.spring.web.modules.triggers.on_slow_http_request.OnSlowHttpRequestException;
 import lombok.RequiredArgsConstructor;

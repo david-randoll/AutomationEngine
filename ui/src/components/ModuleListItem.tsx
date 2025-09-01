@@ -6,6 +6,7 @@ import { FaTrash } from "react-icons/fa";
 import ModuleEditor from "./ModuleEditor";
 import { useFormContext, useWatch } from "react-hook-form";
 import { AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
+import { useAutomationEngine } from "@/providers/AutomationEngineProvider";
 
 interface ModuleListItemProps {
     path: Path;
@@ -13,11 +14,17 @@ interface ModuleListItemProps {
 }
 
 const ModuleListItem = ({ path, onRemove }: ModuleListItemProps) => {
+    const { evictSchema } = useAutomationEngine();
     const { control } = useFormContext();
     const mod = useWatch({
         control,
         name: path.join("."),
     });
+
+    const handleRemove = () => {
+        evictSchema(path.join("."));
+        onRemove();
+    };
 
     return (
         <AccordionItem value={`${path}`} className="border rounded-lg bg-white shadow-sm">
@@ -32,7 +39,7 @@ const ModuleListItem = ({ path, onRemove }: ModuleListItemProps) => {
                         variant="outline"
                         size="sm"
                         className="flex items-center gap-1 px-2 py-1 text-red-700"
-                        onClick={onRemove}>
+                        onClick={handleRemove}>
                         <FaTrash /> Delete
                     </Button>
                 </div>

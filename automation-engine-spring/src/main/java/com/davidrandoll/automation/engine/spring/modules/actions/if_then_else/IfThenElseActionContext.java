@@ -1,0 +1,67 @@
+package com.davidrandoll.automation.engine.spring.modules.actions.if_then_else;
+
+import com.davidrandoll.automation.engine.core.actions.IActionContext;
+import com.davidrandoll.automation.engine.creator.actions.ActionDefinition;
+import com.davidrandoll.automation.engine.creator.conditions.ConditionDefinition;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.FieldNameConstants;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
+@FieldNameConstants
+@JsonPropertyOrder({
+        IfThenElseActionContext.Fields.alias,
+        IfThenElseActionContext.Fields.description,
+        IfThenElseActionContext.Fields.ifConditions,
+        IfThenElseActionContext.Fields.thenActions,
+        IfThenElseActionContext.Fields.ifThenBlocks,
+        IfThenElseActionContext.Fields.elseActions
+})
+public class IfThenElseActionContext implements IActionContext {
+    private String alias;
+    private String description;
+
+    @JsonProperty("if")
+    private List<ConditionDefinition> ifConditions = new ArrayList<>();
+
+    @JsonProperty("then")
+    private List<ActionDefinition> thenActions = new ArrayList<>();
+
+    @JsonProperty("ifs")
+    private List<IfThenBlock> ifThenBlocks = new ArrayList<>();
+
+    @JsonProperty("else")
+    private List<ActionDefinition> elseActions = new ArrayList<>();
+
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    @FieldNameConstants
+    @JsonPropertyOrder({
+            IfThenBlock.Fields.alias,
+            IfThenBlock.Fields.description,
+            IfThenBlock.Fields.ifConditions,
+            IfThenBlock.Fields.thenActions
+    })
+    public static class IfThenBlock implements IActionContext {
+        private String alias;
+        private String description;
+
+        @JsonProperty("if")
+        private List<ConditionDefinition> ifConditions = new ArrayList<>();
+
+        @JsonProperty("then")
+        private List<ActionDefinition> thenActions = new ArrayList<>();
+    }
+}

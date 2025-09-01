@@ -5,6 +5,7 @@ import React, { createContext, useContext, useState, ReactNode } from "react";
 interface AutomationEngineContextType {
     getSchema: (path: string, loader: () => Promise<JsonSchema>) => Promise<JsonSchema>;
     setSchema: (path: string, schema: JsonSchema) => void;
+    evictSchema: (path: string) => void;
     hasSchema: (path: string) => boolean;
 }
 
@@ -26,9 +27,18 @@ export const AutomationEngineProvider = ({ children }: { children: ReactNode }) 
         setCache(new Map(cache.set(path, schema)));
     };
 
+    const evictSchema = (path: string) => {
+        const newCache = new Map(cache);
+        newCache.delete(path);
+        setCache(newCache);
+    };
+
     const hasSchema = (path: string) => cache.has(path);
 
-    const contextValue = React.useMemo(() => ({ getSchema, setSchema, hasSchema }), [getSchema, setSchema, hasSchema]);
+    const contextValue = React.useMemo(
+        () => ({ getSchema, setSchema, hasSchema, evictSchema }),
+        [getSchema, setSchema, hasSchema, evictSchema]
+    );
 
     return <AutomationEngineContext.Provider value={contextValue}>{children}</AutomationEngineContext.Provider>;
 };

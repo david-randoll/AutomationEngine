@@ -1,7 +1,7 @@
 package com.davidrandoll.automation.engine.todo_example.automation_flow.actions.send_email;
 
 import com.davidrandoll.automation.engine.core.events.EventContext;
-import com.davidrandoll.automation.engine.spi.PluggableAction;
+import com.davidrandoll.automation.engine.spring.spi.PluggableAction;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

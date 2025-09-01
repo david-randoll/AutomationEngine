@@ -1,6 +1,6 @@
 package com.davidrandoll.automation.engine.spring.events.properties;
 
-import com.davidrandoll.automation.engine.utils.ConditionalUtils;
+import com.davidrandoll.automation.engine.spring.utils.ConditionalUtils;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;

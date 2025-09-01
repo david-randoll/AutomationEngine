@@ -1,5 +1,0 @@
-server:
-  port: 8085
-logging:
-  level:
-    com.davidrandoll.automation.engine: DEBUG

@@ -7,6 +7,7 @@
     <runConfiguration name="All in todo-example" type="JUnit" />
     <runConfiguration name="All in automation-engine-spring-events" type="JUnit" />
     <runConfiguration name="All in automation-engine-jdbc" type="JUnit" />
+    <runConfiguration name="All in automation-engine-spring" type="JUnit" />
     <method v="2" />
   </configuration>
 </component>

@@ -1,7 +1,7 @@
 package com.davidrandoll.automation.engine.spring.web.modules.conditions.on_http_path_exists;
 
 import com.davidrandoll.automation.engine.core.events.EventContext;
-import com.davidrandoll.automation.engine.spi.PluggableCondition;
+import com.davidrandoll.automation.engine.spring.spi.PluggableCondition;
 import com.davidrandoll.automation.engine.spring.web.modules.triggers.on_http_path_exists.OnHttpPathExistsTrigger;
 import com.davidrandoll.automation.engine.spring.web.modules.triggers.on_http_path_exists.OnHttpPathExistsTriggerContext;
 import lombok.RequiredArgsConstructor;

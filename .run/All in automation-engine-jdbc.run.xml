@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="All in automation-engine-jdbc" type="JUnit" factoryName="JUnit" nameIsGenerated="true">
-    <module name="automation-engine-jdbc" />
+    <module name="automation-engine-spring-jdbc" />
     <extension name="software.aws.toolkits.jetbrains.core.execution.JavaAwsConnectionExtension">
       <option name="credential" />
       <option name="region" />
