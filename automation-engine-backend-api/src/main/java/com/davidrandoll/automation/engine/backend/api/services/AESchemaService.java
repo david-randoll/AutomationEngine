@@ -14,35 +14,35 @@ import com.davidrandoll.automation.engine.creator.AutomationDefinition;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Map;
 
-@Service
 @RequiredArgsConstructor
-public class AESchemaService {
-    public static final String AUTOMATION_DEFINITION = "AutomationDefinition";
+public class AESchemaService implements IAESchemaService {
     private final JsonSchemaService jsonSchemaService;
     private final ApplicationContext application;
 
+    @Override
     public BlockType getAutomationDefinition() {
         var schema = jsonSchemaService.generateSchema(AutomationDefinition.class);
         return new BlockType(
-                AUTOMATION_DEFINITION,
+                AutomationDefinition.class.getSimpleName(),
                 "Automation Definition",
                 "The parent block for all automations",
                 schema
         );
     }
 
+    @Override
     public BlocksByType getBlocksByType(String moduleType, Boolean includeSchema) {
         Class<? extends IBlock> clazz = getBeanByModule(moduleType);
         List<BlockType> types = getModuleByType(clazz, includeSchema);
         return new BlocksByType(types);
     }
 
+    @Override
     public BlockType getSchemaByBlockName(String name) {
         //check if bean exists
         if (!application.containsBean(name)) {
@@ -57,6 +57,7 @@ public class AESchemaService {
         return new BlockType(name, module, schema);
     }
 
+    @Override
     public AllBlockWithSchema getAllBlockSchemas() {
         List<BlockType> types = getModuleByType(IBlock.class, true);
         return new AllBlockWithSchema(types);
