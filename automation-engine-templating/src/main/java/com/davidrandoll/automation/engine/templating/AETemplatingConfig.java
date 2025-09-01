@@ -7,14 +7,21 @@ import com.davidrandoll.automation.engine.templating.extensions.filters.TimeForm
 import com.davidrandoll.automation.engine.templating.interceptors.*;
 import com.davidrandoll.automation.engine.templating.utils.JsonNodeVariableProcessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.pebbletemplates.boot.autoconfigure.PebbleProperties;
 import io.pebbletemplates.pebble.PebbleEngine;
+import io.pebbletemplates.pebble.attributes.methodaccess.MethodAccessValidator;
 import io.pebbletemplates.pebble.extension.AbstractExtension;
+import io.pebbletemplates.pebble.extension.Extension;
 import io.pebbletemplates.pebble.extension.Filter;
+import io.pebbletemplates.pebble.loader.Loader;
+import io.pebbletemplates.spring.extension.SpringExtension;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.lang.Nullable;
 
+import java.util.List;
 import java.util.Map;
 
 @Configuration
@@ -91,5 +98,33 @@ public class AETemplatingConfig {
     @ConditionalOnMissingBean(name = "customExtension", ignored = CustomExtension.class)
     public AbstractExtension customExtension(Map<String, Filter> filters) {
         return new CustomExtension(filters);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public PebbleEngine pebbleEngine(PebbleProperties properties,
+                                     Loader<?> pebbleLoader,
+                                     SpringExtension springExtension,
+                                     @Nullable List<Extension> extensions,
+                                     @Nullable MethodAccessValidator methodAccessValidator) {
+        PebbleEngine.Builder builder = new PebbleEngine.Builder();
+        builder.loader(pebbleLoader);
+        builder.extension(springExtension);
+        if (extensions != null && !extensions.isEmpty()) {
+            builder.extension(extensions.toArray(new Extension[0]));
+        }
+        if (!properties.isCache()) {
+            builder.cacheActive(false);
+        }
+        if (properties.getDefaultLocale() != null) {
+            builder.defaultLocale(properties.getDefaultLocale());
+        }
+        builder.strictVariables(properties.isStrictVariables());
+        builder.greedyMatchMethod(properties.isGreedyMatchMethod());
+        if (methodAccessValidator != null) {
+            builder.methodAccessValidator(methodAccessValidator);
+        }
+        builder.autoEscaping(false);
+        return builder.build();
     }
 }

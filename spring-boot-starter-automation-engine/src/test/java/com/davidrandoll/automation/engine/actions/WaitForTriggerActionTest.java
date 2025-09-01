@@ -1,15 +1,17 @@
 package com.davidrandoll.automation.engine.actions;
 
-import com.davidrandoll.automation.engine.test.AutomationEngineTest;
+import com.davidrandoll.automation.engine.TestConfig;
 import com.davidrandoll.automation.engine.core.Automation;
 import com.davidrandoll.automation.engine.modules.events.time_based.TimeBasedEvent;
+import com.davidrandoll.automation.engine.test.AutomationEngineTest;
 import org.junit.jupiter.api.Test;
+import org.springframework.context.annotation.Import;
 
 import java.time.LocalTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-
+@Import(TestConfig.class)
 class WaitForTriggerActionTest extends AutomationEngineTest {
 
     @Test

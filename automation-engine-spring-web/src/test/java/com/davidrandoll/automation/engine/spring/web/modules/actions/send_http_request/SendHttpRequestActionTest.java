@@ -1,16 +1,18 @@
 package com.davidrandoll.automation.engine.spring.web.modules.actions.send_http_request;
 
 import com.davidrandoll.automation.engine.core.events.EventContext;
-import com.davidrandoll.automation.engine.test.AutomationEngineTest;
-import com.davidrandoll.automation.engine.spring.web.utils.JsonNodeMatcher;
 import com.davidrandoll.automation.engine.modules.events.time_based.TimeBasedEvent;
+import com.davidrandoll.automation.engine.spring.web.utils.JsonNodeMatcher;
+import com.davidrandoll.automation.engine.test.AutomationEngineTest;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.Test;
+import org.springframework.context.annotation.Import;
 
 import java.time.LocalTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Import(SendHttpRequestController.class)
 class SendHttpRequestActionTest extends AutomationEngineTest {
 
     @Test
