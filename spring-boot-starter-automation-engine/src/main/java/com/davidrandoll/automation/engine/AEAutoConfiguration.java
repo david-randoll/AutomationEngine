@@ -7,5 +7,4 @@ import org.springframework.context.annotation.Import;
 @AutoConfiguration
 @Import(AESpringConfig.class)
 public class AEAutoConfiguration {
-
 }
