@@ -10,6 +10,7 @@ import ModuleListItem from "./ModuleListItem";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "./ui/accordion";
 import { Button } from "./ui/button";
 import ModuleEditor from "./ModuleEditor";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 
 interface FieldRendererProps {
     fieldKey: string | number;
@@ -215,6 +216,32 @@ const FieldRenderer = ({ fieldKey, schema, rootSchema, pathInData, onAddBlock }:
                             onChange={(e) => field.onChange(parseFloat(e.target.value))}
                             value={field.value}
                         />
+                    )}
+                />
+            </div>
+        );
+    }
+
+    if (type === "string" && resolvedSch.enum) {
+        return (
+            <div key={name}>
+                <label className="block text-sm font-medium">{capitalize(title)}</label>
+                <Controller
+                    control={control}
+                    name={name}
+                    render={({ field }) => (
+                        <Select value={field.value || ""} onValueChange={(value) => field.onChange(value)}>
+                            <SelectTrigger className="w-full">
+                                <SelectValue placeholder={`Select ${capitalize(title)}`} />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {resolvedSch.enum.map((enumValue: string) => (
+                                    <SelectItem key={enumValue} value={enumValue}>
+                                        {capitalize(enumValue)}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
                     )}
                 />
             </div>
