@@ -26,7 +26,7 @@ public class PublishRabbitMqEventActionContext implements IActionContext {
     private String description;
     private Exchange exchange;
     private Queue queue;
-    private String routingKey;
+    private String routingKey = "";
 
     private Map<String, Object> message;
 
@@ -36,11 +36,15 @@ public class PublishRabbitMqEventActionContext implements IActionContext {
     @FieldNameConstants
     @JsonPropertyOrder({
             Exchange.Fields.name,
-            Exchange.Fields.type
+            Exchange.Fields.type,
+            Exchange.Fields.durable,
+            Exchange.Fields.autoDelete
     })
     public static class Exchange {
         private String name;
         private ExchangeType type;
+        private boolean durable = true;
+        private boolean autoDelete = false;
     }
 
     public enum ExchangeType {
@@ -61,8 +65,8 @@ public class PublishRabbitMqEventActionContext implements IActionContext {
     })
     public static class Queue {
         private String name;
-        private boolean durable;
-        private boolean exclusive;
-        private boolean autoDelete;
+        private boolean durable = true;
+        private boolean exclusive = false;
+        private boolean autoDelete = false;
     }
 }

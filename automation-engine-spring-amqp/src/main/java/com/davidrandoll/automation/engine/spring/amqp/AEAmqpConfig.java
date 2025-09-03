@@ -1,6 +1,8 @@
 package com.davidrandoll.automation.engine.spring.amqp;
 
 import com.davidrandoll.automation.engine.spring.amqp.actions.PublishRabbitMqEventAction;
+import org.springframework.amqp.core.AmqpAdmin;
+import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
 public class AEAmqpConfig {
     @Bean("publishRabbitMqEventAction")
     @ConditionalOnMissingBean(name = "publishRabbitMqEventAction", ignored = PublishRabbitMqEventAction.class)
-    public PublishRabbitMqEventAction publishRabbitMqEventAction() {
-        return new PublishRabbitMqEventAction();
+    public PublishRabbitMqEventAction publishRabbitMqEventAction(AmqpTemplate amqpTemplate, AmqpAdmin amqpAdmin) {
+        return new PublishRabbitMqEventAction(amqpTemplate, amqpAdmin);
     }
 }
