@@ -1,5 +1,5 @@
 server:
-  port: 13000
+  port: 8085
 spring:
   application:
     name: todo-example

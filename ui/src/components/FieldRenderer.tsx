@@ -10,6 +10,7 @@ import ModuleListItem from "./ModuleListItem";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "./ui/accordion";
 import { Button } from "./ui/button";
 import ModuleEditor from "./ModuleEditor";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 
 interface FieldRendererProps {
     fieldKey: string | number;
@@ -135,20 +136,27 @@ const FieldRenderer = ({ fieldKey, schema, rootSchema, pathInData, onAddBlock }:
     }
 
     if (type === "object" && resolvedSch.properties) {
+        const module = {
+            schema: {
+                ...rootSchema,
+                ...resolvedSch, // override the root schema with item schema
+            },
+        } as ModuleType;
         return (
-            <div key={name} className="border p-3 rounded space-y-2 mb-4">
-                <label className="block font-medium">{capitalize(title)}</label>
-                {Object.entries(resolvedSch.properties).map(([childKey, childSchema]) => (
-                    <FieldRenderer
-                        key={`${name}.${childKey}`}
-                        fieldKey={childKey}
-                        schema={childSchema}
-                        rootSchema={rootSchema}
-                        pathInData={[...pathInData, childKey]}
-                        onAddBlock={onAddBlock}
-                    />
-                ))}
-            </div>
+            <Accordion type="single" collapsible className="w-full">
+                <AccordionItem
+                    key={pathInData.join(".")}
+                    value={pathInData.join(".")}
+                    className="border rounded-lg shadow-sm">
+                    <AccordionTrigger className="flex items-center justify-between px-4 py-3 font-medium hover:text-blue-600 transition-colors">
+                        <span>{capitalize(title)}</span>
+                    </AccordionTrigger>
+
+                    <AccordionContent className="px-4 pb-4 mt-2 space-y-3">
+                        <ModuleEditor module={module} path={pathInData} />
+                    </AccordionContent>
+                </AccordionItem>
+            </Accordion>
         );
     }
 
@@ -208,6 +216,32 @@ const FieldRenderer = ({ fieldKey, schema, rootSchema, pathInData, onAddBlock }:
                             onChange={(e) => field.onChange(parseFloat(e.target.value))}
                             value={field.value}
                         />
+                    )}
+                />
+            </div>
+        );
+    }
+
+    if (type === "string" && resolvedSch.enum) {
+        return (
+            <div key={name}>
+                <label className="block text-sm font-medium">{capitalize(title)}</label>
+                <Controller
+                    control={control}
+                    name={name}
+                    render={({ field }) => (
+                        <Select value={field.value || ""} onValueChange={(value) => field.onChange(value)}>
+                            <SelectTrigger className="w-full">
+                                <SelectValue placeholder={`Select ${capitalize(title)}`} />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {resolvedSch.enum.map((enumValue: string) => (
+                                    <SelectItem key={enumValue} value={enumValue}>
+                                        {capitalize(enumValue)}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
                     )}
                 />
             </div>

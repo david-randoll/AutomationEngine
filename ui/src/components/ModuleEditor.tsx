@@ -116,9 +116,10 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
     function onModalSelect(modFromServer: ModuleType) {
         if (!modalFieldPath || !modalType) return;
 
-        const { name } = modFromServer;
+        const { name, label } = modFromServer;
         const instance: ModuleType = {
             ...nameToArea(name),
+            alias: label,
         };
 
         if (modalTargetIsArray) {
