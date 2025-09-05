@@ -1,6 +1,7 @@
 package com.davidrandoll.automation.engine.spring.converter;
 
 import com.davidrandoll.automation.engine.spring.spi.ITypeConverter;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +16,15 @@ public class TypeConverter implements ITypeConverter {
         var result = (T) objectMapper.convertValue(object, clazz);
         if (result == null) {
             log.warn("Type conversion failed. Object: {}, Class: {}", object, clazz);
+        }
+        return result;
+    }
+
+    @Override
+    public <T> T convert(Object object, TypeReference<T> typeReference) {
+        var result = objectMapper.convertValue(object, typeReference);
+        if (result == null) {
+            log.warn("Type conversion failed. Object: {}, TypeReference: {}", object, typeReference);
         }
         return result;
     }

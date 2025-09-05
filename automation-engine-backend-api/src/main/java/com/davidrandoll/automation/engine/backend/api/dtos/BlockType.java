@@ -19,10 +19,14 @@ public class BlockType {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private JsonNode schema;
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Object examples;
+
     public BlockType(String name, IBlock module, @Nullable JsonNode schema) {
         this.name = name;
         this.label = module.getModuleLabel();
         this.description = module.getModuleDescription();
         this.schema = schema;
+        this.examples = module.getExamples();
     }
 }
