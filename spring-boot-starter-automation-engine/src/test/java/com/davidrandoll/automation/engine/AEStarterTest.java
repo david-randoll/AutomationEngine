@@ -1,9 +1,10 @@
 package com.davidrandoll.automation.engine;
 
-import com.davidrandoll.automation.engine.test.AutomationEngineTest;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
 
-public class AEStarterTest extends AutomationEngineTest {
+@SpringBootTest(classes = AEStarterApplication.class)
+public class AEStarterTest {
     @Test
     void contextLoads() {
     }
