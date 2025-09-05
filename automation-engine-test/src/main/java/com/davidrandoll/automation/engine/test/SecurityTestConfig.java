@@ -1,4 +1,4 @@
-package com.davidrandoll.automation.engine;
+package com.davidrandoll.automation.engine.test;
 
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -12,7 +12,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.List;
 
 @TestConfiguration
-public class TestConfig {
+public class SecurityTestConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
