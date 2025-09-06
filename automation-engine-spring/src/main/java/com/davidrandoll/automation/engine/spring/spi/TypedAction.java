@@ -6,6 +6,9 @@ import com.davidrandoll.automation.engine.core.actions.IActionContext;
 import com.davidrandoll.automation.engine.core.events.EventContext;
 import com.davidrandoll.automation.engine.core.utils.GenericTypeResolver;
 
+import java.util.List;
+import java.util.Map;
+
 public interface TypedAction<T extends IActionContext> extends IAction {
     ITypeConverter getTypeConverter();
 
@@ -30,4 +33,11 @@ public interface TypedAction<T extends IActionContext> extends IAction {
     }
 
     void doExecute(EventContext ec, T ac);
+
+    @Override
+    default List<T> getExamples() {
+        var contextType = getContextType();
+        var example = getTypeConverter().convert(Map.of(), contextType);
+        return List.of((T) example);
+    }
 }

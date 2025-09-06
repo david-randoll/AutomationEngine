@@ -12,6 +12,10 @@ import { Button } from "./ui/button";
 import { agent } from "@/lib/agent";
 import { areaToName, nameToArea } from "@/lib/utils";
 import { useAutomationEngine } from "@/providers/AutomationEngineProvider";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Info } from "lucide-react";
+import { FaLightbulb } from "react-icons/fa";
+import ExamplesViewer from "./ExamplesViewer";
 
 interface ModuleEditorProps {
     module: ModuleType;
@@ -52,7 +56,11 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
             console.log("ModuleEditor: fetching schema for", moduleName);
             const res = await agent.getHttp<ModuleType>(`/automation-engine/block/${moduleName}/schema`);
             if (res.success) {
-                return res.data?.schema;
+                const schema = {
+                    ...res.data?.schema,
+                    examples: res.data?.examples,
+                };
+                return schema;
             } else {
                 console.log("Failed to fetch schema:", res.error?.message);
                 return null;
@@ -172,6 +180,9 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
                         Edit YAML
                     </Button>
                 )}
+                <div className="ml-auto">
+                    {schema?.examples && schema?.examples?.length > 0 && <ExamplesViewer examples={schema.examples} />}
+                </div>
             </div>
 
             {(editMode === "json" || editMode === "yaml") && (

@@ -31,7 +31,8 @@ public class AESchemaService implements IAESchemaService {
                 AutomationDefinition.class.getSimpleName(),
                 "Automation Definition",
                 "The parent block for all automations",
-                schema
+                schema,
+                List.of()
         );
     }
 

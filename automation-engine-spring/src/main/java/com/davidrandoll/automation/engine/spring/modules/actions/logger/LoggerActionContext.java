@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldNameConstants;
+import org.slf4j.event.Level;
 
 @Data
 @AllArgsConstructor
@@ -20,6 +21,6 @@ import lombok.experimental.FieldNameConstants;
 public class LoggerActionContext implements IActionContext {
     private String alias;
     private String description;
-    private String level = "INFO";
+    private Level level = Level.INFO;
     private String message = "No message";
 }

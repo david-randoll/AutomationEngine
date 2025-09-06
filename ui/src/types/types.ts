@@ -8,6 +8,7 @@ type ModuleType = {
     label?: string;
     description?: string;
     schema?: JsonSchema;
+    examples?: any[];
 
     // allow additional fields
     [key: string]: unknown;
