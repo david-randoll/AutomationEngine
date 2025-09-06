@@ -12,41 +12,42 @@ interface ExamplesViewerProps {
 }
 
 const ExamplesViewer = ({ examples }: ExamplesViewerProps) => {
-    const [format, setFormat] = useState<EditMode>("json");
+    const [format, setFormat] = useState<"json" | "yaml">("json");
 
     return (
         <Dialog>
             <DialogTrigger asChild>
                 <Button variant="outline" size="sm">
-                    <FaLightbulb className="h-4 w-4" />
+                    <FaLightbulb className="h-4 w-4 mr-1" />
                     Examples
                 </Button>
             </DialogTrigger>
-            <DialogContent className="min-w-4xl max-w-4xl">
+            <DialogContent className="w-full max-w-[95vw] md:max-w-4xl">
                 <DialogHeader>
                     <DialogTitle>Examples</DialogTitle>
                 </DialogHeader>
 
-                <div className="mb-3 flex items-center gap-2">
+                {/* Toggle Buttons */}
+                <div className="mb-3 flex flex-wrap items-center gap-2">
                     <Button
                         variant={format === "json" ? "default" : "outline"}
                         size="sm"
-                        className="cursor-pointer"
                         onClick={() => setFormat("json")}>
                         JSON
                     </Button>
                     <Button
                         variant={format === "yaml" ? "default" : "outline"}
                         size="sm"
-                        className="cursor-pointer"
                         onClick={() => setFormat("yaml")}>
                         YAML
                     </Button>
                 </div>
 
-                <div className="h-[400px] rounded-md border">
+                {/* Editor */}
+                <div className="h-[300px] md:h-[400px] w-full rounded-md border overflow-hidden">
                     <MonacoEditor
                         height="100%"
+                        width="100%"
                         defaultLanguage={format}
                         language={format}
                         value={format === "json" ? JSON.stringify(examples, null, 2) : yaml.dump(examples)}
