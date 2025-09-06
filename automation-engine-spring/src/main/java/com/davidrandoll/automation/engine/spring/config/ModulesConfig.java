@@ -17,6 +17,10 @@ import com.davidrandoll.automation.engine.spring.modules.conditions.and.AndCondi
 import com.davidrandoll.automation.engine.spring.modules.conditions.not.NotCondition;
 import com.davidrandoll.automation.engine.spring.modules.conditions.on_event_type.OnEventTypeCondition;
 import com.davidrandoll.automation.engine.spring.modules.conditions.or.OrCondition;
+import com.davidrandoll.automation.engine.spring.modules.conditions.security.current_user_has_role.CurrentUserHasRoleCondition;
+import com.davidrandoll.automation.engine.spring.modules.conditions.security.current_user_username.CurrentUserUsernameCondition;
+import com.davidrandoll.automation.engine.spring.modules.conditions.security.is_anonymous.IsAnonymousCondition;
+import com.davidrandoll.automation.engine.spring.modules.conditions.security.is_authenticated.IsAuthenticatedCondition;
 import com.davidrandoll.automation.engine.spring.modules.conditions.template.TemplateCondition;
 import com.davidrandoll.automation.engine.spring.modules.conditions.time_based.TimeBasedCondition;
 import com.davidrandoll.automation.engine.spring.modules.events.AEEventPublisher;
@@ -145,6 +149,33 @@ public class ModulesConfig {
     @ConditionalOnMissingBean(name = "timeCondition", ignored = TimeBasedCondition.class)
     public TimeBasedCondition timeCondition() {
         return new TimeBasedCondition();
+    }
+
+    /*
+     * Security Conditions
+     */
+    @Bean(name = "isAuthenticatedCondition")
+    @ConditionalOnMissingBean(name = "isAuthenticatedCondition", ignored = IsAuthenticatedCondition.class)
+    public IsAuthenticatedCondition isAuthenticatedCondition() {
+        return new IsAuthenticatedCondition();
+    }
+
+    @Bean(name = "isAnonymousCondition")
+    @ConditionalOnMissingBean(name = "isAnonymousCondition", ignored = IsAnonymousCondition.class)
+    public IsAnonymousCondition isAnonymousCondition() {
+        return new IsAnonymousCondition();
+    }
+
+    @Bean(name = "currentUserUsernameCondition")
+    @ConditionalOnMissingBean(name = "currentUserUsernameCondition", ignored = CurrentUserUsernameCondition.class)
+    public CurrentUserUsernameCondition currentUserUsernameCondition() {
+        return new CurrentUserUsernameCondition();
+    }
+
+    @Bean(name = "currentUserHasRoleCondition")
+    @ConditionalOnMissingBean(name = "currentUserHasRoleCondition", ignored = CurrentUserHasRoleCondition.class)
+    public CurrentUserHasRoleCondition currentUserHasRoleCondition() {
+        return new CurrentUserHasRoleCondition();
     }
 
     /*
