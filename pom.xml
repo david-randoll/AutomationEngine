@@ -44,6 +44,7 @@
         <module>automation-engine-backend-api</module>
         <module>automation-engine-spring</module>
         <module>automation-engine-spring-amqp</module>
+        <module>automation-engine-spring-security</module>
     </modules>
     <properties>
         <automation-engine.version>1.3.1</automation-engine.version>
