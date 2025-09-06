@@ -12,35 +12,39 @@ interface ExamplesViewerProps {
 }
 
 const ExamplesViewer = ({ examples }: ExamplesViewerProps) => {
-    const [format, setFormat] = useState<"json" | "yaml">("json");
+    const [format, setFormat] = useState<EditMode>("json");
 
     return (
         <Dialog>
             <DialogTrigger asChild>
                 <Button variant="outline" size="sm">
-                    <FaLightbulb />
+                    <FaLightbulb className="h-4 w-4" />
+                    Examples
                 </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-3xl">
-                <DialogHeader className="flex items-center justify-between">
+            <DialogContent className="min-w-4xl max-w-4xl">
+                <DialogHeader>
                     <DialogTitle>Examples</DialogTitle>
-                    <div className="flex gap-2">
-                        <Button
-                            variant={format === "json" ? "default" : "outline"}
-                            size="sm"
-                            onClick={() => setFormat("json")}>
-                            JSON
-                        </Button>
-                        <Button
-                            variant={format === "yaml" ? "default" : "outline"}
-                            size="sm"
-                            onClick={() => setFormat("yaml")}>
-                            YAML
-                        </Button>
-                    </div>
                 </DialogHeader>
 
-                <div className="h-[400px]">
+                <div className="mb-3 flex items-center gap-2">
+                    <Button
+                        variant={format === "json" ? "default" : "outline"}
+                        size="sm"
+                        className="cursor-pointer"
+                        onClick={() => setFormat("json")}>
+                        JSON
+                    </Button>
+                    <Button
+                        variant={format === "yaml" ? "default" : "outline"}
+                        size="sm"
+                        className="cursor-pointer"
+                        onClick={() => setFormat("yaml")}>
+                        YAML
+                    </Button>
+                </div>
+
+                <div className="h-[400px] rounded-md border">
                     <MonacoEditor
                         height="100%"
                         defaultLanguage={format}
@@ -53,6 +57,7 @@ const ExamplesViewer = ({ examples }: ExamplesViewerProps) => {
                             fontSize: 14,
                             wordWrap: "on",
                             automaticLayout: true,
+                            scrollBeyondLastLine: false,
                         }}
                     />
                 </div>

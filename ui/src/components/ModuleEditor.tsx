@@ -180,7 +180,9 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
                         Edit YAML
                     </Button>
                 )}
-                {schema?.examples && schema?.examples?.length > 0 && <ExamplesViewer examples={schema.examples} />}
+                <div className="ml-auto">
+                    {schema?.examples && schema?.examples?.length > 0 && <ExamplesViewer examples={schema.examples} />}
+                </div>
             </div>
 
             {(editMode === "json" || editMode === "yaml") && (
