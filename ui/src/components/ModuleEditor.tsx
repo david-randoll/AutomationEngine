@@ -52,7 +52,11 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
             console.log("ModuleEditor: fetching schema for", moduleName);
             const res = await agent.getHttp<ModuleType>(`/automation-engine/block/${moduleName}/schema`);
             if (res.success) {
-                return res.data?.schema;
+                const schema = {
+                    ...res.data?.schema,
+                    examples: res.data?.examples,
+                };
+                return schema;
             } else {
                 console.log("Failed to fetch schema:", res.error?.message);
                 return null;
@@ -171,6 +175,16 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
                     <Button onClick={() => setEditMode("yaml")} variant="outline" size="sm">
                         Edit YAML
                     </Button>
+                )}
+                {schema?.examples && schema?.examples?.length > 0 && (
+                    <div>
+                        <h4 className="font-semibold">Examples:</h4>
+                        <ul className="list-disc pl-5">
+                            {schema.examples.map((example, index) => (
+                                <li key={index}>{JSON.stringify(example)}</li>
+                            ))}
+                        </ul>
+                    </div>
                 )}
             </div>
 
