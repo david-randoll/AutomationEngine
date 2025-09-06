@@ -12,6 +12,9 @@ import { Button } from "./ui/button";
 import { agent } from "@/lib/agent";
 import { areaToName, nameToArea } from "@/lib/utils";
 import { useAutomationEngine } from "@/providers/AutomationEngineProvider";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Info } from "lucide-react";
+import { FaLightbulb } from "react-icons/fa";
 
 interface ModuleEditorProps {
     module: ModuleType;
@@ -177,14 +180,33 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
                     </Button>
                 )}
                 {schema?.examples && schema?.examples?.length > 0 && (
-                    <div>
-                        <h4 className="font-semibold">Examples:</h4>
-                        <ul className="list-disc pl-5">
-                            {schema.examples.map((example, index) => (
-                                <li key={index}>{JSON.stringify(example)}</li>
-                            ))}
-                        </ul>
-                    </div>
+                    <Dialog>
+                        <DialogTrigger asChild>
+                            <Button variant="outline" size="icon">
+                                <FaLightbulb />
+                            </Button>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-3xl">
+                            <DialogHeader>
+                                <DialogTitle>Examples</DialogTitle>
+                            </DialogHeader>
+                            <div className="h-[400px]">
+                                <MonacoEditor
+                                    height="100%"
+                                    defaultLanguage="json"
+                                    value={JSON.stringify(schema.examples, null, 2)}
+                                    options={{
+                                        readOnly: true,
+                                        minimap: { enabled: false },
+                                        tabSize: 2,
+                                        fontSize: 14,
+                                        wordWrap: "on",
+                                        automaticLayout: true,
+                                    }}
+                                />
+                            </div>
+                        </DialogContent>
+                    </Dialog>
                 )}
             </div>
 
