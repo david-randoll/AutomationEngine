@@ -15,6 +15,7 @@ import { useAutomationEngine } from "@/providers/AutomationEngineProvider";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Info } from "lucide-react";
 import { FaLightbulb } from "react-icons/fa";
+import ExamplesViewer from "./ExamplesViewer";
 
 interface ModuleEditorProps {
     module: ModuleType;
@@ -179,35 +180,7 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
                         Edit YAML
                     </Button>
                 )}
-                {schema?.examples && schema?.examples?.length > 0 && (
-                    <Dialog>
-                        <DialogTrigger asChild>
-                            <Button variant="outline" size="icon">
-                                <FaLightbulb />
-                            </Button>
-                        </DialogTrigger>
-                        <DialogContent className="max-w-3xl">
-                            <DialogHeader>
-                                <DialogTitle>Examples</DialogTitle>
-                            </DialogHeader>
-                            <div className="h-[400px]">
-                                <MonacoEditor
-                                    height="100%"
-                                    defaultLanguage="json"
-                                    value={JSON.stringify(schema.examples, null, 2)}
-                                    options={{
-                                        readOnly: true,
-                                        minimap: { enabled: false },
-                                        tabSize: 2,
-                                        fontSize: 14,
-                                        wordWrap: "on",
-                                        automaticLayout: true,
-                                    }}
-                                />
-                            </div>
-                        </DialogContent>
-                    </Dialog>
-                )}
+                {schema?.examples && schema?.examples?.length > 0 && <ExamplesViewer examples={schema.examples} />}
             </div>
 
             {(editMode === "json" || editMode === "yaml") && (
