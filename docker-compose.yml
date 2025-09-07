@@ -1,0 +1,18 @@
+services:
+  backend:
+    build:
+      context: ./examples/todo-example
+      dockerfile: Dockerfile
+    container_name: automation-backend
+    ports:
+      - "8008:8085"
+
+  frontend:
+    build:
+      context: ./ui
+      dockerfile: Dockerfile
+    container_name: automation-frontend
+    ports:
+      - "8009:3000"
+    depends_on:
+      - backend
