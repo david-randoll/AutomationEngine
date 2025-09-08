@@ -1,5 +1,4 @@
 FROM node:23-alpine3.20 AS builder
-ARG NEXT_PUBLIC_BASE_URL
 RUN echo "NEXT_PUBLIC_BASE_URL=$NEXT_PUBLIC_BASE_URL"
 WORKDIR /app
 RUN apk add --no-cache libc6-compat
@@ -21,7 +20,6 @@ WORKDIR /app
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 COPY --from=builder --chown="$app_user":"$app_user" /app/.next/standalone .
-RUN echo "NEXT_PUBLIC_BASE_URL=$NEXT_PUBLIC_BASE_URL"
 EXPOSE 3000
 ENV PORT=3000
 CMD [ "node", "server.js" ]
