@@ -17,7 +17,10 @@ export interface RequestOptions<T = any> {
     body?: T;
 }
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "";
+const API_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+if (!API_BASE_URL) {
+    throw new Error("API base URL is not defined");
+}
 
 async function requestHttp<TResponse = any, TBody = any>(
     endpoint: string,

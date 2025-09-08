@@ -9,6 +9,7 @@ RUN npm run standalone
 
 FROM alpine:3.20
 ARG app_user=nextjs
+ARG NEXT_PUBLIC_BASE_URL
 RUN apk add --no-cache nodejs && \
     addgroup --system --gid 1001 "$app_user" && \
     adduser --system --uid 1001 "$app_user" && \
