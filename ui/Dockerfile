@@ -1,5 +1,5 @@
 FROM node:23-alpine3.20 AS builder
-RUN echo "NEXT_PUBLIC_BASE_URL=$NEXT_PUBLIC_BASE_URL"
+ARG NEXT_PUBLIC_BASE_URL
 WORKDIR /app
 RUN apk add --no-cache libc6-compat
 ENV NEXT_TELEMETRY_DISABLED=1
@@ -10,6 +10,7 @@ RUN npm run standalone
 
 FROM alpine:3.20
 ARG app_user=nextjs
+ARG NEXT_PUBLIC_BASE_URL
 RUN apk add --no-cache nodejs && \
     addgroup --system --gid 1001 "$app_user" && \
     adduser --system --uid 1001 "$app_user" && \
