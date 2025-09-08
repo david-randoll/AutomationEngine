@@ -19,7 +19,7 @@ export interface RequestOptions<T = any> {
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 if (!API_BASE_URL) {
-    console.warn("NEXT_PUBLIC_BASE_URL is not set. API requests may fail.");
+    throw new Error("API base URL is not defined");
 }
 
 async function requestHttp<TResponse = any, TBody = any>(
