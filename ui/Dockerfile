@@ -3,6 +3,7 @@ WORKDIR /app
 RUN apk add --no-cache libc6-compat
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN echo "NEXT_PUBLIC_BASE_URL=$NEXT_PUBLIC_BASE_URL"
+RUN echo "COOLIFY_URL=$COOLIFY_URL"
 COPY package*.json ./
 RUN npm ci
 COPY . .
