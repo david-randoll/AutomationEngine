@@ -11,6 +11,8 @@ services:
     build:
       context: ui
       dockerfile: Dockerfile
+      args:
+        - NEXT_PUBLIC_BASE_URL
     container_name: automation-frontend
     ports:
       - "8009:3000"
