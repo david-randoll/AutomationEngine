@@ -1,7 +1,7 @@
 services:
   backend:
     build:
-      context: ./examples/todo-example
+      context: examples/todo-example
       dockerfile: Dockerfile
     container_name: automation-backend
     ports:
@@ -9,7 +9,7 @@ services:
 
   frontend:
     build:
-      context: ./ui
+      context: ui
       dockerfile: Dockerfile
     container_name: automation-frontend
     ports:
