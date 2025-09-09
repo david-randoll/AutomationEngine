@@ -1,8 +1,8 @@
 FROM node:23-alpine3.20 AS builder
+ARG NEXT_PUBLIC_BASE_URL
 WORKDIR /app
 RUN apk add --no-cache libc6-compat
 ENV NEXT_TELEMETRY_DISABLED=1
-ARG NEXT_PUBLIC_BASE_URL=${NEXT_PUBLIC_BASE_URL}
 COPY package*.json ./
 RUN npm ci
 COPY . .
@@ -10,6 +10,7 @@ RUN npm run standalone
 
 FROM alpine:3.20
 ARG app_user=nextjs
+ARG NEXT_PUBLIC_BASE_URL
 RUN apk add --no-cache nodejs && \
     addgroup --system --gid 1001 "$app_user" && \
     adduser --system --uid 1001 "$app_user" && \
@@ -19,7 +20,6 @@ USER $app_user
 WORKDIR /app
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
-ARG NEXT_PUBLIC_BASE_URL=${NEXT_PUBLIC_BASE_URL}
 COPY --from=builder --chown="$app_user":"$app_user" /app/.next/standalone .
 EXPOSE 3000
 ENV PORT=3000
