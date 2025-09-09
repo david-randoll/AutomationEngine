@@ -16,7 +16,5 @@ services:
     container_name: automation-frontend
     ports:
       - "8009:3000"
-    environment:
-      - 'NEXT_PUBLIC_BASE_URL=https://automation-engine-api.davidrandoll.com'
     depends_on:
       - backend
