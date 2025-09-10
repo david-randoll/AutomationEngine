@@ -11,6 +11,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldNameConstants;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -26,6 +29,17 @@ public class BasicResultContext implements IResultContext {
 
     @JsonIgnore
     @JsonAnySetter
-    @JsonAnyGetter
     private JsonNode results;
+
+    @JsonAnyGetter
+    public Map<String, Object> getResultsAsMap() {
+        if (results == null || results.isNull()) {
+            return Map.of();
+        }
+        // loop through the fields and convert to map
+        var map = new HashMap<String, Object>();
+        results.fieldNames()
+                .forEachRemaining(field -> map.put(field, results.get(field)));
+        return map;
+    }
 }

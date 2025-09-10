@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.davidrandoll</groupId>
         <artifactId>automation-engine</artifactId>
-        <version>1.4.0</version>
+        <version>1.4.1</version>
     </parent>
 
     <artifactId>automation-engine-spring</artifactId>
