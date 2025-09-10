@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.davidrandoll</groupId>
     <artifactId>automation-engine</artifactId>
-    <version>1.4.0</version>
+    <version>1.4.1</version>
     <packaging>pom</packaging>
     <name>Automation Engine</name>
     <description>A powerful, extensible automation engine for Java and Spring Boot. Define and run dynamic, event-driven
@@ -46,7 +46,7 @@
         <module>automation-engine-spring-amqp</module>
     </modules>
     <properties>
-        <automation-engine.version>1.4.0</automation-engine.version>
+        <automation-engine.version>1.4.1</automation-engine.version>
         <java.version>21</java.version>
     </properties>
 
