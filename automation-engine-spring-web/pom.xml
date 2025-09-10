@@ -21,7 +21,7 @@
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <spring-web-captor.version>1.0.0</spring-web-captor.version>
+        <spring-web-captor.version>1.0.1</spring-web-captor.version>
     </properties>
 
     <dependencies>
