@@ -12,17 +12,12 @@ import { agent } from "@/lib/agent";
 import { areaToName, nameToArea } from "@/lib/utils";
 import { useAutomationEngine } from "@/providers/AutomationEngineProvider";
 import ExamplesViewer from "./ExamplesViewer";
+import ModuleSkeleton from "./ModuleSkeleton";
 
 interface ModuleEditorProps {
     module: ModuleType;
     path: Path;
 }
-
-const Spinner = () => (
-    <div className="flex justify-center items-center">
-        <div className="w-12 h-12 border-4 border-gray-300 border-t-indigo-500 rounded-full animate-spin"></div>
-    </div>
-);
 
 const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
     const { setValue, getValues } = useFormContext();
@@ -159,7 +154,7 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
 
     // Show spinner if schema is loading
     if (!schema || isLoading(pathKey)) {
-        return <Spinner />;
+        return <ModuleSkeleton numOfProps={2} />;
     }
 
     return (
