@@ -41,11 +41,9 @@ export const AutomationEngineProvider = ({ children }: { children: ReactNode }) 
     };
 
     const evictSchema = (path: string) => {
-        setSchemas((prev) => {
-            const copy = new Map(prev);
-            copy.delete(path);
-            return copy;
-        });
+        const newCache = new Map(schemas);
+        newCache.delete(path);
+        setSchemas(newCache);
     };
 
     const hasSchema = (path: string) => schemas.has(path);

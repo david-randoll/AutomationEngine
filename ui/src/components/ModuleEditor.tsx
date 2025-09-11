@@ -38,7 +38,6 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
     const [schema, setSchema] = useState<JsonSchema>();
 
     useEffect(() => {
-        if (schema) return;
         const moduleName = module.name ?? areaToName(module);
 
         getSchema(pathKey, async () => {
