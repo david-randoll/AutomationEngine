@@ -5,22 +5,24 @@ import AddBlockModal from "@/components/AddBlockModal";
 import { useFormContext } from "react-hook-form";
 import FieldRenderer from "./FieldRenderer";
 import AdditionalPropertyAdder from "./AdditionalPropertyAdder";
-
 import MonacoEditor from "@monaco-editor/react";
 import yaml from "js-yaml";
 import { Button } from "./ui/button";
 import { agent } from "@/lib/agent";
 import { areaToName, nameToArea } from "@/lib/utils";
 import { useAutomationEngine } from "@/providers/AutomationEngineProvider";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Info } from "lucide-react";
-import { FaLightbulb } from "react-icons/fa";
 import ExamplesViewer from "./ExamplesViewer";
 
 interface ModuleEditorProps {
     module: ModuleType;
     path: Path;
 }
+
+const Spinner = () => (
+    <div className="flex justify-center items-center">
+        <div className="w-12 h-12 border-4 border-gray-300 border-t-indigo-500 rounded-full animate-spin"></div>
+    </div>
+);
 
 const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
     const { setValue, getValues } = useFormContext();
@@ -31,51 +33,44 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
 
     const [editMode, setEditMode] = useState<EditMode>("ui");
 
+    const pathKey = path.join(".");
+
     const [rawText, setRawText] = useState<string>(() => {
-        return JSON.stringify(getValues(path.join(".")), null, 2);
+        return JSON.stringify(getValues(pathKey), null, 2);
     });
 
-    const { getSchema, setSchema: setAutomationSchema } = useAutomationEngine();
+    const { getSchema, setSchema: setAutomationSchema, isLoading } = useAutomationEngine();
     const [schema, setSchema] = useState<JsonSchema>();
 
     useEffect(() => {
+        if (schema) return;
         const moduleName = module.name ?? areaToName(module);
-        console.log("ModuleEditor: fetching schema for", moduleName);
-        const pathKey = path.join(".");
-
-        if (!moduleName) {
-            getSchema(pathKey, async () => {
-                return module.schema;
-            }).then((schema) => {
-                setSchema(schema);
-            });
-            return;
-        }
 
         getSchema(pathKey, async () => {
+            if (!moduleName) return module.schema;
             console.log("ModuleEditor: fetching schema for", moduleName);
+
             const res = await agent.getHttp<ModuleType>(`/automation-engine/block/${moduleName}/schema`);
             if (res.success) {
-                const schema = {
+                return {
                     ...res.data?.schema,
                     examples: res.data?.examples,
                 };
-                return schema;
             } else {
-                console.log("Failed to fetch schema:", res.error?.message);
+                console.error("Failed to fetch schema:", res.error?.message);
                 return null;
             }
-        }).then((schema) => {
-            if (!schema) {
+        }).then((sch) => {
+            if (!sch) {
                 console.log("No schema with name:", moduleName);
                 setEditMode("json");
-            } else setSchema(schema);
+            } else setSchema(sch);
         });
-    }, [path]);
+    }, [pathKey]);
 
     useEffect(() => {
         if (editMode !== "ui") {
-            const val = getValues(path.join("."));
+            const val = getValues(pathKey);
             try {
                 setRawText(editMode === "json" ? JSON.stringify(val, null, 2) : yaml.dump(val));
             } catch {
@@ -87,7 +82,7 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
     function switchToUIMode() {
         try {
             const parsed = editMode === "json" ? JSON.parse(rawText) : yaml.load(rawText);
-            setValue(path.join("."), parsed, {
+            setValue(pathKey, parsed, {
                 shouldValidate: true,
                 shouldDirty: true,
                 shouldTouch: true,
@@ -104,7 +99,7 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
 
         try {
             const parsed = editMode === "json" ? JSON.parse(value) : yaml.load(value);
-            setValue(path.join("."), parsed, {
+            setValue(pathKey, parsed, {
                 shouldValidate: true,
                 shouldDirty: true,
                 shouldTouch: true,
@@ -159,8 +154,13 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
         };
 
         setSchema(newSchema);
-        setAutomationSchema(path.join("."), newSchema);
+        setAutomationSchema(pathKey, newSchema);
     };
+
+    // Show spinner if schema is loading
+    if (!schema || isLoading(pathKey)) {
+        return <Spinner />;
+    }
 
     return (
         <div>
