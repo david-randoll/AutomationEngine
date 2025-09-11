@@ -7,37 +7,51 @@ interface AutomationEngineContextType {
     setSchema: (path: string, schema: JsonSchema) => void;
     evictSchema: (path: string) => void;
     hasSchema: (path: string) => boolean;
+    isLoading: (path: string) => boolean;
 }
 
 const AutomationEngineContext = createContext<AutomationEngineContextType | null>(null);
 
 export const AutomationEngineProvider = ({ children }: { children: ReactNode }) => {
-    const [cache, setCache] = useState<Map<string, JsonSchema>>(new Map());
+    const [schemas, setSchemas] = useState<Map<string, JsonSchema>>(new Map());
+    const [loadingPaths, setLoadingPaths] = useState<Set<string>>(new Set());
 
     const getSchema = async (path: string, loader: () => Promise<JsonSchema>) => {
-        if (cache.has(path)) {
-            return cache.get(path)!;
+        if (hasSchema(path)) {
+            return schemas.get(path)!;
         }
-        const schema = await loader();
-        setCache(new Map(cache.set(path, schema)));
-        return schema;
+
+        setLoadingPaths((prev) => new Set(prev).add(path));
+
+        try {
+            const schema = await loader();
+            setSchemas((prev) => new Map(prev.set(path, schema)));
+            return schema;
+        } finally {
+            setLoadingPaths((prev) => {
+                const copy = new Set(prev);
+                copy.delete(path);
+                return copy;
+            });
+        }
     };
 
     const setSchema = (path: string, schema: JsonSchema) => {
-        setCache(new Map(cache.set(path, schema)));
+        setSchemas((prev) => new Map(prev.set(path, schema)));
     };
 
     const evictSchema = (path: string) => {
-        const newCache = new Map(cache);
+        const newCache = new Map(schemas);
         newCache.delete(path);
-        setCache(newCache);
+        setSchemas(newCache);
     };
 
-    const hasSchema = (path: string) => cache.has(path);
+    const hasSchema = (path: string) => schemas.has(path);
+    const isLoading = (path: string) => loadingPaths.has(path);
 
     const contextValue = React.useMemo(
-        () => ({ getSchema, setSchema, hasSchema, evictSchema }),
-        [getSchema, setSchema, hasSchema, evictSchema]
+        () => ({ getSchema, setSchema, hasSchema, evictSchema, isLoading }),
+        [schemas, loadingPaths]
     );
 
     return <AutomationEngineContext.Provider value={contextValue}>{children}</AutomationEngineContext.Provider>;

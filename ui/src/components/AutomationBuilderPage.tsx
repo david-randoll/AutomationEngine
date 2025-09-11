@@ -1,13 +1,11 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useFormContext } from "react-hook-form";
 import PreviewPanel from "@/components/PreviewPanel";
 import ModuleEditor from "@/components/ModuleEditor";
 import { agent } from "@/lib/agent";
 
 const AutomationBuilderPage = () => {
-    const { getValues } = useFormContext();
     const rootPath: Path = ["root"];
     const [automationSchema, setAutomationSchema] = useState<ModuleType | null>(null);
 
