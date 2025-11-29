@@ -1,5 +1,5 @@
 server:
-  port: ${server.port:8085}
+  port: ${AUTOMATION_ENGINE_PORT:8085}
 spring:
   application:
     name: todo-example
