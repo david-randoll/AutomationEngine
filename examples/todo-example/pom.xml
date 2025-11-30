@@ -29,6 +29,16 @@
             <artifactId>automation-engine-spring-web</artifactId>
             <version>${automation-engine.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.davidrandoll</groupId>
+            <artifactId>automation-engine-backend-api</artifactId>
+            <version>${automation-engine.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.davidrandoll</groupId>
+            <artifactId>automation-engine-ui</artifactId>
+            <version>${automation-engine.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
