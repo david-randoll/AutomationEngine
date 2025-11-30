@@ -54,7 +54,7 @@
         </dependency>
         <dependency>
             <groupId>com.davidrandoll</groupId>
-            <artifactId>automation-engine-backend-api</artifactId>
+            <artifactId>automation-engine-ui</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
