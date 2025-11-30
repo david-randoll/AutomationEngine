@@ -1,4 +1,3 @@
-
 interface ModuleSkeletonProps {
     numOfProps: number;
 }
