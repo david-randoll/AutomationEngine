@@ -35,17 +35,16 @@ public class AutomationEngineUiConfiguration implements WebMvcConfigurer {
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
         String path = properties.getPath();
-        // Ensure path starts with / and doesn't end with /
-        if (!path.startsWith("/")) {
-            path = "/" + path;
-        }
-        if (path.endsWith("/")) {
-            path = path.substring(0, path.length() - 1);
-        }
+        if (!path.startsWith("/")) path = "/" + path;
+        if (path.endsWith("/")) path = path.substring(0, path.length() - 1);
 
-        // Forward root path to index.html
-        registry.addViewController(path).setViewName("forward:" + path + "/index.html");
-        registry.addViewController(path + "/").setViewName("forward:" + path + "/index.html");
+        // Redirect /automation-engine-ui → /automation-engine-ui/
+        registry.addViewController(path)
+                .setViewName("redirect:" + path + "/");
+
+        // Forward /automation-engine-ui/ → index.html
+        registry.addViewController(path + "/")
+                .setViewName("forward:" + path + "/index.html");
     }
 }
 
