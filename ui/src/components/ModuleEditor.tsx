@@ -152,14 +152,14 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
     };
 
     // Show spinner if schema is loading
-    if (!schema || isLoading(pathKey)) {
-        return <ModuleSkeleton numOfProps={2} />;
-    }
+        if (isLoading(pathKey)) {
+            return <ModuleSkeleton numOfProps={2} />;
+        }
 
-    return (
-        <div>
-            <div className="mb-4 flex space-x-3">
-                {editMode !== "ui" && (
+        return (
+            <div>
+                <div className="mb-4 flex space-x-3">
+                {editMode !== "ui" && schema && (
                     <Button onClick={switchToUIMode} variant="outline" size="sm">
                         Edit UI
                     </Button>

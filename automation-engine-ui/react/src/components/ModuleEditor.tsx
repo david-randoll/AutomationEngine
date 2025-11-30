@@ -64,17 +64,19 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
 
     useEffect(() => {
         if (editMode !== "ui") {
+            console.log("Edit mode changed to", editMode, "serializing data...");
             const val = getValues(pathKey);
             try {
                 setRawText(editMode === "json" ? JSON.stringify(val, null, 2) : yaml.dump(val));
-            } catch {
-                // ignore error during serialize
+            } catch(e) {
+                console.error("Failed to serialize data:", e);
             }
         }
     }, [editMode, getValues, path]);
 
     function switchToUIMode() {
         try {
+            console.log("Switching to UI mode...");
             const parsed = editMode === "json" ? JSON.parse(rawText) : yaml.load(rawText);
             setValue(pathKey, parsed, {
                 shouldValidate: true,
@@ -152,14 +154,14 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
     };
 
     // Show spinner if schema is loading
-    if (!schema || isLoading(pathKey)) {
+    if (isLoading(pathKey)) {
         return <ModuleSkeleton numOfProps={2} />;
     }
 
     return (
         <div>
             <div className="mb-4 flex space-x-3">
-                {editMode !== "ui" && (
+                {editMode !== "ui" && schema && (
                     <Button onClick={switchToUIMode} variant="outline" size="sm">
                         Edit UI
                     </Button>
