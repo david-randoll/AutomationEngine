@@ -14,7 +14,7 @@
     <name>todo-example</name>
     <description>Demo project for Spring Boot</description>
     <properties>
-        <automation-engine.version>1.4.1</automation-engine.version>
+        <automation-engine.version>1.5.0</automation-engine.version>
 
         <java.version>21</java.version>
     </properties>
@@ -29,7 +29,6 @@
             <artifactId>automation-engine-spring-web</artifactId>
             <version>${automation-engine.version}</version>
         </dependency>
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>

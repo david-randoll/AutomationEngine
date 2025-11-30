@@ -17,10 +17,8 @@ export interface RequestOptions<T = any> {
     body?: T;
 }
 
-const API_BASE_URL = import.meta.env.VITE_BASE_URL;
-if (!API_BASE_URL) {
-    console.warn("VITE_BASE_URL is not set");
-}
+const API_BASE_URL = window.location.origin;
+console.log("API_BASE_URL:", API_BASE_URL);
 
 async function requestHttp<TResponse = any, TBody = any>(
     endpoint: string,
