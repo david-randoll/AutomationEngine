@@ -1,0 +1,25 @@
+# Maven
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.classpath
+.project
+.settings/
+
+# Build artifacts
+react/dist/
+react/node_modules/
+react/.env.local
+react/.env.development.local
+react/.env.test.local
+react/.env.production.local
+
