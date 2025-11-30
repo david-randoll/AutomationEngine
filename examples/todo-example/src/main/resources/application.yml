@@ -21,3 +21,6 @@ spring:
 logging:
   level:
     com.davidrandoll: DEBUG
+
+automation-engine.ui:
+  path: /

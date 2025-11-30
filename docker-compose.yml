@@ -5,16 +5,4 @@ services:
       dockerfile: Dockerfile
     container_name: automation-backend
     ports:
-      - "8008:8085"
-
-  frontend:
-    build:
-      context: ui
-      dockerfile: Dockerfile
-      args:
-        - NEXT_PUBLIC_BASE_URL
-    container_name: automation-frontend
-    ports:
-      - "8009:3000"
-    depends_on:
-      - backend
+      - "8009:8085"
