@@ -1,6 +1,7 @@
-package com.davidrandoll.automation.engine.spring.modules.actions.uda;
+package com.davidrandoll.automation.engine.spring.modules.conditions.udc;
 
-import com.davidrandoll.automation.engine.core.actions.IActionContext;
+import com.davidrandoll.automation.engine.core.conditions.IConditionContext;
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -18,17 +19,20 @@ import java.util.Map;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @FieldNameConstants
 @JsonPropertyOrder({
-        UserDefinedActionContext.Fields.alias,
-        UserDefinedActionContext.Fields.description,
-        UserDefinedActionContext.Fields.name,
-        UserDefinedActionContext.Fields.parameters
+        UserDefinedConditionContext.Fields.alias,
+        UserDefinedConditionContext.Fields.description,
+        UserDefinedConditionContext.Fields.name,
+        UserDefinedConditionContext.Fields.parameters
 })
-public class UserDefinedActionContext implements IActionContext {
+public class UserDefinedConditionContext implements IConditionContext {
     private String alias;
     private String description;
+
+    @JsonAlias({"name"})
     private String name;
 
     @JsonAnyGetter
     @JsonAnySetter
     private Map<String, Object> parameters;
 }
+
