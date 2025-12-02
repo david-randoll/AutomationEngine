@@ -17,4 +17,8 @@ public class TestLogAppender extends AppenderBase<ILoggingEvent> {
     public List<String> getLoggedMessages() {
         return loggedMessages;
     }
+
+    public void clear() {
+        loggedMessages.clear();
+    }
 }
