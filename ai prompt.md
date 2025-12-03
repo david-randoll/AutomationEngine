@@ -3,9 +3,9 @@ engine.
 
 ### ⚠️ Core Protocol
 
-1.  **Strict Adherence:** Follow the structure and rules **EXACTLY** as described below.
-2.  **Extensibility:** If a block type does **not** exist in the provided list, you are **allowed to invent your own
-    custom block**.
+1. **Strict Adherence:** Follow the structure and rules **EXACTLY** as described below.
+2. **Extensibility:** If a block type does **not** exist in the provided list, you are **allowed to invent your own
+   custom block**.
     - _Constraint:_ Custom blocks **must** follow the same structural style, conventions, and parameter patterns as the
       existing ones.
 
@@ -20,8 +20,8 @@ alias: string (optional)
 description: string (optional)
 variables: { VariableKey: VariableObject? }
 trigger: { TriggerObject }
-conditions: [ConditionObject?]
-actions: [ActionObject]
+conditions: [ ConditionObject? ]
+actions: [ ActionObject ]
 result: any (optional)
 ```
 
@@ -46,10 +46,10 @@ _Events that start the automation flow._
 
 **`onEventTypeTrigger`**
 
-- **Parameters:** 
-  - `eventType` (string, optional) - Full qualified class name
-  - `eventName` (string, optional) - Simple class name
-  - `regex` (string, optional) - Regular expression pattern
+- **Parameters:**
+    - `eventType` (string, optional) - Full qualified class name
+    - `eventName` (string, optional) - Simple class name
+    - `regex` (string, optional) - Regular expression pattern
 - **Example:**
   ```yaml
   triggers:
@@ -85,9 +85,9 @@ _Events that start the automation flow._
 
 **`timeTrigger`**
 
-- **Parameters:** 
-  - `at` (string, optional) - Time in HH:mm format
-  - `cron` (string, optional) - Cron expression
+- **Parameters:**
+    - `at` (string, optional) - Time in HH:mm format
+    - `cron` (string, optional) - Cron expression
 - **Example:**
   ```yaml
   triggers:
@@ -114,10 +114,10 @@ _Events that start the automation flow._
 
 **`onJdbcQueryTrigger`**
 
-- **Parameters:** 
-  - `query` (string) - SQL query to execute
-  - `params` (object, optional) - Query parameters
-  - `expectedResult` (any) - Expected result to match
+- **Parameters:**
+    - `query` (string) - SQL query to execute
+    - `params` (object, optional) - Query parameters
+    - `expectedResult` (any) - Expected result to match
 - **Example:**
   ```yaml
   triggers:
@@ -135,13 +135,13 @@ _Events that start the automation flow._
 **`onHttpRequestTrigger`**
 
 - **Parameters:**
-  - `method` or `methods` (string or array, optional) - HTTP method(s)
-  - `path` or `paths` (string or array, optional) - Path pattern(s)
-  - `fullPath` or `fullPaths` (string or array, optional) - Full URL pattern(s)
-  - `headers` or `header` (map, optional) - Header key-value pairs
-  - `queryParams` or `query` (map, optional) - Query parameter key-value pairs
-  - `pathParams` (map, optional) - Path parameter key-value pairs
-  - `body` or `requestBody` (JsonNode, optional) - Request body matcher
+    - `method` or `methods` (string or array, optional) - HTTP method(s)
+    - `path` or `paths` (string or array, optional) - Path pattern(s)
+    - `fullPath` or `fullPaths` (string or array, optional) - Full URL pattern(s)
+    - `headers` or `header` (map, optional) - Header key-value pairs
+    - `queryParams` or `query` (map, optional) - Query parameter key-value pairs
+    - `pathParams` (map, optional) - Path parameter key-value pairs
+    - `body` or `requestBody` (JsonNode, optional) - Request body matcher
 - **Example:**
   ```yaml
   triggers:
@@ -161,8 +161,8 @@ _Events that start the automation flow._
 
 **`onHttpPathExistsTrigger`**
 
-- **Parameters:** 
-  - `path` (string) - Path to check if endpoint exists
+- **Parameters:**
+    - `path` (string) - Path to check if endpoint exists
 - **Example:**
   ```yaml
   triggers:
@@ -174,9 +174,9 @@ _Events that start the automation flow._
 
 **`onHttpClientErrorResponseTrigger`** / **`onHttpErrorResponseTrigger`** / **`onHttpServerErrorResponseTrigger`**
 
-- **Parameters:** 
-  - `status` (number, optional) - HTTP status code
-  - `path` (string, optional) - Path pattern
+- **Parameters:**
+    - `status` (number, optional) - HTTP status code
+    - `path` (string, optional) - Path pattern
 - **Example:**
   ```yaml
   triggers:
@@ -188,9 +188,9 @@ _Events that start the automation flow._
 
 **`onHttpResponseTrigger`** / **`onHttpSuccessResponseTrigger`**
 
-- **Parameters:** 
-  - `status` (number, optional) - HTTP status code
-  - `path` (string, optional) - Path pattern
+- **Parameters:**
+    - `status` (number, optional) - HTTP status code
+    - `path` (string, optional) - Path pattern
 - **Example:**
   ```yaml
   triggers:
@@ -208,9 +208,9 @@ _Events that start the automation flow._
 
 **`onSlowHttpRequestTrigger`**
 
-- **Parameters:** 
-  - `thresholdMs` (number) - Threshold in milliseconds
-  - `path` (string, optional) - Path pattern
+- **Parameters:**
+    - `thresholdMs` (number) - Threshold in milliseconds
+    - `path` (string, optional) - Path pattern
 - **Example:**
   ```yaml
   triggers:
@@ -284,9 +284,9 @@ _Logic gates that determine if the automation should proceed._
 
 **`timeCondition`**
 
-- **Parameters:** 
-  - `before` (string, optional) - Time in HH:mm format or ISO8601
-  - `after` (string, optional) - Time in HH:mm format or ISO8601
+- **Parameters:**
+    - `before` (string, optional) - Time in HH:mm format or ISO8601
+    - `after` (string, optional) - Time in HH:mm format or ISO8601
 - **Example:**
   ```yaml
   conditions:
@@ -298,10 +298,10 @@ _Logic gates that determine if the automation should proceed._
 
 **`onEventTypeCondition`**
 
-- **Parameters:** 
-  - `eventType` (string, optional) - Full qualified class name
-  - `eventName` (string, optional) - Simple class name
-  - `regex` (string, optional) - Regular expression pattern
+- **Parameters:**
+    - `eventType` (string, optional) - Full qualified class name
+    - `eventName` (string, optional) - Simple class name
+    - `regex` (string, optional) - Regular expression pattern
 - **Example:**
   ```yaml
   conditions:
@@ -319,18 +319,18 @@ _Logic gates that determine if the automation should proceed._
     - condition: userDefined
       alias: "Custom Condition"
       name: "isBusinessHours"
-      params:
-        timezone: "UTC"
+      timezone: "UTC"
+      allowWeekends: false
   ```
 
 ### Database Conditions
 
 **`onJdbcQueryCondition`**
 
-- **Parameters:** 
-  - `query` (string) - SQL query to execute
-  - `params` (object, optional) - Query parameters
-  - `expectedResult` (any) - Expected result to match
+- **Parameters:**
+    - `query` (string) - SQL query to execute
+    - `params` (object, optional) - Query parameters
+    - `expectedResult` (any) - Expected result to match
 - **Example:**
   ```yaml
   conditions:
@@ -368,9 +368,9 @@ _Logic gates that determine if the automation should proceed._
 
 **`httpHeaderCondition`**
 
-- **Parameters:** 
-  - `name` (string) - Header name
-  - `value` (string or regex) - Header value or pattern
+- **Parameters:**
+    - `name` (string) - Header name
+    - `value` (string or regex) - Header value or pattern
 - **Example:**
   ```yaml
   conditions:
@@ -382,9 +382,9 @@ _Logic gates that determine if the automation should proceed._
 
 **`httpQueryParamCondition`** / **`httpPathParamCondition`**
 
-- **Parameters:** 
-  - `name` (string) - Parameter name
-  - `value` (string or regex) - Parameter value or pattern
+- **Parameters:**
+    - `name` (string) - Parameter name
+    - `value` (string or regex) - Parameter value or pattern
 - **Example:**
   ```yaml
   conditions:
@@ -396,9 +396,9 @@ _Logic gates that determine if the automation should proceed._
 
 **`httpRequestBodyCondition`** / **`httpResponseBodyCondition`**
 
-- **Parameters:** 
-  - `jsonPath` (string) - JSON path expression
-  - `expectedValue` (any) - Expected value at path
+- **Parameters:**
+    - `jsonPath` (string) - JSON path expression
+    - `expectedValue` (any) - Expected value at path
 - **Example:**
   ```yaml
   conditions:
@@ -410,10 +410,10 @@ _Logic gates that determine if the automation should proceed._
 
 **`httpResponseStatusCondition`**
 
-- **Parameters:** 
-  - `equals` (number, optional) - Exact status code
-  - `notEquals` (number, optional) - Status code to exclude
-  - `in` (number[], optional) - List of valid status codes
+- **Parameters:**
+    - `equals` (number, optional) - Exact status code
+    - `notEquals` (number, optional) - Status code to exclude
+    - `in` (number[], optional) - List of valid status codes
 - **Example:**
   ```yaml
   conditions:
@@ -424,9 +424,9 @@ _Logic gates that determine if the automation should proceed._
 
 **`httpLatencyCondition`**
 
-- **Parameters:** 
-  - `operator` (<, >, <=, >=) - Comparison operator
-  - `value` (number in ms) - Latency threshold
+- **Parameters:**
+    - `operator` (<, >, <=, >=) - Comparison operator
+    - `value` (number in ms) - Latency threshold
 - **Example:**
   ```yaml
   conditions:
@@ -479,9 +479,9 @@ _Tasks executed by the automation._
 
 **`loggerAction`**
 
-- **Parameters:** 
-  - `message` (string) - Log message (supports Pebble templates)
-  - `level` (string, optional) - Log level (INFO, DEBUG, WARN, ERROR)
+- **Parameters:**
+    - `message` (string) - Log message (supports Pebble templates)
+    - `level` (string, optional) - Log level (INFO, DEBUG, WARN, ERROR)
 - **Example:**
   ```yaml
   actions:
@@ -494,9 +494,9 @@ _Tasks executed by the automation._
 
 **`delayAction`**
 
-- **Parameters:** 
-  - `durationMs` (number, optional) - Delay in milliseconds
-  - `duration` (string, optional) - ISO-8601 duration (e.g., "PT5S" for 5 seconds)
+- **Parameters:**
+    - `durationMs` (number, optional) - Delay in milliseconds
+    - `duration` (string, optional) - ISO-8601 duration (e.g., "PT5S" for 5 seconds)
 - **Example:**
   ```yaml
   actions:
@@ -539,10 +539,11 @@ _Tasks executed by the automation._
 
 **`ifThenElseAction`**
 
-- **Parameters:** 
-  - `if` (Condition[]) - Conditions to evaluate
-  - `then` (Action[]) - Actions to execute if condition is true
-  - `else` (Action[], optional) - Actions to execute if condition is false
+- **Parameters:**
+    - `if` (Condition[]) - Conditions to evaluate
+    - `then` (Action[]) - Actions to execute if condition is true
+    - `else` (Action[], optional) - Actions to execute if condition is false
+    - `ifs` (array of objects, optional) - Multiple if-then pairs
 - **Example:**
   ```yaml
   actions:
@@ -560,13 +561,40 @@ _Tasks executed by the automation._
           message: "Condition not satisfied"
   ```
 
+  ```yaml
+  actions:
+    - action: ifThenElse
+      alias: "Multiple Conditions"
+      description: "Check multiple conditions"
+      ifs:
+        - if:
+            - condition: time
+              before: "12:00"
+          then:
+            - action: logger
+              message: "Good morning!"
+        - if:
+            - condition: time
+              after: "12:00"
+              before: "18:00"
+          then:
+            - action: logger
+              message: "Good afternoon!"
+      else:
+        - action: logger
+          message: "Good evening!"
+  ```
+
+Note: The `ifs` structure allows for multiple condition-action pairs, with an optional final `else`. Do not mix `if`/
+`then` with `ifs` in the same action.
+
 **`repeatAction`**
 
-- **Parameters:** 
-  - `count` (number, optional) - Number of times to repeat
-  - `while` (Condition[], optional) - Repeat while condition is true
-  - `until` (Condition[], optional) - Repeat until condition is true
-  - `actions` (Action[]) - Actions to repeat
+- **Parameters:**
+    - `count` (number, optional) - Number of times to repeat
+    - `while` (Condition[], optional) - Repeat while condition is true
+    - `until` (Condition[], optional) - Repeat until condition is true
+    - `actions` (Action[]) - Actions to repeat
 - **Example:**
   ```yaml
   actions:
@@ -596,9 +624,9 @@ _Tasks executed by the automation._
 
 **`waitForTriggerAction`**
 
-- **Parameters:** 
-  - `triggers` (Trigger[]) - Triggers to wait for
-  - `timeout` (string) - ISO-8601 duration (e.g., "PT10S" for 10 seconds)
+- **Parameters:**
+    - `triggers` (Trigger[]) - Triggers to wait for
+    - `timeout` (string) - ISO-8601 duration (e.g., "PT10S" for 10 seconds)
 - **Example:**
   ```yaml
   actions:
@@ -613,9 +641,9 @@ _Tasks executed by the automation._
 
 **`stopAction`**
 
-- **Parameters:** 
-  - `stopActionSequence` (boolean, optional) - Stop action sequence if true
-  - `condition` (Condition, optional) - Condition to evaluate before stopping
+- **Parameters:**
+    - `stopActionSequence` (boolean, optional) - Stop action sequence if true
+    - `condition` (Condition, optional) - Condition to evaluate before stopping
 - **Example:**
   ```yaml
   actions:
@@ -644,6 +672,7 @@ _Tasks executed by the automation._
       alias: "Set Order ID"
       description: "Store order ID in variable"
       orderId: "{{ request.body.id }}"
+      amount: 100.50
   ```
 
 **`userDefinedAction`**
@@ -664,9 +693,9 @@ _Tasks executed by the automation._
 
 **`jdbcExecuteAction`**
 
-- **Parameters:** 
-  - `query` (string) - SQL query to execute
-  - `params` (object, optional) - Query parameters
+- **Parameters:**
+    - `query` (string) - SQL query to execute
+    - `params` (object, optional) - Query parameters
 - **Example:**
   ```yaml
   actions:
@@ -680,11 +709,11 @@ _Tasks executed by the automation._
 
 **`jdbcQueryAction`**
 
-- **Parameters:** 
-  - `query` (string) - SQL query to execute
-  - `params` (object, optional) - Query parameters
-  - `variable` (string) - Variable name to store result
-  - `mode` (string, optional) - "list" or "single" (default: "list")
+- **Parameters:**
+    - `query` (string) - SQL query to execute
+    - `params` (object, optional) - Query parameters
+    - `variable` (string) - Variable name to store result
+    - `mode` (string, optional) - "list" or "single" (default: "list")
 - **Example:**
   ```yaml
   actions:
@@ -701,10 +730,10 @@ _Tasks executed by the automation._
 
 **`sendEmailAction`**
 
-- **Parameters:** 
-  - `to` (string) - Recipient email address
-  - `subject` (string) - Email subject
-  - `body` (string) - Email body (supports Pebble templates)
+- **Parameters:**
+    - `to` (string) - Recipient email address
+    - `subject` (string) - Email subject
+    - `body` (string) - Email body (supports Pebble templates)
 - **Example:**
   ```yaml
   actions:
@@ -718,13 +747,14 @@ _Tasks executed by the automation._
 
 **`sendHttpRequestAction`**
 
-- **Parameters:** 
-  - `url` (string) - Target URL
-  - `method` (string, optional) - HTTP method (GET, POST, PUT, DELETE, etc.)
-  - `contentType` (string, optional) - Content-Type header (application/json, application/x-www-form-urlencoded, multipart/form-data)
-  - `headers` (map, optional) - HTTP headers
-  - `body` (object, optional) - Request body
-  - `storeToVariable` (string, optional) - Variable name to store response
+- **Parameters:**
+    - `url` (string) - Target URL
+    - `method` (string, optional) - HTTP method (GET, POST, PUT, DELETE, etc.)
+    - `contentType` (string, optional) - Content-Type header (application/json, application/x-www-form-urlencoded,
+      multipart/form-data)
+    - `headers` (map, optional) - HTTP headers
+    - `body` (object, optional) - Request body
+    - `storeToVariable` (string, optional) - Variable name to store response
 - **Example:**
   ```yaml
   actions:
@@ -744,9 +774,9 @@ _Tasks executed by the automation._
 
 **`publishRabbitMqEventAction`**
 
-- **Parameters:** 
-  - `routingKey` (string) - RabbitMQ routing key
-  - `payload` (object) - Event payload
+- **Parameters:**
+    - `routingKey` (string) - RabbitMQ routing key
+    - `payload` (object) - Event payload
 - **Example:**
   ```yaml
   actions:
@@ -761,9 +791,9 @@ _Tasks executed by the automation._
 
 **`publishSpringEventAction`**
 
-- **Parameters:** 
-  - `eventType` (string) - Event type/class name
-  - `payload` (object) - Event payload
+- **Parameters:**
+    - `eventType` (string) - Event type/class name
+    - `payload` (object) - Event payload
 - **Example:**
   ```yaml
   actions:
@@ -780,10 +810,10 @@ _Tasks executed by the automation._
 
 **`createTodoAction`**
 
-- **Parameters:** 
-  - `title` (string) - Todo title
-  - `description` (string, optional) - Todo description
-  - `assignee` (string, optional) - Assigned user
+- **Parameters:**
+    - `title` (string) - Todo title
+    - `description` (string, optional) - Todo description
+    - `assignee` (string, optional) - Assigned user
 - **Example:**
   ```yaml
   actions:
@@ -796,9 +826,9 @@ _Tasks executed by the automation._
 
 **`changeAssigneeAction`**
 
-- **Parameters:** 
-  - `todoId` (string) - Todo identifier
-  - `newAssignee` (string) - New assignee username
+- **Parameters:**
+    - `todoId` (string) - Todo identifier
+    - `newAssignee` (string) - New assignee username
 - **Example:**
   ```yaml
   actions:
@@ -811,9 +841,9 @@ _Tasks executed by the automation._
 
 **`changeStatusAction`**
 
-- **Parameters:** 
-  - `todoId` (string) - Todo identifier
-  - `status` (string) - New status
+- **Parameters:**
+    - `todoId` (string) - Todo identifier
+    - `status` (string) - New status
 - **Example:**
   ```yaml
   actions:
@@ -842,11 +872,12 @@ _Data storage for use within the automation._
 
 **`ifThenElseVariable`**
 
-- **Parameters:** 
-  - `variable` (string) - Must be "ifThenElse"
-  - `if` (Condition[]) - Conditions to evaluate
-  - `then` (object) - Variables to set if condition is true
-  - `else` (object) - Variables to set if condition is false
+- **Parameters:**
+    - `variable` (string) - Must be "ifThenElse"
+    - `if` (Condition[]) - Conditions to evaluate
+    - `then` (object) - Variables to set if condition is true
+    - `else` (object) - Variables to set if condition is false
+    - `ifs` (array of objects, optional) - Multiple if-then pairs
 - **Example:**
   ```yaml
   variables:
@@ -860,12 +891,34 @@ _Data storage for use within the automation._
         - status_message: "Its getting late!"
   ```
 
+  ```yaml
+  variables:
+    - variable: ifThenElse
+      ifs:
+      - if:
+          - condition: time
+            before: "12:00"
+            then:
+          - greeting: "Good morning!"
+      - if:
+          - condition: time
+            after: "12:00"
+            before: "18:00"
+            then:
+          - greeting: "Good afternoon!"
+            else:
+          - greeting: "Good evening!"
+  ```
+
+Note: The `ifs` structure allows for multiple condition-variable pairs, with an optional final `else`. Do not mix `if`/
+`then` with `ifs` in the same variable.
+
 **`userDefinedVariable`**
 
-- **Parameters:** 
-  - `variable` (string) - Must be "userDefined"
-  - `name` (string) - Name of the user-defined variable handler
-  - `params` (object, optional) - Additional parameters
+- **Parameters:**
+    - `variable` (string) - Must be "userDefined"
+    - `name` (string) - Name of the user-defined variable handler
+    - `params` (object, optional) - Additional parameters
 - **Example:**
   ```yaml
   variables:
@@ -1053,7 +1106,7 @@ actions:
     actions:
       - action: logger
         message: "Processing task (attempt {{ (currentRetry | int) + 1 }} of {{ maxRetries }})"
-      
+
       - action: jdbcQuery
         alias: "Process Task"
         query: "SELECT process_task(:taskId) as success"
@@ -1061,11 +1114,11 @@ actions:
           taskId: "{{ event.taskId }}"
         variable: processResult
         mode: single
-      
+
       - action: variable
         taskCompleted: "{{ processResult.success }}"
         currentRetry: "{{ (currentRetry | int) + 1 }}"
-      
+
       - action: ifThenElse
         if:
           - condition: template
@@ -1103,14 +1156,15 @@ result:
 
 ## ✅ Rules for Generation
 
-1.  **Strict Usage:** Use all block types exactly as defined above.
-2.  **Creation Logic:** If a required action/condition/trigger/variable does not exist in the list, you are allowed to
-    create a new one, strictly following the naming conventions and parameter patterns.
-3.  **Format:** Output only valid **JSON** or **YAML**.
-4.  **Assumptions:** Make reasonable assumptions instead of asking for clarification.
-5.  **Factuality:** Never generate imaginary "existing" blocks—only _invent_ ones when strictly needed for the user
-    request.
-6.  **Syntax:** Reference variables consistently using the correct syntax (e.g., `{{ name }}`).
-7.  **Comments:** Do not include comments in the output.
-8.  **Alias/Description:** Every block type (trigger, condition, action, result and variable) should have an alias and description.
-9.  **Templating:** The templating syntax should be Pebble Java Library (https://pebbletemplates.io/)
+1. **Strict Usage:** Use all block types exactly as defined above.
+2. **Creation Logic:** If a required action/condition/trigger/variable does not exist in the list, you are allowed to
+   create a new one, strictly following the naming conventions and parameter patterns.
+3. **Format:** Output only valid **JSON** or **YAML**.
+4. **Assumptions:** Make reasonable assumptions instead of asking for clarification.
+5. **Factuality:** Never generate imaginary "existing" blocks—only _invent_ ones when strictly needed for the user
+   request.
+6. **Syntax:** Reference variables consistently using the correct syntax (e.g., `{{ name }}`).
+7. **Comments:** Do not include comments in the output.
+8. **Alias/Description:** Every block type (trigger, condition, action, result and variable) should have an alias and
+   description.
+9. **Templating:** The templating syntax should be Pebble Java Library (https://pebbletemplates.io/)
