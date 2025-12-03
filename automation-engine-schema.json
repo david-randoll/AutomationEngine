@@ -1,0 +1,951 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/david-randoll/AutomationEngine/automation-engine-schema.json",
+  "title": "Automation Engine Definition",
+  "description": "Schema for defining automations in AutomationEngine. Automations can be defined in YAML or JSON format.",
+  "type": "object",
+  "properties": {
+    "alias": {
+      "type": "string",
+      "description": "A unique identifier/name for this automation"
+    },
+    "description": {
+      "type": "string",
+      "description": "A description of what this automation does"
+    },
+    "variables": {
+      "type": "array",
+      "description": "Variables to be defined and used within the automation",
+      "items": {
+        "$ref": "#/$defs/VariableDefinition"
+      }
+    },
+    "triggers": {
+      "type": "array",
+      "description": "Triggers that determine when this automation should execute",
+      "items": {
+        "$ref": "#/$defs/TriggerDefinition"
+      }
+    },
+    "conditions": {
+      "type": "array",
+      "description": "Additional conditions that must be met for the automation to execute",
+      "items": {
+        "$ref": "#/$defs/ConditionDefinition"
+      }
+    },
+    "actions": {
+      "type": "array",
+      "description": "Actions to execute when the automation is triggered",
+      "items": {
+        "$ref": "#/$defs/ActionDefinition"
+      }
+    },
+    "result": {
+      "description": "The result/output of the automation execution",
+      "oneOf": [
+        {
+          "$ref": "#/$defs/ResultDefinition"
+        },
+        {
+          "type": "object",
+          "additionalProperties": true
+        }
+      ]
+    }
+  },
+  "$defs": {
+    "VariableDefinition": {
+      "type": "object",
+      "description": "A variable definition block",
+      "properties": {
+        "alias": {
+          "type": "string",
+          "description": "Alias for this variable block"
+        },
+        "description": {
+          "type": "string",
+          "description": "Description of this variable"
+        },
+        "variable": {
+          "type": "string",
+          "description": "The variable type to use",
+          "enum": [
+            "basicVariable",
+            "ifThenElseVariable",
+            "userDefinedVariable"
+          ]
+        },
+        "name": {
+          "type": "string",
+          "description": "Name for user-defined variables"
+        },
+        "parameters": {
+          "type": "object",
+          "description": "Parameters for user-defined variables"
+        },
+        "if": {
+          "type": "array",
+          "description": "Conditions for if-then-else variable",
+          "items": {
+            "$ref": "#/$defs/ConditionDefinition"
+          }
+        },
+        "then": {
+          "type": "array",
+          "description": "Variables to set if conditions are true",
+          "items": {
+            "$ref": "#/$defs/VariableDefinition"
+          }
+        },
+        "ifs": {
+          "type": "array",
+          "description": "Additional if-then blocks for else-if logic",
+          "items": {
+            "type": "object",
+            "properties": {
+              "if": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/ConditionDefinition"
+                }
+              },
+              "then": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/VariableDefinition"
+                }
+              }
+            }
+          }
+        },
+        "else": {
+          "type": "array",
+          "description": "Variables to set if no conditions match",
+          "items": {
+            "$ref": "#/$defs/VariableDefinition"
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "TriggerDefinition": {
+      "type": "object",
+      "description": "A trigger definition that determines when an automation executes",
+      "properties": {
+        "alias": {
+          "type": "string",
+          "description": "Alias for this trigger"
+        },
+        "description": {
+          "type": "string",
+          "description": "Description of this trigger"
+        },
+        "trigger": {
+          "type": "string",
+          "description": "The trigger type",
+          "enum": [
+            "alwaysFalse",
+            "alwaysFalseTrigger",
+            "alwaysTrue",
+            "alwaysTrueTrigger",
+            "onEventType",
+            "onEventTypeTrigger",
+            "template",
+            "templateTrigger",
+            "time",
+            "timeTrigger",
+            "userDefined",
+            "userDefinedTrigger",
+            "onHttpPathExists",
+            "onHttpPathExistsTrigger",
+            "onHttpRequest",
+            "onHttpRequestTrigger",
+            "onHttpClientErrorResponse",
+            "onHttpClientErrorResponseTrigger",
+            "onHttpErrorResponse",
+            "onHttpErrorResponseTrigger",
+            "onHttpResponse",
+            "onHttpResponseTrigger",
+            "onHttpServerErrorResponse",
+            "onHttpServerErrorResponseTrigger",
+            "onHttpSuccessResponse",
+            "onHttpSuccessResponseTrigger",
+            "onSlowHttpRequest",
+            "onSlowHttpRequestTrigger",
+            "onJdbcQuery",
+            "onJdbcQueryTrigger"
+          ]
+        },
+        "eventType": {
+          "type": "string",
+          "description": "Event type to match (for onEventType trigger)"
+        },
+        "eventName": {
+          "type": "string",
+          "description": "Event name to match (for onEventType trigger)"
+        },
+        "regex": {
+          "type": "string",
+          "description": "Regex pattern for matching"
+        },
+        "expression": {
+          "type": "string",
+          "description": "Template expression that evaluates to true/false"
+        },
+        "at": {
+          "type": "string",
+          "format": "time",
+          "description": "Time to trigger (for time-based triggers), e.g., '09:00'"
+        },
+        "name": {
+          "type": "string",
+          "description": "Name for user-defined triggers"
+        },
+        "parameters": {
+          "type": "object",
+          "description": "Parameters for user-defined triggers"
+        },
+        "paths": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "HTTP paths to match"
+        },
+        "fullPaths": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Full HTTP paths to match"
+        },
+        "methods": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/HttpMethodEnum"
+          },
+          "description": "HTTP methods to match"
+        },
+        "headers": {
+          "type": "object",
+          "description": "HTTP headers to match"
+        },
+        "queryParams": {
+          "type": "object",
+          "description": "Query parameters to match"
+        },
+        "pathParams": {
+          "type": "object",
+          "description": "Path parameters to match"
+        },
+        "requestBody": {
+          "type": "object",
+          "description": "Request body to match"
+        },
+        "responseBody": {
+          "type": "object",
+          "description": "Response body to match"
+        },
+        "responseStatuses": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/HttpStatus"
+          },
+          "description": "HTTP response statuses to match"
+        },
+        "errorDetail": {
+          "type": "object",
+          "description": "Error details to match"
+        },
+        "duration": {
+          "type": "string",
+          "format": "duration",
+          "description": "Duration threshold (for slow request triggers)"
+        },
+        "query": {
+          "type": "string",
+          "description": "SQL query for JDBC triggers"
+        },
+        "params": {
+          "type": "object",
+          "description": "Parameters for JDBC query"
+        }
+      },
+      "required": [
+        "trigger"
+      ],
+      "additionalProperties": true
+    },
+    "ConditionDefinition": {
+      "type": "object",
+      "description": "A condition that must be met for the automation to proceed",
+      "properties": {
+        "alias": {
+          "type": "string",
+          "description": "Alias for this condition"
+        },
+        "description": {
+          "type": "string",
+          "description": "Description of this condition"
+        },
+        "condition": {
+          "type": "string",
+          "description": "The condition type",
+          "enum": [
+            "alwaysFalse",
+            "alwaysFalseCondition",
+            "alwaysTrue",
+            "alwaysTrueCondition",
+            "and",
+            "andCondition",
+            "not",
+            "notCondition",
+            "or",
+            "orCondition",
+            "onEventType",
+            "onEventTypeCondition",
+            "template",
+            "templateCondition",
+            "time",
+            "timeCondition",
+            "userDefined",
+            "userDefinedCondition",
+            "httpErrorDetail",
+            "httpErrorDetailCondition",
+            "httpFullPath",
+            "httpFullPathCondition",
+            "httpHeader",
+            "httpHeaderCondition",
+            "httpLatency",
+            "httpLatencyCondition",
+            "httpMethod",
+            "httpMethodCondition",
+            "httpPath",
+            "httpPathCondition",
+            "httpPathParam",
+            "httpPathParamCondition",
+            "httpQueryParam",
+            "httpQueryParamCondition",
+            "httpRequestBody",
+            "httpRequestBodyCondition",
+            "httpResponseBody",
+            "httpResponseBodyCondition",
+            "httpResponseStatus",
+            "httpResponseStatusCondition",
+            "httpPathExists",
+            "httpPathExistsCondition",
+            "onJdbcQuery",
+            "onJdbcQueryCondition"
+          ]
+        },
+        "conditions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ConditionDefinition"
+          },
+          "description": "Nested conditions for and/or/not logic"
+        },
+        "eventType": {
+          "type": "string",
+          "description": "Event type to match"
+        },
+        "eventName": {
+          "type": "string",
+          "description": "Event name to match"
+        },
+        "regex": {
+          "type": "string",
+          "description": "Regex pattern for matching"
+        },
+        "expression": {
+          "type": "string",
+          "description": "Template expression that evaluates to true/false"
+        },
+        "before": {
+          "type": "string",
+          "format": "time",
+          "description": "Time must be before this value"
+        },
+        "after": {
+          "type": "string",
+          "format": "time",
+          "description": "Time must be after this value"
+        },
+        "inclusive": {
+          "type": "boolean",
+          "description": "Whether time bounds are inclusive"
+        },
+        "name": {
+          "type": "string",
+          "description": "Name for user-defined conditions"
+        },
+        "parameters": {
+          "type": "object",
+          "description": "Parameters for user-defined conditions"
+        },
+        "equals": {
+          "type": "string",
+          "description": "Value must equal this"
+        },
+        "notEquals": {
+          "type": "string",
+          "description": "Value must not equal this"
+        },
+        "in": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Value must be in this list"
+        },
+        "notIn": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Value must not be in this list"
+        },
+        "like": {
+          "type": "string",
+          "description": "Value must match this pattern"
+        },
+        "exists": {
+          "type": "boolean",
+          "description": "Whether the value must exist"
+        },
+        "duration": {
+          "type": "string",
+          "format": "duration",
+          "description": "Duration threshold"
+        },
+        "paths": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "HTTP paths to match"
+        },
+        "methods": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/HttpMethodEnum"
+          },
+          "description": "HTTP methods to match"
+        },
+        "headers": {
+          "type": "object",
+          "description": "HTTP headers to match"
+        },
+        "queryParams": {
+          "type": "object",
+          "description": "Query parameters to match"
+        },
+        "pathParams": {
+          "type": "object",
+          "description": "Path parameters to match"
+        },
+        "requestBody": {
+          "type": "object",
+          "description": "Request body to match"
+        },
+        "responseBody": {
+          "type": "object",
+          "description": "Response body to match"
+        },
+        "errorDetail": {
+          "type": "object",
+          "description": "Error details to match"
+        },
+        "query": {
+          "type": "string",
+          "description": "SQL query"
+        },
+        "params": {
+          "type": "object",
+          "description": "Parameters for SQL query"
+        }
+      },
+      "required": [
+        "condition"
+      ],
+      "additionalProperties": true
+    },
+    "ActionDefinition": {
+      "type": "object",
+      "description": "An action to execute when the automation runs",
+      "properties": {
+        "alias": {
+          "type": "string",
+          "description": "Alias for this action"
+        },
+        "description": {
+          "type": "string",
+          "description": "Description of this action"
+        },
+        "action": {
+          "type": "string",
+          "description": "The action type",
+          "enum": [
+            "changeAssignee",
+            "changeAssigneeAction",
+            "changeStatus",
+            "changeStatusAction",
+            "createTodo",
+            "createTodoAction",
+            "sendEmail",
+            "sendEmailAction",
+            "delay",
+            "delayAction",
+            "ifThenElse",
+            "ifThenElseAction",
+            "logger",
+            "loggerAction",
+            "parallel",
+            "parallelAction",
+            "repeat",
+            "repeatAction",
+            "sequence",
+            "sequenceAction",
+            "stop",
+            "stopAction",
+            "variable",
+            "variableAction",
+            "waitForTrigger",
+            "waitForTriggerAction",
+            "userDefined",
+            "userDefinedAction",
+            "publishRabbitMqEvent",
+            "publishRabbitMqEventAction",
+            "publishSpringEvent",
+            "publishSpringEventAction",
+            "jdbcExecute",
+            "jdbcExecuteAction",
+            "jdbcQuery",
+            "jdbcQueryAction"
+          ]
+        },
+        "storeToVariable": {
+          "type": "string",
+          "description": "Store the action result to this variable name"
+        },
+        "message": {
+          "type": "string",
+          "description": "Message content (for logger, sendEmail actions)"
+        },
+        "level": {
+          "type": "string",
+          "enum": [
+            "ERROR",
+            "WARN",
+            "INFO",
+            "DEBUG",
+            "TRACE"
+          ],
+          "description": "Log level for logger action"
+        },
+        "to": {
+          "type": "string",
+          "description": "Email recipient"
+        },
+        "subject": {
+          "type": "string",
+          "description": "Email subject"
+        },
+        "body": {
+          "type": "string",
+          "description": "Email body"
+        },
+        "duration": {
+          "type": "string",
+          "format": "duration",
+          "description": "Duration for delay action (ISO 8601 format, e.g., 'PT5S' for 5 seconds)"
+        },
+        "timeout": {
+          "type": "string",
+          "format": "duration",
+          "description": "Timeout duration"
+        },
+        "if": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ConditionDefinition"
+          },
+          "description": "Conditions for if-then-else action"
+        },
+        "then": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ActionDefinition"
+          },
+          "description": "Actions to execute if conditions are true"
+        },
+        "ifs": {
+          "type": "array",
+          "description": "Additional if-then blocks for else-if logic",
+          "items": {
+            "type": "object",
+            "properties": {
+              "if": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/ConditionDefinition"
+                }
+              },
+              "then": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/ActionDefinition"
+                }
+              }
+            }
+          }
+        },
+        "else": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ActionDefinition"
+          },
+          "description": "Actions to execute if no conditions match"
+        },
+        "actions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ActionDefinition"
+          },
+          "description": "Nested actions (for sequence, parallel, repeat actions)"
+        },
+        "triggers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/TriggerDefinition"
+          },
+          "description": "Triggers to wait for (waitForTrigger action)"
+        },
+        "count": {
+          "type": "integer",
+          "description": "Number of times to repeat (repeat action)"
+        },
+        "while": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ConditionDefinition"
+          },
+          "description": "Continue while these conditions are true"
+        },
+        "until": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ConditionDefinition"
+          },
+          "description": "Continue until these conditions are true"
+        },
+        "for_each": {
+          "type": "array",
+          "description": "Iterate over this array"
+        },
+        "stopActionSequence": {
+          "type": "boolean",
+          "description": "Stop the current action sequence"
+        },
+        "stopAutomation": {
+          "type": "boolean",
+          "description": "Stop the entire automation"
+        },
+        "stopMessage": {
+          "type": "string",
+          "description": "Message to log when stopping"
+        },
+        "name": {
+          "type": "string",
+          "description": "Name for user-defined actions"
+        },
+        "parameters": {
+          "type": "object",
+          "description": "Parameters for user-defined actions"
+        },
+        "title": {
+          "type": "string",
+          "description": "Title for createTodo action"
+        },
+        "todoId": {
+          "oneOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "description": "Todo ID for changeAssignee/changeStatus actions"
+        },
+        "newAssigneeUsername": {
+          "type": "string",
+          "description": "New assignee username"
+        },
+        "newAssigneeFullName": {
+          "type": "string",
+          "description": "New assignee full name"
+        },
+        "newStatusCode": {
+          "type": "string",
+          "description": "New status code"
+        },
+        "todoAssignee": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "integer"
+            },
+            "username": {
+              "type": "string"
+            },
+            "fullName": {
+              "type": "string"
+            }
+          },
+          "description": "Assignee for createTodo action"
+        },
+        "todoStatus": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "integer"
+            },
+            "code": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            }
+          },
+          "description": "Status for createTodo action"
+        },
+        "exchange": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "type": {
+              "type": "string",
+              "enum": [
+                "DIRECT",
+                "TOPIC",
+                "FANOUT"
+              ]
+            },
+            "durable": {
+              "type": "boolean"
+            },
+            "autoDelete": {
+              "type": "boolean"
+            }
+          },
+          "description": "RabbitMQ exchange configuration"
+        },
+        "queue": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "durable": {
+              "type": "boolean"
+            },
+            "exclusive": {
+              "type": "boolean"
+            },
+            "autoDelete": {
+              "type": "boolean"
+            }
+          },
+          "description": "RabbitMQ queue configuration"
+        },
+        "routingKey": {
+          "type": "string",
+          "description": "RabbitMQ routing key"
+        },
+        "className": {
+          "type": "string",
+          "description": "Class name for Spring event publishing"
+        },
+        "publishToAutomationEngine": {
+          "type": "boolean",
+          "description": "Whether to also publish to automation engine"
+        },
+        "data": {
+          "type": "object",
+          "description": "Data payload for event publishing"
+        },
+        "query": {
+          "type": "string",
+          "description": "SQL query for JDBC actions"
+        },
+        "params": {
+          "type": "object",
+          "description": "Parameters for SQL query"
+        },
+        "mode": {
+          "type": "string",
+          "description": "Query mode (list, single, etc.)"
+        },
+        "variable": {
+          "type": "string",
+          "description": "Variable name to store query result"
+        }
+      },
+      "required": [
+        "action"
+      ],
+      "additionalProperties": true
+    },
+    "ResultDefinition": {
+      "type": "object",
+      "description": "The result/output definition for the automation",
+      "properties": {
+        "alias": {
+          "type": "string",
+          "description": "Alias for the result"
+        },
+        "description": {
+          "type": "string",
+          "description": "Description of the result"
+        },
+        "result": {
+          "type": "string",
+          "description": "The result type",
+          "enum": [
+            "basic",
+            "basicResult"
+          ]
+        }
+      },
+      "additionalProperties": true
+    },
+    "HttpMethodEnum": {
+      "type": "string",
+      "enum": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH",
+        "HEAD",
+        "OPTIONS",
+        "TRACE",
+        "CONNECT",
+        "UNKNOWN"
+      ],
+      "description": "HTTP method"
+    },
+    "HttpStatus": {
+      "type": "string",
+      "enum": [
+        "CONTINUE",
+        "SWITCHING_PROTOCOLS",
+        "PROCESSING",
+        "EARLY_HINTS",
+        "CHECKPOINT",
+        "OK",
+        "CREATED",
+        "ACCEPTED",
+        "NON_AUTHORITATIVE_INFORMATION",
+        "NO_CONTENT",
+        "RESET_CONTENT",
+        "PARTIAL_CONTENT",
+        "MULTI_STATUS",
+        "ALREADY_REPORTED",
+        "IM_USED",
+        "MULTIPLE_CHOICES",
+        "MOVED_PERMANENTLY",
+        "FOUND",
+        "MOVED_TEMPORARILY",
+        "SEE_OTHER",
+        "NOT_MODIFIED",
+        "USE_PROXY",
+        "TEMPORARY_REDIRECT",
+        "PERMANENT_REDIRECT",
+        "BAD_REQUEST",
+        "UNAUTHORIZED",
+        "PAYMENT_REQUIRED",
+        "FORBIDDEN",
+        "NOT_FOUND",
+        "METHOD_NOT_ALLOWED",
+        "NOT_ACCEPTABLE",
+        "PROXY_AUTHENTICATION_REQUIRED",
+        "REQUEST_TIMEOUT",
+        "CONFLICT",
+        "GONE",
+        "LENGTH_REQUIRED",
+        "PRECONDITION_FAILED",
+        "PAYLOAD_TOO_LARGE",
+        "REQUEST_ENTITY_TOO_LARGE",
+        "URI_TOO_LONG",
+        "REQUEST_URI_TOO_LONG",
+        "UNSUPPORTED_MEDIA_TYPE",
+        "REQUESTED_RANGE_NOT_SATISFIABLE",
+        "EXPECTATION_FAILED",
+        "I_AM_A_TEAPOT",
+        "INSUFFICIENT_SPACE_ON_RESOURCE",
+        "METHOD_FAILURE",
+        "DESTINATION_LOCKED",
+        "UNPROCESSABLE_ENTITY",
+        "LOCKED",
+        "FAILED_DEPENDENCY",
+        "TOO_EARLY",
+        "UPGRADE_REQUIRED",
+        "PRECONDITION_REQUIRED",
+        "TOO_MANY_REQUESTS",
+        "REQUEST_HEADER_FIELDS_TOO_LARGE",
+        "UNAVAILABLE_FOR_LEGAL_REASONS",
+        "INTERNAL_SERVER_ERROR",
+        "NOT_IMPLEMENTED",
+        "BAD_GATEWAY",
+        "SERVICE_UNAVAILABLE",
+        "GATEWAY_TIMEOUT",
+        "HTTP_VERSION_NOT_SUPPORTED",
+        "VARIANT_ALSO_NEGOTIATES",
+        "INSUFFICIENT_STORAGE",
+        "LOOP_DETECTED",
+        "BANDWIDTH_LIMIT_EXCEEDED",
+        "NOT_EXTENDED",
+        "NETWORK_AUTHENTICATION_REQUIRED"
+      ],
+      "description": "HTTP status code"
+    },
+    "MatchContext": {
+      "type": "object",
+      "description": "Matching context for conditions",
+      "properties": {
+        "equals": {
+          "type": "string"
+        },
+        "notEquals": {
+          "type": "string"
+        },
+        "in": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "notIn": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "regex": {
+          "type": "string"
+        },
+        "like": {
+          "type": "string"
+        },
+        "exists": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}
