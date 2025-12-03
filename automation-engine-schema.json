@@ -46,10 +46,6 @@
       "oneOf": [
         {
           "$ref": "#/$defs/ResultDefinition"
-        },
-        {
-          "type": "object",
-          "additionalProperties": true
         }
       ]
     }
