@@ -236,9 +236,15 @@ public class AESchemaService implements IAESchemaService {
 
             thenSchema.set("properties", thenProperties);
 
-            // Handle additionalProperties
+            // Handle additionalProperties - it could be a boolean or a schema with $ref
             if (blockSchema.has("additionalProperties")) {
-                thenSchema.set("additionalProperties", blockSchema.get("additionalProperties").deepCopy());
+                JsonNode additionalProps = blockSchema.get("additionalProperties");
+                if (additionalProps.isObject()) {
+                    // Process any $refs in additionalProperties
+                    thenSchema.set("additionalProperties", processSchemaNode(additionalProps, blockSchema, defs));
+                } else {
+                    thenSchema.set("additionalProperties", additionalProps.deepCopy());
+                }
             } else {
                 thenSchema.put("additionalProperties", false);
             }
@@ -268,6 +274,8 @@ public class AESchemaService implements IAESchemaService {
                     JsonNode referencedDef = sourceSchema.get("$defs").get(defName);
                     // Add to global defs if not already present
                     if (!globalDefs.has(defName)) {
+                        // Mark as being processed to avoid infinite recursion
+                        globalDefs.set(defName, objectMapper.createObjectNode());
                         globalDefs.set(defName, processSchemaNode(referencedDef, sourceSchema, globalDefs));
                     }
                 }
@@ -289,6 +297,12 @@ public class AESchemaService implements IAESchemaService {
         // Process items in arrays
         if (result.has("items")) {
             result.set("items", processSchemaNode(result.get("items"), sourceSchema, globalDefs));
+        }
+
+        // Process additionalProperties if it's a schema object
+        if (result.has("additionalProperties") && result.get("additionalProperties").isObject()) {
+            result.set("additionalProperties",
+                    processSchemaNode(result.get("additionalProperties"), sourceSchema, globalDefs));
         }
 
         // Process allOf, anyOf, oneOf
