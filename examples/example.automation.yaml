@@ -1,4 +1,4 @@
-# $schema: ./automation-engine-schema.json
+# $schema: ../automation-engine-schema.json
 # Example Automation: Send Email on Todo Creation
 # This automation demonstrates triggers, conditions, actions, and result definition
 
