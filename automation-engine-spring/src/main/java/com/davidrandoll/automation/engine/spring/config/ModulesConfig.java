@@ -2,6 +2,7 @@ package com.davidrandoll.automation.engine.spring.config;
 
 import com.davidrandoll.automation.engine.AutomationEngine;
 import com.davidrandoll.automation.engine.core.events.publisher.IEventPublisher;
+import com.davidrandoll.automation.engine.spring.AEConfigProvider;
 import com.davidrandoll.automation.engine.spring.modules.actions.delay.DelayAction;
 import com.davidrandoll.automation.engine.spring.modules.actions.if_then_else.IfThenElseAction;
 import com.davidrandoll.automation.engine.spring.modules.actions.logger.LoggerAction;
@@ -41,7 +42,6 @@ import com.davidrandoll.automation.engine.spring.modules.variables.if_them_else.
 import com.davidrandoll.automation.engine.spring.modules.variables.udv.DefaultUserDefinedVariableRegistry;
 import com.davidrandoll.automation.engine.spring.modules.variables.udv.IUserDefinedVariableRegistry;
 import com.davidrandoll.automation.engine.spring.modules.variables.udv.UserDefinedVariable;
-import com.davidrandoll.automation.engine.spring.AEConfigProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.ApplicationEventPublisher;
@@ -114,7 +114,7 @@ public class ModulesConfig {
         return new DefaultUserDefinedActionRegistry();
     }
 
-    @Bean(name = "userDefinedAction")
+    @Bean(name = {"userDefinedAction", "udaAction"})
     @ConditionalOnMissingBean(name = "userDefinedAction", ignored = UserDefinedAction.class)
     public UserDefinedAction userDefinedAction(IUserDefinedActionRegistry registry) {
         return new UserDefinedAction(registry);
@@ -177,7 +177,7 @@ public class ModulesConfig {
         return new DefaultUserDefinedConditionRegistry();
     }
 
-    @Bean(name = "userDefinedCondition")
+    @Bean(name = {"userDefinedCondition", "udcCondition"})
     @ConditionalOnMissingBean(name = "userDefinedCondition", ignored = UserDefinedCondition.class)
     public UserDefinedCondition userDefinedCondition(IUserDefinedConditionRegistry registry) {
         return new UserDefinedCondition(registry);
@@ -247,7 +247,7 @@ public class ModulesConfig {
         return new DefaultUserDefinedTriggerRegistry();
     }
 
-    @Bean(name = "userDefinedTrigger")
+    @Bean(name = {"userDefinedTrigger", "udtTrigger"})
     @ConditionalOnMissingBean(name = "userDefinedTrigger", ignored = UserDefinedTrigger.class)
     public UserDefinedTrigger userDefinedTrigger(IUserDefinedTriggerRegistry registry) {
         return new UserDefinedTrigger(registry);
@@ -274,7 +274,7 @@ public class ModulesConfig {
         return new DefaultUserDefinedVariableRegistry();
     }
 
-    @Bean(name = "userDefinedVariable")
+    @Bean(name = {"userDefinedVariable", "udvVariable"})
     @ConditionalOnMissingBean(name = "userDefinedVariable", ignored = UserDefinedVariable.class)
     public UserDefinedVariable userDefinedVariable(IUserDefinedVariableRegistry registry) {
         return new UserDefinedVariable(registry);
