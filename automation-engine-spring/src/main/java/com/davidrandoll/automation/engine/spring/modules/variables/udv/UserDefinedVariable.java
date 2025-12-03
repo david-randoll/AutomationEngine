@@ -27,7 +27,11 @@ public class UserDefinedVariable extends PluggableVariable<UserDefinedVariableCo
         var definition = variableDefinition.get();
         log.debug("Resolving user-defined variable: {}", vc.getName());
 
-        // Add parameters to event context
+        // Merge default parameters with provided parameters
+        // Default parameters from definition come first, then override with provided parameters
+        if (!ObjectUtils.isEmpty(definition.getParameters())) {
+            ec.addMetadata(definition.getParameters());
+        }
         if (!ObjectUtils.isEmpty(vc.getParameters())) {
             ec.addMetadata(vc.getParameters());
         }

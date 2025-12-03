@@ -27,7 +27,11 @@ public class UserDefinedTrigger extends PluggableTrigger<UserDefinedTriggerConte
         var definition = triggerDefinition.get();
         log.debug("Evaluating user-defined trigger: {}", tc.getName());
 
-        // Add parameters to event context
+        // Merge default parameters with provided parameters
+        // Default parameters from definition come first, then override with provided parameters
+        if (!ObjectUtils.isEmpty(definition.getParameters())) {
+            ec.addMetadata(definition.getParameters());
+        }
         if (!ObjectUtils.isEmpty(tc.getParameters())) {
             ec.addMetadata(tc.getParameters());
         }

@@ -27,7 +27,11 @@ public class UserDefinedCondition extends PluggableCondition<UserDefinedConditio
         var definition = conditionDefinition.get();
         log.debug("Evaluating user-defined condition: {}", cc.getName());
 
-        // Add parameters to event context
+        // Merge default parameters with provided parameters
+        // Default parameters from definition come first, then override with provided parameters
+        if (!ObjectUtils.isEmpty(definition.getParameters())) {
+            ec.addMetadata(definition.getParameters());
+        }
         if (!ObjectUtils.isEmpty(cc.getParameters())) {
             ec.addMetadata(cc.getParameters());
         }

@@ -27,7 +27,11 @@ public class UserDefinedAction extends PluggableAction<UserDefinedActionContext>
         UserDefinedActionDefinition definition = actionDefinition.get();
         log.debug("Executing user-defined action: {}", ac.getName());
 
-        // Add parameters to event context
+        // Merge default parameters with provided parameters
+        // Default parameters from definition come first, then override with provided parameters
+        if (!ObjectUtils.isEmpty(definition.getParameters())) {
+            ec.addMetadata(definition.getParameters());
+        }
         if (!ObjectUtils.isEmpty(ac.getParameters())) {
             ec.addMetadata(ac.getParameters());
         }
