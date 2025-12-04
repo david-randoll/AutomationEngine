@@ -7,8 +7,10 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Default implementation of IUserDefinedConditionRegistry that stores conditions in memory.
- * Users can extend this class or provide their own implementation to load from a database, file, etc.
+ * Default implementation of IUserDefinedConditionRegistry that stores
+ * conditions in memory.
+ * Users can extend this class or provide their own implementation to load from
+ * a database, file, etc.
  */
 @Slf4j
 public class DefaultUserDefinedConditionRegistry implements IUserDefinedConditionRegistry {
@@ -24,6 +26,7 @@ public class DefaultUserDefinedConditionRegistry implements IUserDefinedConditio
      *
      * @param definition the condition definition to register
      */
+    @Override
     public void registerCondition(UserDefinedConditionDefinition definition) {
         if (definition == null || definition.getName() == null) {
             log.warn("Cannot register condition with null name");
@@ -38,6 +41,7 @@ public class DefaultUserDefinedConditionRegistry implements IUserDefinedConditio
      *
      * @param name the name of the condition to unregister
      */
+    @Override
     public void unregisterCondition(String name) {
         conditions.remove(name);
         log.info("Unregistered user-defined condition: {}", name);
@@ -48,8 +52,8 @@ public class DefaultUserDefinedConditionRegistry implements IUserDefinedConditio
      *
      * @return a map of all registered conditions
      */
+    @Override
     public Map<String, UserDefinedConditionDefinition> getAllConditions() {
         return Map.copyOf(conditions);
     }
 }
-

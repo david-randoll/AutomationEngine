@@ -7,8 +7,10 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Default implementation of IUserDefinedTriggerRegistry that stores triggers in memory.
- * Users can extend this class or provide their own implementation to load from a database, file, etc.
+ * Default implementation of IUserDefinedTriggerRegistry that stores triggers in
+ * memory.
+ * Users can extend this class or provide their own implementation to load from
+ * a database, file, etc.
  */
 @Slf4j
 public class DefaultUserDefinedTriggerRegistry implements IUserDefinedTriggerRegistry {
@@ -24,6 +26,7 @@ public class DefaultUserDefinedTriggerRegistry implements IUserDefinedTriggerReg
      *
      * @param definition the trigger definition to register
      */
+    @Override
     public void registerTrigger(UserDefinedTriggerDefinition definition) {
         if (definition == null || definition.getName() == null) {
             log.warn("Cannot register trigger with null name");
@@ -38,6 +41,7 @@ public class DefaultUserDefinedTriggerRegistry implements IUserDefinedTriggerReg
      *
      * @param name the name of the trigger to unregister
      */
+    @Override
     public void unregisterTrigger(String name) {
         triggers.remove(name);
         log.info("Unregistered user-defined trigger: {}", name);
@@ -48,8 +52,8 @@ public class DefaultUserDefinedTriggerRegistry implements IUserDefinedTriggerReg
      *
      * @return a map of all registered triggers
      */
+    @Override
     public Map<String, UserDefinedTriggerDefinition> getAllTriggers() {
         return Map.copyOf(triggers);
     }
 }
-

@@ -1,5 +1,6 @@
 package com.davidrandoll.automation.engine.spring.modules.actions.uda;
 
+import com.davidrandoll.automation.engine.core.actions.IActionContext;
 import com.davidrandoll.automation.engine.creator.actions.ActionDefinition;
 import com.davidrandoll.automation.engine.creator.conditions.ConditionDefinition;
 import com.davidrandoll.automation.engine.creator.variables.VariableDefinition;
@@ -26,17 +27,22 @@ import java.util.Map;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @FieldNameConstants
 @JsonPropertyOrder({
-        UserDefinedActionDefinition.Fields.name,
+        UserDefinedActionDefinition.Fields.alias,
         UserDefinedActionDefinition.Fields.description,
+        UserDefinedActionDefinition.Fields.name,
         UserDefinedActionDefinition.Fields.parameters,
         UserDefinedActionDefinition.Fields.variables,
         UserDefinedActionDefinition.Fields.conditions,
         UserDefinedActionDefinition.Fields.actions
 })
-public class UserDefinedActionDefinition {
-    private String name;
+public class UserDefinedActionDefinition implements IActionContext {
+    private String alias;
     private String description;
 
+    /**
+     * Name of the user-defined action
+     */
+    private String name;
     /**
      * Parameter definitions for this action (name -> default value or description)
      */

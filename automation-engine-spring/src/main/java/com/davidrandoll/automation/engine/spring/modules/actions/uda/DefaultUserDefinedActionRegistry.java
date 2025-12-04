@@ -7,8 +7,10 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Default implementation of IUserDefinedActionRegistry that stores actions in memory.
- * Users can extend this class or provide their own implementation to load from a database, file, etc.
+ * Default implementation of IUserDefinedActionRegistry that stores actions in
+ * memory.
+ * Users can extend this class or provide their own implementation to load from
+ * a database, file, etc.
  */
 @Slf4j
 public class DefaultUserDefinedActionRegistry implements IUserDefinedActionRegistry {
@@ -24,6 +26,7 @@ public class DefaultUserDefinedActionRegistry implements IUserDefinedActionRegis
      *
      * @param definition the action definition to register
      */
+    @Override
     public void registerAction(UserDefinedActionDefinition definition) {
         if (definition == null || definition.getName() == null) {
             log.warn("Cannot register action with null name");
@@ -38,6 +41,7 @@ public class DefaultUserDefinedActionRegistry implements IUserDefinedActionRegis
      *
      * @param name the name of the action to unregister
      */
+    @Override
     public void unregisterAction(String name) {
         actions.remove(name);
         log.info("Unregistered user-defined action: {}", name);
@@ -48,8 +52,8 @@ public class DefaultUserDefinedActionRegistry implements IUserDefinedActionRegis
      *
      * @return a set of all registered action names
      */
+    @Override
     public Map<String, UserDefinedActionDefinition> getAllActions() {
         return Map.copyOf(actions);
     }
 }
-

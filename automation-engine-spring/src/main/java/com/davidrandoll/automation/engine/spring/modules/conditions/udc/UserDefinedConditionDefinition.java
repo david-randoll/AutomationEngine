@@ -1,5 +1,6 @@
 package com.davidrandoll.automation.engine.spring.modules.conditions.udc;
 
+import com.davidrandoll.automation.engine.core.conditions.IConditionContext;
 import com.davidrandoll.automation.engine.creator.conditions.ConditionDefinition;
 import com.davidrandoll.automation.engine.creator.variables.VariableDefinition;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -25,15 +26,21 @@ import java.util.Map;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @FieldNameConstants
 @JsonPropertyOrder({
-        UserDefinedConditionDefinition.Fields.name,
+        UserDefinedConditionDefinition.Fields.alias,
         UserDefinedConditionDefinition.Fields.description,
+        UserDefinedConditionDefinition.Fields.name,
         UserDefinedConditionDefinition.Fields.parameters,
         UserDefinedConditionDefinition.Fields.variables,
         UserDefinedConditionDefinition.Fields.conditions
 })
-public class UserDefinedConditionDefinition {
-    private String name;
+public class UserDefinedConditionDefinition implements IConditionContext {
+    private String alias;
     private String description;
+
+    /**
+     * Name of the user-defined condition
+     */
+    private String name;
 
     /**
      * Parameter definitions for this condition (name -> default value or description)

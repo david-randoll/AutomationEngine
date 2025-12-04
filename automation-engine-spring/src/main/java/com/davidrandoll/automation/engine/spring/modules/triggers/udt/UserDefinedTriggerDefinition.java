@@ -1,5 +1,6 @@
 package com.davidrandoll.automation.engine.spring.modules.triggers.udt;
 
+import com.davidrandoll.automation.engine.core.triggers.ITriggerContext;
 import com.davidrandoll.automation.engine.creator.triggers.TriggerDefinition;
 import com.davidrandoll.automation.engine.creator.variables.VariableDefinition;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -25,16 +26,21 @@ import java.util.Map;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @FieldNameConstants
 @JsonPropertyOrder({
-        UserDefinedTriggerDefinition.Fields.name,
+        UserDefinedTriggerDefinition.Fields.alias,
         UserDefinedTriggerDefinition.Fields.description,
+        UserDefinedTriggerDefinition.Fields.name,
         UserDefinedTriggerDefinition.Fields.parameters,
         UserDefinedTriggerDefinition.Fields.variables,
         UserDefinedTriggerDefinition.Fields.triggers
 })
-public class UserDefinedTriggerDefinition {
-    private String name;
+public class UserDefinedTriggerDefinition implements ITriggerContext {
+    private String alias;
     private String description;
 
+    /**
+     * Name of the user-defined trigger
+     */
+    private String name;
     /**
      * Parameter definitions for this trigger (name -> default value or description)
      */

@@ -1,5 +1,6 @@
 package com.davidrandoll.automation.engine.spring.modules.variables.udv;
 
+import com.davidrandoll.automation.engine.core.variables.IVariableContext;
 import com.davidrandoll.automation.engine.creator.variables.VariableDefinition;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -24,15 +25,20 @@ import java.util.Map;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @FieldNameConstants
 @JsonPropertyOrder({
-        UserDefinedVariableDefinition.Fields.name,
+        UserDefinedVariableDefinition.Fields.alias,
         UserDefinedVariableDefinition.Fields.description,
+        UserDefinedVariableDefinition.Fields.name,
         UserDefinedVariableDefinition.Fields.parameters,
         UserDefinedVariableDefinition.Fields.variables
 })
-public class UserDefinedVariableDefinition {
-    private String name;
+public class UserDefinedVariableDefinition implements IVariableContext {
+    private String alias;
     private String description;
 
+    /**
+     * Name of the user-defined variable
+     */
+    private String name;
     /**
      * Parameter definitions for this variable (name -> default value or description)
      */
