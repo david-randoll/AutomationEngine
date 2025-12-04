@@ -43,7 +43,7 @@
   },
   "[json]": {
     "editor.insertSpaces": true,
-    "editor.tabSize": 2,
+    "editor.tabSize": 4,
     "editor.autoIndent": "full",
     "editor.quickSuggestions": {
       "other": true,
