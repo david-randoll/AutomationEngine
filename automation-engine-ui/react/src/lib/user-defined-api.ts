@@ -9,6 +9,7 @@ import type {
   UserDefinedVariableDefinition,
   UserDefinedDefinition,
 } from "@/types/user-defined";
+import type { ModuleType } from "@/types/types";
 
 const BASE_PATH = "/automation-engine/user-defined";
 
@@ -86,4 +87,5 @@ export const userDefinedApi = {
         return variablesApi.unregister(name);
     }
   },
+  getSchema: (type: BlockType) => agent.get<ModuleType>(`${BASE_PATH}/${type}/schema`),
 };

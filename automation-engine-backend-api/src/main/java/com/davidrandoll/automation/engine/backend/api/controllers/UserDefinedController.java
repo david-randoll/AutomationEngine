@@ -1,5 +1,7 @@
 package com.davidrandoll.automation.engine.backend.api.controllers;
 
+import com.davidrandoll.automation.engine.backend.api.dtos.BlockType;
+import com.davidrandoll.automation.engine.backend.api.json_schema.JsonSchemaService;
 import com.davidrandoll.automation.engine.spring.modules.actions.uda.IUserDefinedActionRegistry;
 import com.davidrandoll.automation.engine.spring.modules.actions.uda.UserDefinedActionDefinition;
 import com.davidrandoll.automation.engine.spring.modules.conditions.udc.IUserDefinedConditionRegistry;
@@ -12,7 +14,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -28,6 +32,46 @@ public class UserDefinedController {
     private final IUserDefinedConditionRegistry conditionRegistry;
     private final IUserDefinedTriggerRegistry triggerRegistry;
     private final IUserDefinedVariableRegistry variableRegistry;
+    private final JsonSchemaService jsonSchemaService;
+
+    // ==================== Schema ====================
+
+    /**
+     * Get the JSON schema for a specific user-defined block type.
+     *
+     * @param blockType the block type (actions, conditions, triggers, variables)
+     * @return the schema for the block type
+     */
+    @GetMapping("/{blockType}/schema")
+    public BlockType getSchema(@PathVariable String blockType) {
+        return switch (blockType.toLowerCase()) {
+            case "actions" -> new BlockType(
+                    "UserDefinedActionDefinition",
+                    "User-Defined Action",
+                    "Create a reusable custom action with parameters",
+                    jsonSchemaService.generateSchema(UserDefinedActionDefinition.class),
+                    List.of());
+            case "conditions" -> new BlockType(
+                    "UserDefinedConditionDefinition",
+                    "User-Defined Condition",
+                    "Create a reusable custom condition with parameters",
+                    jsonSchemaService.generateSchema(UserDefinedConditionDefinition.class),
+                    List.of());
+            case "triggers" -> new BlockType(
+                    "UserDefinedTriggerDefinition",
+                    "User-Defined Trigger",
+                    "Create a reusable custom trigger with parameters",
+                    jsonSchemaService.generateSchema(UserDefinedTriggerDefinition.class),
+                    List.of());
+            case "variables" -> new BlockType(
+                    "UserDefinedVariableDefinition",
+                    "User-Defined Variable",
+                    "Create a reusable custom variable with parameters",
+                    jsonSchemaService.generateSchema(UserDefinedVariableDefinition.class),
+                    List.of());
+            default -> throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid block type: " + blockType);
+        };
+    }
 
     // ==================== Actions ====================
 
