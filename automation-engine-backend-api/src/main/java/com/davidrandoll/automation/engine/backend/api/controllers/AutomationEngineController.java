@@ -6,8 +6,11 @@ import com.davidrandoll.automation.engine.backend.api.dtos.BlocksByType;
 import com.davidrandoll.automation.engine.backend.api.services.IAESchemaService;
 import com.davidrandoll.automation.engine.creator.AutomationDefinition;
 import com.fasterxml.jackson.databind.JsonNode;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+
 
 @RestController
 @RequestMapping("/automation-engine")
@@ -17,7 +20,7 @@ public class AutomationEngineController {
 
     @GetMapping("block/{type}")
     public BlocksByType getBlocksByType(@PathVariable String type,
-            @RequestParam(required = false) Boolean includeSchema) {
+                                        @RequestParam(required = false) Boolean includeSchema) {
         return service.getBlocksByType(type, includeSchema);
     }
 
@@ -44,11 +47,11 @@ public class AutomationEngineController {
      * This schema can be used to validate automation YAML/JSON files and provides
      * IDE autocomplete support. The schema is dynamically built from all registered
      * triggers, conditions, actions, variables, and results.
-     * 
+     *
      * @return A complete JSON schema for automation definitions
      */
-    @GetMapping("schema.json")
-    public JsonNode getFullAutomationSchema() {
-        return service.getFullAutomationSchema();
+    @GetMapping(value = "schema.json", produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonNode getFullAutomationSchema(HttpServletRequest request) {
+        return service.getFullAutomationSchema(request.getRequestURL().toString());
     }
 }

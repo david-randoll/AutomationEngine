@@ -22,5 +22,5 @@ public interface IAESchemaService {
      *
      * @return A complete JSON schema as a JsonNode
      */
-    JsonNode getFullAutomationSchema();
+    JsonNode getFullAutomationSchema(String url);
 }
