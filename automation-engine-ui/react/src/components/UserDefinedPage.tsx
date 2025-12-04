@@ -146,9 +146,13 @@ const DefinitionCard = ({ name, definition, onUnregister }: DefinitionCardProps)
     );
 };
 
-const UserDefinedPage = () => {
+interface UserDefinedPageProps {
+    initialTab?: BlockType;
+}
+
+const UserDefinedPage = ({ initialTab = "actions" }: UserDefinedPageProps) => {
     const navigate = useNavigate();
-    const [activeTab, setActiveTab] = useState<BlockType>("actions");
+    const activeTab = initialTab;
     const [definitions, setDefinitions] = useState<Record<BlockType, Record<string, UserDefinedDefinition>>>({
         actions: {},
         conditions: {},
@@ -205,7 +209,7 @@ const UserDefinedPage = () => {
 
                 <Card className="py-4">
                     <CardContent className="p-0 px-4">
-                        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as BlockType)}>
+                        <Tabs value={activeTab} onValueChange={(v) => navigate(`/user-defined/${v}`)}>
                             <TabsList className="grid w-full grid-cols-4">
                                 {blockTypeConfigs.map((config) => (
                                     <TabsTrigger key={config.type} value={config.type} className="flex items-center gap-1">
