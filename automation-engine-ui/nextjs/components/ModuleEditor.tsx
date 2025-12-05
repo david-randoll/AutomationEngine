@@ -5,21 +5,15 @@ import AddBlockModal from "@/components/AddBlockModal";
 import { useFormContext } from "react-hook-form";
 import FieldRenderer from "./FieldRenderer";
 import AdditionalPropertyAdder from "./AdditionalPropertyAdder";
-import dynamic from "next/dynamic";
+import MonacoEditor from "@monaco-editor/react";
 import yaml from "js-yaml";
 import { Button } from "./ui/button";
 import { agent } from "@/lib/agent";
 import { areaToName, nameToArea } from "@/lib/utils";
 import { useAutomationEngine } from "@/providers/AutomationEngineProvider";
-import ExamplesViewer from "./ExamplesViewer";
-import ModuleSkeleton from "./ModuleSkeleton";
 import type { ModuleType, Path, Area, EditMode, JsonSchema } from "@/types/types";
-
-// Dynamic import for Monaco Editor to avoid SSR issues
-const MonacoEditor = dynamic(() => import("@monaco-editor/react"), {
-    ssr: false,
-    loading: () => <div className="h-[400px] w-full bg-muted animate-pulse rounded" />,
-});
+import ModuleSkeleton from "./ModuleSkeleton";
+import ExamplesViewer from "./ExamplesViewer";
 
 interface ModuleEditorProps {
     module: ModuleType;
