@@ -1,4 +1,3 @@
-"use client";
 
 import { useState, useEffect } from "react";
 import AddBlockModal from "@/components/AddBlockModal";
@@ -11,9 +10,9 @@ import { Button } from "./ui/button";
 import { agent } from "@/lib/agent";
 import { areaToName, nameToArea } from "@/lib/utils";
 import { useAutomationEngine } from "@/providers/AutomationEngineProvider";
-import type { ModuleType, Path, Area, EditMode, JsonSchema } from "@/types/types";
-import ModuleSkeleton from "./ModuleSkeleton";
 import ExamplesViewer from "./ExamplesViewer";
+import ModuleSkeleton from "./ModuleSkeleton";
+import type { ModuleType, Path, Area, EditMode, JsonSchema } from "@/types/types";
 
 interface ModuleEditorProps {
     module: ModuleType;
@@ -42,7 +41,7 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
         const moduleName = module.name ?? areaToName(module);
 
         getSchema(pathKey, async () => {
-            if (!moduleName) return module.schema || null;
+            if (!moduleName) return module.schema;
             console.log("ModuleEditor: fetching schema for", moduleName);
 
             const res = await agent.getHttp<ModuleType>(`/automation-engine/block/${moduleName}/schema`);
@@ -55,13 +54,16 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
                 console.error("Failed to fetch schema:", res.error?.message);
                 return null;
             }
-        }).then((sch) => {
-            if (!sch) {
+        }).then((sch: JsonSchema | null | unknown) => {
+            if (sch) {
+                setSchema(sch as JsonSchema);
+            } else {
                 console.log("No schema with name:", moduleName);
                 setEditMode("json");
-            } else setSchema(sch);
+            }
         });
-    }, [pathKey, module, getSchema]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [pathKey]);// don't add module or getSchema here
 
     useEffect(() => {
         if (editMode !== "ui") {
@@ -73,7 +75,7 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
                 console.error("Failed to serialize data:", e);
             }
         }
-    }, [editMode, getValues, pathKey]);
+    }, [editMode, getValues, path]);
 
     function switchToUIMode() {
         try {
@@ -205,23 +207,23 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
                 />
             )}
 
-            {editMode === "ui" && schema && (
+            {editMode === "ui" && (
                 <div className="space-y-3">
                     <div className="grid grid-cols-1 gap-3">
-                        {Object.entries((schema.properties as Record<string, unknown>) || {}).map(([key, sch]) => (
+                        {Object.entries((schema?.properties as Record<string, unknown>) || {}).map(([key, sch]) => (
                             <FieldRenderer
                                 key={key}
                                 fieldKey={key}
                                 schema={sch as JsonSchema}
-                                rootSchema={schema}
+                                rootSchema={schema as JsonSchema}
                                 pathInData={[...path, key]}
                                 onAddBlock={onAddBlock}
                             />
                         ))}
                     </div>
-                    {schema.additionalProperties ? (
+                    {schema?.additionalProperties ? (
                         <AdditionalPropertyAdder
-                            properties={(schema.properties as Record<string, unknown>) || {}}
+                            properties={(schema?.properties as Record<string, unknown>) || {}}
                             setProperties={setProperties}
                         />
                     ) : null}

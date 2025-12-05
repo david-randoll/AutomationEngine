@@ -4,7 +4,7 @@ import { createContext, useContext, useState, useMemo, type ReactNode } from "re
 import type { JsonSchema } from "@/types/types";
 
 interface AutomationEngineContextType {
-    getSchema: (path: string, loader: () => Promise<JsonSchema | null>) => Promise<JsonSchema | null>;
+    getSchema: (path: string, loader: () => Promise<JsonSchema | null | unknown>) => Promise<JsonSchema | null | unknown>;
     setSchema: (path: string, schema: JsonSchema) => void;
     evictSchema: (path: string) => void;
     hasSchema: (path: string) => boolean;
@@ -20,7 +20,7 @@ export const AutomationEngineProvider = ({ children }: { children: ReactNode }) 
     const hasSchema = (path: string) => schemas.has(path);
     const isLoading = (path: string) => loadingPaths.has(path);
 
-    const getSchema = async (path: string, loader: () => Promise<JsonSchema | null>) => {
+    const getSchema = async (path: string, loader: () => Promise<JsonSchema | null | unknown>) => {
         if (hasSchema(path)) {
             return schemas.get(path)!;
         }
@@ -30,7 +30,7 @@ export const AutomationEngineProvider = ({ children }: { children: ReactNode }) 
         try {
             const schema = await loader();
             if (schema) {
-                setSchemas((prev) => new Map(prev.set(path, schema)));
+                setSchemas((prev) => new Map(prev.set(path, schema as JsonSchema)));
             }
             return schema;
         } finally {
