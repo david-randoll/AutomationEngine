@@ -18,6 +18,8 @@ export interface RequestOptions<T = unknown> {
 }
 
 function getApiBaseUrl(): string {
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+  if(baseUrl) return baseUrl;
   if (typeof window !== "undefined") {
     return window.location.origin;
   }
