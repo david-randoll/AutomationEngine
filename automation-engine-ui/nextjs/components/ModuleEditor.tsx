@@ -193,6 +193,22 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
                     defaultLanguage={editMode}
                     value={rawText}
                     onChange={onEditorChange}
+                    beforeMount={(monaco) => {
+                        // Register schema only for JSON mode
+                        if (schema && editMode === "json") {
+                            monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
+                                validate: true,
+                                enableSchemaRequest: false, // you are providing local schema
+                                schemas: [
+                                    {
+                                        uri: `inmemory://schema/${pathKey}.json`, // any unique URI
+                                        fileMatch: ["*"], // or ["editor.json"] if you set a custom model
+                                        schema: schema,
+                                    },
+                                ],
+                            });
+                        }
+                    }}
                     options={{
                         quickSuggestions: true,
                         minimap: { enabled: false },
