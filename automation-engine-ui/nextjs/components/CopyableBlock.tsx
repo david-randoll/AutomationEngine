@@ -1,15 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FiCheck, FiCopy } from "react-icons/fi";
-import dynamic from "next/dynamic";
-
-// Dynamic import for Monaco Editor to avoid SSR issues
-const MonacoEditor = dynamic(() => import("@monaco-editor/react"), {
-    ssr: false,
-    loading: () => <div className="h-full w-full bg-muted animate-pulse rounded" />,
-});
+import MonacoEditor from "@monaco-editor/react";
 
 interface CopyableBlockProps {
     label: string;

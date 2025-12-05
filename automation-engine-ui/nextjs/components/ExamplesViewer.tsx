@@ -3,15 +3,9 @@
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import dynamic from "next/dynamic";
+import MonacoEditor from "@monaco-editor/react";
 import yaml from "js-yaml";
 import { FaLightbulb } from "react-icons/fa";
-
-// Dynamic import for Monaco Editor to avoid SSR issues
-const MonacoEditor = dynamic(() => import("@monaco-editor/react"), {
-    ssr: false,
-    loading: () => <div className="h-[400px] w-full bg-muted animate-pulse rounded" />,
-});
 
 interface ExamplesViewerProps {
     examples: unknown[];
