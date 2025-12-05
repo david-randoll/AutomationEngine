@@ -1,7 +1,10 @@
 "use client";
-import type { Metadata } from "next";
+
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { FormProvider, useForm } from "react-hook-form";
+import { AutomationEngineProvider } from "@/providers/AutomationEngineProvider";
+import { Toaster } from "sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -13,6 +16,19 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+function Providers({ children }: { children: React.ReactNode }) {
+  const methods = useForm({
+    defaultValues: {},
+    mode: "onBlur",
+  });
+
+  return (
+    <FormProvider {...methods}>
+      <AutomationEngineProvider>{children}</AutomationEngineProvider>
+    </FormProvider>
+  );
+}
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -23,7 +39,8 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <Providers>{children}</Providers>
+        <Toaster richColors position="top-right" />
       </body>
     </html>
   );
