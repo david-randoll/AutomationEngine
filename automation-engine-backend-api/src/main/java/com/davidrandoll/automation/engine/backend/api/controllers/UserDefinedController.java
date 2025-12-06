@@ -10,6 +10,8 @@ import com.davidrandoll.automation.engine.spring.modules.triggers.udt.IUserDefin
 import com.davidrandoll.automation.engine.spring.modules.triggers.udt.UserDefinedTriggerDefinition;
 import com.davidrandoll.automation.engine.spring.modules.variables.udv.IUserDefinedVariableRegistry;
 import com.davidrandoll.automation.engine.spring.modules.variables.udv.UserDefinedVariableDefinition;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +30,7 @@ public class UserDefinedController {
     private final IUserDefinedTriggerRegistry triggerRegistry;
     private final IUserDefinedVariableRegistry variableRegistry;
     private final JsonSchemaService jsonSchemaService;
+    private final ObjectMapper objectMapper;
 
     private enum BlockEnum {
         ACTIONS, CONDITIONS, TRIGGERS, VARIABLES;
@@ -110,26 +113,26 @@ public class UserDefinedController {
     @PostMapping("/{blockType}")
     public ResponseEntity<?> register(
             @PathVariable String blockType,
-            @RequestBody Object definition
+            @RequestBody JsonNode definition
     ) {
         return switch (BlockEnum.from(blockType)) {
             case ACTIONS -> {
-                var def = (UserDefinedActionDefinition) definition;
+                var def = objectMapper.convertValue(definition, UserDefinedActionDefinition.class);
                 actionRegistry.registerAction(def);
                 yield ResponseEntity.status(HttpStatus.CREATED).body(def);
             }
             case CONDITIONS -> {
-                var def = (UserDefinedConditionDefinition) definition;
+                var def = objectMapper.convertValue(definition, UserDefinedConditionDefinition.class);
                 conditionRegistry.registerCondition(def);
                 yield ResponseEntity.status(HttpStatus.CREATED).body(def);
             }
             case TRIGGERS -> {
-                var def = (UserDefinedTriggerDefinition) definition;
+                var def = objectMapper.convertValue(definition, UserDefinedTriggerDefinition.class);
                 triggerRegistry.registerTrigger(def);
                 yield ResponseEntity.status(HttpStatus.CREATED).body(def);
             }
             case VARIABLES -> {
-                var def = (UserDefinedVariableDefinition) definition;
+                var def = objectMapper.convertValue(definition, UserDefinedVariableDefinition.class);
                 variableRegistry.registerVariable(def);
                 yield ResponseEntity.status(HttpStatus.CREATED).body(def);
             }
