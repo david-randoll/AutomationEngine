@@ -46,30 +46,27 @@ public class AutomationEngineUiConfiguration implements WebMvcConfigurer {
                 .addResolver(new PathResourceResolver() {
                     @Override
                     protected Resource getResource(String resourcePath, Resource location) throws IOException {
-                        // 1. ROOT PATH FIX: If the path is empty, serve index.html immediately
-                        if (resourcePath.trim().isEmpty() || resourcePath.equals("/")) {
-                            return location.createRelative("index.html");
+                        if (resourcePath.matches(".*\\.[a-zA-Z0-9]+$")) {
+                            Resource staticFile = location.createRelative(resourcePath);
+                            if (staticFile.exists() && staticFile.isReadable()) {
+                                return staticFile;
+                            }
+                            return null;
                         }
 
-                        // 2. Exact Match: Check if the exact file exists (images, css, js)
-                        Resource requestedResource = location.createRelative(resourcePath);
-                        // IMPORTANT: We explicitly check isReadable() to filter out directories
-                        if (requestedResource.exists() && requestedResource.isReadable() && requestedResource.isFile()) {
-                            return requestedResource;
+                        // --- 2) Try directory-based index.html (e.g. /ui/user-defined) ---
+                        Resource htmlIndex = location.createRelative(resourcePath + "/index.html");
+                        if (htmlIndex.exists() && htmlIndex.isReadable()) {
+                            return htmlIndex;
                         }
 
-                        // 3. HTML Extension: Check if file exists with .html (for /user-defined)
-                        Resource htmlResource = location.createRelative(resourcePath + ".html");
-                        if (htmlResource.exists() && htmlResource.isReadable()) {
-                            return htmlResource;
+                        // --- 3) Try HTML extension (/ui/user-defined → user-defined.html) ---
+                        Resource htmlFile = location.createRelative(resourcePath + ".html");
+                        if (htmlFile.exists() && htmlFile.isReadable()) {
+                            return htmlFile;
                         }
 
-                        Resource htmlIndexResource = location.createRelative(resourcePath + "/index.html");
-                        if (htmlIndexResource.exists() && htmlIndexResource.isReadable()) {
-                            return htmlIndexResource;
-                        }
-
-                        // 4. SPA Fallback: Everything else goes to index.html (for deep links /user-defined/conditions)
+                        // --- 4) SPA fallback for deep links ---
                         return location.createRelative("index.html");
                     }
                 });
