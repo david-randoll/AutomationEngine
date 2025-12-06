@@ -17,7 +17,6 @@ import java.io.IOException;
 @ConditionalOnProperty(prefix = "automation-engine.ui", name = "enabled", havingValue = "true", matchIfMissing = true)
 @RequiredArgsConstructor
 public class AutomationEngineUiConfiguration implements WebMvcConfigurer {
-
     private final AutomationEngineUiProperties properties;
 
     // Helper to normalize the path (Keep this)
@@ -32,8 +31,13 @@ public class AutomationEngineUiConfiguration implements WebMvcConfigurer {
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
         String path = getNormalizedPath();
+        registry.addViewController(path)
+                .setViewName("redirect:" + path + "/");
+
         registry.addViewController(path + "/")
                 .setViewName("forward:" + path + "/index.html");
+
+        registry.setOrder(Integer.MIN_VALUE);
     }
 
     @Override
