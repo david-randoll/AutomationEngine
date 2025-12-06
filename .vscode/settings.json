@@ -1,0 +1,54 @@
+{
+  // YAML IntelliSense configuration
+  // Requires the "YAML" extension by Red Hat (redhat.vscode-yaml)
+  "yaml.schemas": {
+    "./automation-engine-schema.json": [
+      "**/automations/**/*.yaml",
+      "**/automations/**/*.yml",
+      "**/*.automation.yaml",
+      "**/*.automation.yml",
+      "**/automation-*.yaml",
+      "**/automation-*.yml"
+    ]
+  },
+
+  // JSON IntelliSense configuration
+  "json.schemas": [
+    {
+      "fileMatch": ["**/automations/**/*.json", "**/*.automation.json", "**/automation-*.json"],
+      "url": "./automation-engine-schema.json"
+    }
+  ],
+
+  // Enable YAML validation
+  "yaml.validate": true,
+  "yaml.completion": true,
+  "yaml.hover": true,
+
+  // Format settings for YAML
+  "yaml.format.enable": true,
+  "yaml.format.singleQuote": false,
+  "yaml.format.bracketSpacing": true,
+
+  // Editor settings for YAML/JSON files
+  "[yaml]": {
+    "editor.insertSpaces": true,
+    "editor.tabSize": 2,
+    "editor.autoIndent": "full",
+    "editor.quickSuggestions": {
+      "other": true,
+      "comments": false,
+      "strings": true
+    }
+  },
+  "[json]": {
+    "editor.insertSpaces": true,
+    "editor.tabSize": 4,
+    "editor.autoIndent": "full",
+    "editor.quickSuggestions": {
+      "other": true,
+      "comments": false,
+      "strings": true
+    }
+  }
+}

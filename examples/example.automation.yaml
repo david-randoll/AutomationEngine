@@ -1,0 +1,49 @@
+# $schema: ../automation-engine-schema.json
+# Example Automation: Send Email on Todo Creation
+# This automation demonstrates triggers, conditions, actions, and result definition
+
+alias: send-todo-email-notification
+description: Sends an email notification when a new Todo is created
+
+variables:
+- greeting: "Hello"
+- emailTemplate: |
+    {{ greeting }},
+
+    A new todo has been created:
+    - Title: {{ event.title }}
+    - Status: {{ event.status }}
+
+triggers:
+- trigger: onEventType
+  alias: on-todo-created
+  description: Triggered when a TodoCreateEvent occurs
+  eventName: TodoCreateEvent
+
+conditions:
+- condition: template
+  alias: has-assignee
+  description: Check if todo has an assignee
+  expression: "{{ event.assignee != null }}"
+
+actions:
+- action: logger
+  alias: log-start
+  level: INFO
+  message: "Processing todo creation for: {{ event.title }}"
+
+- action: sendEmail
+  alias: send-notification
+  to: "{{ event.assignee }}"
+  subject: "New Todo Created: {{ event.title }}"
+  body: "{{ emailTemplate }}"
+
+- action: logger
+  alias: log-complete
+  level: INFO
+  message: "Email sent successfully"
+
+result:
+  success: true
+  todoTitle: "{{ event.title }}"
+  notifiedUser: "{{ event.assignee }}"

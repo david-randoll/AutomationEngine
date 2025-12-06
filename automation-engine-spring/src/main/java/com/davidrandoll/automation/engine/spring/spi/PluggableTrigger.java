@@ -11,7 +11,7 @@ public abstract class PluggableTrigger<T extends ITriggerContext> implements Typ
 
     @Autowired
     @Delegate
-    private AutomationProcessor processor;
+    protected AutomationProcessor processor;
 
     @Override
     public ITypeConverter getTypeConverter() {

@@ -2,6 +2,7 @@ package com.davidrandoll.automation.engine.spring.config;
 
 import com.davidrandoll.automation.engine.AutomationEngine;
 import com.davidrandoll.automation.engine.core.events.publisher.IEventPublisher;
+import com.davidrandoll.automation.engine.spring.AEConfigProvider;
 import com.davidrandoll.automation.engine.spring.modules.actions.delay.DelayAction;
 import com.davidrandoll.automation.engine.spring.modules.actions.if_then_else.IfThenElseAction;
 import com.davidrandoll.automation.engine.spring.modules.actions.logger.LoggerAction;
@@ -9,6 +10,9 @@ import com.davidrandoll.automation.engine.spring.modules.actions.parallel.Parall
 import com.davidrandoll.automation.engine.spring.modules.actions.repeat.RepeatAction;
 import com.davidrandoll.automation.engine.spring.modules.actions.sequence.SequenceAction;
 import com.davidrandoll.automation.engine.spring.modules.actions.stop.StopAction;
+import com.davidrandoll.automation.engine.spring.modules.actions.uda.DefaultUserDefinedActionRegistry;
+import com.davidrandoll.automation.engine.spring.modules.actions.uda.IUserDefinedActionRegistry;
+import com.davidrandoll.automation.engine.spring.modules.actions.uda.UserDefinedAction;
 import com.davidrandoll.automation.engine.spring.modules.actions.variable.VariableAction;
 import com.davidrandoll.automation.engine.spring.modules.actions.wait_for_trigger.WaitForTriggerAction;
 import com.davidrandoll.automation.engine.spring.modules.conditions.always_false.AlwaysFalseCondition;
@@ -19,6 +23,9 @@ import com.davidrandoll.automation.engine.spring.modules.conditions.on_event_typ
 import com.davidrandoll.automation.engine.spring.modules.conditions.or.OrCondition;
 import com.davidrandoll.automation.engine.spring.modules.conditions.template.TemplateCondition;
 import com.davidrandoll.automation.engine.spring.modules.conditions.time_based.TimeBasedCondition;
+import com.davidrandoll.automation.engine.spring.modules.conditions.udc.DefaultUserDefinedConditionRegistry;
+import com.davidrandoll.automation.engine.spring.modules.conditions.udc.IUserDefinedConditionRegistry;
+import com.davidrandoll.automation.engine.spring.modules.conditions.udc.UserDefinedCondition;
 import com.davidrandoll.automation.engine.spring.modules.events.AEEventPublisher;
 import com.davidrandoll.automation.engine.spring.modules.events.time_based.TimeBasedEventPublisher;
 import com.davidrandoll.automation.engine.spring.modules.results.basic.BasicResult;
@@ -27,9 +34,14 @@ import com.davidrandoll.automation.engine.spring.modules.triggers.always_true.Al
 import com.davidrandoll.automation.engine.spring.modules.triggers.on_event_type.OnEventTypeTrigger;
 import com.davidrandoll.automation.engine.spring.modules.triggers.template.TemplateTrigger;
 import com.davidrandoll.automation.engine.spring.modules.triggers.time_based.TimeBasedTrigger;
+import com.davidrandoll.automation.engine.spring.modules.triggers.udt.DefaultUserDefinedTriggerRegistry;
+import com.davidrandoll.automation.engine.spring.modules.triggers.udt.IUserDefinedTriggerRegistry;
+import com.davidrandoll.automation.engine.spring.modules.triggers.udt.UserDefinedTrigger;
 import com.davidrandoll.automation.engine.spring.modules.variables.basic.BasicVariable;
 import com.davidrandoll.automation.engine.spring.modules.variables.if_them_else.IfThenElseVariable;
-import com.davidrandoll.automation.engine.spring.AEConfigProvider;
+import com.davidrandoll.automation.engine.spring.modules.variables.udv.DefaultUserDefinedVariableRegistry;
+import com.davidrandoll.automation.engine.spring.modules.variables.udv.IUserDefinedVariableRegistry;
+import com.davidrandoll.automation.engine.spring.modules.variables.udv.UserDefinedVariable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.ApplicationEventPublisher;
@@ -96,6 +108,18 @@ public class ModulesConfig {
         return new WaitForTriggerAction(provider);
     }
 
+    @Bean
+    @ConditionalOnMissingBean(value = IUserDefinedActionRegistry.class, ignored = DefaultUserDefinedActionRegistry.class)
+    public IUserDefinedActionRegistry userDefinedActionRegistry() {
+        return new DefaultUserDefinedActionRegistry();
+    }
+
+    @Bean(name = {"userDefinedAction", "udaAction"})
+    @ConditionalOnMissingBean(name = "userDefinedAction", ignored = UserDefinedAction.class)
+    public UserDefinedAction userDefinedAction(IUserDefinedActionRegistry registry) {
+        return new UserDefinedAction(registry);
+    }
+
     /*
      * Conditions
      */
@@ -145,6 +169,18 @@ public class ModulesConfig {
     @ConditionalOnMissingBean(name = "timeCondition", ignored = TimeBasedCondition.class)
     public TimeBasedCondition timeCondition() {
         return new TimeBasedCondition();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(value = IUserDefinedConditionRegistry.class, ignored = DefaultUserDefinedConditionRegistry.class)
+    public IUserDefinedConditionRegistry userDefinedConditionRegistry() {
+        return new DefaultUserDefinedConditionRegistry();
+    }
+
+    @Bean(name = {"userDefinedCondition", "udcCondition"})
+    @ConditionalOnMissingBean(name = "userDefinedCondition", ignored = UserDefinedCondition.class)
+    public UserDefinedCondition userDefinedCondition(IUserDefinedConditionRegistry registry) {
+        return new UserDefinedCondition(registry);
     }
 
     /*
@@ -205,6 +241,18 @@ public class ModulesConfig {
         return new TimeBasedTrigger();
     }
 
+    @Bean
+    @ConditionalOnMissingBean(value = IUserDefinedTriggerRegistry.class, ignored = DefaultUserDefinedTriggerRegistry.class)
+    public IUserDefinedTriggerRegistry userDefinedTriggerRegistry() {
+        return new DefaultUserDefinedTriggerRegistry();
+    }
+
+    @Bean(name = {"userDefinedTrigger", "udtTrigger"})
+    @ConditionalOnMissingBean(name = "userDefinedTrigger", ignored = UserDefinedTrigger.class)
+    public UserDefinedTrigger userDefinedTrigger(IUserDefinedTriggerRegistry registry) {
+        return new UserDefinedTrigger(registry);
+    }
+
     /*
      * Variables
      */
@@ -218,5 +266,17 @@ public class ModulesConfig {
     @ConditionalOnMissingBean(name = "ifThenElseVariable", ignored = IfThenElseVariable.class)
     public IfThenElseVariable ifThenElseVariable() {
         return new IfThenElseVariable();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(value = IUserDefinedVariableRegistry.class, ignored = DefaultUserDefinedVariableRegistry.class)
+    public IUserDefinedVariableRegistry userDefinedVariableRegistry() {
+        return new DefaultUserDefinedVariableRegistry();
+    }
+
+    @Bean(name = {"userDefinedVariable", "udvVariable"})
+    @ConditionalOnMissingBean(name = "userDefinedVariable", ignored = UserDefinedVariable.class)
+    public UserDefinedVariable userDefinedVariable(IUserDefinedVariableRegistry registry) {
+        return new UserDefinedVariable(registry);
     }
 }

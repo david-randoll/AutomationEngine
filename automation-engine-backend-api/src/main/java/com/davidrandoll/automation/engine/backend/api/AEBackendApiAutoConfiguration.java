@@ -1,6 +1,7 @@
 package com.davidrandoll.automation.engine.backend.api;
 
 import com.davidrandoll.automation.engine.backend.api.controllers.AutomationEngineController;
+import com.davidrandoll.automation.engine.backend.api.controllers.UserDefinedController;
 import com.davidrandoll.automation.engine.backend.api.json_schema.JsonSchemaConfig;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.context.annotation.Import;
@@ -9,7 +10,8 @@ import org.springframework.context.annotation.Import;
 @Import({
         AEBackendApiConfig.class,
         JsonSchemaConfig.class,
-        AutomationEngineController.class
+        AutomationEngineController.class,
+        UserDefinedController.class
 })
 public class AEBackendApiAutoConfiguration {
 }
