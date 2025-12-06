@@ -83,7 +83,7 @@ const UserDefinedEditPage = ({ blockType, name }: UserDefinedEditPageProps) => {
         try {
             await userDefinedApi.update(blockType, name, data);
             toast.success(`${blockTypeLabels[blockType]} "${data.name}" updated successfully`);
-            router.push(`/user-defined/${blockType}`);
+            router.push(`./user-defined/${blockType}`);
         } catch (err) {
             console.error("Failed to update:", err);
             if (err instanceof Error) {
@@ -103,7 +103,7 @@ const UserDefinedEditPage = ({ blockType, name }: UserDefinedEditPageProps) => {
                 <div className="max-w-7xl mx-auto">
                     <div className="text-center py-12">
                         <p className="text-destructive">{error}</p>
-                        <Button variant="outline" className="mt-4" onClick={() => router.push(`/user-defined/${blockType}`)}>
+                        <Button variant="outline" className="mt-4" onClick={() => router.push(`./user-defined/${blockType}`)}>
                             <ArrowLeftIcon className="size-4 mr-2" />
                             Back to User-Defined Types
                         </Button>
@@ -128,7 +128,7 @@ const UserDefinedEditPage = ({ blockType, name }: UserDefinedEditPageProps) => {
             <div className="max-w-7xl mx-auto">
                 <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-2 sm:gap-0">
                     <div className="flex items-center gap-4">
-                        <Button variant="ghost" size="sm" onClick={() => router.push(`/user-defined/${blockType}`)}>
+                        <Button variant="ghost" size="sm" onClick={() => router.push(`./user-defined/${blockType}`)}>
                             <ArrowLeftIcon className="size-4" />
                         </Button>
                         <div>

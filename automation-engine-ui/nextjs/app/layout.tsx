@@ -41,6 +41,7 @@ export default function RootLayout({
       >
         <Providers>{children}</Providers>
         <Toaster richColors position="top-right" />
+        <script src="./app-config.js"></script>
       </body>
     </html>
   );

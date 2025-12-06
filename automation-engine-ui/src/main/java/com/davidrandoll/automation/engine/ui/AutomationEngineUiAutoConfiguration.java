@@ -5,7 +5,8 @@ import org.springframework.context.annotation.Import;
 
 @AutoConfiguration
 @Import({
-        AutomationEngineUiConfiguration.class
+        AutomationEngineUiConfiguration.class,
+        UIConfigController.class
 })
 public class AutomationEngineUiAutoConfiguration {
 }

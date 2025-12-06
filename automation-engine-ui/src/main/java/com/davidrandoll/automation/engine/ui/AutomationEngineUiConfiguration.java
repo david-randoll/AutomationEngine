@@ -70,7 +70,6 @@ public class AutomationEngineUiConfiguration implements WebMvcConfigurer {
                             return htmlFile;
                         }
 
-                        // --- 4) SPA fallback for deep links ---
                         return location.createRelative("index.html");
                     }
                 });

@@ -22,7 +22,7 @@ const NavBar = () => {
                             Automation Builder
                         </Link>
                         <Link
-                            href="/user-defined"
+                            href="./user-defined"
                             className={`px-3 py-1.5 text-sm rounded-md transition-colors ${isUserDefined ? "bg-primary text-primary-foreground" : "text-gray-600 hover:bg-gray-100"
                                 }`}
                         >

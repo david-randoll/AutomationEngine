@@ -2,6 +2,14 @@
 
 export type HttpMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
 
+declare global {
+  interface Window {
+    __APP_CONFIG__: {
+      contextPath?: string;
+    };
+  }
+}
+
 export interface ApiResponse<T = unknown> {
   success: boolean;
   data?: T;
@@ -17,13 +25,22 @@ export interface RequestOptions<T = unknown> {
   body?: T;
 }
 
-function getApiBaseUrl(): string {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
-  if(baseUrl) return baseUrl;
+export function getContextPath(): string {
   if (typeof window !== "undefined") {
-    return window.location.origin;
+    return window.__APP_CONFIG__.contextPath || "";
   }
   return "";
+}
+
+export function getApiBaseUrl(): string {
+  let baseUrl = "";
+  if (typeof window !== "undefined") {
+    console.log("Determining API base URL from window location");
+    const contextPath = getContextPath();
+    baseUrl = `${window.location.origin}/${contextPath}`.replace(/([^:]\/)\/+/g, "$1");
+  }
+  console.log("API Base URL:", baseUrl);
+  return baseUrl;
 }
 
 async function requestHttp<TResponse = unknown, TBody = unknown>(

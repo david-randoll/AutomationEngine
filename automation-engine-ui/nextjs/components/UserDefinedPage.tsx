@@ -104,7 +104,7 @@ const DefinitionCard = ({ name, definition, blockType, onUnregister }: Definitio
     const [confirmDelete, setConfirmDelete] = useState(false);
 
     const handleEdit = () => {
-        router.push(`/user-defined/${blockType}/edit?name=${encodeURIComponent(name)}`);
+        router.push(`./user-defined/${blockType}/edit?name=${encodeURIComponent(name)}`);
     };
 
     return (
@@ -210,7 +210,7 @@ const UserDefinedPage = ({ initialTab = "actions" }: UserDefinedPageProps) => {
 
                 <Card className="py-4">
                     <CardContent className="p-0 px-4">
-                        <Tabs value={activeTab} onValueChange={(v) => router.push(`/user-defined/${v}`)}>
+                        <Tabs value={activeTab} onValueChange={(v) => router.push(`./user-defined/${v}`)}>
                             <TabsList className="grid w-full grid-cols-4">
                                 {blockTypeConfigs.map((config) => (
                                     <TabsTrigger key={config.type} value={config.type} className="flex items-center gap-1">
@@ -228,7 +228,7 @@ const UserDefinedPage = ({ initialTab = "actions" }: UserDefinedPageProps) => {
                                                 <h3 className="text-lg font-semibold">{config.label}</h3>
                                                 <p className="text-sm text-muted-foreground">{config.description}</p>
                                             </div>
-                                            <Button size="sm" onClick={() => router.push(`/user-defined/${config.type}/new`)}>
+                                            <Button size="sm" onClick={() => router.push(`./user-defined/${config.type}/new`)}>
                                                 <PlusIcon className="size-4 mr-1" />
                                                 Register {config.singularLabel}
                                             </Button>

@@ -17,7 +17,7 @@ export default function EditPageContent({ blockType }: EditPageContentProps) {
 
     useEffect(() => {
         if (!name) {
-            router.push(`/user-defined/${blockType}`);
+            router.push(`./user-defined/${blockType}`);
         }
     }, [name, blockType, router]);
 

@@ -73,7 +73,7 @@ const UserDefinedRegisterPage = ({ blockType }: UserDefinedRegisterPageProps) =>
         try {
             await userDefinedApi.register(blockType, data);
             toast.success(`${blockTypeLabels[blockType]} "${data.name}" registered successfully`);
-            router.push("/user-defined");
+            router.push("./user-defined");
         } catch (err) {
             console.error("Failed to register:", err);
             if (err instanceof Error) {
@@ -93,7 +93,7 @@ const UserDefinedRegisterPage = ({ blockType }: UserDefinedRegisterPageProps) =>
                 <div className="max-w-7xl mx-auto">
                     <div className="text-center py-12">
                         <p className="text-destructive">{error}</p>
-                        <Button variant="outline" className="mt-4" onClick={() => router.push("/user-defined")}>
+                        <Button variant="outline" className="mt-4" onClick={() => router.push("./user-defined")}>
                             <ArrowLeftIcon className="size-4 mr-2" />
                             Back to User-Defined Types
                         </Button>
