@@ -91,10 +91,7 @@ public class UserDefinedController {
     }
 
     @GetMapping("/{blockType}/{name}")
-    public ResponseEntity<?> getOne(
-            @PathVariable String blockType,
-            @PathVariable String name
-    ) {
+    public ResponseEntity<?> getOne(@PathVariable String blockType, @PathVariable String name) {
         return switch (BlockEnum.from(blockType)) {
             case ACTIONS -> actionRegistry.findAction(name)
                     .map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
@@ -110,11 +107,13 @@ public class UserDefinedController {
         };
     }
 
+    @PutMapping("/{blockType}/{name}")
+    public ResponseEntity<?> update(@PathVariable String blockType, @PathVariable String name, @RequestBody JsonNode definition) {
+        return register(blockType, definition);
+    }
+
     @PostMapping("/{blockType}")
-    public ResponseEntity<?> register(
-            @PathVariable String blockType,
-            @RequestBody JsonNode definition
-    ) {
+    public ResponseEntity<?> register(@PathVariable String blockType, @RequestBody JsonNode definition) {
         return switch (BlockEnum.from(blockType)) {
             case ACTIONS -> {
                 var def = objectMapper.convertValue(definition, UserDefinedActionDefinition.class);
@@ -140,10 +139,7 @@ public class UserDefinedController {
     }
 
     @DeleteMapping("/{blockType}/{name}")
-    public ResponseEntity<Void> unregister(
-            @PathVariable String blockType,
-            @PathVariable String name
-    ) {
+    public ResponseEntity<Void> unregister(@PathVariable String blockType, @PathVariable String name) {
         switch (BlockEnum.from(blockType)) {
             case ACTIONS -> actionRegistry.unregisterAction(name);
             case CONDITIONS -> conditionRegistry.unregisterCondition(name);

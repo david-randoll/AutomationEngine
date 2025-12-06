@@ -19,6 +19,8 @@ export const actionsApi = {
   get: (name: string) => agent.get<UserDefinedActionDefinition>(`${BASE_PATH}/actions/${name}`),
   register: (definition: UserDefinedActionDefinition) =>
     agent.post<UserDefinedActionDefinition, UserDefinedActionDefinition>(`${BASE_PATH}/actions`, definition),
+  update: (name: string, definition: UserDefinedActionDefinition) =>
+    agent.put<UserDefinedActionDefinition, UserDefinedActionDefinition>(`${BASE_PATH}/actions/${name}`, definition),
   unregister: (name: string) => agent.delete(`${BASE_PATH}/actions/${name}`),
 };
 
@@ -28,6 +30,11 @@ export const conditionsApi = {
   get: (name: string) => agent.get<UserDefinedConditionDefinition>(`${BASE_PATH}/conditions/${name}`),
   register: (definition: UserDefinedConditionDefinition) =>
     agent.post<UserDefinedConditionDefinition, UserDefinedConditionDefinition>(`${BASE_PATH}/conditions`, definition),
+  update: (name: string, definition: UserDefinedConditionDefinition) =>
+    agent.put<UserDefinedConditionDefinition, UserDefinedConditionDefinition>(
+      `${BASE_PATH}/conditions/${name}`,
+      definition
+    ),
   unregister: (name: string) => agent.delete(`${BASE_PATH}/conditions/${name}`),
 };
 
@@ -37,6 +44,8 @@ export const triggersApi = {
   get: (name: string) => agent.get<UserDefinedTriggerDefinition>(`${BASE_PATH}/triggers/${name}`),
   register: (definition: UserDefinedTriggerDefinition) =>
     agent.post<UserDefinedTriggerDefinition, UserDefinedTriggerDefinition>(`${BASE_PATH}/triggers`, definition),
+  update: (name: string, definition: UserDefinedTriggerDefinition) =>
+    agent.put<UserDefinedTriggerDefinition, UserDefinedTriggerDefinition>(`${BASE_PATH}/triggers/${name}`, definition),
   unregister: (name: string) => agent.delete(`${BASE_PATH}/triggers/${name}`),
 };
 
@@ -46,6 +55,11 @@ export const variablesApi = {
   get: (name: string) => agent.get<UserDefinedVariableDefinition>(`${BASE_PATH}/variables/${name}`),
   register: (definition: UserDefinedVariableDefinition) =>
     agent.post<UserDefinedVariableDefinition, UserDefinedVariableDefinition>(`${BASE_PATH}/variables`, definition),
+  update: (name: string, definition: UserDefinedVariableDefinition) =>
+    agent.put<UserDefinedVariableDefinition, UserDefinedVariableDefinition>(
+      `${BASE_PATH}/variables/${name}`,
+      definition
+    ),
   unregister: (name: string) => agent.delete(`${BASE_PATH}/variables/${name}`),
 };
 
@@ -63,6 +77,18 @@ export const userDefinedApi = {
         return variablesApi.getAll();
     }
   },
+  get: (type: BlockType, name: string) => {
+    switch (type) {
+      case "actions":
+        return actionsApi.get(name);
+      case "conditions":
+        return conditionsApi.get(name);
+      case "triggers":
+        return triggersApi.get(name);
+      case "variables":
+        return variablesApi.get(name);
+    }
+  },
   register: (type: BlockType, definition: UserDefinedDefinition) => {
     switch (type) {
       case "actions":
@@ -73,6 +99,18 @@ export const userDefinedApi = {
         return triggersApi.register(definition as UserDefinedTriggerDefinition);
       case "variables":
         return variablesApi.register(definition as UserDefinedVariableDefinition);
+    }
+  },
+  update: (type: BlockType, name: string, definition: UserDefinedDefinition) => {
+    switch (type) {
+      case "actions":
+        return actionsApi.update(name, definition as UserDefinedActionDefinition);
+      case "conditions":
+        return conditionsApi.update(name, definition as UserDefinedConditionDefinition);
+      case "triggers":
+        return triggersApi.update(name, definition as UserDefinedTriggerDefinition);
+      case "variables":
+        return variablesApi.update(name, definition as UserDefinedVariableDefinition);
     }
   },
   unregister: (type: BlockType, name: string) => {

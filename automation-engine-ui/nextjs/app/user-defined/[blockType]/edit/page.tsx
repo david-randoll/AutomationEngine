@@ -1,7 +1,8 @@
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 import NavBar from "@/components/NavBar";
-import UserDefinedPage from "@/components/UserDefinedPage";
 import type { BlockType } from "@/types/user-defined";
+import EditPageContent from "@/components/EditPageContent";
 
 const validBlockTypes = ["actions", "conditions", "triggers", "variables"] as const;
 
@@ -15,7 +16,7 @@ export function generateStaticParams() {
     }));
 }
 
-export default async function UserDefinedBlockTypePage({
+export default async function EditUserDefinedPage({
     params,
 }: Readonly<{
     params: Promise<{ blockType: string }>;
@@ -29,7 +30,17 @@ export default async function UserDefinedBlockTypePage({
     return (
         <div className="min-h-screen bg-background">
             <NavBar />
-            <UserDefinedPage initialTab={blockType} />
+            <Suspense
+                fallback={
+                    <div className="p-4 sm:p-6 bg-gray-50 min-h-screen">
+                        <div className="max-w-7xl mx-auto">
+                            <div className="text-center py-12">Loading...</div>
+                        </div>
+                    </div>
+                }
+            >
+                <EditPageContent blockType={blockType} />
+            </Suspense>
         </div>
     );
 }

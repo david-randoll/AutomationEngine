@@ -81,6 +81,7 @@ const DefinitionList = ({ type, definitions, onRefresh, onUnregister, isLoading 
                                 key={name}
                                 name={name}
                                 definition={definition}
+                                blockType={type}
                                 onUnregister={() => onUnregister(name)}
                             />
                         ))}
@@ -94,12 +95,17 @@ const DefinitionList = ({ type, definitions, onRefresh, onUnregister, isLoading 
 interface DefinitionCardProps {
     name: string;
     definition: UserDefinedDefinition;
+    blockType: BlockType;
     onUnregister: () => void;
 }
 
-const DefinitionCard = ({ name, definition, onUnregister }: DefinitionCardProps) => {
-    const [expanded, setExpanded] = useState(false);
+const DefinitionCard = ({ name, definition, blockType, onUnregister }: DefinitionCardProps) => {
+    const router = useRouter();
     const [confirmDelete, setConfirmDelete] = useState(false);
+
+    const handleEdit = () => {
+        router.push(`/user-defined/${blockType}/edit?name=${encodeURIComponent(name)}`);
+    };
 
     return (
         <Card className="py-3">
@@ -112,8 +118,8 @@ const DefinitionCard = ({ name, definition, onUnregister }: DefinitionCardProps)
                         )}
                     </div>
                     <div className="flex items-center gap-1 ml-2">
-                        <Button variant="ghost" size="sm" onClick={() => setExpanded(!expanded)} className="text-xs">
-                            {expanded ? "Hide" : "View"}
+                        <Button variant="ghost" size="sm" onClick={handleEdit} className="text-xs">
+                            Edit
                         </Button>
                         {confirmDelete ? (
                             <div className="flex items-center gap-1">
@@ -137,13 +143,6 @@ const DefinitionCard = ({ name, definition, onUnregister }: DefinitionCardProps)
                     </div>
                 </div>
             </CardHeader>
-            {expanded && (
-                <CardContent className="py-2 px-4">
-                    <pre className="text-xs bg-muted p-2 rounded-md overflow-auto max-h-60">
-                        {JSON.stringify(definition, null, 2)}
-                    </pre>
-                </CardContent>
-            )}
         </Card>
     );
 };
