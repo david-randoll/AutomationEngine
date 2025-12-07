@@ -7,7 +7,9 @@ import { routeTree } from './routeTree.gen'
 
 import './styles.css'
 import reportWebVitals from './reportWebVitals.ts'
+import { getContextPath } from './lib/agent.ts'
 
+const contextPath = getContextPath();
 // Create a new router instance
 const router = createRouter({
   routeTree,
@@ -16,6 +18,7 @@ const router = createRouter({
   scrollRestoration: true,
   defaultStructuralSharing: true,
   defaultPreloadStaleTime: 0,
+  basepath: contextPath,
 })
 
 // Register the router instance for type safety

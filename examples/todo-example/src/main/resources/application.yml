@@ -1,8 +1,8 @@
 server:
   port: ${AUTOMATION_ENGINE_PORT:8086}
 
-#  servlet:
-#    context-path: /todo
+  servlet:
+    context-path: /todo
 spring:
   application:
     name: todo-example

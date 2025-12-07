@@ -25,10 +25,22 @@ export interface RequestOptions<T = unknown> {
   body?: T;
 }
 
+export const CONTEXT_PATH_URL = "./app-config.json";
 export function getContextPath(): string {
-  if (typeof window !== "undefined") {
-    return window.__APP_CONFIG__?.contextPath || "";
+  console.log("Getting context path...");
+  if (typeof window !== "undefined" && window.__APP_CONFIG__?.contextPath) {
+    console.log("Using cached context path:", window.__APP_CONFIG__.contextPath);
+    return window.__APP_CONFIG__?.contextPath;
   }
+
+  console.log("Fetching context path from", CONTEXT_PATH_URL);
+  agent.get<{ contextPath?: string }>(CONTEXT_PATH_URL).then((data: { contextPath?: string }) => {
+    console.log("Fetched app config:", data);
+    window.__APP_CONFIG__ = data;
+    return data.contextPath || "";
+  });
+
+  console.warn("Context path not found, defaulting to root '/'");
   return "";
 }
 
@@ -37,9 +49,10 @@ export function getApiBaseUrl(): string {
 
   const base = window.location.origin;
   const contextPath = getContextPath();
+  console.log("Context path in getApiBaseUrl:", contextPath);
   const normalized = contextPath.replace(/^\/+/, "");
 
-  const full = new URL(normalized, base);
+  const full = new URL(base + "/" + normalized);
   console.log("API Base URL:", full);
   return full.toString();
 }
