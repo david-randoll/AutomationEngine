@@ -5,7 +5,7 @@ import { FormProvider, useForm } from 'react-hook-form'
 import { AutomationEngineProvider } from '@/providers/AutomationEngineProvider'
 import { Toaster } from 'sonner'
 
-function Providers({ children }: { children: React.ReactNode }) {
+function Providers({ children }: Readonly<{ children: React.ReactNode }>) {
   const methods = useForm({
     defaultValues: {},
     mode: 'onBlur',

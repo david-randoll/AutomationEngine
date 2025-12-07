@@ -22,4 +22,5 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
+  base: './', // <-- this forces relative asset paths
 })
