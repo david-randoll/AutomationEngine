@@ -65,7 +65,11 @@ async function requestHttp<TResponse = unknown, TBody = unknown>(
   const { method = "GET", headers = {}, body } = options;
 
   try {
-    const url = new URL(endpoint, getApiBaseUrl()).toString();
+    //remove any trailing slashes from base url
+    const baseUrl = getApiBaseUrl().replace(/\/+$/, "");
+    const path = endpoint.startsWith("/") ? endpoint : `/${endpoint}`;
+    const url = `${baseUrl}${path}`;
+    console.log(`Making ${method} request with path ${endpoint} to URL: ${url}`);
     const res = await fetch(url, {
       method,
       headers: {
