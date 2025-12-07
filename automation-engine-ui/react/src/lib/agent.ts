@@ -52,8 +52,9 @@ export function getApiBaseUrl(): string {
   console.log("Context path in getApiBaseUrl:", contextPath);
   const normalized = contextPath.replace(/^\/+/, "");
 
-  const full = new URL(base + "/" + normalized);
-  console.log("API Base URL:", full);
+  console.log("Base URL parts - Base:", base, "Normalized Context Path:", normalized);
+  const full = new URL(normalized, base);
+  console.log("API Base URL:", full.toString());
   return full.toString();
 }
 
