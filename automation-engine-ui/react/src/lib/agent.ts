@@ -33,14 +33,15 @@ export function getContextPath(): string {
 }
 
 export function getApiBaseUrl(): string {
-  let baseUrl = "";
-  if (typeof window !== "undefined") {
-    console.log("Determining API base URL from window location");
-    const contextPath = getContextPath();
-    baseUrl = `${window.location.origin}/${contextPath}`.replace(/([^:]\/)\/+/g, "$1");
-  }
-  console.log("API Base URL:", baseUrl);
-  return baseUrl;
+  if (typeof window === "undefined") return "";
+
+  const base = window.location.origin;
+  const contextPath = getContextPath();
+  const normalized = contextPath.replace(/^\/+/, "");
+
+  const full = new URL(normalized, base);
+  console.log("API Base URL:", full);
+  return full.toString();
 }
 
 async function requestHttp<TResponse = unknown, TBody = unknown>(
@@ -50,7 +51,8 @@ async function requestHttp<TResponse = unknown, TBody = unknown>(
   const { method = "GET", headers = {}, body } = options;
 
   try {
-    const res = await fetch(`${getApiBaseUrl()}${endpoint}`, {
+    const url = new URL(endpoint, getApiBaseUrl()).toString();
+    const res = await fetch(url, {
       method,
       headers: {
         "Content-Type": "application/json",

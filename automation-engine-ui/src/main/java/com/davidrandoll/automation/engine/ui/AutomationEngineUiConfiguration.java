@@ -11,6 +11,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.resource.PathResourceResolver;
 
 import java.io.IOException;
+import java.util.Optional;
 
 @Configuration
 @EnableConfigurationProperties(AutomationEngineUiProperties.class)
@@ -21,8 +22,7 @@ public class AutomationEngineUiConfiguration implements WebMvcConfigurer {
 
     // Helper to normalize the path (Keep this)
     private String getNormalizedPath() {
-        String path = properties.getPath();
-        if (path == null) path = "";
+        String path = Optional.ofNullable(properties.getPath()).orElse("");
         if (!path.startsWith("/")) path = "/" + path;
         if (path.endsWith("/")) path = path.substring(0, path.length() - 1);
         return path;
