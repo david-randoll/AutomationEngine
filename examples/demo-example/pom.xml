@@ -17,7 +17,7 @@
     <description>A project to demonstrate the usage of automation-engine</description>
 
     <properties>
-        <automation-engine.version>1.6.1</automation-engine.version>
+        <automation-engine.version>1.6.2</automation-engine.version>
 
         <java.version>21</java.version>
     </properties>
