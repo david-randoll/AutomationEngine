@@ -18,8 +18,10 @@ export const AutomationEngineProvider = ({ children }: { children: ReactNode }) 
     const hasSchema = (path: string) => schemas.has(path);
     const isLoading = (path: string) => loadingPaths.has(path);
 
+    const shouldCacheSchema = false;
+
     const getSchema = async (path: string, loader: () => Promise<JsonSchema | null | unknown>) => {
-        if (hasSchema(path)) {
+        if (hasSchema(path) && shouldCacheSchema) {
             return schemas.get(path)!;
         }
 
