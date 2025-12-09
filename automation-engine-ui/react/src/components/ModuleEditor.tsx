@@ -74,7 +74,7 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
                 console.error("Failed to serialize data:", e);
             }
         }
-    }, [editMode, getValues, path, pathKey]);
+    }, [editMode, getValues, path]);
 
     function switchToUIMode() {
         try {
