@@ -34,11 +34,6 @@ export function getContextPath(): string {
   }
 
   console.log("Fetching context path from", CONTEXT_PATH_URL);
-  agent.get<{ contextPath?: string }>(CONTEXT_PATH_URL).then((data: { contextPath?: string }) => {
-    console.log("Fetched app config:", data);
-    window.__APP_CONFIG__ = data;
-    return data.contextPath || "";
-  });
 
   console.warn("Context path not found, defaulting to root '/'");
   return "";
