@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { agent } from "@/lib/agent";
+import { blockApi } from "@/lib/automation-api";
 import type { Area, ModuleType } from "@/types/types";
 
 interface AddBlockModalProps {
@@ -21,8 +21,8 @@ const AddBlockModal = ({ open, onOpenChange, type, onSelect }: AddBlockModalProp
         if (!open) return;
 
         setLoading(true);
-        agent
-            .get<{ types: ModuleType[] }>(`/automation-engine/block/${type}?includeSchema=true`)
+        blockApi
+            .getAll(type)
             .then((json) => (Array.isArray(json) ? json : json?.types || []))
             .then(setItems)
             .catch((e) => {

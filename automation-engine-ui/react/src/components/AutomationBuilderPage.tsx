@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import PreviewPanel from "@/components/PreviewPanel";
 import ModuleEditor from "@/components/ModuleEditor";
-import { agent } from "@/lib/agent";
+import { automationDefinitionApi } from "@/lib/automation-api";
 import type { Path, ModuleType } from "@/types/types";
 
 const AutomationBuilderPage = () => {
@@ -9,8 +9,8 @@ const AutomationBuilderPage = () => {
     const [automationSchema, setAutomationSchema] = useState<ModuleType | null>(null);
 
     useEffect(() => {
-        agent
-            .get<ModuleType>("/automation-engine/automation-definition/schema")
+        automationDefinitionApi
+            .getSchema()
             .then(setAutomationSchema)
             .catch(console.error);
     }, []);

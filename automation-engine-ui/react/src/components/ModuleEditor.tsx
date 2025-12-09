@@ -6,7 +6,7 @@ import AdditionalPropertyAdder from "./AdditionalPropertyAdder";
 import MonacoEditor from "@monaco-editor/react";
 import yaml from "js-yaml";
 import { Button } from "./ui/button";
-import { agent } from "@/lib/agent";
+import { blockApi } from "@/lib/automation-api";
 import { areaToName, nameToArea } from "@/lib/utils";
 import { useAutomationEngine } from "@/providers/AutomationEngineProvider";
 import ExamplesViewer from "./ExamplesViewer";
@@ -43,7 +43,7 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
             if (!moduleName) return module.schema;
             console.log("ModuleEditor: fetching schema for", moduleName);
 
-            const res = await agent.getHttp<ModuleType>(`/automation-engine/block/${moduleName}/schema`);
+            const res = await blockApi.getSchemaHttp(moduleName);
             if (res.success) {
                 return {
                     ...res.data?.schema,
