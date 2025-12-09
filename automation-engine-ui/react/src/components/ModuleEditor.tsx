@@ -36,6 +36,67 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
     const { getSchema, setSchema: setAutomationSchema, isLoading } = useAutomationEngine();
     const [schema, setSchema] = useState<JsonSchema>();
 
+    /**
+     * Infer a JSON Schema type definition from a JavaScript value.
+     * Used to reconstruct schema definitions for custom/additional properties.
+     */
+    function inferSchemaFromValue(value: unknown): JsonSchema {
+        if (value === null || value === undefined) {
+            return { type: "string" };
+        }
+        if (Array.isArray(value)) {
+            // Try to infer items type from first element
+            const itemSchema = value.length > 0 ? inferSchemaFromValue(value[0]) : { type: "string" };
+            return { type: "array", items: itemSchema };
+        }
+        if (typeof value === "object") {
+            return { type: "object" };
+        }
+        if (typeof value === "boolean") {
+            return { type: "boolean" };
+        }
+        if (typeof value === "number") {
+            return Number.isInteger(value) ? { type: "integer" } : { type: "number" };
+        }
+        return { type: "string" };
+    }
+
+    /**
+     * Merge custom properties from form data into the fetched schema.
+     * This ensures that user-added additional properties persist when the schema is refetched.
+     */
+    function mergeCustomPropertiesIntoSchema(baseSchema: JsonSchema, formData: unknown): JsonSchema {
+        // Only merge if additionalProperties is allowed and we have form data
+        if (!baseSchema.additionalProperties || !formData || typeof formData !== "object") {
+            return baseSchema;
+        }
+
+        const schemaProps = (baseSchema.properties as Record<string, unknown>) || {};
+        const formDataObj = formData as Record<string, unknown>;
+        const customProps: Record<string, JsonSchema> = {};
+
+        // Find properties in form data that aren't defined in the schema
+        for (const key of Object.keys(formDataObj)) {
+            if (!(key in schemaProps)) {
+                customProps[key] = inferSchemaFromValue(formDataObj[key]);
+            }
+        }
+
+        // If we found custom properties, merge them into the schema
+        if (Object.keys(customProps).length > 0) {
+            console.log("Merging custom properties into schema:", Object.keys(customProps));
+            return {
+                ...baseSchema,
+                properties: {
+                    ...schemaProps,
+                    ...customProps,
+                },
+            };
+        }
+
+        return baseSchema;
+    }
+
     useEffect(() => {
         const moduleName = module.name ?? areaToName(module);
 
@@ -55,7 +116,15 @@ const ModuleEditor = ({ module, path }: ModuleEditorProps) => {
             }
         }).then((sch: JsonSchema | null | unknown) => {
             if (sch) {
-                setSchema(sch as JsonSchema);
+                const baseSchema = sch as JsonSchema;
+                // Merge any custom properties from form data back into the schema
+                const formData = getValues(pathKey);
+                const mergedSchema = mergeCustomPropertiesIntoSchema(baseSchema, formData);
+                setSchema(mergedSchema);
+                // Also update the automation schema cache with the merged version
+                if (mergedSchema !== baseSchema) {
+                    setAutomationSchema(pathKey, mergedSchema);
+                }
             } else {
                 console.log("No schema with name:", moduleName);
                 setEditMode("json");
