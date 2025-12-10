@@ -60,7 +60,7 @@ const WorkflowNode = memo(({ data, selected }: NodeProps & { data: WorkflowNodeD
             {blockType !== "start" && (
                 <Handle
                     type="target"
-                    position={Position.Top}
+                    position={Position.Left}
                     className="!w-3 !h-3 !bg-gray-400 !border-2 !border-white"
                 />
             )}
@@ -119,7 +119,7 @@ const WorkflowNode = memo(({ data, selected }: NodeProps & { data: WorkflowNodeD
             {blockType !== "end" && (
                 <Handle
                     type="source"
-                    position={Position.Bottom}
+                    position={Position.Right}
                     className="!w-3 !h-3 !bg-gray-400 !border-2 !border-white"
                 />
             )}

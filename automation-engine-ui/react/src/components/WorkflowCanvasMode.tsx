@@ -58,15 +58,15 @@ const WorkflowCanvasMode = ({ path }: WorkflowCanvasModeProps) => {
         const newNodes: Node[] = [];
         const newEdges: Edge[] = [];
 
-        let yOffset = 0;
-        const nodeSpacing = 120;
+        let xOffset = 0;
+        const nodeSpacing = 300;
         let prevNodeId: string | null = null;
 
         // Add a start node
         const startNode: Node = {
             id: "start",
             type: "workflowNode",
-            position: { x: 400, y: yOffset },
+            position: { x: xOffset, y: 200 },
             data: {
                 label: "Start",
                 blockType: "start",
@@ -74,7 +74,7 @@ const WorkflowCanvasMode = ({ path }: WorkflowCanvasModeProps) => {
         };
         newNodes.push(startNode);
         prevNodeId = "start";
-        yOffset += nodeSpacing;
+        xOffset += nodeSpacing;
 
         // Process each area in order
         for (const area of AREA_ORDER) {
@@ -90,7 +90,7 @@ const WorkflowCanvasMode = ({ path }: WorkflowCanvasModeProps) => {
                     const node: Node = {
                         id: nodeId,
                         type: "workflowNode",
-                        position: { x: 400, y: yOffset },
+                        position: { x: xOffset, y: 200 },
                         data: {
                             label: (item.alias as string) || blockName || `${area} ${index + 1}`,
                             blockType: area,
@@ -112,7 +112,7 @@ const WorkflowCanvasMode = ({ path }: WorkflowCanvasModeProps) => {
                     }
 
                     prevNodeId = nodeId;
-                    yOffset += nodeSpacing;
+                    xOffset += nodeSpacing;
                 }
             } else if (data[area] && typeof data[area] === "object") {
                 // Single block (not array)
@@ -124,7 +124,7 @@ const WorkflowCanvasMode = ({ path }: WorkflowCanvasModeProps) => {
                 const node: Node = {
                     id: nodeId,
                     type: "workflowNode",
-                    position: { x: 400, y: yOffset },
+                    position: { x: xOffset, y: 200 },
                     data: {
                         label: (item.alias as string) || blockName || area,
                         blockType: area,
@@ -145,7 +145,7 @@ const WorkflowCanvasMode = ({ path }: WorkflowCanvasModeProps) => {
                 }
 
                 prevNodeId = nodeId;
-                yOffset += nodeSpacing;
+                xOffset += nodeSpacing;
             }
         }
 
@@ -153,7 +153,7 @@ const WorkflowCanvasMode = ({ path }: WorkflowCanvasModeProps) => {
         const endNode: Node = {
             id: "end",
             type: "workflowNode",
-            position: { x: 400, y: yOffset },
+            position: { x: xOffset, y: 200 },
             data: {
                 label: "End",
                 blockType: "end",
@@ -362,6 +362,7 @@ const WorkflowCanvasMode = ({ path }: WorkflowCanvasModeProps) => {
                     </div>
                     <div className="flex-1 overflow-auto p-4">
                         <ModuleEditor
+                            key={selectedNodePath.join(".")}
                             module={selectedNodeData}
                             path={selectedNodePath}
                         />
