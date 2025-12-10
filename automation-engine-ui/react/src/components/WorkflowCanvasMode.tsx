@@ -50,10 +50,11 @@ const WorkflowCanvasMode = ({ path }: WorkflowCanvasModeProps) => {
     const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [isFullscreen, setIsFullscreen] = useState(false);
+    const [refreshTrigger, setRefreshTrigger] = useState(0);
 
     // Convert form data to nodes and edges
-    const convertToNodesAndEdges = useCallback(() => {
-        const data = getValues(pathKey) || {};
+    useEffect(() => {
+        const data = formData || {};
         const newNodes: Node[] = [];
         const newEdges: Edge[] = [];
 
@@ -181,12 +182,7 @@ const WorkflowCanvasMode = ({ path }: WorkflowCanvasModeProps) => {
 
         setNodes(newNodes);
         setEdges(newEdges);
-    }, [getValues, pathKey, setNodes, setEdges]);
-
-    // Initial conversion and watch for changes
-    useEffect(() => {
-        convertToNodesAndEdges();
-    }, [formData, convertToNodesAndEdges]);
+    }, [formData, setNodes, setEdges, refreshTrigger]);
 
     const onConnect = useCallback(
         (params: Connection) => setEdges((eds) => addEdge({ ...params, type: "smoothstep", animated: true }, eds)),
@@ -243,6 +239,7 @@ const WorkflowCanvasMode = ({ path }: WorkflowCanvasModeProps) => {
         });
 
         setModalOpen(false);
+        setRefreshTrigger(prev => prev + 1);
     };
 
     const handleDeleteNode = useCallback(() => {
@@ -268,6 +265,7 @@ const WorkflowCanvasMode = ({ path }: WorkflowCanvasModeProps) => {
 
         setSidebarOpen(false);
         setSelectedNodeId(null);
+        setRefreshTrigger(prev => prev + 1);
     }, [selectedNodeId, pathKey, setValue, getValues]);
 
     return (

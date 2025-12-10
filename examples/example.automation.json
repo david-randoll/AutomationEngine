@@ -1,55 +1,57 @@
 {
-  "alias": "send-todo-email-notification",
-  "description": "Sends an email notification when a new Todo is created",
-  "variables": [
-    {
-      "greeting": "Hello"
-    },
-    {
-      "emailTemplate": "{{ greeting }},\n\nA new todo has been created:\n- Title: {{ event.title }}\n- Status: {{ event.status }}\n"
+    "alias": "send-todo-email-notification",
+    "description": "Sends an email notification when a new Todo is created",
+    "variables": [
+        {
+            "variable": "basic",
+            "greeting": "Hello"
+        },
+        {
+            "variable": "basic",
+            "emailTemplate": "{{ greeting }},\n\nA new todo has been created:\n- Title: {{ event.title }}\n- Status: {{ event.status }}\n"
+        }
+    ],
+    "triggers": [
+        {
+            "trigger": "onEventType",
+            "alias": "on-todo-created",
+            "description": "Triggered when a TodoCreateEvent occurs",
+            "eventName": "TodoCreateEvent"
+        }
+    ],
+    "conditions": [
+        {
+            "condition": "template",
+            "alias": "has-assignee",
+            "description": "Check if todo has an assignee",
+            "expression": "{{ event.assignee != null }}"
+        }
+    ],
+    "actions": [
+        {
+            "action": "logger",
+            "alias": "log-start",
+            "level": "INFO",
+            "message": "Processing todo creation for: {{ event.title }}"
+        },
+        {
+            "action": "sendEmail",
+            "alias": "send-notification",
+            "to": "{{ event.assignee }}",
+            "subject": "New Todo Created: {{ event.title }}",
+            "body": "{{ emailTemplate }}"
+        },
+        {
+            "action": "logger",
+            "alias": "log-complete",
+            "level": "INFO",
+            "message": "Email sent successfully"
+        }
+    ],
+    "result": {
+        "result": "basic",
+        "success": true,
+        "todoTitle": "{{ event.title }}",
+        "notifiedUser": "{{ event.assignee }}"
     }
-  ],
-  "triggers": [
-    {
-      "trigger": "onEventType",
-      "alias": "on-todo-created",
-      "description": "Triggered when a TodoCreateEvent occurs",
-      "eventName": "TodoCreateEvent"
-    }
-  ],
-  "conditions": [
-    {
-      "condition": "template",
-      "alias": "has-assignee",
-      "description": "Check if todo has an assignee",
-      "expression": "{{ event.assignee != null }}"
-    }
-  ],
-  "actions": [
-    {
-      "action": "logger",
-      "alias": "log-start",
-      "level": "INFO",
-      "message": "Processing todo creation for: {{ event.title }}"
-    },
-    {
-      "action": "sendEmail",
-      "alias": "send-notification",
-      "to": "{{ event.assignee }}",
-      "subject": "New Todo Created: {{ event.title }}",
-      "body": "{{ emailTemplate }}"
-    },
-    {
-      "action": "logger",
-      "alias": "log-complete",
-      "level": "INFO",
-      "message": "Email sent successfully"
-    }
-  ],
-  "result": {
-    "result": "basic",
-    "success": true,
-    "todoTitle": "{{ event.title }}",
-    "notifiedUser": "{{ event.assignee }}"
-  }
 }
