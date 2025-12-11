@@ -8,7 +8,7 @@
     <parent>
         <groupId>com.davidrandoll</groupId>
         <artifactId>automation-engine</artifactId>
-        <version>1.6.4</version>
+        <version>${revision}</version>
     </parent>
 
     <artifactId>automation-engine-backend-api</artifactId>
