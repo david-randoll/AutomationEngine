@@ -12,6 +12,8 @@ import java.util.Map;
 public interface TypedVariable<T extends IVariableContext> extends IVariable {
     ITypeConverter getTypeConverter();
 
+    TypedVariable<T> getSelf();
+
     @Override
     default Class<?> getContextType() {
         return GenericTypeResolver.getGenericParameterClass(getClass());
@@ -20,15 +22,18 @@ public interface TypedVariable<T extends IVariableContext> extends IVariable {
     @Override
     default void resolve(EventContext eventContext, VariableContext variableContext) {
         T data = getTypeConverter().convert(variableContext.getData(), getContextType());
-        resolve(eventContext, data);
+        // Calling the proxied self to ensure AOP aspects are applied such as transactions, logging, etc.
+        var self = getSelf();
+        if (self == null)
+            throw new IllegalStateException("Self reference is not initialized");
+        self.resolve(eventContext, data);
     }
 
     void resolve(EventContext eventContext, T variableContext);
 
     @Override
     default List<T> getExamples() {
-        var contextType = getContextType();
-        var example = getTypeConverter().convert(Map.of(), contextType);
+        var example = getTypeConverter().convert(Map.of(), getContextType());
         return List.of((T) example);
     }
 }

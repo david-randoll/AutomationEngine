@@ -12,6 +12,8 @@ import java.util.Map;
 public interface TypedResult<T extends IResultContext> extends IResult {
     ITypeConverter getTypeConverter();
 
+    TypedResult<T> getSelf();
+
     @Override
     default Class<?> getContextType() {
         return GenericTypeResolver.getGenericParameterClass(getClass());
@@ -20,15 +22,18 @@ public interface TypedResult<T extends IResultContext> extends IResult {
     @Override
     default Object getExecutionSummary(EventContext context, ResultContext resultContext) {
         T data = getTypeConverter().convert(resultContext.getData(), getContextType());
-        return getExecutionSummary(context, data);
+        // Calling the proxied self to ensure AOP aspects are applied such as transactions, logging, etc.
+        var self = getSelf();
+        if (self == null)
+            throw new IllegalStateException("Self reference is not initialized");
+        return self.getExecutionSummary(context, data);
     }
 
     Object getExecutionSummary(EventContext ec, T cc);
 
     @Override
     default List<T> getExamples() {
-        var contextType = getContextType();
-        var example = getTypeConverter().convert(Map.of(), contextType);
+        var example = getTypeConverter().convert(Map.of(), getContextType());
         return List.of((T) example);
     }
 }

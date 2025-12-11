@@ -4,6 +4,7 @@ import com.davidrandoll.automation.engine.core.actions.IActionContext;
 import com.davidrandoll.automation.engine.creator.AutomationProcessor;
 import lombok.experimental.Delegate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 
 public abstract class PluggableAction<T extends IActionContext> implements TypedAction<T> {
     @Autowired
@@ -13,8 +14,17 @@ public abstract class PluggableAction<T extends IActionContext> implements Typed
     @Delegate
     protected AutomationProcessor processor;
 
+    @Autowired
+    private ApplicationContext applicationContext;
+
     @Override
     public ITypeConverter getTypeConverter() {
         return typeConverter;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public TypedAction<T> getSelf() {
+        return (TypedAction<T>) applicationContext.getBean(this.getClass());
     }
 }
