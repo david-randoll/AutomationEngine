@@ -23,6 +23,7 @@
     "@tanstack/react-router-devtools": "^1.132.0",
     "@tanstack/router-plugin": "^1.132.0",
     "@types/js-yaml": "^4.0.9",
+    "@xyflow/react": "^12.10.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "framer-motion": "^12.23.25",

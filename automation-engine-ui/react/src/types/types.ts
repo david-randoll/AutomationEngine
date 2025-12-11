@@ -15,4 +15,7 @@ export type ModuleType = {
 };
 export type EditMode = "json" | "yaml" | "ui";
 
+// Top-level UI mode for the automation builder
+export type UIMode = "interactive" | "code" | "workflow";
+
 export type Path = (string | number)[];
