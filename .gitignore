@@ -324,3 +324,4 @@ $RECYCLE.BIN/
 *.DS_Store
 LicenseService.iml
 automation-engine-ui/nextjs/.env.local
+*.flattened-pom.xml
