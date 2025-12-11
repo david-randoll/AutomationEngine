@@ -12,6 +12,8 @@ import java.util.Map;
 public interface TypedAction<T extends IActionContext> extends IAction {
     ITypeConverter getTypeConverter();
 
+    TypedAction<T> getSelf();
+
     @Override
     default Class<?> getContextType() {
         return GenericTypeResolver.getGenericParameterClass(getClass());
@@ -19,12 +21,16 @@ public interface TypedAction<T extends IActionContext> extends IAction {
 
     @Override
     default void execute(EventContext eventContext, ActionContext actionContext) {
-        T data = getTypeConverter().convert(actionContext.getData(), getContextType());
-        if (data == null) {
-            throw new IllegalArgumentException("Cannot convert action context data to " + getContextType());
-        }
-        if (canExecute(eventContext, data)) {
-            doExecute(eventContext, data);
+        T data = getTypeConverter().convert(actionContext.getData(), this.getContextType());
+        if (data == null)
+            throw new IllegalArgumentException("Cannot convert action context data to " + this.getContextType());
+
+        // Calling the proxied self to ensure AOP aspects are applied such as transactions, logging, etc.
+        var self = getSelf();
+        if (self == null)
+            throw new IllegalStateException("Self reference is not initialized");
+        if (self.canExecute(eventContext, data)) {
+            self.doExecute(eventContext, data);
         }
     }
 
@@ -36,8 +42,7 @@ public interface TypedAction<T extends IActionContext> extends IAction {
 
     @Override
     default List<T> getExamples() {
-        var contextType = getContextType();
-        var example = getTypeConverter().convert(Map.of(), contextType);
+        var example = getTypeConverter().convert(Map.of(), getContextType());
         return List.of((T) example);
     }
 }

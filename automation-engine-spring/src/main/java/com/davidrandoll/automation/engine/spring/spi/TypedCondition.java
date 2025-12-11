@@ -12,6 +12,8 @@ import java.util.Map;
 public interface TypedCondition<T extends IConditionContext> extends ICondition {
     ITypeConverter getTypeConverter();
 
+    TypedCondition<T> getSelf();
+
     @Override
     default Class<?> getContextType() {
         return GenericTypeResolver.getGenericParameterClass(getClass());
@@ -20,15 +22,18 @@ public interface TypedCondition<T extends IConditionContext> extends ICondition 
     @Override
     default boolean isSatisfied(EventContext eventContext, ConditionContext conditionContext) {
         T data = getTypeConverter().convert(conditionContext.getData(), getContextType());
-        return isSatisfied(eventContext, data);
+        // Calling the proxied self to ensure AOP aspects are applied such as transactions, logging, etc.
+        var self = getSelf();
+        if (self == null)
+            throw new IllegalStateException("Self reference is not initialized");
+        return self.isSatisfied(eventContext, data);
     }
 
     boolean isSatisfied(EventContext ec, T cc);
 
     @Override
     default List<T> getExamples() {
-        var contextType = getContextType();
-        var example = getTypeConverter().convert(Map.of(), contextType);
+        var example = getTypeConverter().convert(Map.of(), getContextType());
         return List.of((T) example);
     }
 }
