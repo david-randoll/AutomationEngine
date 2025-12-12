@@ -45,6 +45,7 @@
         <module>automation-engine-spring</module>
         <module>automation-engine-spring-amqp</module>
         <module>automation-engine-ui</module>
+        <module>automation-engine-test-coverage-report</module>
     </modules>
     <properties>
         <revision>${automation-engine.version}</revision>
@@ -171,11 +172,10 @@
                 <version>0.8.14</version>
                 <executions>
                     <execution>
-                        <id>report</id>
+                        <id>prepare-agent</id>
                         <goals>
-                            <goal>report-aggregate</goal>
+                            <goal>prepare-agent</goal>
                         </goals>
-                        <phase>verify</phase>
                     </execution>
                 </executions>
             </plugin>
