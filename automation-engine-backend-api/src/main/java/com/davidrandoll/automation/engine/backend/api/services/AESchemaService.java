@@ -114,7 +114,8 @@ public class AESchemaService implements IAESchemaService {
         rootSchema.put("$schema", "https://json-schema.org/draft/2020-12/schema");
         rootSchema.put("$id", url);
         rootSchema.put("title", "Automation Engine Definition Schema");
-        rootSchema.put("description", "Schema for defining automations in AutomationEngine. Automations can be defined in YAML or JSON format.");
+        rootSchema.put("description",
+                "Schema for defining automations in AutomationEngine. Automations can be defined in YAML or JSON format.");
         rootSchema.put("additionalProperties", false);
 
         // Get or create $defs section
@@ -198,7 +199,7 @@ public class AESchemaService implements IAESchemaService {
     }
 
     private ObjectNode buildConditionalSchema(BlockType block, String shortName, BlockTypeConfig config,
-                                              ObjectNode defs) {
+            ObjectNode defs) {
         ObjectNode conditionalSchema = objectMapper.createObjectNode();
 
         // Build "if" condition
