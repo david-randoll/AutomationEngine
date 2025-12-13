@@ -54,6 +54,7 @@ public class VariableTemplatingInterceptor implements IVariableInterceptor {
         var eventData = eventContext.getEventData(objectMapper);
         if (ObjectUtils.isEmpty(variableContext.getData()) || ObjectUtils.isEmpty(eventData)) {
             chain.resolve(eventContext, variableContext);
+            return;
         }
 
         var mapCopy = processor.processIfNotAutomation(eventData, variableContext.getData());

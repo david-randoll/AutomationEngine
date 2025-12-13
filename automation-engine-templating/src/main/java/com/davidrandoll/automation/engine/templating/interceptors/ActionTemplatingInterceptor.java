@@ -52,6 +52,7 @@ public class ActionTemplatingInterceptor implements IActionInterceptor {
         var eventData = eventContext.getEventData(objectMapper);
         if (ObjectUtils.isEmpty(actionContext.getData()) || ObjectUtils.isEmpty(eventData)) {
             chain.execute(eventContext, actionContext);
+            return;
         }
 
         var mapCopy = processor.processIfNotAutomation(eventData, actionContext.getData());
