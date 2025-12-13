@@ -27,8 +27,11 @@ public class BaseActionList extends ArrayList<IBaseAction> {
                     .toList();
 
             CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
-        } catch (StopActionSequenceException e) {
-            // This exception is thrown when the action sequence should be stopped
+        } catch (java.util.concurrent.CompletionException e) {
+            if (!(e.getCause() instanceof StopActionSequenceException)) {
+                throw e;
+            }
+            // StopActionSequenceException is caught and suppressed
         }
     }
 
@@ -39,8 +42,11 @@ public class BaseActionList extends ArrayList<IBaseAction> {
                     .toList();
 
             CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
-        } catch (StopActionSequenceException e) {
-            // This exception is thrown when the action sequence should be stopped
+        } catch (java.util.concurrent.CompletionException e) {
+            if (!(e.getCause() instanceof StopActionSequenceException)) {
+                throw e;
+            }
+            // StopActionSequenceException is caught and suppressed
         }
     }
 
