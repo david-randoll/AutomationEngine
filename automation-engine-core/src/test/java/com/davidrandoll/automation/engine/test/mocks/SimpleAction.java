@@ -1,5 +1,7 @@
 package com.davidrandoll.automation.engine.test.mocks;
 
+import com.davidrandoll.automation.engine.core.actions.ActionContext;
+import com.davidrandoll.automation.engine.core.actions.IAction;
 import com.davidrandoll.automation.engine.core.actions.IBaseAction;
 import com.davidrandoll.automation.engine.core.events.EventContext;
 import lombok.Getter;
@@ -13,7 +15,7 @@ import java.util.List;
  * Tracks execution count and can be configured to throw exceptions.
  */
 @Getter
-public class SimpleAction implements IBaseAction {
+public class SimpleAction implements IBaseAction, IAction {
     private final String name;
     private int executionCount = 0;
     private final List<EventContext> executedContexts = new ArrayList<>();
@@ -32,6 +34,16 @@ public class SimpleAction implements IBaseAction {
         if (exceptionToThrow != null) {
             throw exceptionToThrow;
         }
+    }
+
+    @Override
+    public void execute(EventContext context, ActionContext actionContext) {
+        execute(context);
+    }
+
+    @Override
+    public Class<?> getContextType() {
+        return ActionContext.class;
     }
 
     public void reset() {

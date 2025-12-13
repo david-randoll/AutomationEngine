@@ -2,6 +2,8 @@ package com.davidrandoll.automation.engine.test.mocks;
 
 import com.davidrandoll.automation.engine.core.events.EventContext;
 import com.davidrandoll.automation.engine.core.triggers.IBaseTrigger;
+import com.davidrandoll.automation.engine.core.triggers.ITrigger;
+import com.davidrandoll.automation.engine.core.triggers.TriggerContext;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,7 +16,7 @@ import java.util.List;
  */
 @Getter
 @Setter
-public class SimpleTrigger implements IBaseTrigger {
+public class SimpleTrigger implements IBaseTrigger, ITrigger {
     private final String name;
     private boolean activated = true;
     private int checkCount = 0;
@@ -40,5 +42,15 @@ public class SimpleTrigger implements IBaseTrigger {
         checkCount++;
         checkedContexts.add(eventContext);
         return activated;
+    }
+
+    @Override
+    public boolean isTriggered(EventContext context, TriggerContext triggerContext) {
+        return isTriggered(context);
+    }
+
+    @Override
+    public Class<?> getContextType() {
+        return TriggerContext.class;
     }
 }

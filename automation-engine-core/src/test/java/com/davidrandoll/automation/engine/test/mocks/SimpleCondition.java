@@ -1,6 +1,8 @@
 package com.davidrandoll.automation.engine.test.mocks;
 
+import com.davidrandoll.automation.engine.core.conditions.ConditionContext;
 import com.davidrandoll.automation.engine.core.conditions.IBaseCondition;
+import com.davidrandoll.automation.engine.core.conditions.ICondition;
 import com.davidrandoll.automation.engine.core.events.EventContext;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,7 +16,7 @@ import java.util.List;
  */
 @Getter
 @Setter
-public class SimpleCondition implements IBaseCondition {
+public class SimpleCondition implements IBaseCondition, ICondition {
     private final String name;
     private boolean evaluationResult = true;
     private int evaluationCount = 0;
@@ -34,6 +36,16 @@ public class SimpleCondition implements IBaseCondition {
         evaluationCount++;
         evaluatedContexts.add(eventContext);
         return evaluationResult;
+    }
+
+    @Override
+    public boolean isSatisfied(EventContext context, ConditionContext conditionContext) {
+        return isSatisfied(context);
+    }
+
+    @Override
+    public Class<?> getContextType() {
+        return ConditionContext.class;
     }
 
     public void reset() {

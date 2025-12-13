@@ -14,11 +14,16 @@ import java.util.List;
  * Returns a configured value.
  */
 @Getter
-public class SimpleVariable implements IBaseVariable {
+public class SimpleVariable implements IBaseVariable, IVariable {
     private final String name;
     private final Object value;
     private int resolveCount = 0;
     private final List<EventContext> resolvedContexts = new ArrayList<>();
+
+    public SimpleVariable(String name) {
+        this.name = name;
+        this.value = "defaultValue";
+    }
 
     public SimpleVariable(String name, Object value) {
         this.name = name;
@@ -30,6 +35,16 @@ public class SimpleVariable implements IBaseVariable {
         resolveCount++;
         resolvedContexts.add(eventContext);
         eventContext.addMetadata(name, value);
+    }
+
+    @Override
+    public void resolve(EventContext context, VariableContext variableContext) {
+        resolve(context);
+    }
+
+    @Override
+    public Class<?> getContextType() {
+        return VariableContext.class;
     }
 
     public void reset() {
