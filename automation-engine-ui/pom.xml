@@ -129,6 +129,18 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>**/AutomationEngineUiAutoConfiguration.class</exclude>
+                        <exclude>**/AutomationEngineUiConfiguration.class</exclude>
+                        <exclude>**/AutomationEngineUiProperties.class</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 

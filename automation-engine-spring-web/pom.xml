@@ -69,4 +69,23 @@
         </dependency>
     </dependencies>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>**/*Context.class</exclude>
+                        <exclude>**/AESpringWebAutoConfiguration.class</exclude>
+                        <exclude>**/AESpringWebConfig.class</exclude>
+                        <exclude>**/events/**</exclude>
+                        <exclude>**/exceptions/**</exclude>
+                        <exclude>**/jackson/**</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
 </project>
