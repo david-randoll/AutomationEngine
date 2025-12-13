@@ -30,18 +30,23 @@ class UserDefinedControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean private IUserDefinedActionRegistry actionRegistry;
-    @MockBean private IUserDefinedConditionRegistry conditionRegistry;
-    @MockBean private IUserDefinedTriggerRegistry triggerRegistry;
-    @MockBean private IUserDefinedVariableRegistry variableRegistry;
-    @MockBean private JsonSchemaService jsonSchemaService;
+    @MockBean
+    private IUserDefinedActionRegistry actionRegistry;
+    @MockBean
+    private IUserDefinedConditionRegistry conditionRegistry;
+    @MockBean
+    private IUserDefinedTriggerRegistry triggerRegistry;
+    @MockBean
+    private IUserDefinedVariableRegistry variableRegistry;
+    @MockBean
+    private JsonSchemaService jsonSchemaService;
 
     @Test
     void getSchema_ShouldReturnOk_ForActions() throws Exception {
         when(jsonSchemaService.generateSchema(any())).thenReturn(new ObjectMapper().createObjectNode());
 
         mockMvc.perform(get("/automation-engine/user-defined/actions/schema")
-                        .contentType(MediaType.APPLICATION_JSON))
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
 
@@ -50,7 +55,7 @@ class UserDefinedControllerTest {
         when(actionRegistry.getAllActions()).thenReturn(Map.of());
 
         mockMvc.perform(get("/automation-engine/user-defined/actions")
-                        .contentType(MediaType.APPLICATION_JSON))
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
 
@@ -59,7 +64,7 @@ class UserDefinedControllerTest {
         when(jsonSchemaService.generateSchema(any())).thenReturn(new ObjectMapper().createObjectNode());
 
         mockMvc.perform(get("/automation-engine/user-defined/conditions/schema")
-                        .contentType(MediaType.APPLICATION_JSON))
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
 
@@ -68,24 +73,26 @@ class UserDefinedControllerTest {
         when(triggerRegistry.getAllTriggers()).thenReturn(Map.of());
 
         mockMvc.perform(get("/automation-engine/user-defined/triggers")
-                        .contentType(MediaType.APPLICATION_JSON))
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
 
     @Test
     void register_ShouldReturnCreated_ForActions() throws Exception {
         String json = "{\"alias\":\"test\"}";
-        
-        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post("/automation-engine/user-defined/actions")
-                        .content(json)
-                        .contentType(MediaType.APPLICATION_JSON))
+
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+                .post("/automation-engine/user-defined/actions")
+                .content(json)
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
     }
 
     @Test
     void unregister_ShouldReturnNoContent() throws Exception {
-        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete("/automation-engine/user-defined/actions/test")
-                        .contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+                .delete("/automation-engine/user-defined/actions/test")
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
     }
 
@@ -94,7 +101,7 @@ class UserDefinedControllerTest {
         when(actionRegistry.findAction("test")).thenReturn(Optional.of(new UserDefinedActionDefinition()));
 
         mockMvc.perform(get("/automation-engine/user-defined/actions/test")
-                        .contentType(MediaType.APPLICATION_JSON))
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
 
@@ -103,24 +110,25 @@ class UserDefinedControllerTest {
         when(actionRegistry.findAction("test")).thenReturn(Optional.empty());
 
         mockMvc.perform(get("/automation-engine/user-defined/actions/test")
-                        .contentType(MediaType.APPLICATION_JSON))
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }
 
     @Test
     void update_ShouldReturnCreated() throws Exception {
         String json = "{\"alias\":\"test\"}";
-        
-        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put("/automation-engine/user-defined/variables/test")
-                        .content(json)
-                        .contentType(MediaType.APPLICATION_JSON))
+
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+                .put("/automation-engine/user-defined/variables/test")
+                .content(json)
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
     }
 
     @Test
     void invalidBlockType_ShouldReturnBadRequest() throws Exception {
         mockMvc.perform(get("/automation-engine/user-defined/invalid/schema")
-                        .contentType(MediaType.APPLICATION_JSON))
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
 }

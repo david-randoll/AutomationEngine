@@ -118,7 +118,7 @@ class JsonNodeVariableProcessorTest {
         ObjectNode data = mapper.createObjectNode();
         data.put("key", "{{ value }}");
         data.put("number", 123);
-        
+
         ResultContext resultContext = new ResultContext(data);
 
         when(templateProcessor.process("{{ value }}", eventData)).thenReturn("processed");

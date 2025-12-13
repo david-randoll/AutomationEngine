@@ -48,7 +48,7 @@ class TypeConverterTest {
         String result = typeConverter.convert(input, String.class);
 
         assertThat(result).isNull();
-        // Verification of logging is tricky without a logging capture tool, 
+        // Verification of logging is tricky without a logging capture tool,
         // but we verify the method completes without error.
     }
 
@@ -56,8 +56,9 @@ class TypeConverterTest {
     void convert_TypeReference_ShouldConvertSuccessfully() {
         Object input = new Object();
         Map<String, String> expected = Map.of("key", "value");
-        TypeReference<Map<String, String>> typeRef = new TypeReference<>() {};
-        
+        TypeReference<Map<String, String>> typeRef = new TypeReference<>() {
+        };
+
         when(objectMapper.convertValue(eq(input), eq(typeRef))).thenReturn(expected);
 
         Map<String, String> result = typeConverter.convert(input, typeRef);
@@ -68,8 +69,9 @@ class TypeConverterTest {
     @Test
     void convert_TypeReference_ShouldLogWarningWhenResultIsNull() {
         Object input = new Object();
-        TypeReference<Map<String, String>> typeRef = new TypeReference<>() {};
-        
+        TypeReference<Map<String, String>> typeRef = new TypeReference<>() {
+        };
+
         when(objectMapper.convertValue(eq(input), eq(typeRef))).thenReturn(null);
 
         Map<String, String> result = typeConverter.convert(input, typeRef);

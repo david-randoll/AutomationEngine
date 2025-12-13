@@ -41,12 +41,14 @@ class JsonConverterTest {
     @Test
     void convert_ShouldThrowRuntimeExceptionOnJsonProcessingException() throws JsonProcessingException {
         String json = "invalid-json";
-        when(objectMapper.readValue(eq(json), eq(TestObject.class))).thenThrow(new JsonProcessingException("Error") {});
+        when(objectMapper.readValue(eq(json), eq(TestObject.class))).thenThrow(new JsonProcessingException("Error") {
+        });
 
         assertThatThrownBy(() -> jsonConverter.convert(json, TestObject.class))
                 .isInstanceOf(RuntimeException.class)
                 .hasCauseInstanceOf(JsonProcessingException.class);
     }
 
-    static class TestObject {}
+    static class TestObject {
+    }
 }

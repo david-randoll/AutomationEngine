@@ -63,7 +63,7 @@ class AESchemaServiceTest {
         IAction action = mock(IAction.class);
         when(action.getContextType()).thenAnswer(inv -> Object.class);
         when(applicationContext.getBeansOfType(IAction.class)).thenReturn(Map.of("testAction", action));
-        
+
         ObjectNode schema = objectMapper.createObjectNode();
         when(jsonSchemaService.generateSchema(any())).thenReturn(schema);
 
@@ -98,12 +98,12 @@ class AESchemaServiceTest {
                 .isInstanceOf(ResponseStatusException.class)
                 .hasMessageContaining("No module found");
     }
-    
+
     @Test
     void getBlocksByType_ShouldReturnTriggers() {
         ITrigger trigger = mock(ITrigger.class);
         when(applicationContext.getBeansOfType(ITrigger.class)).thenReturn(Map.of("testTrigger", trigger));
-        
+
         var result = service.getBlocksByType("triggers", false);
         assertThat(result.getTypes()).hasSize(1);
         assertThat(result.getTypes().get(0).getName()).isEqualTo("testTrigger");
@@ -136,9 +136,9 @@ class AESchemaServiceTest {
         ITrigger trigger = mock(ITrigger.class);
         when(trigger.getContextType()).thenAnswer(inv -> Object.class);
         when(applicationContext.getBeansOfType(ITrigger.class)).thenReturn(Map.of("myTrigger", trigger));
-        
+
         var result = service.getFullAutomationSchema("http://localhost");
-        
+
         assertThat(result).isNotNull();
         // Verify that definitions were created
         assertThat(result.has("$defs")).isTrue();
@@ -173,21 +173,21 @@ class AESchemaServiceTest {
         ObjectNode triggerSchema = objectMapper.createObjectNode();
         ObjectNode triggerProps = objectMapper.createObjectNode();
         triggerProps.set("simpleField", objectMapper.createObjectNode().put("type", "string"));
-        
+
         // Add nested ref
         ObjectNode refField = objectMapper.createObjectNode();
         refField.put("$ref", "#/$defs/ComplexType");
         triggerProps.set("refField", refField);
-        
+
         triggerSchema.set("properties", triggerProps);
-        
+
         // Add defs
         ObjectNode defs = objectMapper.createObjectNode();
         ObjectNode complexType = objectMapper.createObjectNode();
         complexType.put("type", "object");
         defs.set("ComplexType", complexType);
         triggerSchema.set("$defs", defs);
-        
+
         // Add additionalProperties as boolean
         triggerSchema.put("additionalProperties", true);
 
@@ -214,7 +214,7 @@ class AESchemaServiceTest {
         IAction action = mock(IAction.class);
         when(action.getContextType()).thenAnswer(inv -> Object.class);
         when(applicationContext.getBeansOfType(IAction.class)).thenReturn(Map.of("customTask", action));
-        
+
         ObjectNode actionSchema = objectMapper.createObjectNode();
         when(jsonSchemaService.generateSchema(eq(Object.class))).thenReturn(actionSchema);
 
@@ -223,7 +223,7 @@ class AESchemaServiceTest {
         assertThat(result).isNotNull();
         JsonNode actionDef = result.get("$defs").get("ActionDefinition");
         JsonNode enumValues = actionDef.get("allOf").get(0).get("properties").get("action").get("enum");
-        
+
         // Should use full name if suffix not found
         boolean found = false;
         for (JsonNode val : enumValues) {
@@ -251,15 +251,15 @@ class AESchemaServiceTest {
 
         ObjectNode conditionSchema = objectMapper.createObjectNode();
         ObjectNode props = objectMapper.createObjectNode();
-        
+
         // Array field
         ObjectNode arrayField = objectMapper.createObjectNode();
         arrayField.put("type", "array");
         arrayField.set("items", objectMapper.createObjectNode().put("type", "string"));
         props.set("tags", arrayField);
-        
+
         conditionSchema.set("properties", props);
-        
+
         // additionalProperties as object
         ObjectNode addProps = objectMapper.createObjectNode();
         addProps.put("type", "integer");
@@ -268,7 +268,7 @@ class AESchemaServiceTest {
         when(jsonSchemaService.generateSchema(eq(Object.class))).thenReturn(conditionSchema);
 
         var result = service.getFullAutomationSchema("http://localhost");
-        
+
         assertThat(result).isNotNull();
         JsonNode conditionDef = result.get("$defs").get("ConditionDefinition");
         // Verify structure
@@ -291,7 +291,7 @@ class AESchemaServiceTest {
 
         ObjectNode varSchema = objectMapper.createObjectNode();
         ObjectNode props = objectMapper.createObjectNode();
-        
+
         // Field with allOf
         ObjectNode allOfField = objectMapper.createObjectNode();
         ArrayNode allOfArray = objectMapper.createArrayNode();
@@ -299,12 +299,12 @@ class AESchemaServiceTest {
         allOfArray.add(objectMapper.createObjectNode().put("minLength", 1));
         allOfField.set("allOf", allOfArray);
         props.set("compositeField", allOfField);
-        
+
         varSchema.set("properties", props);
         when(jsonSchemaService.generateSchema(eq(Object.class))).thenReturn(varSchema);
 
         var result = service.getFullAutomationSchema("http://localhost");
-        
+
         assertThat(result).isNotNull();
         JsonNode varDef = result.get("$defs").get("VariableDefinition");
         assertThat(varDef).isNotNull();

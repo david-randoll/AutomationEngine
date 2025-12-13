@@ -17,7 +17,8 @@ import static org.apache.commons.lang3.BooleanUtils.isFalse;
 /**
  * Interceptor for processing variable data using templating.
  * <p>
- * This interceptor processes the variable context data by replacing any placeholders
+ * This interceptor processes the variable context data by replacing any
+ * placeholders
  * in the strings with corresponding values from the event context.
  * It uses a {@link TemplateProcessor} to perform the templating.
  * </p>
@@ -37,7 +38,8 @@ public class VariableTemplatingInterceptor implements IVariableInterceptor {
      * the placeholder {{name}} with the corresponding value from the event context.
      * If a string does not contain a template, it remains unchanged.
      *
-     * @param eventContext    the event context providing data for template replacement
+     * @param eventContext    the event context providing data for template
+     *                        replacement
      * @param variableContext the variable context containing data to process
      * @param chain           the variable to set after processing
      */

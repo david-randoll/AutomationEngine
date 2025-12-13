@@ -7,9 +7,14 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class GenericTypeResolverTest {
 
-    static class StringGeneric extends BaseGeneric<String> {}
-    static class BaseGeneric<T> {}
-    static class NoGeneric {}
+    static class StringGeneric extends BaseGeneric<String> {
+    }
+
+    static class BaseGeneric<T> {
+    }
+
+    static class NoGeneric {
+    }
 
     @Test
     void testGetGenericParameterClass() {

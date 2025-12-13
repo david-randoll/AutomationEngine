@@ -27,7 +27,7 @@ class ResultTemplatingInterceptorTest {
 
     @Mock
     private JsonNodeVariableProcessor processor;
-    
+
     private ObjectMapper objectMapper;
     private ResultTemplatingInterceptor interceptor;
 
@@ -43,14 +43,14 @@ class ResultTemplatingInterceptorTest {
         ObjectNode data = objectMapper.createObjectNode();
         data.put("key", "value");
         ResultContext resultContext = new ResultContext(data);
-        
+
         IResultChain chain = mock(IResultChain.class);
         when(chain.autoEvaluateExpression()).thenReturn(true);
 
         Map<String, Object> eventData = new HashMap<>();
         eventData.put("some", "data");
         when(eventContext.getEventData(objectMapper)).thenReturn(eventData);
-        
+
         when(processor.processIfNotAutomation(eq(eventData), any(JsonNode.class))).thenReturn(data);
 
         interceptor.intercept(eventContext, resultContext, chain);
