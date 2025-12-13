@@ -160,7 +160,9 @@ Create a corresponding context class:
 ```java
 
 @Data
-public class SendSlackMessageContext extends ActionContext {
+public class SendSlackMessageContext implements IActionContext {
+    private String alias;
+    private String description;
     private String message;
     private String channel;
 }

@@ -72,7 +72,9 @@ public class MyCustomAction extends PluggableAction<MyCustomActionContext> {
 }
 
 @Data  // Always use Lombok @Data for context classes
-public class MyCustomActionContext extends ActionContext {
+public class MyCustomActionContext implements IActionContext {
+    private String alias;
+    private String description;
     private String myParam;  // Auto-mapped from YAML properties
 }
 ```
@@ -227,7 +229,10 @@ mvn flatten:flatten
 
 2. **Type conversion failures**
 
+   - Context class must implement the appropriate interface (IActionContext, IConditionContext, ITriggerContext,
+     IVariableContext, IResultContext)
    - Context class must have matching field names (case-sensitive)
+   - Always include `alias` and `description` fields (required by context interfaces)
    - Use `@Data` on context classes for getters/setters
 
 3. **AOP aspects not applying**
