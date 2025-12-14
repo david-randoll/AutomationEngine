@@ -13,12 +13,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class AutomationEngineTest {
@@ -38,15 +39,18 @@ class AutomationEngineTest {
     }
 
     @Test
-    void testRegister() {
+    void testRegister_ShouldDelegateToOrchestrator() {
         Automation automation = mock(Automation.class);
+        
         automationEngine.register(automation);
+        
         verify(orchestrator).registerAutomation(automation);
+        verifyNoMoreInteractions(orchestrator);
     }
 
     @Test
-    void testRegisterWithYaml() {
-        String yaml = "alias: test";
+    void testRegisterWithYaml_ShouldParseAndRegister() {
+        String yaml = "alias: test-automation";
         Automation automation = mock(Automation.class);
         when(factory.createAutomation("yaml", yaml)).thenReturn(automation);
 
@@ -57,8 +61,8 @@ class AutomationEngineTest {
     }
 
     @Test
-    void testRegisterWithJson() {
-        String json = "{\"alias\": \"test\"}";
+    void testRegisterWithJson_ShouldParseAndRegister() {
+        String json = "{\"alias\": \"test-automation\"}";
         Automation automation = mock(Automation.class);
         when(factory.createAutomation("json", json)).thenReturn(automation);
 
@@ -69,51 +73,68 @@ class AutomationEngineTest {
     }
 
     @Test
-    void testRemove() {
+    void testRemove_ShouldDelegateToOrchestrator() {
         Automation automation = mock(Automation.class);
+        
         automationEngine.remove(automation);
+        
         verify(orchestrator).removeAutomation(automation);
+        verifyNoMoreInteractions(orchestrator);
     }
 
     @Test
-    void testRemoveAll() {
+    void testRemoveAll_ShouldClearAllAutomations() {
         automationEngine.removeAll();
+        
         verify(orchestrator).removeAllAutomations();
+        verifyNoMoreInteractions(orchestrator);
     }
 
     @Test
-    void testPublishEventContext() {
+    void testPublishEventContext_ShouldHandleEventContext() {
         EventContext context = mock(EventContext.class);
+        
         automationEngine.publishEvent(context);
+        
         verify(orchestrator).handleEventContext(context);
+        verifyNoMoreInteractions(orchestrator);
     }
 
     @Test
-    void testPublishEvent() {
+    void testPublishEvent_ShouldHandleEvent() {
         IEvent event = mock(IEvent.class);
+        
         automationEngine.publishEvent(event);
+        
         verify(orchestrator).handleEvent(event);
+        verifyNoMoreInteractions(orchestrator);
     }
 
     @Test
-    void testExecuteAutomation() {
+    void testExecuteAutomation_ShouldReturnResult() {
         Automation automation = mock(Automation.class);
+        when(automation.getAlias()).thenReturn("test-automation");
         EventContext context = mock(EventContext.class);
         AutomationResult result = mock(AutomationResult.class);
+        when(result.isExecuted()).thenReturn(true);
+        when(result.getAutomation()).thenReturn(automation);
         when(orchestrator.executeAutomation(automation, context)).thenReturn(result);
 
         AutomationResult actual = automationEngine.executeAutomation(automation, context);
 
         assertEquals(result, actual);
+        assertThat(actual.isExecuted()).isTrue();
+        assertThat(actual.getAutomation().getAlias()).isEqualTo("test-automation");
         verify(orchestrator).executeAutomation(automation, context);
     }
 
     @Test
-    void testExecuteAutomationWithYaml() {
-        String yaml = "alias: test";
+    void testExecuteAutomationWithYaml_ShouldParseAndExecute() {
+        String yaml = "alias: execute-test";
         EventContext context = mock(EventContext.class);
         Automation automation = mock(Automation.class);
         AutomationResult result = mock(AutomationResult.class);
+        when(result.isExecuted()).thenReturn(true);
 
         when(factory.createAutomation("yaml", yaml)).thenReturn(automation);
         when(orchestrator.executeAutomation(automation, context)).thenReturn(result);
@@ -121,16 +142,19 @@ class AutomationEngineTest {
         AutomationResult actual = automationEngine.executeAutomationWithYaml(yaml, context);
 
         assertEquals(result, actual);
+        assertThat(actual.isExecuted()).isTrue();
         verify(factory).createAutomation("yaml", yaml);
         verify(orchestrator).executeAutomation(automation, context);
     }
 
     @Test
-    void testExecuteAutomationWithYamlAndEvent() {
-        String yaml = "alias: test";
+    void testExecuteAutomationWithYamlAndEvent_ShouldWrapEventInContext() {
+        String yaml = "alias: event-test";
         IEvent event = mock(IEvent.class);
         Automation automation = mock(Automation.class);
+        when(automation.getAlias()).thenReturn("event-test");
         AutomationResult result = mock(AutomationResult.class);
+        when(result.getAutomation()).thenReturn(automation);
 
         when(factory.createAutomation("yaml", yaml)).thenReturn(automation);
         when(orchestrator.executeAutomation(eq(automation), any(EventContext.class))).thenReturn(result);
@@ -138,15 +162,18 @@ class AutomationEngineTest {
         AutomationResult actual = automationEngine.executeAutomationWithYaml(yaml, event);
 
         assertEquals(result, actual);
+        assertThat(actual.getAutomation().getAlias()).isEqualTo("event-test");
         verify(factory).createAutomation("yaml", yaml);
+        verify(orchestrator).executeAutomation(eq(automation), any(EventContext.class));
     }
 
     @Test
-    void testExecuteAutomationWithJson() {
-        String json = "{\"alias\": \"test\"}";
+    void testExecuteAutomationWithJson_ShouldParseAndExecute() {
+        String json = "{\"alias\": \"json-test\"}";
         EventContext context = mock(EventContext.class);
         Automation automation = mock(Automation.class);
         AutomationResult result = mock(AutomationResult.class);
+        when(result.isExecuted()).thenReturn(false);
 
         when(factory.createAutomation("json", json)).thenReturn(automation);
         when(orchestrator.executeAutomation(automation, context)).thenReturn(result);
@@ -154,13 +181,14 @@ class AutomationEngineTest {
         AutomationResult actual = automationEngine.executeAutomationWithJson(json, context);
 
         assertEquals(result, actual);
+        assertThat(actual.isExecuted()).isFalse();
         verify(factory).createAutomation("json", json);
         verify(orchestrator).executeAutomation(automation, context);
     }
 
     @Test
-    void testExecuteAutomationWithJsonAndEvent() {
-        String json = "{\"alias\": \"test\"}";
+    void testExecuteAutomationWithJsonAndEvent_ShouldWrapEventInContext() {
+        String json = "{\"alias\": \"json-event-test\"}";
         IEvent event = mock(IEvent.class);
         Automation automation = mock(Automation.class);
         AutomationResult result = mock(AutomationResult.class);
@@ -172,10 +200,14 @@ class AutomationEngineTest {
 
         assertEquals(result, actual);
         verify(factory).createAutomation("json", json);
+        verify(orchestrator).executeAutomation(eq(automation), any(EventContext.class));
     }
 
     @Test
-    void testGetEventFactory() {
-        assertEquals(eventFactory, automationEngine.getEventFactory());
+    void testGetEventFactory_ShouldReturnInjectedFactory() {
+        EventFactory result = automationEngine.getEventFactory();
+        
+        assertEquals(eventFactory, result);
+        assertThat(result).isNotNull();
     }
 }
