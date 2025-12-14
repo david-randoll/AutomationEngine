@@ -60,5 +60,22 @@
         </dependency>
     </dependencies>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>**/*Context.class</exclude>
+                        <exclude>**/AESpringConfig.class</exclude>
+                        <exclude>**/AEConfigProvider.class</exclude>
+                        <exclude>**/config/**</exclude>
+                        <exclude>**/spi/**</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

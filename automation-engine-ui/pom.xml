@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                             http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <groupId>com.davidrandoll</groupId>
         <artifactId>automation-engine</artifactId>
@@ -12,14 +15,15 @@
     <artifactId>automation-engine-ui</artifactId>
     <name>Automation Engine UI</name>
     <description>
-        A module providing the user interface for the Automation Engine, built with React and integrated into a Spring
-        Boot application.
+        A module providing the user interface for the Automation Engine,
+        built with React and integrated into a Spring Boot application.
     </description>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
         <frontend-maven-plugin.version>1.15.1</frontend-maven-plugin.version>
         <node.version>v22.12.0</node.version>
         <npm.version>10.9.0</npm.version>
@@ -28,35 +32,61 @@
     <dependencies>
         <dependency>
             <groupId>com.davidrandoll</groupId>
+            <artifactId>automation-engine-core</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.davidrandoll</groupId>
+            <artifactId>automation-engine-spring</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.davidrandoll</groupId>
             <artifactId>automation-engine-backend-api</artifactId>
             <version>${project.version}</version>
-            <scope>compile</scope>
         </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-autoconfigure</artifactId>
             <scope>provided</scope>
         </dependency>
+
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
             <scope>provided</scope>
         </dependency>
+
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
             <scope>provided</scope>
         </dependency>
+
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
             <scope>provided</scope>
         </dependency>
+
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <scope>provided</scope>
         </dependency>
+
+        <dependency>
+            <groupId>com.davidrandoll</groupId>
+            <artifactId>automation-engine-test</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+
     </dependencies>
 
     <build>
@@ -65,14 +95,15 @@
                 <groupId>com.github.eirslett</groupId>
                 <artifactId>frontend-maven-plugin</artifactId>
                 <version>${frontend-maven-plugin.version}</version>
+
                 <configuration>
                     <workingDirectory>react</workingDirectory>
                     <installDirectory>target</installDirectory>
                 </configuration>
+
                 <executions>
-                    <!-- Install Node and NPM -->
                     <execution>
-                        <id>install node and npm</id>
+                        <id>install-node-and-npm</id>
                         <goals>
                             <goal>install-node-and-npm</goal>
                         </goals>
@@ -82,9 +113,8 @@
                         </configuration>
                     </execution>
 
-                    <!-- npm install -->
                     <execution>
-                        <id>npm install</id>
+                        <id>npm-install</id>
                         <goals>
                             <goal>npm</goal>
                         </goals>
@@ -93,9 +123,8 @@
                         </configuration>
                     </execution>
 
-                    <!-- npm run build -->
                     <execution>
-                        <id>npm run build</id>
+                        <id>npm-run-build</id>
                         <goals>
                             <goal>npm</goal>
                         </goals>
@@ -117,7 +146,9 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${project.build.outputDirectory}/META-INF/automation-engine-ui</outputDirectory>
+                            <outputDirectory>
+                                ${project.build.outputDirectory}/META-INF/automation-engine-ui
+                            </outputDirectory>
                             <resources>
                                 <resource>
                                     <directory>react/dist</directory>
@@ -127,6 +158,19 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>**/AutomationEngineUiAutoConfiguration.class</exclude>
+                        <exclude>**/AutomationEngineUiConfiguration.class</exclude>
+                        <exclude>**/PathResourceResolverExtension.class</exclude>
+                        <exclude>**/AutomationEngineUiProperties.class</exclude>
+                    </excludes>
+                </configuration>
             </plugin>
         </plugins>
     </build>

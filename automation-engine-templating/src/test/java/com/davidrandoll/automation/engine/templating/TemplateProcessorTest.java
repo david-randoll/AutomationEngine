@@ -162,6 +162,85 @@ class TemplateProcessorTest {
                                 new Order(2, List.of(new Item("Orange", 3.0, 2), new Item("Grape", 1.5, 5)))
                         )),
                         "Items: Order ID: 1 - Apple: 10.00 Banana: 3.60 Order ID: 2 - Orange: 6.00 Grape: 7.50 "
+                ),
+
+                // Test time_format filter with LocalTime
+                Arguments.of(
+                        "Time: {{ time | time_format }}",
+                        Map.of("time", java.time.LocalTime.of(14, 30)),
+                        "Time: 02:30 PM"
+                ),
+                Arguments.of(
+                        "Time: {{ time | time_format(pattern='HH:mm:ss') }}",
+                        Map.of("time", java.time.LocalTime.of(9, 15)),
+                        "Time: 09:15:00"
+                ),
+                Arguments.of(
+                        "Meeting at {{ time | time_format(pattern='hh:mm a') }}",
+                        Map.of("time", java.time.LocalTime.of(15, 45)),
+                        "Meeting at 03:45 PM"
+                ),
+
+                // Test time_format filter with String
+                Arguments.of(
+                        "Time: {{ timeStr | time_format }}",
+                        Map.of("timeStr", "14:30"),
+                        "Time: 02:30 PM"
+                ),
+
+                // Test int filter
+                Arguments.of(
+                        "Integer: {{ value | int }}",
+                        Map.of("value", 42.7),
+                        "Integer: 42"
+                ),
+                Arguments.of(
+                        "Integer: {{ value | int }}",
+                        Map.of("value", "123"),
+                        "Integer: 123"
+                ),
+                Arguments.of(
+                        "Integer: {{ value | int }}",
+                        Map.of("value", 99),
+                        "Integer: 99"
+                ),
+
+                // Test number_format with different decimal places
+                Arguments.of(
+                        "Price: {{ price | number_format }}",
+                        Map.of("price", 99.999),
+                        "Price: 100.00"
+                ),
+                Arguments.of(
+                        "Price: {{ price | number_format(decimalPlaces=3) }}",
+                        Map.of("price", 99.456),
+                        "Price: 99.456"
+                ),
+                Arguments.of(
+                        "Quantity: {{ quantity | number_format(decimalPlaces=0) }}",
+                        Map.of("quantity", 42.7),
+                        "Quantity: 43"
+                ),
+
+                // Test empty template
+                Arguments.of(
+                        "",
+                        Map.of("key", "value"),
+                        ""
+                ),
+
+                // Test whitespace handling
+                Arguments.of(
+                        "   {{ value }}   ",
+                        Map.of("value", "test"),
+                        "   test   "
+                ),
+
+                // Test nested objects
+                Arguments.of(
+                        "User: {{ user.name }}, Age: {{ user.age }}",
+                        Map.of("user", new User("Alice", 25, 100.0)),
+                        "User: Alice, Age: 25"
                 )
         );
     }

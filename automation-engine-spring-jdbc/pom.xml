@@ -49,4 +49,20 @@
         </dependency>
     </dependencies>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>**/*Context.class</exclude>
+                        <exclude>**/AEJdbcAutoConfiguration.class</exclude>
+                        <exclude>**/AEJdbcConfig.class</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
 </project>

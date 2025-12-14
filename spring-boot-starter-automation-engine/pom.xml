@@ -24,6 +24,12 @@
     <dependencies>
         <dependency>
             <groupId>com.davidrandoll</groupId>
+            <artifactId>automation-engine-core</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.davidrandoll</groupId>
             <artifactId>automation-engine-spring</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
@@ -54,6 +60,12 @@
         </dependency>
         <dependency>
             <groupId>com.davidrandoll</groupId>
+            <artifactId>automation-engine-templating</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.davidrandoll</groupId>
             <artifactId>automation-engine-ui</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
@@ -71,5 +83,19 @@
             <scope>provided</scope>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>**/AEAutoConfiguration.class</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>
