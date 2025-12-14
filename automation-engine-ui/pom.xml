@@ -167,7 +167,7 @@
                     <excludes>
                         <exclude>**/AutomationEngineUiAutoConfiguration.class</exclude>
                         <exclude>**/AutomationEngineUiConfiguration.class</exclude>
-                        <exclude>**/AutomationEngineUiConfiguration#PathResourceResolverExtension.class</exclude>
+                        <exclude>**/AutomationEngineUiConfiguration$PathResourceResolverExtension.class</exclude>
                         <exclude>**/AutomationEngineUiProperties.class</exclude>
                     </excludes>
                 </configuration>
