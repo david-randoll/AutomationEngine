@@ -29,21 +29,28 @@ import java.util.List;
         RepeatActionContext.Fields.actions
 })
 public class RepeatActionContext implements IActionContext {
+    /** Unique identifier for this action */
     private String alias;
+
+    /** Human-readable description of what this action does */
     private String description;
-    // repeat options
+
+    /** Number of times to repeat the actions. Use this for a fixed number of iterations */
     private long count;
 
+    /** Conditions to check before each iteration. Actions repeat while all conditions are true */
     @JsonProperty("while")
     private List<ConditionDefinition> whileConditions;
 
+    /** Conditions to check after each iteration. Actions repeat until all conditions become true */
     @JsonProperty("until")
     private List<ConditionDefinition> untilConditions;
 
+    /** List or array to iterate over. Actions execute once for each item, with the current item available in the context */
     @JsonProperty("for_each")
     private List<Object> forEach;
 
-    // actions to repeat
+    /** Actions to execute on each iteration of the repeat loop */
     private List<ActionDefinition> actions;
 
     public boolean hasWhileConditions() {

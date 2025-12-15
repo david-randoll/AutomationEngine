@@ -17,6 +17,9 @@ import lombok.experimental.FieldNameConstants;
         HttpMethodConditionContext.Fields.description
 })
 public class HttpMethodConditionContext extends MatchContext implements IConditionContext {
+    /** Unique identifier for this condition */
     private String alias;
+
+    /** Human-readable description of what this condition checks */
     private String description;
 }

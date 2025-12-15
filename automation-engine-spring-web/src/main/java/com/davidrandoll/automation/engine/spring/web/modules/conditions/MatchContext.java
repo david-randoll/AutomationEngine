@@ -10,24 +10,31 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 public class MatchContext {
+    /** Check if the value equals this exact string */
     @JsonAlias({"equal", "==", "equals"})
     private String equals;
 
+    /** Check if the value does not equal this string */
     @JsonAlias({"notEqual", "!=", "notEquals"})
     private String notEquals;
 
+    /** Check if the value matches any string in this list */
     @JsonAlias({"in", "contains", "includes", "anyOf", "hasAnyOf", "anyMatch", "equalsAny"})
     private List<String> in;
 
+    /** Check if the value does not match any string in this list */
     @JsonAlias({"notIn", "notContains", "notIncludes", "noneOf", "hasNoneOf"})
     private List<String> notIn;
 
+    /** Check if the value matches this regular expression pattern */
     @JsonAlias({"regex", "matches", "match"})
     private String regex;
 
+    /** Check if the value contains this substring (case-insensitive wildcard match) */
     @JsonAlias({"like"})
     private String like;
 
+    /** Check if the value exists (is not null or empty). If true, value must exist; if false, value must not exist */
     @JsonAlias({"exists", "isPresent", "exist"})
     private Boolean exists;
 
