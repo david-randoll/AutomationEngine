@@ -27,6 +27,7 @@ import java.util.List;
         RepeatActionContext.Fields.whileConditions,
         RepeatActionContext.Fields.untilConditions,
         RepeatActionContext.Fields.forEach,
+        RepeatActionContext.Fields.as,
         RepeatActionContext.Fields.actions
 })
 public class RepeatActionContext implements IActionContext {
@@ -49,7 +50,10 @@ public class RepeatActionContext implements IActionContext {
 
     /** List or array to iterate over. Actions execute once for each item, with the current item available in the context */
     @JsonAlias({"for_each", "forEach", "foreach"})
-    private List<Object> forEach;
+    private Object forEach;
+
+    /** Variable name to use for the current item in forEach loops. Defaults to "item" if not specified */
+    private String as = "item";
 
     /** Actions to execute on each iteration of the repeat loop */
     private List<ActionDefinition> actions;
