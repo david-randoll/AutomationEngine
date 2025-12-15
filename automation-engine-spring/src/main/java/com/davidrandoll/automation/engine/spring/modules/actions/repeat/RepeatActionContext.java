@@ -3,6 +3,7 @@ package com.davidrandoll.automation.engine.spring.modules.actions.repeat;
 import com.davidrandoll.automation.engine.core.actions.IActionContext;
 import com.davidrandoll.automation.engine.creator.actions.ActionDefinition;
 import com.davidrandoll.automation.engine.creator.conditions.ConditionDefinition;
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -29,21 +30,28 @@ import java.util.List;
         RepeatActionContext.Fields.actions
 })
 public class RepeatActionContext implements IActionContext {
+    /** Unique identifier for this action */
     private String alias;
+
+    /** Human-readable description of what this action does */
     private String description;
-    // repeat options
+
+    /** Number of times to repeat the actions. Use this for a fixed number of iterations */
     private long count;
 
+    /** Conditions to check before each iteration. Actions repeat while all conditions are true */
     @JsonProperty("while")
     private List<ConditionDefinition> whileConditions;
 
+    /** Conditions to check after each iteration. Actions repeat until all conditions become true */
     @JsonProperty("until")
     private List<ConditionDefinition> untilConditions;
 
-    @JsonProperty("for_each")
+    /** List or array to iterate over. Actions execute once for each item, with the current item available in the context */
+    @JsonAlias({"for_each", "forEach", "foreach"})
     private List<Object> forEach;
 
-    // actions to repeat
+    /** Actions to execute on each iteration of the repeat loop */
     private List<ActionDefinition> actions;
 
     public boolean hasWhileConditions() {
