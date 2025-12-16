@@ -10,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.ObjectUtils;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @Slf4j
@@ -50,23 +49,53 @@ public class RepeatAction extends PluggableAction<RepeatActionContext> {
     }
 
     private Iterable<?> convertToIterable(JsonNode node) {
-        if (node == null) return Collections.emptyList();
-
-        if (node.isArray()) {
-            List<Object> list = new ArrayList<>();
-            node.forEach(n -> list.add(objectMapper.convertValue(n, Object.class)));
-            return list;
-        } else if (node.isTextual()) {
-            String text = node.asText();
-            try {
-                JsonNode parsedNode = objectMapper.readTree(text);
-                return convertToIterable(parsedNode);
-            } catch (Exception e) {
-                log.warn("Failed to parse forEach text as JSON array: {}", e.getMessage());
-            }
+        if (node == null || node.isNull() || node.isMissingNode()) {
+            return List.of();
         }
 
-        // single value → singleton list
+        // Case 1: already a JSON array
+        if (node.isArray()) {
+            return jsonArrayToList(node);
+        }
+
+        // Case 2: string that MAY contain JSON
+        if (node.isTextual()) {
+            JsonNode parsed = tryParseJson(node.asText());
+            if (parsed != null) {
+                return convertToIterable(parsed);
+            }
+
+            // Not JSON → treat as single value
+            return List.of(node.asText());
+        }
+
+        // Case 3: object / number / boolean → single value
         return List.of(objectMapper.convertValue(node, Object.class));
+    }
+
+    private List<Object> jsonArrayToList(JsonNode arrayNode) {
+        List<Object> list = new ArrayList<>(arrayNode.size());
+        arrayNode.forEach(n -> list.add(objectMapper.convertValue(n, Object.class)));
+        return list;
+    }
+
+    private JsonNode tryParseJson(String text) {
+        String trimmed = text.trim();
+
+        // Cheap structural guard
+        if (!looksLikeJson(trimmed)) {
+            return null;
+        }
+
+        try {
+            return objectMapper.readTree(trimmed);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private boolean looksLikeJson(String s) {
+        return (s.startsWith("[") && s.endsWith("]")) ||
+               (s.startsWith("{") && s.endsWith("}"));
     }
 }
