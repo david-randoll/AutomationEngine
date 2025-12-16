@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.ObjectUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Slf4j
@@ -49,53 +50,39 @@ public class RepeatAction extends PluggableAction<RepeatActionContext> {
     }
 
     private Iterable<?> convertToIterable(JsonNode node) {
-        if (node == null || node.isNull() || node.isMissingNode()) {
-            return List.of();
-        }
+        if (node == null || node.isNull() || node.isMissingNode()) return Collections.emptyList();
 
-        // Case 1: already a JSON array
         if (node.isArray()) {
-            return jsonArrayToList(node);
-        }
-
-        // Case 2: string that MAY contain JSON
-        if (node.isTextual()) {
-            JsonNode parsed = tryParseJson(node.asText());
-            if (parsed != null) {
-                return convertToIterable(parsed);
+            List<Object> list = new ArrayList<>();
+            node.forEach(n -> list.add(objectMapper.convertValue(n, Object.class)));
+            return list;
+        } else if (node.isTextual()) {
+            String text = node.asText();
+            try {
+                JsonNode parsedNode = objectMapper.readTree(text);
+                return convertToIterable(parsedNode);
+            } catch (Exception e) {
+                // not a parsable JSON, treat as single value
             }
 
-            // Not JSON → treat as single value
-            return List.of(node.asText());
+            if (text.startsWith("[") && text.endsWith("]")) {
+                String content = text.substring(1, text.length() - 1).trim();
+                if (ObjectUtils.isEmpty(content)) return Collections.emptyList();
+                try {
+                    JsonNode parsedNode = objectMapper.readTree(text);
+                    return convertToIterable(parsedNode);
+                } catch (Exception e) {
+                    // Not valid JSON, treat as toString() format
+                }
+
+                // Parse as toString() format (no quotes around strings)
+                String[] items = content.split("\\s*,\\s*");
+                log.debug("Parsed forEach toString() format into {} items", items.length);
+                return java.util.Arrays.asList(items);
+            }
         }
 
-        // Case 3: object / number / boolean → single value
+        // single value → singleton list
         return List.of(objectMapper.convertValue(node, Object.class));
-    }
-
-    private List<Object> jsonArrayToList(JsonNode arrayNode) {
-        List<Object> list = new ArrayList<>(arrayNode.size());
-        arrayNode.forEach(n -> list.add(objectMapper.convertValue(n, Object.class)));
-        return list;
-    }
-
-    private JsonNode tryParseJson(String text) {
-        String trimmed = text.trim();
-
-        // Cheap structural guard
-        if (!looksLikeJson(trimmed)) {
-            return null;
-        }
-
-        try {
-            return objectMapper.readTree(trimmed);
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    private boolean looksLikeJson(String s) {
-        return (s.startsWith("[") && s.endsWith("]")) ||
-               (s.startsWith("{") && s.endsWith("}"));
     }
 }
