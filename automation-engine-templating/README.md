@@ -91,7 +91,32 @@ status: "{{ event.active ? 'Active' : 'Inactive' }}"
 
 ### Filters
 
-Pebble provides many built-in filters:
+Pebble provides many built-in filters. AutomationEngine extends these with custom filters:
+
+#### Custom Filters
+
+**Data Conversion:**
+- `json` - Convert objects to JSON: `{{ event.user | json }}`
+- `fromJson` - Parse JSON strings: `{{ jsonString | fromJson.name }}`
+- `int` - Convert to integer: `{{ value | int }}`
+
+**Date/Time Formatting:**
+- `date_format` - Format dates: `{{ event.createdAt | date_format('yyyy-MM-dd HH:mm:ss') }}`
+- `time_format` - Format times: `{{ event.time | time_format('HH:mm a') }}`
+- `number_format` - Format numbers: `{{ value | number_format(2) }}`
+
+**Encoding/Decoding:**
+- `base64encode` - Encode to Base64: `{{ credentials | base64encode }}`
+- `base64decode` - Decode from Base64: `{{ encoded | base64decode }}`
+- `urlEncode` - URL encode: `{{ searchTerm | urlEncode }}`
+- `urlDecode` - URL decode: `{{ encoded | urlDecode }}`
+
+**Utility:**
+- `coalesce` - First non-null value: `{{ event.assignee | coalesce('unassigned') }}`
+
+See [FILTERS.md](FILTERS.md) for detailed documentation and examples.
+
+#### Standard Pebble Filters
 
 ```yaml
 # String filters
@@ -102,8 +127,6 @@ capitalize: "{{ event.title | capitalize }}"
 # Number filters
 formatted: "{{ event.amount | numberformat('#,##0.00') }}"
 
-# Date filters
-date: "{{ event.timestamp | date('yyyy-MM-dd HH:mm:ss') }}"
 
 # Default values
 value: "{{ event.optional | default('N/A') }}"

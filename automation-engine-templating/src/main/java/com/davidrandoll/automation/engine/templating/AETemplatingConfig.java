@@ -1,9 +1,7 @@
 package com.davidrandoll.automation.engine.templating;
 
 import com.davidrandoll.automation.engine.templating.extensions.CustomExtension;
-import com.davidrandoll.automation.engine.templating.extensions.filters.IntegerFilter;
-import com.davidrandoll.automation.engine.templating.extensions.filters.NumberFormatFilter;
-import com.davidrandoll.automation.engine.templating.extensions.filters.TimeFormatFilter;
+import com.davidrandoll.automation.engine.templating.extensions.filters.*;
 import com.davidrandoll.automation.engine.templating.interceptors.*;
 import com.davidrandoll.automation.engine.templating.utils.JsonNodeVariableProcessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -92,6 +90,54 @@ public class AETemplatingConfig {
     @ConditionalOnMissingBean(name = "time_format", ignored = TimeFormatFilter.class)
     public Filter timeFormatFilter() {
         return new TimeFormatFilter();
+    }
+
+    @Bean("date_format")
+    @ConditionalOnMissingBean(name = "date_format", ignored = DateFormatFilter.class)
+    public Filter dateFormatFilter() {
+        return new DateFormatFilter();
+    }
+
+    @Bean("json")
+    @ConditionalOnMissingBean(name = "json", ignored = JsonFilter.class)
+    public Filter jsonFilter(ObjectMapper objectMapper) {
+        return new JsonFilter(objectMapper);
+    }
+
+    @Bean("fromJson")
+    @ConditionalOnMissingBean(name = "fromJson", ignored = FromJsonFilter.class)
+    public Filter fromJsonFilter(ObjectMapper objectMapper) {
+        return new FromJsonFilter(objectMapper);
+    }
+
+    @Bean("coalesce")
+    @ConditionalOnMissingBean(name = "coalesce", ignored = CoalesceFilter.class)
+    public Filter coalesceFilter() {
+        return new CoalesceFilter();
+    }
+
+    @Bean("base64encode")
+    @ConditionalOnMissingBean(name = "base64encode", ignored = Base64EncodeFilter.class)
+    public Filter base64EncodeFilter() {
+        return new Base64EncodeFilter();
+    }
+
+    @Bean("base64decode")
+    @ConditionalOnMissingBean(name = "base64decode", ignored = Base64DecodeFilter.class)
+    public Filter base64DecodeFilter() {
+        return new Base64DecodeFilter();
+    }
+
+    @Bean("urlEncode")
+    @ConditionalOnMissingBean(name = "urlEncode", ignored = UrlEncodeFilter.class)
+    public Filter urlEncodeFilter() {
+        return new UrlEncodeFilter();
+    }
+
+    @Bean("urlDecode")
+    @ConditionalOnMissingBean(name = "urlDecode", ignored = UrlDecodeFilter.class)
+    public Filter urlDecodeFilter() {
+        return new UrlDecodeFilter();
     }
 
     @Bean("customExtension")
