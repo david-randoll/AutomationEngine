@@ -42,6 +42,7 @@ import com.davidrandoll.automation.engine.spring.modules.variables.if_them_else.
 import com.davidrandoll.automation.engine.spring.modules.variables.udv.DefaultUserDefinedVariableRegistry;
 import com.davidrandoll.automation.engine.spring.modules.variables.udv.IUserDefinedVariableRegistry;
 import com.davidrandoll.automation.engine.spring.modules.variables.udv.UserDefinedVariable;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.ApplicationEventPublisher;
@@ -80,8 +81,8 @@ public class ModulesConfig {
 
     @Bean(name = "repeatAction")
     @ConditionalOnMissingBean(name = "repeatAction", ignored = RepeatAction.class)
-    public RepeatAction repeatAction() {
-        return new RepeatAction();
+    public RepeatAction repeatAction(ObjectMapper objectMapper) {
+        return new RepeatAction(objectMapper);
     }
 
     @Bean(name = "sequenceAction")

@@ -3,17 +3,20 @@ package com.davidrandoll.automation.engine.spring.modules.actions.repeat;
 
 import com.davidrandoll.automation.engine.core.events.EventContext;
 import com.davidrandoll.automation.engine.spring.spi.PluggableAction;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.ObjectUtils;
 
-import java.util.Arrays;
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
 public class RepeatAction extends PluggableAction<RepeatActionContext> {
+    private final ObjectMapper objectMapper;
 
     @Override
     public void doExecute(EventContext ec, RepeatActionContext ac) {
@@ -46,40 +49,24 @@ public class RepeatAction extends PluggableAction<RepeatActionContext> {
         }
     }
 
-    /**
-     * Converts various object types to an Iterable for forEach loops
-     *
-     * @param obj The object to convert (Collection, Array, or single item)
-     * @return An iterable representation
-     */
-    private Iterable<?> convertToIterable(Object obj) {
-        if (obj == null) return Collections.emptyList();
-        if (obj instanceof Collection<?> colObj) return colObj;
-        if (obj instanceof Iterable<?> itObj) return itObj;
+    private Iterable<?> convertToIterable(JsonNode node) {
+        if (node == null) return Collections.emptyList();
 
-        if (obj.getClass().isArray()) {
-            if (obj instanceof Object[] arrObj)
-                return Arrays.asList(arrObj);
-            return convertPrimitiveArrayToList(obj);
+        if (node.isArray()) {
+            List<Object> list = new ArrayList<>();
+            node.forEach(n -> list.add(objectMapper.convertValue(n, Object.class)));
+            return list;
+        } else if (node.isTextual()) {
+            String text = node.asText();
+            try {
+                JsonNode parsedNode = objectMapper.readTree(text);
+                return convertToIterable(parsedNode);
+            } catch (Exception e) {
+                log.warn("Failed to parse forEach text as JSON array: {}", e.getMessage());
+            }
         }
-        return Collections.singletonList(obj);
-    }
 
-    /**
-     * Converts primitive arrays to lists
-     */
-    private Iterable<?> convertPrimitiveArrayToList(Object array) {
-        if (array instanceof int[] arr) {
-            return Arrays.stream(arr).boxed().toList();
-        } else if (array instanceof long[] arr) {
-            return Arrays.stream(arr).boxed().toList();
-        } else if (array instanceof double[] arr) {
-            return Arrays.stream(arr).boxed().toList();
-        } else if (array instanceof boolean[] arr) {
-            return java.util.stream.IntStream.range(0, arr.length)
-                    .mapToObj(i -> arr[i])
-                    .toList();
-        }
-        return Collections.singletonList(array);
+        // single value → singleton list
+        return List.of(objectMapper.convertValue(node, Object.class));
     }
 }
