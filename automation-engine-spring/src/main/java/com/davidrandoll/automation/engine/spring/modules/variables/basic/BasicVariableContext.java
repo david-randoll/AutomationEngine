@@ -22,9 +22,13 @@ import java.util.Map;
         BasicVariableContext.Fields.description
 })
 public class BasicVariableContext implements IVariableContext {
+    /** Unique identifier for this variable */
     private String alias;
+
+    /** Human-readable description of what this variable represents */
     private String description;
 
+    /** Map of variable names to values. Any additional properties will be stored as variables */
     @JsonIgnore
     @JsonAnySetter
     @JsonAnyGetter

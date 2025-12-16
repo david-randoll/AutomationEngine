@@ -40,43 +40,56 @@ import java.util.Map;
         OnHttpResponseTriggerContext.Fields.errorDetail
 })
 public class OnHttpResponseTriggerContext implements ITriggerContext {
+    /** Unique identifier for this trigger */
     private String alias;
+
+    /** Human-readable description of what this trigger responds to */
     private String description;
 
+    /** HTTP methods to match for the request (e.g., GET, POST, PUT, DELETE). If not specified, all methods will match */
     @JsonAlias({"method", "methods"})
     @FlexibleHttpMethodList
     private List<HttpMethodEnum> methods;
 
+    /** Full URL paths to match for the request including context path (e.g., "/api/v1/users"). Supports wildcards */
     @JsonAlias({"fullPath", "fullPaths", "fullUrl", "fullUrls"})
     @FlexibleStringList
     private List<String> fullPaths;
 
+    /** Request paths to match excluding context path (e.g., "/users"). Supports wildcards */
     @JsonAlias({"path", "paths"})
     @FlexibleStringList
     private List<String> paths;
 
+    /** HTTP request headers that must be present for this trigger to activate */
     @JsonAlias({"headers", "header"})
     @FlexibleMultiValueMap
     private HttpHeaders headers;
 
+    /** Query parameters that must be present in the request URL for this trigger to activate */
     @JsonAlias({"query", "queryString", "queryParam", "queryParams"})
     @FlexibleMultiValueMap
     private MultiValueMap<String, String> queryParams;
 
+    /** Path parameters extracted from the URL pattern that must match for this trigger to activate */
     @JsonAlias({"pathParams", "pathParam"})
     @FlexibleMultiValueMap
     private MultiValueMap<String, String> pathParams;
 
+    /** Request body content that must match for this trigger to activate. Can be a JSON object or any value */
     @JsonAlias({"body", "requestBody"})
     private JsonNode requestBody;
 
+    /** Response body content that must match for this trigger to activate. Can be a JSON object or any value */
     @JsonAlias({"responseBody"})
     private JsonNode responseBody;
 
+    /** HTTP response status codes to match (e.g., 200, 404, 500). Trigger activates only for these statuses */
     @JsonAlias({"status", "responseStatus"})
     @FlexibleHttpStatusList
     private List<HttpStatus> responseStatuses;
 
+    /** Error details that must be present for this trigger to activate. Typically used for exception-based responses */
     @JsonAlias({"error", "errorDetail"})
     @FlexibleMapObject
     private Map<String, Object> errorDetail;

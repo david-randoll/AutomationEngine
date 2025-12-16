@@ -20,12 +20,17 @@ import java.util.Map;
         JdbcExecuteActionContext.Fields.params
 })
 public class JdbcExecuteActionContext implements IActionContext {
+    /** Unique identifier for this action */
     private String alias;
+
+    /** Human-readable description of what this action does */
     private String description;
 
+    /** SQL statement to execute (typically INSERT, UPDATE, DELETE, or DDL statements) */
     @JsonAlias({"query", "sql", "statement"})
     private String query;
 
+    /** Parameters to bind to the statement. Map keys correspond to named parameters in the SQL */
     @JsonAlias({"params", "parameters", "queryParams", "args", "arguments"})
     private Map<String, Object> params = new HashMap<>();
 }

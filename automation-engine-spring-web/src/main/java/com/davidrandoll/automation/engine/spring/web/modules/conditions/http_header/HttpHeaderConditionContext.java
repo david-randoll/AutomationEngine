@@ -19,9 +19,13 @@ import java.util.Map;
         HttpHeaderConditionContext.Fields.description
 })
 public class HttpHeaderConditionContext implements IConditionContext {
+    /** Unique identifier for this condition */
     private String alias;
+
+    /** Human-readable description of what this condition checks */
     private String description;
 
+    /** Map of HTTP header names to match conditions. Each header can have match operations (equals, in, regex, etc.) */
     @JsonAnySetter
     @JsonAnyGetter
     private Map<String, MatchContext> headers;

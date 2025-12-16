@@ -19,7 +19,12 @@ import java.time.LocalTime;
         TimeBasedTriggerContext.Fields.at
 })
 public class TimeBasedTriggerContext implements ITriggerContext {
+    /** Unique identifier for this trigger */
     private String alias;
+
+    /** Human-readable description of what this trigger responds to */
     private String description;
+
+    /** Time of day when this trigger should activate (format: HH:mm:ss or HH:mm) */
     private LocalTime at;
 }

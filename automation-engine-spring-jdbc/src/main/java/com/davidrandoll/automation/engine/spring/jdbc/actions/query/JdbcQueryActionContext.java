@@ -22,12 +22,25 @@ import java.util.Map;
         JdbcQueryActionContext.Fields.variable
 })
 public class JdbcQueryActionContext implements IActionContext {
+    /**
+     * Unique identifier for this action
+     */
     private String alias;
+
+    /**
+     * Human-readable description of what this action does
+     */
     private String description;
 
+    /**
+     * SQL query to execute. Can contain placeholders for parameters (e.g., :paramName or ?)
+     */
     @JsonAlias({"query", "sql", "statement"})
     private String query;
 
+    /**
+     * Parameters to bind to the query. Map keys correspond to named parameters in the SQL query
+     */
     @JsonAlias({"params", "parameters", "queryParams", "args", "arguments"})
     private Map<String, Object> params = new HashMap<>();
 
