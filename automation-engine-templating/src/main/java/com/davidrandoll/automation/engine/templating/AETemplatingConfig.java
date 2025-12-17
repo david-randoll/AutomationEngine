@@ -1,17 +1,19 @@
 package com.davidrandoll.automation.engine.templating;
 
-import com.davidrandoll.automation.engine.templating.extensions.CustomExtension;
+import com.davidrandoll.automation.engine.templating.extensions.AEPebbleExtension;
 import com.davidrandoll.automation.engine.templating.extensions.filters.*;
 import com.davidrandoll.automation.engine.templating.interceptors.*;
 import com.davidrandoll.automation.engine.templating.utils.JsonNodeVariableProcessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.pebbletemplates.boot.autoconfigure.PebbleProperties;
 import io.pebbletemplates.pebble.PebbleEngine;
+import io.pebbletemplates.pebble.attributes.AttributeResolver;
 import io.pebbletemplates.pebble.attributes.methodaccess.MethodAccessValidator;
-import io.pebbletemplates.pebble.extension.AbstractExtension;
-import io.pebbletemplates.pebble.extension.Extension;
-import io.pebbletemplates.pebble.extension.Filter;
+import io.pebbletemplates.pebble.extension.*;
 import io.pebbletemplates.pebble.loader.Loader;
+import io.pebbletemplates.pebble.operator.BinaryOperator;
+import io.pebbletemplates.pebble.operator.UnaryOperator;
+import io.pebbletemplates.pebble.tokenParser.TokenParser;
 import io.pebbletemplates.spring.extension.SpringExtension;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -140,10 +142,26 @@ public class AETemplatingConfig {
         return new UrlDecodeFilter();
     }
 
-    @Bean("customExtension")
-    @ConditionalOnMissingBean(name = "customExtension", ignored = CustomExtension.class)
-    public AbstractExtension customExtension(Map<String, Filter> filters) {
-        return new CustomExtension(filters);
+    @Bean("aEPebbleExtension")
+    @ConditionalOnMissingBean(name = "aEPebbleExtension", ignored = AEPebbleExtension.class)
+    public AbstractExtension customExtension(List<TokenParser> tokenParsers,
+                                             List<BinaryOperator> binaryOperators,
+                                             List<UnaryOperator> unaryOperators,
+                                             Map<String, Filter> filters,
+                                             Map<String, Test> tests,
+                                             Map<String, Function> functions,
+                                             List<NodeVisitorFactory> nodeVisitorFactories,
+                                             List<AttributeResolver> attributeResolvers) {
+        return new AEPebbleExtension(
+                tokenParsers,
+                binaryOperators,
+                unaryOperators,
+                filters,
+                tests,
+                functions,
+                nodeVisitorFactories,
+                attributeResolvers
+        );
     }
 
     @Bean
