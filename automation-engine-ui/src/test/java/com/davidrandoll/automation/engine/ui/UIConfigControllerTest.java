@@ -9,33 +9,35 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 class UIConfigControllerTest extends AutomationEngineTest {
-    
+
     @ParameterizedTest
     @ValueSource(strings = {
-        "/app-config.js",
-        "/subfolder/app-config.js",
-        "/level1/level2/app-config.js",
-        "/a/b/c/app-config.js"
+            "/app-config.js",
+            "/subfolder/app-config.js",
+            "/level1/level2/app-config.js",
+            "/a/b/c/app-config.js"
     })
     void getAppConfig_ShouldReturnJavaScriptConfigForAnyPath(String path) throws Exception {
         mockMvc.perform(get(path))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith("application/javascript"))
-                .andExpect(content().string("window.__APP_CONFIG__ = {\"uiPath\":\"/automation-engine-ui\",\"contextPath\":\"\"};"));
+                .andExpect(content().string(
+                        "window.__APP_CONFIG__ = {\"apiPath\":\"/automation-engine\",\"contextPath\":\"\",\"uiPath\":\"/automation-engine\"};"));
     }
 
     @ParameterizedTest
     @ValueSource(strings = {
-        "/app-config.json",
-        "/folder/app-config.json",
-        "/dir1/dir2/app-config.json",
-        "/x/y/z/app-config.json"
+            "/app-config.json",
+            "/folder/app-config.json",
+            "/dir1/dir2/app-config.json",
+            "/x/y/z/app-config.json"
     })
     void getAppConfigJson_ShouldReturnJsonConfigForAnyPath(String path) throws Exception {
         mockMvc.perform(get(path))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json"))
                 .andExpect(jsonPath("$.contextPath", is("")))
-                .andExpect(jsonPath("$.uiPath", is("/automation-engine-ui")));
+                .andExpect(jsonPath("$.uiPath", is("/automation-engine")))
+                .andExpect(jsonPath("$.apiPath", is("/automation-engine")));
     }
 }

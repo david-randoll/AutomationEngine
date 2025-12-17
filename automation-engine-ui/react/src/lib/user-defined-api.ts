@@ -1,6 +1,6 @@
 // API functions for user-defined block types
 
-import { agent } from "./agent";
+import { agent, getApiPath } from "./agent";
 import type {
   BlockType,
   UserDefinedActionDefinition,
@@ -11,56 +11,64 @@ import type {
 } from "@/types/user-defined";
 import type { ModuleType } from "@/types/types";
 
-const BASE_PATH = "/automation-engine/user-defined";
+function getBasePath(): string {
+  return `${getApiPath()}/user-defined`;
+}
 
 // Actions API
 export const actionsApi = {
-  getAll: () => agent.get<Record<string, UserDefinedActionDefinition>>(`${BASE_PATH}/actions`),
-  get: (name: string) => agent.get<UserDefinedActionDefinition>(`${BASE_PATH}/actions/${name}`),
+  getAll: () => agent.get<Record<string, UserDefinedActionDefinition>>(`${getBasePath()}/actions`),
+  get: (name: string) => agent.get<UserDefinedActionDefinition>(`${getBasePath()}/actions/${name}`),
   register: (definition: UserDefinedActionDefinition) =>
-    agent.post<UserDefinedActionDefinition, UserDefinedActionDefinition>(`${BASE_PATH}/actions`, definition),
+    agent.post<UserDefinedActionDefinition, UserDefinedActionDefinition>(`${getBasePath()}/actions`, definition),
   update: (name: string, definition: UserDefinedActionDefinition) =>
-    agent.put<UserDefinedActionDefinition, UserDefinedActionDefinition>(`${BASE_PATH}/actions/${name}`, definition),
-  unregister: (name: string) => agent.delete(`${BASE_PATH}/actions/${name}`),
+    agent.put<UserDefinedActionDefinition, UserDefinedActionDefinition>(`${getBasePath()}/actions/${name}`, definition),
+  unregister: (name: string) => agent.delete(`${getBasePath()}/actions/${name}`),
 };
 
 // Conditions API
 export const conditionsApi = {
-  getAll: () => agent.get<Record<string, UserDefinedConditionDefinition>>(`${BASE_PATH}/conditions`),
-  get: (name: string) => agent.get<UserDefinedConditionDefinition>(`${BASE_PATH}/conditions/${name}`),
+  getAll: () => agent.get<Record<string, UserDefinedConditionDefinition>>(`${getBasePath()}/conditions`),
+  get: (name: string) => agent.get<UserDefinedConditionDefinition>(`${getBasePath()}/conditions/${name}`),
   register: (definition: UserDefinedConditionDefinition) =>
-    agent.post<UserDefinedConditionDefinition, UserDefinedConditionDefinition>(`${BASE_PATH}/conditions`, definition),
-  update: (name: string, definition: UserDefinedConditionDefinition) =>
-    agent.put<UserDefinedConditionDefinition, UserDefinedConditionDefinition>(
-      `${BASE_PATH}/conditions/${name}`,
+    agent.post<UserDefinedConditionDefinition, UserDefinedConditionDefinition>(
+      `${getBasePath()}/conditions`,
       definition
     ),
-  unregister: (name: string) => agent.delete(`${BASE_PATH}/conditions/${name}`),
+  update: (name: string, definition: UserDefinedConditionDefinition) =>
+    agent.put<UserDefinedConditionDefinition, UserDefinedConditionDefinition>(
+      `${getBasePath()}/conditions/${name}`,
+      definition
+    ),
+  unregister: (name: string) => agent.delete(`${getBasePath()}/conditions/${name}`),
 };
 
 // Triggers API
 export const triggersApi = {
-  getAll: () => agent.get<Record<string, UserDefinedTriggerDefinition>>(`${BASE_PATH}/triggers`),
-  get: (name: string) => agent.get<UserDefinedTriggerDefinition>(`${BASE_PATH}/triggers/${name}`),
+  getAll: () => agent.get<Record<string, UserDefinedTriggerDefinition>>(`${getBasePath()}/triggers`),
+  get: (name: string) => agent.get<UserDefinedTriggerDefinition>(`${getBasePath()}/triggers/${name}`),
   register: (definition: UserDefinedTriggerDefinition) =>
-    agent.post<UserDefinedTriggerDefinition, UserDefinedTriggerDefinition>(`${BASE_PATH}/triggers`, definition),
+    agent.post<UserDefinedTriggerDefinition, UserDefinedTriggerDefinition>(`${getBasePath()}/triggers`, definition),
   update: (name: string, definition: UserDefinedTriggerDefinition) =>
-    agent.put<UserDefinedTriggerDefinition, UserDefinedTriggerDefinition>(`${BASE_PATH}/triggers/${name}`, definition),
-  unregister: (name: string) => agent.delete(`${BASE_PATH}/triggers/${name}`),
+    agent.put<UserDefinedTriggerDefinition, UserDefinedTriggerDefinition>(
+      `${getBasePath()}/triggers/${name}`,
+      definition
+    ),
+  unregister: (name: string) => agent.delete(`${getBasePath()}/triggers/${name}`),
 };
 
 // Variables API
 export const variablesApi = {
-  getAll: () => agent.get<Record<string, UserDefinedVariableDefinition>>(`${BASE_PATH}/variables`),
-  get: (name: string) => agent.get<UserDefinedVariableDefinition>(`${BASE_PATH}/variables/${name}`),
+  getAll: () => agent.get<Record<string, UserDefinedVariableDefinition>>(`${getBasePath()}/variables`),
+  get: (name: string) => agent.get<UserDefinedVariableDefinition>(`${getBasePath()}/variables/${name}`),
   register: (definition: UserDefinedVariableDefinition) =>
-    agent.post<UserDefinedVariableDefinition, UserDefinedVariableDefinition>(`${BASE_PATH}/variables`, definition),
+    agent.post<UserDefinedVariableDefinition, UserDefinedVariableDefinition>(`${getBasePath()}/variables`, definition),
   update: (name: string, definition: UserDefinedVariableDefinition) =>
     agent.put<UserDefinedVariableDefinition, UserDefinedVariableDefinition>(
-      `${BASE_PATH}/variables/${name}`,
+      `${getBasePath()}/variables/${name}`,
       definition
     ),
-  unregister: (name: string) => agent.delete(`${BASE_PATH}/variables/${name}`),
+  unregister: (name: string) => agent.delete(`${getBasePath()}/variables/${name}`),
 };
 
 // Generic API based on block type
@@ -125,5 +133,5 @@ export const userDefinedApi = {
         return variablesApi.unregister(name);
     }
   },
-  getSchema: (type: BlockType) => agent.get<ModuleType>(`${BASE_PATH}/${type}/schema`),
+  getSchema: (type: BlockType) => agent.get<ModuleType>(`${getBasePath()}/${type}/schema`),
 };

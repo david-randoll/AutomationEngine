@@ -1,9 +1,11 @@
 // API functions for automation engine blocks and schemas
 
-import { agent } from "./agent";
+import { agent, getApiPath } from "./agent";
 import type { ModuleType, Area } from "@/types/types";
 
-const BASE_PATH = "/automation-engine";
+function getBasePath(): string {
+  return getApiPath();
+}
 
 // Response type for block list endpoint
 export interface BlockListResponse {
@@ -18,7 +20,7 @@ export const blockApi = {
    * @param includeSchema - Whether to include the schema in the response
    */
   getAll: (area: Area, includeSchema = true) =>
-    agent.get<BlockListResponse>(`${BASE_PATH}/block/${area}?includeSchema=${includeSchema}`),
+    agent.get<BlockListResponse>(`${getBasePath()}/block/${area}?includeSchema=${includeSchema}`),
 
   /**
    * Get all blocks of a specific area type, returning raw API response
@@ -26,19 +28,19 @@ export const blockApi = {
    * @param includeSchema - Whether to include the schema in the response
    */
   getAllHttp: (area: Area, includeSchema = true) =>
-    agent.getHttp<BlockListResponse>(`${BASE_PATH}/block/${area}?includeSchema=${includeSchema}`),
+    agent.getHttp<BlockListResponse>(`${getBasePath()}/block/${area}?includeSchema=${includeSchema}`),
 
   /**
    * Get the schema for a specific block by name
    * @param blockName - The name of the block
    */
-  getSchema: (blockName: string) => agent.get<ModuleType>(`${BASE_PATH}/block/${blockName}/schema`),
+  getSchema: (blockName: string) => agent.get<ModuleType>(`${getBasePath()}/block/${blockName}/schema`),
 
   /**
    * Get the schema for a specific block by name, returning raw API response
    * @param blockName - The name of the block
    */
-  getSchemaHttp: (blockName: string) => agent.getHttp<ModuleType>(`${BASE_PATH}/block/${blockName}/schema`),
+  getSchemaHttp: (blockName: string) => agent.getHttp<ModuleType>(`${getBasePath()}/block/${blockName}/schema`),
 };
 
 // Automation Definition API - for automation definition schema
@@ -46,12 +48,12 @@ export const automationDefinitionApi = {
   /**
    * Get the schema for automation definitions
    */
-  getSchema: () => agent.get<ModuleType>(`${BASE_PATH}/automation-definition/schema`),
+  getSchema: () => agent.get<ModuleType>(`${getBasePath()}/automation-definition/schema`),
 
   /**
    * Get the schema for automation definitions, returning raw API response
    */
-  getSchemaHttp: () => agent.getHttp<ModuleType>(`${BASE_PATH}/automation-definition/schema`),
+  getSchemaHttp: () => agent.getHttp<ModuleType>(`${getBasePath()}/automation-definition/schema`),
 };
 
 // Combined automation API export

@@ -11,16 +11,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-
 @RestController
-@RequestMapping("/automation-engine")
+@RequestMapping("${automation-engine.backend-api.path:/automation-engine}")
 @RequiredArgsConstructor
 public class AutomationEngineController {
     private final IAESchemaService service;
 
     @GetMapping("block/{type}")
     public BlocksByType getBlocksByType(@PathVariable String type,
-                                        @RequestParam(required = false) Boolean includeSchema) {
+            @RequestParam(required = false) Boolean includeSchema) {
         return service.getBlocksByType(type, includeSchema);
     }
 
