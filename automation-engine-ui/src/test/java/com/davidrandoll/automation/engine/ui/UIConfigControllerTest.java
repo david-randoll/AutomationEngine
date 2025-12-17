@@ -21,7 +21,7 @@ class UIConfigControllerTest extends AutomationEngineTest {
         mockMvc.perform(get(path))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith("application/javascript"))
-                .andExpect(content().string("window.__APP_CONFIG__ = { contextPath: '' };"));
+                .andExpect(content().string("window.__APP_CONFIG__ = {\"uiPath\":\"/automation-engine-ui\",\"contextPath\":\"\"};"));
     }
 
     @ParameterizedTest
@@ -35,6 +35,7 @@ class UIConfigControllerTest extends AutomationEngineTest {
         mockMvc.perform(get(path))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json"))
-                .andExpect(jsonPath("$.contextPath", is("")));
+                .andExpect(jsonPath("$.contextPath", is("")))
+                .andExpect(jsonPath("$.uiPath", is("/automation-engine-ui")));
     }
 }
