@@ -3,7 +3,10 @@ package com.davidrandoll.automation.engine.ui;
 import com.davidrandoll.automation.engine.test.AutomationEngineTest;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.skyscreamer.jsonassert.JSONAssert;
+import org.springframework.test.web.servlet.MvcResult;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -18,11 +21,36 @@ class UIConfigControllerTest extends AutomationEngineTest {
             "/a/b/c/app-config.js"
     })
     void getAppConfig_ShouldReturnJavaScriptConfigForAnyPath(String path) throws Exception {
-        mockMvc.perform(get(path))
+
+        MvcResult result = mockMvc.perform(get(path))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith("application/javascript"))
-                .andExpect(content().string(
-                        "window.__APP_CONFIG__ = {\"apiPath\":\"/automation-engine\",\"contextPath\":\"\",\"uiPath\":\"/automation-engine\"};"));
+                .andReturn();
+
+        String response = result.getResponse().getContentAsString();
+
+        // Validate JS wrapper
+        assertThat(response)
+                .startsWith("window.__APP_CONFIG__ = ")
+                .endsWith(";");
+
+        // Extract JSON payload
+        String json = response
+                .replaceFirst("^window.__APP_CONFIG__ = ", "")
+                .replaceFirst(";$", "");
+
+        // Semantic JSON assertion (order-independent)
+        JSONAssert.assertEquals(
+                """
+                        {
+                          "apiPath": "/automation-engine",
+                          "contextPath": "",
+                          "uiPath": "/automation-engine"
+                        }
+                        """,
+                json,
+                true
+        );
     }
 
     @ParameterizedTest
