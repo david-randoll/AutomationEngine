@@ -28,18 +28,25 @@ import java.util.List;
         IfThenElseActionContext.Fields.elseActions
 })
 public class IfThenElseActionContext implements IActionContext {
+    /** Unique identifier for this action */
     private String alias;
+
+    /** Human-readable description of what this action does */
     private String description;
 
+    /** Conditions to evaluate for the primary if block. All conditions must be true */
     @JsonProperty("if")
     private List<ConditionDefinition> ifConditions = new ArrayList<>();
 
+    /** Actions to execute if the primary if conditions are all true */
     @JsonProperty("then")
     private List<ActionDefinition> thenActions = new ArrayList<>();
 
+    /** Additional if-then blocks to evaluate in sequence (else-if logic) */
     @JsonProperty("ifs")
     private List<IfThenBlock> ifThenBlocks = new ArrayList<>();
 
+    /** Actions to execute if none of the if conditions are true */
     @JsonProperty("else")
     private List<ActionDefinition> elseActions = new ArrayList<>();
 
@@ -55,12 +62,17 @@ public class IfThenElseActionContext implements IActionContext {
             IfThenBlock.Fields.thenActions
     })
     public static class IfThenBlock implements IActionContext {
+        /** Unique identifier for this if-then block */
         private String alias;
+
+        /** Human-readable description of what this block checks */
         private String description;
 
+        /** Conditions to evaluate for this if-then block. All conditions must be true */
         @JsonProperty("if")
         private List<ConditionDefinition> ifConditions = new ArrayList<>();
 
+        /** Actions to execute if all conditions in this block are true */
         @JsonProperty("then")
         private List<ActionDefinition> thenActions = new ArrayList<>();
     }

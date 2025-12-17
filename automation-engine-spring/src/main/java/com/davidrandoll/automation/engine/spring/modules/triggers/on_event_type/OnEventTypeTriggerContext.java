@@ -21,9 +21,18 @@ import lombok.experimental.FieldNameConstants;
         OnEventTypeTriggerContext.Fields.regex
 })
 public class OnEventTypeTriggerContext implements ITriggerContext {
+    /** Unique identifier for this trigger */
     private String alias;
+
+    /** Human-readable description of what this trigger responds to */
     private String description;
+
+    /** Fully qualified class name of the event type to match (e.g., com.example.MyEvent) */
     private String eventType;
+
+    /** Simple name of the event class to match (e.g., MyEvent). Alternative to eventType */
     private String eventName;
+
+    /** Regular expression pattern to match against the event class name */
     private String regex;
 }

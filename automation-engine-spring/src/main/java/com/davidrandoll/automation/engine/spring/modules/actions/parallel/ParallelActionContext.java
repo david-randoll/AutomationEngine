@@ -22,7 +22,12 @@ import java.util.List;
         ParallelActionContext.Fields.actions
 })
 public class ParallelActionContext implements IActionContext {
+    /** Unique identifier for this action */
     private String alias;
+
+    /** Human-readable description of what this action does */
     private String description;
+
+    /** List of actions to execute in parallel (concurrently) */
     private List<ActionDefinition> actions;
 }

@@ -20,9 +20,13 @@ import java.util.Map;
         HttpQueryParamConditionContext.Fields.queryParams
 })
 public class HttpQueryParamConditionContext implements IConditionContext {
+    /** Unique identifier for this condition */
     private String alias;
+
+    /** Human-readable description of what this condition checks */
     private String description;
 
+    /** Map of query parameter names to match conditions. Each parameter can have match operations (equals, in, regex, etc.) */
     @JsonAnySetter
     @JsonAnyGetter
     private Map<String, MatchContext> queryParams;

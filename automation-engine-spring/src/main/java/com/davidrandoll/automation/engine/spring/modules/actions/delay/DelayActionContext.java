@@ -21,8 +21,12 @@ import java.time.Duration;
         DelayActionContext.Fields.duration
 })
 public class DelayActionContext implements IActionContext {
+    /** Unique identifier for this action */
     private String alias;
+
+    /** Human-readable description of what this action does */
     private String description;
+
     /**
      * Duration to wait before executing the next action.
      * The duration is specified using the ISO-8601 format:

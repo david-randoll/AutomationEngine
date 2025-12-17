@@ -37,18 +37,30 @@ import static org.springframework.http.MediaType.MULTIPART_FORM_DATA;
         SendHttpRequestActionContext.Fields.allowHttpEvent
 })
 public class SendHttpRequestActionContext implements IActionContext {
+    /** Unique identifier for this action */
     private String alias;
+
+    /** Human-readable description of what this action does */
     private String description;
+
+    /** Target URL for the HTTP request. Supports template expressions */
     private String url;
+
+    /** HTTP method to use (GET, POST, PUT, DELETE, etc.) */
     private HttpMethod method;
 
+    /** HTTP headers to include in the request */
     @JsonAlias({"headers", "header"})
     @FlexibleMultiValueMap
     private HttpHeaders headers;
 
+    /** Content-Type for the request body. Defaults to application/json */
     private MediaType contentType = MediaType.APPLICATION_JSON;
+
+    /** Request body content. Can be a JSON object, string, or form data depending on contentType */
     private Object body;
 
+    /** Variable name to store the HTTP response. If not specified, response is not stored */
     private String storeToVariable;
 
     /**

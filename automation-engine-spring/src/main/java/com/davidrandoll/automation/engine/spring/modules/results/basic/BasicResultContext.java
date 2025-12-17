@@ -24,9 +24,13 @@ import java.util.Map;
         BasicResultContext.Fields.results
 })
 public class BasicResultContext implements IResultContext {
+    /** Unique identifier for this result */
     private String alias;
+
+    /** Human-readable description of what this result represents */
     private String description;
 
+    /** JSON object containing the result data. Any additional properties will be included in the result */
     @JsonIgnore
     @JsonAnySetter
     private JsonNode results;

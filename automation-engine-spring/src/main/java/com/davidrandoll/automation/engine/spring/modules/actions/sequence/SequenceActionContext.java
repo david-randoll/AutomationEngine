@@ -22,7 +22,12 @@ import java.util.List;
         SequenceActionContext.Fields.actions
 })
 public class SequenceActionContext implements IActionContext {
+    /** Unique identifier for this action */
     private String alias;
+
+    /** Human-readable description of what this action does */
     private String description;
+
+    /** List of actions to execute in sequence, one after another */
     private List<ActionDefinition> actions;
 }

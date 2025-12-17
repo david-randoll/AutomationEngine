@@ -22,9 +22,13 @@ import java.util.Map;
         VariableActionContext.Fields.description
 })
 public class VariableActionContext implements IActionContext {
+    /** Unique identifier for this action */
     private String alias;
+
+    /** Human-readable description of what this action does */
     private String description;
 
+    /** Map of variable names to values. Any additional properties will be stored as variables in the automation context */
     @JsonIgnore
     @JsonAnySetter
     @JsonAnyGetter
