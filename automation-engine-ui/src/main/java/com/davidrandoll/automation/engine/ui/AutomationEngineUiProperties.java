@@ -15,5 +15,5 @@ public class AutomationEngineUiProperties {
      * The path where the Automation Engine UI will be served.
      * Default is /automation-engine-ui
      */
-    private String path = "/automation-engine";
+    private String path = "/automation-engine-ui";
 }
