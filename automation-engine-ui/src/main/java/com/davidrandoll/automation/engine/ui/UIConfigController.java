@@ -1,5 +1,7 @@
 package com.davidrandoll.automation.engine.ui;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,6 +15,7 @@ import java.util.Optional;
 public class UIConfigController {
     private final ServerProperties serverProperties;
     private final AutomationEngineUiProperties uiProperties;
+    private final ObjectMapper objectMapper;
 
     @GetMapping(
             value = {
@@ -22,9 +25,9 @@ public class UIConfigController {
                     "/*/*/*/app-config.js"
             }, produces = "application/javascript"
     )
-    public String getAppConfig() {
-        String contextPath = Optional.ofNullable(serverProperties.getServlet().getContextPath()).orElse("");
-        return "window.__APP_CONFIG__ = { contextPath: '%s' };".formatted(contextPath);
+    public String getAppConfig() throws JsonProcessingException {
+        String appConfigValues = objectMapper.writeValueAsString(getAppConfigJson());
+        return "window.__APP_CONFIG__ = %s;".formatted(appConfigValues);
     }
 
     @GetMapping(
@@ -38,7 +41,8 @@ public class UIConfigController {
     public Map<String, String> getAppConfigJson() {
         String contextPath = Optional.ofNullable(serverProperties.getServlet().getContextPath()).orElse("");
         return Map.of(
-                "contextPath", contextPath
+                "contextPath", contextPath,
+                "uiPath", uiProperties.getPath()
         );
     }
 }

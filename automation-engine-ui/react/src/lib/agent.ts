@@ -4,8 +4,9 @@ export type HttpMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
 
 declare global {
   interface Window {
-    __APP_CONFIG__: {
+    __APP_CONFIG__?: {
       contextPath?: string;
+      uiPath?: string;
     };
   }
 }
@@ -26,17 +27,42 @@ export interface RequestOptions<T = unknown> {
 }
 
 export const CONTEXT_PATH_URL = "./app-config.json";
-export function getContextPath(): string {
-  console.log("Getting context path...");
-  if (typeof window !== "undefined" && window.__APP_CONFIG__?.contextPath) {
-    console.log("Using cached context path:", window.__APP_CONFIG__.contextPath);
-    return window.__APP_CONFIG__?.contextPath;
+
+export function getAppConfig(): {
+  contextPath?: string;
+  uiPath?: string;
+} {
+  if (typeof window === "undefined") {
+    return {};
   }
 
-  console.log("Fetching context path from", CONTEXT_PATH_URL);
+  if (window.__APP_CONFIG__) {
+    return window.__APP_CONFIG__
+  }
 
-  console.warn("Context path not found, defaulting to root '/'");
-  return "";
+  return {};
+}
+
+
+export function getContextPath(): string {
+  console.log("Getting context path...");
+    const config = getAppConfig();
+
+    if (config.contextPath) {
+      console.log("Using context path:", config.contextPath);
+      return config.contextPath;
+    }
+
+    console.warn("Context path not found, defaulting to root '/'");
+    return "";
+}
+
+export function getConfigValue(
+  key: "contextPath" | "uiPath",
+  defaultValue = ""
+): string {
+  const config = getAppConfig();
+  return config[key] ?? defaultValue;
 }
 
 export function getApiBaseUrl(): string {

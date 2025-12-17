@@ -7,9 +7,9 @@ import { routeTree } from './routeTree.gen'
 
 import './styles.css'
 import reportWebVitals from './reportWebVitals.ts'
-import { getContextPath } from './lib/agent.ts'
+import { getConfigValue } from './lib/agent.ts'
 
-const contextPath = getContextPath();
+const contextPath = (getConfigValue("contextPath") + getConfigValue("uiPath")).replace(/\/+$/, '')
 // Create a new router instance
 const router = createRouter({
   routeTree,
