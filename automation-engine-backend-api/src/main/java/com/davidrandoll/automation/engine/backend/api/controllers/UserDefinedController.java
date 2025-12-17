@@ -21,7 +21,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/automation-engine/user-defined")
+@RequestMapping("${automation-engine.backend-api.path:/automation-engine}/user-defined")
 @RequiredArgsConstructor
 public class UserDefinedController {
 
@@ -41,8 +41,7 @@ public class UserDefinedController {
             } catch (Exception e) {
                 throw new ResponseStatusException(
                         HttpStatus.BAD_REQUEST,
-                        "Invalid block type: " + s + " (expected: actions, conditions, triggers, variables)"
-                );
+                        "Invalid block type: " + s + " (expected: actions, conditions, triggers, variables)");
             }
         }
     }
@@ -54,29 +53,25 @@ public class UserDefinedController {
                     "UserDefinedActionDefinition", "User-Defined Action",
                     "Create a reusable custom action",
                     jsonSchemaService.generateSchema(UserDefinedActionDefinition.class),
-                    java.util.List.of()
-            );
+                    java.util.List.of());
 
             case CONDITIONS -> new BlockType(
                     "UserDefinedConditionDefinition", "User-Defined Condition",
                     "Create a reusable custom condition",
                     jsonSchemaService.generateSchema(UserDefinedConditionDefinition.class),
-                    java.util.List.of()
-            );
+                    java.util.List.of());
 
             case TRIGGERS -> new BlockType(
                     "UserDefinedTriggerDefinition", "User-Defined Trigger",
                     "Create a reusable custom trigger",
                     jsonSchemaService.generateSchema(UserDefinedTriggerDefinition.class),
-                    java.util.List.of()
-            );
+                    java.util.List.of());
 
             case VARIABLES -> new BlockType(
                     "UserDefinedVariableDefinition", "User-Defined Variable",
                     "Create a reusable custom variable",
                     jsonSchemaService.generateSchema(UserDefinedVariableDefinition.class),
-                    java.util.List.of()
-            );
+                    java.util.List.of());
         };
     }
 
@@ -108,7 +103,8 @@ public class UserDefinedController {
     }
 
     @PutMapping("/{blockType}/{name}")
-    public ResponseEntity<?> update(@PathVariable String blockType, @PathVariable String name, @RequestBody JsonNode definition) {
+    public ResponseEntity<?> update(@PathVariable String blockType, @PathVariable String name,
+            @RequestBody JsonNode definition) {
         return register(blockType, definition);
     }
 

@@ -7,6 +7,7 @@ declare global {
     __APP_CONFIG__?: {
       contextPath?: string;
       uiPath?: string;
+      apiPath?: string;
     };
   }
 }
@@ -31,38 +32,48 @@ export const CONTEXT_PATH_URL = "./app-config.json";
 export function getAppConfig(): {
   contextPath?: string;
   uiPath?: string;
+  apiPath?: string;
 } {
   if (typeof window === "undefined") {
     return {};
   }
 
   if (window.__APP_CONFIG__) {
-    return window.__APP_CONFIG__
+    return window.__APP_CONFIG__;
   }
 
   return {};
 }
 
-
 export function getContextPath(): string {
   console.log("Getting context path...");
-    const config = getAppConfig();
+  const config = getAppConfig();
 
-    if (config.contextPath) {
-      console.log("Using context path:", config.contextPath);
-      return config.contextPath;
-    }
+  if (config.contextPath) {
+    console.log("Using context path:", config.contextPath);
+    return config.contextPath;
+  }
 
-    console.warn("Context path not found, defaulting to root '/'");
-    return "";
+  console.warn("Context path not found, defaulting to root '/'");
+  return "";
 }
 
-export function getConfigValue(
-  key: "contextPath" | "uiPath",
-  defaultValue = ""
-): string {
+export function getConfigValue(key: "contextPath" | "uiPath" | "apiPath", defaultValue = ""): string {
   const config = getAppConfig();
   return config[key] ?? defaultValue;
+}
+
+export function getApiPath(): string {
+  console.log("Getting API path...");
+  const config = getAppConfig();
+
+  if (config.apiPath) {
+    console.log("Using API path:", config.apiPath);
+    return config.apiPath;
+  }
+
+  console.warn("API path not found, defaulting to '/automation-engine'");
+  return "/automation-engine";
 }
 
 export function getApiBaseUrl(): string {
