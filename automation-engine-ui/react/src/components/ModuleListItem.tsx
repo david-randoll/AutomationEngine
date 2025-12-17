@@ -27,7 +27,7 @@ const ModuleListItem = ({ path, onRemove }: ModuleListItemProps) => {
     return (
         <AccordionItem value={`${path}`} className="border rounded-lg bg-white shadow-sm">
             <AccordionTrigger className="flex items-center justify-between px-4 py-4 font-medium text-left hover:text-blue-600 transition-colors">
-                <span>{mod?.alias || mod?.label || mod?.name || "Unnamed"}</span>
+                <span>{mod?.alias || mod?.label || mod?.name || mod?.variable || mod?.trigger || mod?.condition || mod?.action || "Unnamed"}</span>
             </AccordionTrigger>
 
             <AccordionContent className="px-4 pb-4 mt-2">
