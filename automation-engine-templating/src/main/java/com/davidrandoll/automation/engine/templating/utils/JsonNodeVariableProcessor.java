@@ -32,11 +32,13 @@ public class JsonNodeVariableProcessor {
     }
 
     public JsonNode processIfNotAutomation(Map<String, Object> eventData, JsonNode node) {
-        if (node == null || node.isNull()) return node;
+        if (node == null || node.isNull())
+            return node;
 
         if (node.isObject()) {
             // If the object has any automation-related fields, skip processing it entirely
-            if (hasAutomationField(node)) return node;
+            if (hasAutomationField(node))
+                return node;
 
             ObjectNode processedNode = mapper.createObjectNode();
             node.fields().forEachRemaining(entry -> {
@@ -58,7 +60,7 @@ public class JsonNodeVariableProcessor {
         if (node.isTextual()) {
             try {
                 String processedText = templateProcessor.process(node.asText(), eventData);
-                return new TextNode(processedText);
+                return parseStringToJsonNode(processedText);
             } catch (IOException e) {
                 log.error("Error processing template for text node: {}. Error: {}", node.asText(), e.getMessage());
                 throw new ResultTemplatingInterceptor.AutomationEngineProcessingException(e);
@@ -67,6 +69,30 @@ public class JsonNodeVariableProcessor {
 
         // For other types (numbers, booleans, etc.), leave them as is
         return node;
+    }
+
+    /**
+     * Parses a string value to the appropriate JsonNode type.
+     * Attempts to parse as JSON to preserve numeric, boolean, array, and object
+     * types.
+     * Falls back to TextNode if the string is not valid JSON.
+     *
+     * @param value the string value to parse
+     * @return JsonNode with the appropriate type (IntNode, BooleanNode, etc.) or
+     *         TextNode if not parseable
+     */
+    private JsonNode parseStringToJsonNode(String value) {
+        if (value == null) {
+            return mapper.nullNode();
+        }
+
+        // Try to parse as JSON value to preserve type
+        try {
+            return mapper.readTree(value);
+        } catch (Exception e) {
+            // If it's not valid JSON, treat it as a text node
+            return new TextNode(value);
+        }
     }
 
     private boolean hasAutomationField(JsonNode node) {
@@ -83,13 +109,13 @@ public class JsonNodeVariableProcessor {
 
     public JsonNode processOnlyString(Map<String, Object> eventData, ResultContext resultContext) {
         JsonNode jsonNodeCopy = resultContext.getData();
-        for (Iterator<Map.Entry<String, JsonNode>> it = jsonNodeCopy.fields(); it.hasNext(); ) {
+        for (Iterator<Map.Entry<String, JsonNode>> it = jsonNodeCopy.fields(); it.hasNext();) {
             var entry = it.next();
             if (entry.getValue().isTextual()) {
                 String valueStr = entry.getValue().asText();
                 try {
                     String processedValue = templateProcessor.process(valueStr, eventData);
-                    entry.setValue(mapper.getNodeFactory().textNode(processedValue));
+                    entry.setValue(parseStringToJsonNode(processedValue));
                 } catch (IOException e) {
                     log.error("Error processing template for key: {}. Error: {}", entry.getKey(), e.getMessage());
                     throw new ResultTemplatingInterceptor.AutomationEngineProcessingException(e);
