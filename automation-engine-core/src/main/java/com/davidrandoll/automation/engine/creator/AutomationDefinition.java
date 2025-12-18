@@ -30,6 +30,7 @@ import java.util.Optional;
 @JsonPropertyOrder({
         AutomationDefinition.Fields.alias,
         AutomationDefinition.Fields.description,
+        AutomationDefinition.Fields.options,
         AutomationDefinition.Fields.variables,
         AutomationDefinition.Fields.triggers,
         AutomationDefinition.Fields.conditions,
@@ -41,6 +42,11 @@ public class AutomationDefinition {
     private String alias;
     @Getter
     private String description;
+
+    @Getter
+    @Builder.Default
+    private java.util.Map<String, Object> options = new java.util.HashMap<>();
+
     private List<VariableDefinition> variables = new ArrayList<>();
     private List<TriggerDefinition> triggers = new ArrayList<>();
     private List<ConditionDefinition> conditions = new ArrayList<>();

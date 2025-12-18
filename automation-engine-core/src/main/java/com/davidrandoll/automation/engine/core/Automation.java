@@ -16,19 +16,25 @@ import static java.util.Objects.isNull;
 @Getter
 public final class Automation {
     private final String alias;
+    private final java.util.Map<String, Object> options;
     private final BaseVariableList variables;
     private final BaseTriggerList triggers;
     private final BaseConditionList conditions;
     private final BaseActionList actions;
     private final IBaseResult result;
 
-    public Automation(String alias, BaseVariableList variables, BaseTriggerList triggers, BaseConditionList conditions, BaseActionList actions, IBaseResult result) {
+    public Automation(String alias, java.util.Map<String, Object> options, BaseVariableList variables, BaseTriggerList triggers, BaseConditionList conditions, BaseActionList actions, IBaseResult result) {
         this.alias = alias;
-        this.variables = Optional.ofNullable(variables).orElse(BaseVariableList.of());
-        this.triggers = Optional.ofNullable(triggers).orElse(BaseTriggerList.of());
-        this.conditions = Optional.ofNullable(conditions).orElse(BaseConditionList.of());
-        this.actions = Optional.ofNullable(actions).orElse(BaseActionList.of());
-        this.result = Optional.ofNullable(result).orElse(context -> null);
+        this.options = java.util.Collections.unmodifiableMap(java.util.Optional.ofNullable(options).orElse(java.util.Collections.emptyMap()));
+        this.variables = java.util.Optional.ofNullable(variables).orElse(BaseVariableList.of());
+        this.triggers = java.util.Optional.ofNullable(triggers).orElse(BaseTriggerList.of());
+        this.conditions = java.util.Optional.ofNullable(conditions).orElse(BaseConditionList.of());
+        this.actions = java.util.Optional.ofNullable(actions).orElse(BaseActionList.of());
+        this.result = java.util.Optional.ofNullable(result).orElse(context -> null);
+    }
+
+    public Automation(String alias, BaseVariableList variables, BaseTriggerList triggers, BaseConditionList conditions, BaseActionList actions, IBaseResult result) {
+        this(alias, java.util.Collections.emptyMap(), variables, triggers, conditions, actions, result);
     }
 
     /**
@@ -74,6 +80,7 @@ public final class Automation {
     public Automation(Automation automation) {
         this(
                 automation.alias,
+                automation.options,
                 BaseVariableList.of(automation.variables),
                 BaseTriggerList.of(automation.triggers),
                 BaseConditionList.of(automation.conditions),

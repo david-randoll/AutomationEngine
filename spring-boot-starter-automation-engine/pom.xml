@@ -54,6 +54,12 @@
         </dependency>
         <dependency>
             <groupId>com.davidrandoll</groupId>
+            <artifactId>automation-engine-spring-tx</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.davidrandoll</groupId>
             <artifactId>automation-engine-spring-web</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
