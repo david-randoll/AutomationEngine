@@ -7,9 +7,7 @@ import com.davidrandoll.automation.engine.orchestrator.interceptors.IAutomationE
 import com.davidrandoll.automation.engine.orchestrator.interceptors.IAutomationExecutionInterceptor;
 import com.davidrandoll.automation.engine.spring.tx.TransactionalRunner;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
 
-@Component
 @RequiredArgsConstructor
 public class TransactionalExecutionInterceptor implements IAutomationExecutionInterceptor {
 

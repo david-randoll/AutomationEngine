@@ -1,1 +1,1 @@
-com.davidrandoll.automation.engine.spring.tx.AESpringTxConfig
+com.davidrandoll.automation.engine.spring.tx.AESpringTxAutoConfiguration
