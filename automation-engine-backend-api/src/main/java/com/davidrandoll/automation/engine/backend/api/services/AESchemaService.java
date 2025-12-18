@@ -84,7 +84,7 @@ public class AESchemaService implements IAESchemaService {
         return beans.entrySet().stream()
                 .map(entry -> {
                     IBlock module = entry.getValue();
-                    if (includeSchema == null || Boolean.FALSE.equals(includeSchema)) {
+                    if (includeSchema == null || !includeSchema) {
                         return new BlockType(entry.getKey(), module, null);
                     }
                     var schema = jsonSchemaService.generateSchema(module.getContextType());
@@ -198,8 +198,7 @@ public class AESchemaService implements IAESchemaService {
         return definition;
     }
 
-    private ObjectNode buildConditionalSchema(BlockType block, String shortName, BlockTypeConfig config,
-            ObjectNode defs) {
+    private ObjectNode buildConditionalSchema(BlockType block, String shortName, BlockTypeConfig config, ObjectNode defs) {
         ObjectNode conditionalSchema = objectMapper.createObjectNode();
 
         // Build "if" condition
