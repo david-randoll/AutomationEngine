@@ -25,7 +25,8 @@ public final class Automation {
     private final BaseActionList actions;
     private final IBaseResult result;
 
-    public Automation(String alias, Map<String, Object> options, BaseVariableList variables, BaseTriggerList triggers, BaseConditionList conditions, BaseActionList actions, IBaseResult result) {
+    public Automation(String alias, Map<String, Object> options, BaseVariableList variables, BaseTriggerList triggers,
+            BaseConditionList conditions, BaseActionList actions, IBaseResult result) {
         this.alias = alias;
         this.options = Collections.unmodifiableMap(Optional.ofNullable(options).orElse(Collections.emptyMap()));
         this.variables = Optional.ofNullable(variables).orElse(BaseVariableList.of());
@@ -35,7 +36,8 @@ public final class Automation {
         this.result = Optional.ofNullable(result).orElse(context -> null);
     }
 
-    public Automation(String alias, BaseVariableList variables, BaseTriggerList triggers, BaseConditionList conditions, BaseActionList actions, IBaseResult result) {
+    public Automation(String alias, BaseVariableList variables, BaseTriggerList triggers, BaseConditionList conditions,
+            BaseActionList actions, IBaseResult result) {
         this(alias, Collections.emptyMap(), variables, triggers, conditions, actions, result);
     }
 
@@ -43,7 +45,8 @@ public final class Automation {
      * Set the variables
      */
     public void resolveVariables(EventContext eventContext) {
-        if (isNull(variables)) return;
+        if (isNull(variables))
+            return;
         variables.resolveAll(eventContext);
     }
 
@@ -53,7 +56,8 @@ public final class Automation {
      * @return true if any of the triggers are triggered
      */
     public boolean anyTriggerActivated(EventContext eventContext) {
-        if (isNull(triggers)) return false;
+        if (isNull(triggers))
+            return false;
         return triggers.anyTriggered(eventContext);
     }
 
@@ -63,7 +67,8 @@ public final class Automation {
      * @return true if all conditions are met
      */
     public boolean allConditionsMet(EventContext context) {
-        if (isNull(conditions)) return true;
+        if (isNull(conditions))
+            return true;
         return conditions.allSatisfied(context);
     }
 
@@ -71,7 +76,8 @@ public final class Automation {
      * Perform all actions
      */
     public void performActions(EventContext context) {
-        if (isNull(actions)) return;
+        if (isNull(actions))
+            return;
         try {
             actions.executeAll(context);
         } catch (StopAutomationException e) {
@@ -87,8 +93,7 @@ public final class Automation {
                 BaseTriggerList.of(automation.triggers),
                 BaseConditionList.of(automation.conditions),
                 BaseActionList.of(automation.actions),
-                automation.result
-        );
+                automation.result);
     }
 
     public Object getExecutionSummary(EventContext context) {

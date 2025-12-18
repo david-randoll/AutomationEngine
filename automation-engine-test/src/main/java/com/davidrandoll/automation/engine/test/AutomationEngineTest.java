@@ -37,7 +37,7 @@ public class AutomationEngineTest {
     protected int port;
 
     @BeforeEach
-    void setUp() {
+    protected void setUp() {
         Logger logger = (Logger) LoggerFactory.getLogger("com.davidrandoll.automation.engine");
         logAppender = new TestLogAppender();
         logger.addAppender(logAppender);
