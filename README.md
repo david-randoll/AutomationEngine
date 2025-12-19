@@ -131,7 +131,7 @@ Add the Spring Boot starter dependency to your `pom.xml`:
 <dependency>
     <groupId>com.davidrandoll</groupId>
     <artifactId>spring-boot-starter-automation-engine</artifactId>
-    <version>1.7.0</version>
+    <version>1.8.0</version>
 </dependency>
 ```
 

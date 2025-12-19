@@ -17,10 +17,11 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.FieldNameConstants;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -30,6 +31,7 @@ import java.util.Optional;
 @JsonPropertyOrder({
         AutomationDefinition.Fields.alias,
         AutomationDefinition.Fields.description,
+        AutomationDefinition.Fields.options,
         AutomationDefinition.Fields.variables,
         AutomationDefinition.Fields.triggers,
         AutomationDefinition.Fields.conditions,
@@ -41,12 +43,17 @@ public class AutomationDefinition {
     private String alias;
     @Getter
     private String description;
+
+    @Getter
+    @Builder.Default
+    private Map<String, Object> options = new HashMap<>();
+
     private List<VariableDefinition> variables = new ArrayList<>();
     private List<TriggerDefinition> triggers = new ArrayList<>();
     private List<ConditionDefinition> conditions = new ArrayList<>();
     private List<ActionDefinition> actions = new ArrayList<>();
 
-    @JsonAlias({"execution_summary", "result", "summary", "executionResult", "return"})
+    @JsonAlias({ "execution_summary", "result", "summary", "executionResult", "return" })
     @JsonDeserialize(using = ResultDeserializer.class)
     private ResultDefinition result = new ResultDefinition();
 

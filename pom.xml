@@ -44,13 +44,14 @@
         <module>automation-engine-backend-api</module>
         <module>automation-engine-spring</module>
         <module>automation-engine-spring-amqp</module>
+        <module>automation-engine-spring-tx</module>
         <module>automation-engine-ui</module>
         <module>automation-engine-test-coverage-report</module>
     </modules>
     <properties>
         <revision>${automation-engine.version}</revision>
 
-        <automation-engine.version>1.7.0</automation-engine.version>
+        <automation-engine.version>1.8.0</automation-engine.version>
         <java.version>21</java.version>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>

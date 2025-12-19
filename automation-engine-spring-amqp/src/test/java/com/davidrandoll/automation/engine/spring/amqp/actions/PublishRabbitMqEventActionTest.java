@@ -28,7 +28,7 @@ class PublishRabbitMqEventActionTest extends AutomationEngineTest {
     private AmqpAdmin amqpAdmin;
 
     @BeforeEach
-    void setup() {
+    void setUp() {
         reset(amqpTemplate, amqpAdmin);
     }
 

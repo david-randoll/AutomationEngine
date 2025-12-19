@@ -22,7 +22,7 @@ public class PublishRabbitMqEventAction extends PluggableAction<PublishRabbitMqE
         String exchangeName = ctx.getExchange().getName();
         boolean exchangeDurable = ctx.getExchange().isDurable();
         boolean exchangeAutoDelete = ctx.getExchange().isAutoDelete();
-        String routingKey = ctx.getRoutingKey();
+        String routingKey = ctx.getRoutingKey() != null ? ctx.getRoutingKey() : "";
 
         Exchange exchange = switch (ctx.getExchange().getType()) {
             case FANOUT -> new FanoutExchange(exchangeName, exchangeDurable, exchangeAutoDelete);
