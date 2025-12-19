@@ -140,9 +140,9 @@ class AESchemaServiceTest {
         var result = service.getFullAutomationSchema("http://localhost");
 
         assertThat(result).isNotNull();
-        // Verify that definitions were created
+        // Verify that definitions were created - now using fully qualified names
         assertThat(result.has("$defs")).isTrue();
-        assertThat(result.get("$defs").has("TriggerDefinition")).isTrue();
+        assertThat(result.get("$defs").has("com.davidrandoll.automation.engine.creator.triggers.TriggerDefinition")).isTrue();
     }
 
     @Test
@@ -221,7 +221,8 @@ class AESchemaServiceTest {
         var result = service.getFullAutomationSchema("http://localhost");
 
         assertThat(result).isNotNull();
-        JsonNode actionDef = result.get("$defs").get("ActionDefinition");
+        // Now using fully qualified name for ActionDefinition
+        JsonNode actionDef = result.get("$defs").get("com.davidrandoll.automation.engine.creator.actions.ActionDefinition");
         JsonNode enumValues = actionDef.get("allOf").get(0).get("properties").get("action").get("enum");
 
         // Should use full name if suffix not found
@@ -270,7 +271,8 @@ class AESchemaServiceTest {
         var result = service.getFullAutomationSchema("http://localhost");
 
         assertThat(result).isNotNull();
-        JsonNode conditionDef = result.get("$defs").get("ConditionDefinition");
+        // Now using fully qualified name for ConditionDefinition
+        JsonNode conditionDef = result.get("$defs").get("com.davidrandoll.automation.engine.creator.conditions.ConditionDefinition");
         // Verify structure
         assertThat(conditionDef).isNotNull();
     }
@@ -306,7 +308,8 @@ class AESchemaServiceTest {
         var result = service.getFullAutomationSchema("http://localhost");
 
         assertThat(result).isNotNull();
-        JsonNode varDef = result.get("$defs").get("VariableDefinition");
+        // Now using fully qualified name for VariableDefinition
+        JsonNode varDef = result.get("$defs").get("com.davidrandoll.automation.engine.creator.variables.VariableDefinition");
         assertThat(varDef).isNotNull();
     }
 }

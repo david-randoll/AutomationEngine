@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.ObjectUtils;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -79,11 +80,13 @@ public class JsonNodeVariableProcessor {
      *
      * @param value the string value to parse
      * @return JsonNode with the appropriate type (IntNode, BooleanNode, etc.) or
-     *         TextNode if not parseable
+     * TextNode if not parseable
      */
     private JsonNode parseStringToJsonNode(String value) {
         if (value == null) {
             return mapper.nullNode();
+        } else if (ObjectUtils.isEmpty(value)) {
+            return new TextNode(value);
         }
 
         // Try to parse as JSON value to preserve type
@@ -109,7 +112,7 @@ public class JsonNodeVariableProcessor {
 
     public JsonNode processOnlyString(Map<String, Object> eventData, ResultContext resultContext) {
         JsonNode jsonNodeCopy = resultContext.getData();
-        for (Iterator<Map.Entry<String, JsonNode>> it = jsonNodeCopy.fields(); it.hasNext();) {
+        for (Iterator<Map.Entry<String, JsonNode>> it = jsonNodeCopy.fields(); it.hasNext(); ) {
             var entry = it.next();
             if (entry.getValue().isTextual()) {
                 String valueStr = entry.getValue().asText();
