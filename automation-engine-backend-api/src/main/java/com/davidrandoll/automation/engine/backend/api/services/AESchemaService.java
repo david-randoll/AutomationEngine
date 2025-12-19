@@ -11,6 +11,11 @@ import com.davidrandoll.automation.engine.core.result.IResult;
 import com.davidrandoll.automation.engine.core.triggers.ITrigger;
 import com.davidrandoll.automation.engine.core.variables.IVariable;
 import com.davidrandoll.automation.engine.creator.AutomationDefinition;
+import com.davidrandoll.automation.engine.creator.actions.ActionDefinition;
+import com.davidrandoll.automation.engine.creator.conditions.ConditionDefinition;
+import com.davidrandoll.automation.engine.creator.result.ResultDefinition;
+import com.davidrandoll.automation.engine.creator.triggers.TriggerDefinition;
+import com.davidrandoll.automation.engine.creator.variables.VariableDefinition;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -23,6 +28,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 public class AESchemaService implements IAESchemaService {
@@ -32,12 +38,13 @@ public class AESchemaService implements IAESchemaService {
 
     // Block type configurations: type name -> (bean suffix, discriminator field)
     private static final Map<String, BlockTypeConfig> BLOCK_TYPE_CONFIGS = Map.of(
-            "triggers", new BlockTypeConfig("Trigger", "trigger"),
-            "conditions", new BlockTypeConfig("Condition", "condition"),
-            "actions", new BlockTypeConfig("Action", "action"),
-            "variables", new BlockTypeConfig("Variable", "variable"));
+            "triggers", new BlockTypeConfig("Trigger", "trigger", TriggerDefinition.class),
+            "conditions", new BlockTypeConfig("Condition", "condition", ConditionDefinition.class),
+            "actions", new BlockTypeConfig("Action", "action", ActionDefinition.class),
+            "variables", new BlockTypeConfig("Variable", "variable", VariableDefinition.class),
+            "result", new BlockTypeConfig("Result", "result", ResultDefinition.class));
 
-    private record BlockTypeConfig(String beanSuffix, String discriminatorField) {
+    private record BlockTypeConfig(String beanSuffix, String discriminatorField, Class<?> clazz) {
     }
 
     @Override
@@ -134,7 +141,9 @@ public class AESchemaService implements IAESchemaService {
                 if (config != null) {
                     // Get all blocks of this type with their schemas
                     BlocksByType blocksByType = getBlocksByType(fieldName, true);
-                    String defName = capitalize(fieldName.substring(0, fieldName.length() - 1)) + "Definition";
+
+                    // Use the fully qualified class name for the definition
+                    String defName = getFullyQualifiedDefinitionName(config, fieldName);
 
                     // Build the definition with conditional schemas
                     ObjectNode blockDefinition = buildBlockDefinition(blocksByType, config, defs);
@@ -317,6 +326,17 @@ public class AESchemaService implements IAESchemaService {
         }
 
         return result;
+    }
+
+    private String getFullyQualifiedDefinitionName(BlockTypeConfig config, String fieldName) {
+        // Get the fully qualified class name for the definition
+        String fullyQualifiedName = Optional.ofNullable(config.clazz).map(Class::getCanonicalName).orElse(null);
+        if (fullyQualifiedName != null) {
+            return fullyQualifiedName;
+        }
+
+        // Fallback to simple name if not in the map
+        return capitalize(fieldName.substring(0, fieldName.length() - 1)) + "Definition";
     }
 
     private String extractShortName(String beanName, String suffix) {
