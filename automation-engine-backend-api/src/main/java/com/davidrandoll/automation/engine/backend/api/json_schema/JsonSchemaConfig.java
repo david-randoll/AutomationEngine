@@ -20,6 +20,7 @@ public class JsonSchemaConfig {
         configBuilder.with(javadocDescriptionModule);
         configBuilder.with(new JsonAnySetterAsAdditionalPropsModule());
         configBuilder.with(new BlockTypeDefinitionModule());
+        configBuilder.with(new NestedClassPrefixModule());
         configBuilder.with(Option.DEFINITIONS_FOR_ALL_OBJECTS);
         SchemaGeneratorConfig config = configBuilder.build();
         return new SchemaGenerator(config);
