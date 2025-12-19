@@ -4,13 +4,12 @@ import com.github.victools.jsonschema.generator.Module;
 import com.github.victools.jsonschema.generator.SchemaGeneratorConfigBuilder;
 
 /**
- * Module to prefix nested class definitions with their parent class name.
- * This prevents naming collisions when multiple parent classes have nested
- * classes with the same name.
+ * Module to use fully qualified class names for all type definitions in JSON schemas.
+ * This prevents naming collisions and provides complete context for all classes.
  * <p>
  * For example:
- * - IfThenElseActionContext.IfThenBlock becomes
- * "IfThenElseActionContext.IfThenBlock" instead of just "IfThenBlock"
+ * - Regular class: "MyClass" becomes "com.example.MyClass"
+ * - Nested class: "IfThenBlock" becomes "com.example.IfThenElseActionContext.IfThenBlock"
  */
 public class NestedClassPrefixModule implements Module {
     @Override
@@ -18,53 +17,31 @@ public class NestedClassPrefixModule implements Module {
         builder.forTypesInGeneral()
                 .withDefinitionNamingStrategy((definitionKey, context) -> {
                     Class<?> clazz = definitionKey.getType().getErasedType();
-
-                    // Check if this is a nested class (static member class or inner class)
-                    if (clazz.getEnclosingClass() != null) {
-                        return buildNestedClassName(clazz);
-                    }
-
-                    // Not a nested class, use default behavior (return simple class name)
-                    return clazz.getSimpleName();
+                    return buildFullyQualifiedName(clazz);
                 });
     }
 
     /**
-     * Build the custom name for a nested class by prefixing it with parent class
-     * names.
-     * Handles multiple levels of nesting.
+     * Build the fully qualified name for any class.
+     * For nested classes, uses '$' separator as per Java naming convention.
+     * For regular classes, uses the package name.
      *
-     * @param clazz the nested class
-     * @return the custom name with parent class prefix(es)
+     * @param clazz the class
+     * @return the fully qualified name (e.g., "com.example.Outer.Inner")
      */
-    private String buildNestedClassName(Class<?> clazz) {
-        StringBuilder nameBuilder = new StringBuilder();
-        buildNestedClassNameRecursive(clazz, nameBuilder);
-        return nameBuilder.toString();
-    }
-
-    /**
-     * Recursively build the nested class name from outermost to innermost class.
-     *
-     * @param clazz       the current class
-     * @param nameBuilder the string builder to accumulate the name
-     */
-    private void buildNestedClassNameRecursive(Class<?> clazz, StringBuilder nameBuilder) {
-        Class<?> enclosingClass = clazz.getEnclosingClass();
-
-        if (enclosingClass != null) {
-            // If the enclosing class is also nested, process it first
-            if (enclosingClass.getEnclosingClass() != null) {
-                buildNestedClassNameRecursive(enclosingClass, nameBuilder);
-                nameBuilder.append(".");
-            } else {
-                // This is the outermost class
-                nameBuilder.append(enclosingClass.getSimpleName());
-                nameBuilder.append(".");
-            }
+    private String buildFullyQualifiedName(Class<?> clazz) {
+        // Use the canonical name which handles nested classes properly with '.' separator
+        // For nested classes: com.example.Outer.Inner
+        // For regular classes: com.example.MyClass
+        String canonicalName = clazz.getCanonicalName();
+        
+        // If canonical name is available (it might be null for local/anonymous classes), use it
+        if (canonicalName != null) {
+            return canonicalName;
         }
-
-        // Append the current class name
-        nameBuilder.append(clazz.getSimpleName());
+        
+        // Fallback to getName() which uses '$' for nested classes
+        // Then replace '$' with '.' for consistency
+        return clazz.getName().replace('$', '.');
     }
 }

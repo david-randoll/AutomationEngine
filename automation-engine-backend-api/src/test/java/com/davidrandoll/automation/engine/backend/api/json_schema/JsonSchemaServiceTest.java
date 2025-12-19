@@ -44,7 +44,7 @@ class JsonSchemaServiceTest {
     }
 
     @Test
-    void generateSchema_ShouldPrefixNestedClassDefinitions() {
+    void generateSchema_ShouldUseFullyQualifiedNames() {
         JsonSchemaService service = new JsonSchemaService(schemaGenerator);
         JsonNode schema = service.generateSchema(TestParentClass.class);
 
@@ -54,16 +54,15 @@ class JsonSchemaServiceTest {
         JsonNode defs = schema.get("$defs");
         assertThat(defs).isNotNull();
 
-        // Verify that the nested class has the parent class prefix
-        // Note: Since TestParentClass is itself nested in JsonSchemaServiceTest,
-        // the full name will be JsonSchemaServiceTest.TestParentClass.NestedClass
-        assertThat(defs.has("JsonSchemaServiceTest.TestParentClass.NestedClass"))
-                .as("Nested class should be prefixed with parent class name")
+        // Verify that the nested class uses fully qualified name
+        String expectedName = "com.davidrandoll.automation.engine.backend.api.json_schema.JsonSchemaServiceTest.TestParentClass.NestedClass";
+        assertThat(defs.has(expectedName))
+                .as("Nested class should use fully qualified name")
                 .isTrue();
 
-        // Verify that a non-nested class doesn't have a prefix
+        // Verify that simple names don't exist
         assertThat(defs.has("NestedClass"))
-                .as("Unprefixed nested class name should not exist")
+                .as("Simple class name should not exist")
                 .isFalse();
     }
 
@@ -77,15 +76,16 @@ class JsonSchemaServiceTest {
         JsonNode defs = schema.get("$defs");
         assertThat(defs).isNotNull();
 
-        // Verify that deeply nested classes have full path prefix
-        // Note: Since TestOuterClass is itself nested in JsonSchemaServiceTest,
-        // the full names will include JsonSchemaServiceTest prefix
-        assertThat(defs.has("JsonSchemaServiceTest.TestOuterClass.MiddleClass"))
-                .as("Middle nested class should be prefixed with outer class name")
+        // Verify that deeply nested classes use fully qualified names
+        String expectedMiddleName = "com.davidrandoll.automation.engine.backend.api.json_schema.JsonSchemaServiceTest.TestOuterClass.MiddleClass";
+        String expectedInnerName = "com.davidrandoll.automation.engine.backend.api.json_schema.JsonSchemaServiceTest.TestOuterClass.MiddleClass.InnerClass";
+        
+        assertThat(defs.has(expectedMiddleName))
+                .as("Middle nested class should use fully qualified name")
                 .isTrue();
 
-        assertThat(defs.has("JsonSchemaServiceTest.TestOuterClass.MiddleClass.InnerClass"))
-                .as("Deeply nested class should have full path prefix")
+        assertThat(defs.has(expectedInnerName))
+                .as("Deeply nested class should use fully qualified name")
                 .isTrue();
     }
 

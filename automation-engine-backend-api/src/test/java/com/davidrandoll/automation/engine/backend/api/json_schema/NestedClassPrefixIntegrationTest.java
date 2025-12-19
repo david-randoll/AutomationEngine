@@ -28,9 +28,10 @@ class NestedClassPrefixIntegrationTest {
         JsonNode defs = schema.get("$defs");
         assertThat(defs).isNotNull();
 
-        // Verify that the nested IfThenBlock class has the parent class prefix
-        assertThat(defs.has("IfThenElseActionContext.IfThenBlock"))
-                .as("IfThenBlock should be prefixed with IfThenElseActionContext")
+        // Verify that the nested IfThenBlock class uses fully qualified name
+        String expectedName = "com.davidrandoll.automation.engine.spring.modules.actions.if_then_else.IfThenElseActionContext.IfThenBlock";
+        assertThat(defs.has(expectedName))
+                .as("IfThenBlock should use fully qualified name")
                 .isTrue();
 
         // Verify that the unprefixed name doesn't exist
