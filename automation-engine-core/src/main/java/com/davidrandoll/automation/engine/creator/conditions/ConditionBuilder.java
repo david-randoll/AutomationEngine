@@ -39,7 +39,7 @@ public class ConditionBuilder {
                 .orElseThrow(() -> new ConditionNotFoundException(condition.getCondition()));
 
         var interceptingCondition = new InterceptingCondition(conditionInstance, conditionInterceptors);
-        var conditionContext = new ConditionContext(condition.getParams());
+        var conditionContext = new ConditionContext(condition);
 
         return eventContext -> interceptingCondition.isSatisfied(eventContext, conditionContext);
     }

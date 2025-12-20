@@ -38,7 +38,7 @@ public class TriggerBuilder {
                 .orElseThrow(() -> new TriggerNotFoundException(trigger.getTrigger()));
 
         var interceptingTrigger = new InterceptingTrigger(triggerInstance, triggerInterceptors);
-        var triggerContext = new TriggerContext(trigger.getParams());
+        var triggerContext = new TriggerContext(trigger);
         return event -> interceptingTrigger.isTriggered(event, triggerContext);
     }
 

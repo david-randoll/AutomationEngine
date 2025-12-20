@@ -56,8 +56,8 @@ public class TracingTriggerInterceptor implements ITriggerInterceptor {
         TraceSnapshot afterSnapshot = captureSnapshot(eventContext, triggerContext);
 
         // Extract type and alias from context
-        String type = extractType(triggerContext);
-        String alias = extractAlias(triggerContext);
+        String type = triggerContext.getTrigger();
+        String alias = triggerContext.getAlias();
 
         // Create trace entry with children if any were added
         TriggerTraceEntry entry = TriggerTraceEntry.builder()
@@ -82,15 +82,5 @@ public class TracingTriggerInterceptor implements ITriggerInterceptor {
                 .eventSnapshot(filterTraceData(eventContext.getEventData()))
                 .contextSnapshot(filterTraceData(triggerContext.getData()))
                 .build();
-    }
-
-    private String extractType(TriggerContext context) {
-        Object type = context.getData().get(TYPE_KEY);
-        return type != null ? type.toString() : null;
-    }
-
-    private String extractAlias(TriggerContext context) {
-        Object alias = context.getData().get("alias");
-        return alias != null ? alias.toString() : null;
     }
 }

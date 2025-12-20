@@ -21,7 +21,7 @@ public class ResultBuilder {
                 .orElseThrow(() -> new ResultNotFoundException(result.getResult()));
 
         var interceptingResult = new InterceptingResult(instance, interceptors);
-        var resultContext = new ResultContext(result.getParams());
+        var resultContext = new ResultContext(result);
 
         return ec -> interceptingResult.getExecutionSummary(ec, resultContext);
     }

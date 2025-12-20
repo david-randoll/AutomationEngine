@@ -62,8 +62,8 @@ public class TracingActionInterceptor implements IActionInterceptor {
         TraceSnapshot afterSnapshot = captureSnapshot(eventContext, actionContext);
 
         // Extract type and alias from context
-        String type = extractType(actionContext);
-        String alias = extractAlias(actionContext);
+        String type = actionContext.getAction();
+        String alias = actionContext.getAlias();
 
         // Create trace entry with children if any were added
         ActionTraceEntry entry = ActionTraceEntry.builder()
@@ -85,15 +85,5 @@ public class TracingActionInterceptor implements IActionInterceptor {
                 .eventSnapshot(filterTraceData(eventContext.getEventData()))
                 .contextSnapshot(filterTraceData(actionContext.getData()))
                 .build();
-    }
-
-    private String extractType(ActionContext context) {
-        Object type = context.getData().get(TYPE_KEY);
-        return type != null ? type.toString() : null;
-    }
-
-    private String extractAlias(ActionContext context) {
-        Object alias = context.getData().get("alias");
-        return alias != null ? alias.toString() : null;
     }
 }

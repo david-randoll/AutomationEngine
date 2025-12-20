@@ -56,8 +56,8 @@ public class TracingConditionInterceptor implements IConditionInterceptor {
         TraceSnapshot afterSnapshot = captureSnapshot(eventContext, conditionContext);
 
         // Extract type and alias from context
-        String type = extractType(conditionContext);
-        String alias = extractAlias(conditionContext);
+        String type = conditionContext.getCondition();
+        String alias = conditionContext.getAlias();
 
         // Create trace entry with children if any were added
         ConditionTraceEntry entry = ConditionTraceEntry.builder()
@@ -82,15 +82,5 @@ public class TracingConditionInterceptor implements IConditionInterceptor {
                 .eventSnapshot(filterTraceData(eventContext.getEventData()))
                 .contextSnapshot(filterTraceData(conditionContext.getData()))
                 .build();
-    }
-
-    private String extractType(ConditionContext context) {
-        Object type = context.getData().get(TYPE_KEY);
-        return type != null ? type.toString() : null;
-    }
-
-    private String extractAlias(ConditionContext context) {
-        Object alias = context.getData().get("alias");
-        return alias != null ? alias.toString() : null;
     }
 }

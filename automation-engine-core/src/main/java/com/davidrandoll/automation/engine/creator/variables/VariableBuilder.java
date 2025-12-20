@@ -38,7 +38,7 @@ public class VariableBuilder {
                 .orElseThrow(() -> new VariableNotFoundException(variable.getVariable()));
 
         var interceptingVariable = new InterceptingVariable(variableInstance, variableInterceptors);
-        var variableContext = new VariableContext(variable.getParams());
+        var variableContext = new VariableContext(variable);
 
         return event -> interceptingVariable.resolve(event, variableContext);
     }

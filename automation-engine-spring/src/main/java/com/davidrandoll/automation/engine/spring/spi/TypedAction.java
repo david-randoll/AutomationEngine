@@ -21,7 +21,7 @@ public interface TypedAction<T extends IActionContext> extends IAction {
 
     @Override
     default void execute(EventContext eventContext, ActionContext actionContext) {
-        T data = getTypeConverter().convert(actionContext.getData(), this.getContextType());
+        T data = getTypeConverter().convert(actionContext, this.getContextType());
         if (data == null)
             throw new IllegalArgumentException("Cannot convert action context data to " + this.getContextType());
 

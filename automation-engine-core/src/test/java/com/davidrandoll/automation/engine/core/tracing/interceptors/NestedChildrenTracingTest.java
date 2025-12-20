@@ -31,10 +31,14 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class NestedChildrenTracingTest {
 
-    @Mock private IActionChain actionChain;
-    @Mock private IVariableChain variableChain;
-    @Mock private ITriggerChain triggerChain;
-    @Mock private IConditionChain conditionChain;
+    @Mock
+    private IActionChain actionChain;
+    @Mock
+    private IVariableChain variableChain;
+    @Mock
+    private ITriggerChain triggerChain;
+    @Mock
+    private IConditionChain conditionChain;
 
     private EventContext eventContext;
 
@@ -53,18 +57,13 @@ class NestedChildrenTracingTest {
         TracingActionInterceptor parentInterceptor = new TracingActionInterceptor();
         TracingActionInterceptor childInterceptor = new TracingActionInterceptor();
 
-        Map<String, Object> parentData = new HashMap<>();
-        parentData.put("__type", "parentAction");
-        parentData.put("alias", "parent-action");
-        ActionContext parentContext = new ActionContext(parentData);
+        ActionContext parentContext = new ActionContext("parent-action", null, "parentAction", Map.of());
 
-        Map<String, Object> childData = new HashMap<>();
-        childData.put("__type", "childAction");
-        childData.put("alias", "child-action");
-        ActionContext childContext = new ActionContext(childData);
+        ActionContext childContext = new ActionContext("child-action", null, "childAction", Map.of());
 
         doAnswer(invocation -> {
-            childInterceptor.intercept(eventContext, childContext, (ec, ac) -> {});
+            childInterceptor.intercept(eventContext, childContext, (ec, ac) -> {
+            });
             return null;
         }).when(actionChain).execute(any(), any());
 
@@ -86,10 +85,7 @@ class NestedChildrenTracingTest {
         TracingVariableInterceptor parentInterceptor = new TracingVariableInterceptor();
         TracingVariableInterceptor childInterceptor = new TracingVariableInterceptor();
 
-        Map<String, Object> parentData = new HashMap<>();
-        parentData.put("__type", "parentVariable");
-        parentData.put("alias", "parent-variable");
-        VariableContext parentContext = new VariableContext(parentData);
+        VariableContext parentContext = new VariableContext("parent-variable", null, "parentVariable", Map.of());
 
         Map<String, Object> childData = new HashMap<>();
         childData.put("__type", "childVariable");
@@ -97,7 +93,8 @@ class NestedChildrenTracingTest {
         VariableContext childContext = new VariableContext(childData);
 
         doAnswer(invocation -> {
-            childInterceptor.intercept(eventContext, childContext, (ec, vc) -> {});
+            childInterceptor.intercept(eventContext, childContext, (ec, vc) -> {
+            });
             return null;
         }).when(variableChain).resolve(any(), any());
 

@@ -67,6 +67,8 @@ public class TracingResultInterceptor implements IResultInterceptor {
 
         // Create trace entry with children if any were added
         ResultTraceEntry entry = ResultTraceEntry.builder()
+                .type(resultContext.getResult())
+                .alias(resultContext.getAlias())
                 .startedAt(startedAt)
                 .finishedAt(finishedAt)
                 .before(beforeSnapshot)

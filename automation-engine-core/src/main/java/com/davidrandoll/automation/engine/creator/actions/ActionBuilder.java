@@ -40,7 +40,7 @@ public class ActionBuilder {
                 .orElseThrow(() -> new ActionNotFoundException(action.getAction()));
 
         var interceptingAction = new InterceptingAction(actionInstance, actionInterceptors);
-        var actionContext = new ActionContext(action.getParams());
+        var actionContext = new ActionContext(action);
 
         return eventContext -> interceptingAction.execute(eventContext, actionContext);
     }

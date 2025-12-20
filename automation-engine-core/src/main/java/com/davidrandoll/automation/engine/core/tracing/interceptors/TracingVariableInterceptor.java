@@ -10,9 +10,7 @@ import com.davidrandoll.automation.engine.core.variables.interceptors.IVariableC
 import com.davidrandoll.automation.engine.core.variables.interceptors.IVariableInterceptor;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import static com.davidrandoll.automation.engine.core.tracing.utils.TraceUtils.filterTraceData;
 import static com.davidrandoll.automation.engine.core.tracing.utils.TraceUtils.hasAnyChildren;
 
 /**
@@ -20,11 +18,6 @@ import static com.davidrandoll.automation.engine.core.tracing.utils.TraceUtils.h
  */
 @Slf4j
 public class TracingVariableInterceptor implements IVariableInterceptor {
-
-    /**
-     * Key used to store the type in context data.
-     */
-    public static final String TYPE_KEY = "__type";
 
     @Override
     public void intercept(EventContext eventContext, VariableContext variableContext, IVariableChain chain) {
@@ -58,8 +51,8 @@ public class TracingVariableInterceptor implements IVariableInterceptor {
         TraceSnapshot afterSnapshot = captureSnapshot(eventContext, variableContext);
 
         // Extract type and alias from context
-        String type = extractType(variableContext);
-        String alias = extractAlias(variableContext);
+        String type = variableContext.getVariable();
+        String alias = variableContext.getAlias();
 
         // Create trace entry with children if any were added
         VariableTraceEntry entry = VariableTraceEntry.builder()
@@ -81,31 +74,5 @@ public class TracingVariableInterceptor implements IVariableInterceptor {
                 .eventSnapshot(filterTraceData(eventContext.getEventData()))
                 .contextSnapshot(filterTraceData(variableContext.getData()))
                 .build();
-    }
-
-    private String extractType(VariableContext context) {
-        Object type = context.getData().get(TYPE_KEY);
-        return type != null ? type.toString() : null;
-    }
-
-    private String extractAlias(VariableContext context) {
-        Object alias = context.getData().get("alias");
-        return alias != null ? alias.toString() : null;
-    }
-
-    /**
-     * Filters out internal keys (starting with __) from context data for the snapshot.
-     */
-    private Map<String, Object> filterTraceData(Map<String, Object> data) {
-        if (data == null) {
-            return new HashMap<>();
-        }
-        Map<String, Object> filtered = new HashMap<>();
-        for (Map.Entry<String, Object> entry : data.entrySet()) {
-            if (!entry.getKey().startsWith("__")) {
-                filtered.put(entry.getKey(), entry.getValue());
-            }
-        }
-        return filtered;
     }
 }
