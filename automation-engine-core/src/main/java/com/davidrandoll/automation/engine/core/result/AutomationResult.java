@@ -5,6 +5,8 @@ import com.davidrandoll.automation.engine.core.events.EventContext;
 import lombok.Getter;
 import lombok.experimental.Delegate;
 
+import java.util.Collections;
+import java.util.Map;
 import java.util.Optional;
 
 @Getter
@@ -15,19 +17,43 @@ public class AutomationResult {
 
     @Delegate
     private final Optional<Object> result;
+    
+    /**
+     * Additional fields that can be attached to the result by interceptors or other components.
+     * Useful for tracing, debugging, and extensibility without modifying core result structure.
+     */
+    private final Map<String, Object> additionalFields;
 
-    private AutomationResult(boolean executed, Automation automation, EventContext context, Object result) {
+    private AutomationResult(boolean executed, Automation automation, EventContext context, Object result, Map<String, Object> additionalFields) {
         this.executed = executed;
         this.automation = new Automation(automation);
         this.context = context;
         this.result = Optional.ofNullable(result);
+        this.additionalFields = additionalFields != null ? Map.copyOf(additionalFields) : Collections.emptyMap();
     }
 
     public static AutomationResult executed(Automation automation, EventContext context, Object result) {
-        return new AutomationResult(true, automation, context, result);
+        return new AutomationResult(true, automation, context, result, null);
     }
 
     public static AutomationResult skipped(Automation automation, EventContext context) {
-        return new AutomationResult(false, automation, context, null);
+        return new AutomationResult(false, automation, context, null, null);
+    }
+    
+    /**
+     * Create an executed AutomationResult with additional fields.
+     * Used by interceptors (e.g., tracing) to attach metadata.
+     *
+     * @param automation The automation that was executed
+     * @param context The event context
+     * @param result The execution result
+     * @param executed Whether the automation was executed or skipped
+     * @param additionalFields Additional metadata fields
+     * @return A new AutomationResult with additional fields
+     */
+    public static AutomationResult executedWithAdditionalFields(Automation automation, EventContext context, 
+                                                                 Object result, boolean executed,
+                                                                 Map<String, Object> additionalFields) {
+        return new AutomationResult(executed, automation, context, result, additionalFields);
     }
 }
