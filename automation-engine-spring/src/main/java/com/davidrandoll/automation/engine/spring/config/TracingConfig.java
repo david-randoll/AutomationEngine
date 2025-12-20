@@ -1,6 +1,11 @@
 package com.davidrandoll.automation.engine.spring.config;
 
-import com.davidrandoll.automation.engine.spring.spi.interceptors.*;
+import com.davidrandoll.automation.engine.core.actions.interceptors.IActionInterceptor;
+import com.davidrandoll.automation.engine.core.conditions.interceptors.IConditionInterceptor;
+import com.davidrandoll.automation.engine.core.result.interceptors.IResultInterceptor;
+import com.davidrandoll.automation.engine.core.triggers.interceptors.ITriggerInterceptor;
+import com.davidrandoll.automation.engine.core.variables.interceptors.IVariableInterceptor;
+import com.davidrandoll.automation.engine.orchestrator.interceptors.IAutomationExecutionInterceptor;
 import com.davidrandoll.automation.engine.spring.tracing.TracingConfigurationProperties;
 import com.davidrandoll.automation.engine.spring.tracing.interceptors.*;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -15,7 +20,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @EnableConfigurationProperties(TracingConfigurationProperties.class)
 public class TracingConfig {
-    
+
     /**
      * Top-level automation execution tracing interceptor.
      * Coordinates all component-level traces and generates trace IDs.
@@ -25,7 +30,7 @@ public class TracingConfig {
     public IAutomationExecutionInterceptor automationTracingInterceptor(TracingConfigurationProperties config) {
         return new AutomationTracingInterceptor(config);
     }
-    
+
     /**
      * Variable resolution tracing interceptor.
      */
@@ -34,7 +39,7 @@ public class TracingConfig {
     public IVariableInterceptor variableTracingInterceptor() {
         return new VariableTracingInterceptor();
     }
-    
+
     /**
      * Trigger evaluation tracing interceptor.
      */
@@ -43,7 +48,7 @@ public class TracingConfig {
     public ITriggerInterceptor triggerTracingInterceptor() {
         return new TriggerTracingInterceptor();
     }
-    
+
     /**
      * Condition evaluation tracing interceptor.
      */
@@ -52,7 +57,7 @@ public class TracingConfig {
     public IConditionInterceptor conditionTracingInterceptor() {
         return new ConditionTracingInterceptor();
     }
-    
+
     /**
      * Action execution tracing interceptor.
      */
@@ -61,7 +66,7 @@ public class TracingConfig {
     public IActionInterceptor actionTracingInterceptor() {
         return new ActionTracingInterceptor();
     }
-    
+
     /**
      * Result computation tracing interceptor.
      */
