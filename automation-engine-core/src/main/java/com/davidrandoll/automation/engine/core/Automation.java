@@ -26,7 +26,7 @@ public final class Automation {
     private final IBaseResult result;
 
     public Automation(String alias, Map<String, Object> options, BaseVariableList variables, BaseTriggerList triggers,
-            BaseConditionList conditions, BaseActionList actions, IBaseResult result) {
+                      BaseConditionList conditions, BaseActionList actions, IBaseResult result) {
         this.alias = alias;
         this.options = Collections.unmodifiableMap(Optional.ofNullable(options).orElse(Collections.emptyMap()));
         this.variables = Optional.ofNullable(variables).orElse(BaseVariableList.of());
@@ -37,7 +37,7 @@ public final class Automation {
     }
 
     public Automation(String alias, BaseVariableList variables, BaseTriggerList triggers, BaseConditionList conditions,
-            BaseActionList actions, IBaseResult result) {
+                      BaseActionList actions, IBaseResult result) {
         this(alias, Collections.emptyMap(), variables, triggers, conditions, actions, result);
     }
 

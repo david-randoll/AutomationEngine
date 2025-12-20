@@ -1,3 +1,8 @@
 logging:
   level:
     com.davidrandoll.automation.engine: DEBUG
+
+automation:
+  engine:
+    tracing:
+      enabled: true

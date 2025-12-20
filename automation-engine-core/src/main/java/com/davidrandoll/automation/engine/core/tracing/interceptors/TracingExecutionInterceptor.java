@@ -7,6 +7,8 @@ import com.davidrandoll.automation.engine.core.tracing.ExecutionTrace;
 import com.davidrandoll.automation.engine.core.tracing.TraceContext;
 import com.davidrandoll.automation.engine.orchestrator.interceptors.IAutomationExecutionChain;
 import com.davidrandoll.automation.engine.orchestrator.interceptors.IAutomationExecutionInterceptor;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
@@ -21,42 +23,18 @@ import java.util.Map;
  * </p>
  */
 @Slf4j
+@Getter
+@RequiredArgsConstructor
 public class TracingExecutionInterceptor implements IAutomationExecutionInterceptor {
+    private final boolean tracingEnabled;
 
-    /**
-     * Whether tracing is enabled. Can be controlled dynamically.
-     */
-    private volatile boolean tracingEnabled = true;
-
-    public TracingExecutionInterceptor() {
-    }
-
-    public TracingExecutionInterceptor(boolean tracingEnabled) {
-        this.tracingEnabled = tracingEnabled;
-    }
-
-    /**
-     * Enable or disable tracing.
-     *
-     * @param enabled true to enable tracing, false to disable
-     */
-    public void setTracingEnabled(boolean enabled) {
-        this.tracingEnabled = enabled;
-    }
-
-    /**
-     * Check if tracing is currently enabled.
-     *
-     * @return true if tracing is enabled
-     */
-    public boolean isTracingEnabled() {
-        return tracingEnabled;
-    }
 
     @Override
     public AutomationResult intercept(Automation automation, EventContext context, IAutomationExecutionChain chain) {
-        if (!tracingEnabled) {
-            log.debug("Tracing is disabled, proceeding without trace capture");
+        // Check both global flag and per-automation flag
+        boolean automationTracingEnabled = (boolean) automation.getOptions().getOrDefault("tracing", false);
+        if (!tracingEnabled || !automationTracingEnabled) {
+            log.debug("Tracing is disabled (global={}, automation={}), proceeding without trace capture", tracingEnabled, automationTracingEnabled);
             return chain.proceed(automation, context);
         }
 

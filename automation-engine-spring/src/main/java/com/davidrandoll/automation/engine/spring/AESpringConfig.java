@@ -13,7 +13,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
         ModulesConfig.class,
         ParserConfig.class,
         ProviderConfig.class,
-        SupplierConfig.class
+        SupplierConfig.class,
+        TracingConfig.class
 })
 @EnableScheduling
 public class AESpringConfig {

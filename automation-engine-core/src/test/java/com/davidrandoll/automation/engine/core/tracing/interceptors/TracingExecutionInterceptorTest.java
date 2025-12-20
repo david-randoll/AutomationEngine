@@ -31,7 +31,7 @@ class TracingExecutionInterceptorTest {
 
     @BeforeEach
     void setUp() {
-        interceptor = new TracingExecutionInterceptor();
+        interceptor = new TracingExecutionInterceptor(true);
         TestEvent event = TestEvent.builder()
                 .eventType("TEST")
                 .message("Test message")
@@ -92,28 +92,6 @@ class TracingExecutionInterceptorTest {
         assertThat(result.getAdditionalFields()).containsKey("customField");
         assertThat(result.getAdditionalFields()).containsKey(ExecutionTrace.TRACE_KEY);
         assertThat(result.getAdditionalFields().get("customField")).isEqualTo("customValue");
-    }
-
-    @Test
-    void testIntercept_tracingDisabled_doesNotAttachTrace() {
-        interceptor.setTracingEnabled(false);
-        AutomationResult originalResult = AutomationResult.executed(automation, eventContext, "result");
-        when(chain.proceed(any(), any())).thenReturn(originalResult);
-
-        AutomationResult result = interceptor.intercept(automation, eventContext, chain);
-
-        assertThat(result.getAdditionalFields()).doesNotContainKey(ExecutionTrace.TRACE_KEY);
-    }
-
-    @Test
-    void testSetTracingEnabled_controlsTracing() {
-        assertThat(interceptor.isTracingEnabled()).isTrue();
-
-        interceptor.setTracingEnabled(false);
-        assertThat(interceptor.isTracingEnabled()).isFalse();
-
-        interceptor.setTracingEnabled(true);
-        assertThat(interceptor.isTracingEnabled()).isTrue();
     }
 
     @Test

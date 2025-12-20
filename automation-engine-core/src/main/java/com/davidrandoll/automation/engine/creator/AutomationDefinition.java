@@ -16,12 +16,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldNameConstants;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -53,7 +48,7 @@ public class AutomationDefinition {
     private List<ConditionDefinition> conditions = new ArrayList<>();
     private List<ActionDefinition> actions = new ArrayList<>();
 
-    @JsonAlias({ "execution_summary", "result", "summary", "executionResult", "return" })
+    @JsonAlias({"execution_summary", "result", "summary", "executionResult", "return"})
     @JsonDeserialize(using = ResultDeserializer.class)
     private ResultDefinition result = new ResultDefinition();
 
