@@ -1,11 +1,7 @@
 package com.davidrandoll.automation.engine.spring.modules.conditions.udc;
 
 import com.davidrandoll.automation.engine.core.conditions.IConditionContext;
-import com.fasterxml.jackson.annotation.JsonAlias;
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -30,6 +26,8 @@ public class UserDefinedConditionContext implements IConditionContext {
 
     @JsonAlias({"name"})
     private String name;
+
+    private boolean throwErrorIfNotFound = true;
 
     @JsonAnyGetter
     @JsonAnySetter

@@ -24,9 +24,9 @@ class UserDefinedActionTest extends AutomationEngineTest {
     void setUp() {
         // Register a simple user-defined action
         UserDefinedActionDefinition simpleAction = UserDefinedActionDefinition.builder()
+                .parameters(Map.of("userName", "Guest", "greeting", "Hello"))
                 .name("greetUser")
                 .description("Greets a user with a message")
-                .parameters(Map.of("userName", "Guest", "greeting", "Hello"))
                 .actions(List.of(
                         ActionDefinition.builder()
                                 .action("logger")

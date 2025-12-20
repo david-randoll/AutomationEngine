@@ -1,11 +1,7 @@
 package com.davidrandoll.automation.engine.spring.modules.variables.udv;
 
 import com.davidrandoll.automation.engine.core.variables.IVariableContext;
-import com.fasterxml.jackson.annotation.JsonAlias;
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -30,6 +26,8 @@ public class UserDefinedVariableContext implements IVariableContext {
 
     @JsonAlias({"name"})
     private String name;
+
+    private boolean throwErrorIfNotFound = true;
 
     @JsonAnyGetter
     @JsonAnySetter

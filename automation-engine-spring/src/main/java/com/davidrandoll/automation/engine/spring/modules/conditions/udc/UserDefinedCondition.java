@@ -4,7 +4,9 @@ import com.davidrandoll.automation.engine.core.events.EventContext;
 import com.davidrandoll.automation.engine.spring.spi.PluggableCondition;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.util.ObjectUtils;
+import org.springframework.web.server.ResponseStatusException;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -20,6 +22,8 @@ public class UserDefinedCondition extends PluggableCondition<UserDefinedConditio
 
         var conditionDefinition = registry.findCondition(cc.getName());
         if (conditionDefinition.isEmpty()) {
+            if (cc.isThrowErrorIfNotFound())
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User-defined condition '" + cc.getName() + "' not found in registry");
             log.warn("User-defined condition '{}' not found in registry", cc.getName());
             return false;
         }

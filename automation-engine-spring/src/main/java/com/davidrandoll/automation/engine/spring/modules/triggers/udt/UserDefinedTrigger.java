@@ -4,7 +4,9 @@ import com.davidrandoll.automation.engine.core.events.EventContext;
 import com.davidrandoll.automation.engine.spring.spi.PluggableTrigger;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.util.ObjectUtils;
+import org.springframework.web.server.ResponseStatusException;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -20,6 +22,8 @@ public class UserDefinedTrigger extends PluggableTrigger<UserDefinedTriggerConte
 
         var triggerDefinition = registry.findTrigger(tc.getName());
         if (triggerDefinition.isEmpty()) {
+            if (tc.isThrowErrorIfNotFound())
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User-defined trigger '" + tc.getName() + "' not found in registry");
             log.warn("User-defined trigger '{}' not found in registry", tc.getName());
             return false;
         }
