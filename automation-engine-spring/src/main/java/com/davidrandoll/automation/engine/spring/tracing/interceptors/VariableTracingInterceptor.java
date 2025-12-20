@@ -28,7 +28,9 @@ public class VariableTracingInterceptor implements IVariableInterceptor {
         }
 
         long startNanos = System.nanoTime();
-        String alias = variableContext.getAlias();
+        String alias = variableContext.getData().get("alias") != null
+                ? variableContext.getData().get("alias").toString()
+                : "unknown";
 
         // Capture before value
         Object beforeValue = eventContext.getMetadata().get(alias);

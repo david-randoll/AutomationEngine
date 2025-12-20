@@ -35,7 +35,9 @@ public class TriggerTracingInterceptor implements ITriggerInterceptor {
 
         // Build trace entry
         Map<String, Object> traceEntry = TraceDataCollector.createTimingEntry(startNanos, endNanos);
-        traceEntry.put(TraceConstants.FIELD_ALIAS, triggerContext.getAlias());
+        String alias = triggerContext.getData().get("alias") != null ? triggerContext.getData().get("alias").toString()
+                : "unknown";
+        traceEntry.put(TraceConstants.FIELD_ALIAS, alias);
         traceEntry.put(TraceConstants.FIELD_TYPE, triggerContext.getClass().getSimpleName());
         traceEntry.put(TraceConstants.FIELD_ACTIVATED, activated);
 
@@ -43,7 +45,7 @@ public class TriggerTracingInterceptor implements ITriggerInterceptor {
         TraceDataCollector.appendToTraceList(eventContext, TraceConstants.TRACE_TRIGGERS, traceEntry);
 
         log.trace("Trigger evaluated: {} = {} in {}ns",
-                triggerContext.getAlias(), activated, traceEntry.get(TraceConstants.FIELD_DURATION_NANOS));
+                alias, activated, traceEntry.get(TraceConstants.FIELD_DURATION_NANOS));
 
         return activated;
     }

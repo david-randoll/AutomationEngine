@@ -9,7 +9,9 @@ import com.davidrandoll.automation.engine.core.conditions.interceptors.Intercept
 import com.davidrandoll.automation.engine.core.events.EventContext;
 import lombok.RequiredArgsConstructor;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static java.util.Objects.isNull;
@@ -38,7 +40,17 @@ public class ConditionBuilder {
                 .orElseThrow(() -> new ConditionNotFoundException(condition.getCondition()));
 
         var interceptingCondition = new InterceptingCondition(conditionInstance, conditionInterceptors);
-        var conditionContext = new ConditionContext(condition.getParams());
+        
+        // Add alias and description to params map for tracing interceptors
+        Map<String, Object> params = new HashMap<>(condition.getParams());
+        if (condition.getAlias() != null) {
+            params.put("alias", condition.getAlias());
+        }
+        if (condition.getDescription() != null) {
+            params.put("description", condition.getDescription());
+        }
+        
+        var conditionContext = new ConditionContext(params);
 
         return eventContext -> interceptingCondition.isSatisfied(eventContext, conditionContext);
     }

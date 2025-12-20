@@ -9,7 +9,9 @@ import com.davidrandoll.automation.engine.core.actions.interceptors.Intercepting
 import com.davidrandoll.automation.engine.core.events.EventContext;
 import lombok.RequiredArgsConstructor;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.Executor;
 
@@ -39,7 +41,17 @@ public class ActionBuilder {
                 .orElseThrow(() -> new ActionNotFoundException(action.getAction()));
 
         var interceptingAction = new InterceptingAction(actionInstance, actionInterceptors);
-        var actionContext = new ActionContext(action.getParams());
+        
+        // Create params map with alias and description included for tracing
+        Map<String, Object> params = new HashMap<>(action.getParams());
+        if (action.getAlias() != null) {
+            params.put("alias", action.getAlias());
+        }
+        if (action.getDescription() != null) {
+            params.put("description", action.getDescription());
+        }
+        
+        var actionContext = new ActionContext(params);
 
         return eventContext -> interceptingAction.execute(eventContext, actionContext);
     }

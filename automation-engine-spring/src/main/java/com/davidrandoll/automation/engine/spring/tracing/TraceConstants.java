@@ -2,35 +2,36 @@ package com.davidrandoll.automation.engine.spring.tracing;
 
 /**
  * Constants for tracing metadata keys in EventContext.
- * All trace-related metadata uses the __trace_ prefix to avoid collision with user-defined variables.
+ * All trace-related metadata uses the __trace_ prefix to avoid collision with
+ * user-defined variables.
  */
 public final class TraceConstants {
-    
+
     private TraceConstants() {
         throw new UnsupportedOperationException("Utility class");
     }
-    
+
     // Top-level trace keys
     public static final String TRACE_ID = "__trace_id";
     public static final String TRACE_AUTOMATION_START = "__trace_automation_start";
     public static final String TRACE_AUTOMATION_END = "__trace_automation_end";
     public static final String TRACE_AUTOMATION_DURATION_NANOS = "__trace_automation_duration_nanos";
     public static final String TRACE_EXECUTED = "__trace_executed";
-    
+
     // Component trace lists
     public static final String TRACE_VARIABLES = "__trace_variables";
     public static final String TRACE_TRIGGERS = "__trace_triggers";
     public static final String TRACE_CONDITIONS = "__trace_conditions";
     public static final String TRACE_ACTIONS = "__trace_actions";
     public static final String TRACE_RESULT = "__trace_result";
-    
+
     // Context snapshot keys
     public static final String TRACE_CONTEXT_SNAPSHOT_BEFORE = "__trace_context_snapshot_before";
     public static final String TRACE_CONTEXT_SNAPSHOT_AFTER = "__trace_context_snapshot_after";
-    
+
     // Summary key
     public static final String TRACE_SUMMARY = "__trace_summary";
-    
+
     // Common field names in trace entries
     public static final String FIELD_ALIAS = "alias";
     public static final String FIELD_TYPE = "type";
@@ -45,4 +46,33 @@ public final class TraceConstants {
     public static final String FIELD_AFTER_VALUE = "afterValue";
     public static final String FIELD_RESULT_TYPE = "resultType";
     public static final String FIELD_RESULT_VALUE = "resultValue";
+
+    // Hierarchical execution tree constants
+    public static final String EXECUTION_TREE = "executionTree";
+
+    // Node types for hierarchical structure
+    public static final String NODE_TYPE_AUTOMATION = "automation";
+    public static final String NODE_TYPE_PHASE = "phase";
+    public static final String NODE_TYPE_VARIABLE = "variable";
+    public static final String NODE_TYPE_TRIGGER = "trigger";
+    public static final String NODE_TYPE_CONDITION = "condition";
+    public static final String NODE_TYPE_ACTION = "action";
+    public static final String NODE_TYPE_RESULT = "result";
+
+    // Phase names
+    public static final String PHASE_VARIABLES = "variables";
+    public static final String PHASE_TRIGGERS = "triggers";
+    public static final String PHASE_CONDITIONS = "conditions";
+    public static final String PHASE_ACTIONS = "actions";
+    public static final String PHASE_RESULT = "result";
+
+    // Status values
+    public static final String STATUS_EXECUTED = "executed";
+    public static final String STATUS_SKIPPED = "skipped";
+    public static final String STATUS_ACTIVATED = "activated";
+    public static final String STATUS_NOT_ACTIVATED = "notActivated";
+    public static final String STATUS_SATISFIED = "satisfied";
+    public static final String STATUS_NOT_SATISFIED = "notSatisfied";
+    public static final String STATUS_SUCCESS = "success";
+    public static final String STATUS_FAILED = "failed";
 }

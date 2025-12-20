@@ -35,7 +35,10 @@ public class ConditionTracingInterceptor implements IConditionInterceptor {
 
         // Build trace entry
         Map<String, Object> traceEntry = TraceDataCollector.createTimingEntry(startNanos, endNanos);
-        traceEntry.put(TraceConstants.FIELD_ALIAS, conditionContext.getAlias());
+        String alias = conditionContext.getData().get("alias") != null
+                ? conditionContext.getData().get("alias").toString()
+                : "unknown";
+        traceEntry.put(TraceConstants.FIELD_ALIAS, alias);
         traceEntry.put(TraceConstants.FIELD_TYPE, conditionContext.getClass().getSimpleName());
         traceEntry.put(TraceConstants.FIELD_SATISFIED, satisfied);
 
@@ -43,7 +46,7 @@ public class ConditionTracingInterceptor implements IConditionInterceptor {
         TraceDataCollector.appendToTraceList(eventContext, TraceConstants.TRACE_CONDITIONS, traceEntry);
 
         log.trace("Condition evaluated: {} = {} in {}ns",
-                conditionContext.getAlias(), satisfied, traceEntry.get(TraceConstants.FIELD_DURATION_NANOS));
+                alias, satisfied, traceEntry.get(TraceConstants.FIELD_DURATION_NANOS));
 
         return satisfied;
     }

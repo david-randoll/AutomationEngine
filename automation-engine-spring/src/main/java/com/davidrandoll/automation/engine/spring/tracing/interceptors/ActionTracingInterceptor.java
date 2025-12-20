@@ -28,7 +28,13 @@ public class ActionTracingInterceptor implements IActionInterceptor {
         }
 
         long startNanos = System.nanoTime();
-        String alias = actionContext.getAlias();
+        
+        // Debug: log the data map to see what's in it
+        log.debug("ActionContext data keys: {}", actionContext.getData().keySet());
+        log.debug("ActionContext data: {}", actionContext.getData());
+        
+        String alias = actionContext.getData().get("alias") != null ? actionContext.getData().get("alias").toString()
+                : "unknown";
         Throwable exception = null;
 
         try {

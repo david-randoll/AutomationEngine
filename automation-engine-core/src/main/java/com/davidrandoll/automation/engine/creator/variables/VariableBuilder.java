@@ -9,7 +9,9 @@ import com.davidrandoll.automation.engine.core.variables.interceptors.IVariableI
 import com.davidrandoll.automation.engine.core.variables.interceptors.InterceptingVariable;
 import lombok.RequiredArgsConstructor;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static java.util.Objects.isNull;
@@ -37,7 +39,17 @@ public class VariableBuilder {
                 .orElseThrow(() -> new VariableNotFoundException(variable.getVariable()));
 
         var interceptingVariable = new InterceptingVariable(variableInstance, variableInterceptors);
-        var variableContext = new VariableContext(variable.getParams());
+        
+        // Add alias and description to params map for tracing interceptors
+        Map<String, Object> params = new HashMap<>(variable.getParams());
+        if (variable.getAlias() != null) {
+            params.put("alias", variable.getAlias());
+        }
+        if (variable.getDescription() != null) {
+            params.put("description", variable.getDescription());
+        }
+        
+        var variableContext = new VariableContext(params);
 
         return event -> interceptingVariable.resolve(event, variableContext);
     }

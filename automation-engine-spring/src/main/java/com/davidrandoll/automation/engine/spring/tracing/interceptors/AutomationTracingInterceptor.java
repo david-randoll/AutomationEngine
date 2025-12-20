@@ -5,8 +5,10 @@ import com.davidrandoll.automation.engine.core.events.EventContext;
 import com.davidrandoll.automation.engine.core.result.AutomationResult;
 import com.davidrandoll.automation.engine.orchestrator.interceptors.IAutomationExecutionChain;
 import com.davidrandoll.automation.engine.orchestrator.interceptors.IAutomationExecutionInterceptor;
+import com.davidrandoll.automation.engine.spring.tracing.ExecutionNode;
 import com.davidrandoll.automation.engine.spring.tracing.TraceConstants;
 import com.davidrandoll.automation.engine.spring.tracing.TraceDataCollector;
+import com.davidrandoll.automation.engine.spring.tracing.TraceTreeBuilder;
 import com.davidrandoll.automation.engine.spring.tracing.TracingConfigurationProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +18,8 @@ import java.util.*;
 
 /**
  * Top-level interceptor for automation execution tracing.
- * Generates trace IDs, captures overall execution timing, and aggregates child traces.
+ * Generates trace IDs, captures overall execution timing, and aggregates child
+ * traces.
  * Extracts trace data and attaches to AutomationResult.additionalFields.
  */
 @Slf4j
@@ -36,7 +39,8 @@ public class AutomationTracingInterceptor implements IAutomationExecutionInterce
         context.addMetadata(TraceConstants.TRACE_AUTOMATION_START, startNanos);
 
         // Capture context snapshot before execution
-        if (config.isIncludeContextSnapshots() && config.getSnapshotMode() != TracingConfigurationProperties.SnapshotMode.NONE) {
+        if (config.isIncludeContextSnapshots()
+                && config.getSnapshotMode() != TracingConfigurationProperties.SnapshotMode.NONE) {
             boolean keysOnly = config.getSnapshotMode() == TracingConfigurationProperties.SnapshotMode.KEYS_ONLY;
             Map<String, Object> snapshotBefore = TraceDataCollector.captureContextSnapshot(context, keysOnly);
             context.addMetadata(TraceConstants.TRACE_CONTEXT_SNAPSHOT_BEFORE, snapshotBefore);
@@ -55,7 +59,8 @@ public class AutomationTracingInterceptor implements IAutomationExecutionInterce
             context.addMetadata(TraceConstants.TRACE_EXECUTED, result.isExecuted());
 
             // Capture context snapshot after execution
-            if (config.isIncludeContextSnapshots() && config.getSnapshotMode() != TracingConfigurationProperties.SnapshotMode.NONE) {
+            if (config.isIncludeContextSnapshots()
+                    && config.getSnapshotMode() != TracingConfigurationProperties.SnapshotMode.NONE) {
                 boolean keysOnly = config.getSnapshotMode() == TracingConfigurationProperties.SnapshotMode.KEYS_ONLY;
                 Map<String, Object> snapshotAfter = TraceDataCollector.captureContextSnapshot(context, keysOnly);
                 context.addMetadata(TraceConstants.TRACE_CONTEXT_SNAPSHOT_AFTER, snapshotAfter);
@@ -70,8 +75,7 @@ public class AutomationTracingInterceptor implements IAutomationExecutionInterce
                     context,
                     result.getResult().orElse(null),
                     result.isExecuted(),
-                    Collections.singletonMap("trace", traceData)
-            );
+                    Collections.singletonMap("trace", traceData));
 
             // Clear trace data from context if configured
             if (config.isClearAfterExtraction()) {
@@ -120,7 +124,12 @@ public class AutomationTracingInterceptor implements IAutomationExecutionInterce
             trace.put("timing", timing);
         }
 
-        // Component traces
+        // Build hierarchical execution tree
+        ExecutionNode executionTree = TraceTreeBuilder.buildExecutionTree(automation, context, result);
+        trace.put(TraceConstants.EXECUTION_TREE, executionTree.toMap());
+
+        // Also keep flat structure for backward compatibility (can be removed later if
+        // not needed)
         List<Map<String, Object>> variables = TraceDataCollector.getTraceList(context, TraceConstants.TRACE_VARIABLES);
         if (!variables.isEmpty()) {
             trace.put("variables", variables);
@@ -136,7 +145,8 @@ public class AutomationTracingInterceptor implements IAutomationExecutionInterce
             trace.put("triggersActivated", activatedCount);
         }
 
-        List<Map<String, Object>> conditions = TraceDataCollector.getTraceList(context, TraceConstants.TRACE_CONDITIONS);
+        List<Map<String, Object>> conditions = TraceDataCollector.getTraceList(context,
+                TraceConstants.TRACE_CONDITIONS);
         if (!conditions.isEmpty()) {
             trace.put("conditions", conditions);
             // Add summary: all conditions satisfied?
