@@ -24,7 +24,8 @@ public class TriggerBuilder {
     public BaseTriggerList resolve(List<TriggerDefinition> triggers) {
         var result = new BaseTriggerList();
 
-        if (isNull(triggers)) return result;
+        if (isNull(triggers))
+            return result;
 
         for (TriggerDefinition trigger : triggers) {
             IBaseTrigger newTriggerInstance = buildTrigger(trigger);
@@ -39,7 +40,7 @@ public class TriggerBuilder {
                 .orElseThrow(() -> new TriggerNotFoundException(trigger.getTrigger()));
 
         var interceptingTrigger = new InterceptingTrigger(triggerInstance, triggerInterceptors);
-        
+
         // Add alias, description, and type to params map for tracing interceptors
         Map<String, Object> params = new HashMap<>(trigger.getParams());
         params.put("__type", trigger.getTrigger()); // Store type for tracing interceptors
@@ -49,11 +50,10 @@ public class TriggerBuilder {
         if (trigger.getDescription() != null) {
             params.put("description", trigger.getDescription());
         }
-        
+
         var triggerContext = new TriggerContext(params);
         return event -> interceptingTrigger.isTriggered(event, triggerContext);
     }
-
 
     public boolean anyTriggersTriggered(EventContext eventContext, List<TriggerDefinition> triggers) {
         BaseTriggerList resolvedTriggers = resolve(triggers);

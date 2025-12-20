@@ -48,7 +48,7 @@ public class AutomationDefinition {
     private List<ConditionDefinition> conditions = new ArrayList<>();
     private List<ActionDefinition> actions = new ArrayList<>();
 
-    @JsonAlias({"execution_summary", "result", "summary", "executionResult", "return"})
+    @JsonAlias({ "execution_summary", "result", "summary", "executionResult", "return" })
     @JsonDeserialize(using = ResultDeserializer.class)
     private ResultDefinition result = new ResultDefinition();
 

@@ -25,7 +25,8 @@ public class ActionBuilder {
     public BaseActionList resolve(List<ActionDefinition> actions) {
         var result = new BaseActionList();
 
-        if (isNull(actions)) return result;
+        if (isNull(actions))
+            return result;
 
         for (var action : actions) {
             IBaseAction newActionInstance = buildAction(action);
@@ -41,7 +42,7 @@ public class ActionBuilder {
                 .orElseThrow(() -> new ActionNotFoundException(action.getAction()));
 
         var interceptingAction = new InterceptingAction(actionInstance, actionInterceptors);
-        
+
         // Create params map with alias, description, and type included for tracing
         Map<String, Object> params = new HashMap<>(action.getParams());
         params.put("__type", action.getAction()); // Store type for tracing interceptors
@@ -51,7 +52,7 @@ public class ActionBuilder {
         if (action.getDescription() != null) {
             params.put("description", action.getDescription());
         }
-        
+
         var actionContext = new ActionContext(params);
 
         return eventContext -> interceptingAction.execute(eventContext, actionContext);

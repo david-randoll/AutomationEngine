@@ -24,7 +24,8 @@ public class VariableBuilder {
     public BaseVariableList resolve(List<VariableDefinition> variables) {
         var result = new BaseVariableList();
 
-        if (isNull(variables)) return result;
+        if (isNull(variables))
+            return result;
 
         for (VariableDefinition variable : variables) {
             IBaseVariable newVariableInstance = buildVariable(variable);
@@ -39,7 +40,7 @@ public class VariableBuilder {
                 .orElseThrow(() -> new VariableNotFoundException(variable.getVariable()));
 
         var interceptingVariable = new InterceptingVariable(variableInstance, variableInterceptors);
-        
+
         // Add alias, description, and type to params map for tracing interceptors
         Map<String, Object> params = new HashMap<>(variable.getParams());
         params.put("__type", variable.getVariable()); // Store type for tracing interceptors
@@ -49,12 +50,11 @@ public class VariableBuilder {
         if (variable.getDescription() != null) {
             params.put("description", variable.getDescription());
         }
-        
+
         var variableContext = new VariableContext(params);
 
         return event -> interceptingVariable.resolve(event, variableContext);
     }
-
 
     public void resolveVariables(EventContext eventContext, List<VariableDefinition> variables) {
         BaseVariableList resolvedVariables = resolve(variables);

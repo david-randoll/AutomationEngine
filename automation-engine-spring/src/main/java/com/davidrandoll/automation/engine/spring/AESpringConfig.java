@@ -7,14 +7,14 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @Configuration
 @Import({
-        BuilderConfig.class,
-        ConverterConfig.class,
-        CoreConfig.class,
-        ModulesConfig.class,
-        ParserConfig.class,
-        ProviderConfig.class,
-        SupplierConfig.class,
-        TracingConfig.class
+                BuilderConfig.class,
+                ConverterConfig.class,
+                CoreConfig.class,
+                ModulesConfig.class,
+                ParserConfig.class,
+                ProviderConfig.class,
+                SupplierConfig.class,
+                TracingConfig.class
 })
 @EnableScheduling
 public class AESpringConfig {

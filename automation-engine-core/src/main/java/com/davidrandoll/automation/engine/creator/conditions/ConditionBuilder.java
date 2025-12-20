@@ -24,7 +24,8 @@ public class ConditionBuilder {
     public BaseConditionList resolve(List<ConditionDefinition> conditions) {
         var result = new BaseConditionList();
 
-        if (isNull(conditions)) return result;
+        if (isNull(conditions))
+            return result;
 
         for (var condition : conditions) {
             IBaseCondition newConditionInstance = buildCondition(condition);
@@ -40,7 +41,7 @@ public class ConditionBuilder {
                 .orElseThrow(() -> new ConditionNotFoundException(condition.getCondition()));
 
         var interceptingCondition = new InterceptingCondition(conditionInstance, conditionInterceptors);
-        
+
         // Add alias, description, and type to params map for tracing interceptors
         Map<String, Object> params = new HashMap<>(condition.getParams());
         params.put("__type", condition.getCondition()); // Store type for tracing interceptors
@@ -50,7 +51,7 @@ public class ConditionBuilder {
         if (condition.getDescription() != null) {
             params.put("description", condition.getDescription());
         }
-        
+
         var conditionContext = new ConditionContext(params);
 
         return eventContext -> interceptingCondition.isSatisfied(eventContext, conditionContext);
