@@ -48,12 +48,12 @@ public class TraceContext {
      * @return the TraceContext
      */
     public static TraceContext getOrCreate(EventContext eventContext, String alias) {
-        Object existing = eventContext.getMetadata().get(TRACE_CONTEXT_KEY);
-        if (existing instanceof TraceContext) {
-            return (TraceContext) existing;
+        Object existing = eventContext.getMetadata(TRACE_CONTEXT_KEY);
+        if (existing instanceof TraceContext traceContext) {
+            return traceContext;
         }
         TraceContext traceContext = new TraceContext(alias);
-        eventContext.getMetadata().put(TRACE_CONTEXT_KEY, traceContext);
+        eventContext.addMetadata(TRACE_CONTEXT_KEY, traceContext);
         return traceContext;
     }
 
@@ -65,7 +65,8 @@ public class TraceContext {
      */
     public static TraceContext get(EventContext eventContext) {
         Object existing = eventContext.getMetadata().get(TRACE_CONTEXT_KEY);
-        return existing instanceof TraceContext ? (TraceContext) existing : null;
+        if (existing instanceof TraceContext traceContext) return traceContext;
+        return null;
     }
 
     /**

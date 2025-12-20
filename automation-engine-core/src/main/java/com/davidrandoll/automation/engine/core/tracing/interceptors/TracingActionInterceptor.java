@@ -10,8 +10,8 @@ import com.davidrandoll.automation.engine.core.tracing.TraceContext;
 import com.davidrandoll.automation.engine.core.tracing.TraceSnapshot;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.HashMap;
-import java.util.Map;
+import static com.davidrandoll.automation.engine.core.tracing.utils.TraceUtils.filterTraceData;
+import static com.davidrandoll.automation.engine.core.tracing.utils.TraceUtils.hasAnyChildren;
 
 /**
  * Interceptor that captures trace information for action execution.
@@ -82,8 +82,8 @@ public class TracingActionInterceptor implements IActionInterceptor {
 
     private TraceSnapshot captureSnapshot(EventContext eventContext, ActionContext actionContext) {
         return TraceSnapshot.builder()
-                .eventSnapshot(new HashMap<>(eventContext.getEventData()))
-                .contextSnapshot(filterContextData(actionContext.getData()))
+                .eventSnapshot(filterTraceData(eventContext.getEventData()))
+                .contextSnapshot(filterTraceData(actionContext.getData()))
                 .build();
     }
 
@@ -95,35 +95,5 @@ public class TracingActionInterceptor implements IActionInterceptor {
     private String extractAlias(ActionContext context) {
         Object alias = context.getData().get("alias");
         return alias != null ? alias.toString() : null;
-    }
-
-    /**
-     * Filters out internal keys (starting with __) from context data for the snapshot.
-     */
-    private Map<String, Object> filterContextData(Map<String, Object> data) {
-        if (data == null) {
-            return new HashMap<>();
-        }
-        Map<String, Object> filtered = new HashMap<>();
-        for (Map.Entry<String, Object> entry : data.entrySet()) {
-            if (!entry.getKey().startsWith("__")) {
-                filtered.put(entry.getKey(), entry.getValue());
-            }
-        }
-        return filtered;
-    }
-
-    /**
-     * Checks if the children container has any entries.
-     */
-    private boolean hasAnyChildren(TraceChildren children) {
-        if (children == null) {
-            return false;
-        }
-        return !children.getVariables().isEmpty()
-                || !children.getTriggers().isEmpty()
-                || !children.getConditions().isEmpty()
-                || !children.getActions().isEmpty()
-                || children.getResult() != null;
     }
 }

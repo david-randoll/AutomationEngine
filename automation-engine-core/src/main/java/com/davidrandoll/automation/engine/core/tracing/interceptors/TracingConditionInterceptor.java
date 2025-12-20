@@ -9,8 +9,7 @@ import com.davidrandoll.automation.engine.core.tracing.TraceContext;
 import com.davidrandoll.automation.engine.core.tracing.TraceSnapshot;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.HashMap;
-import java.util.Map;
+import static com.davidrandoll.automation.engine.core.tracing.utils.TraceUtils.filterTraceData;
 
 /**
  * Interceptor that captures trace information for condition evaluation.
@@ -68,8 +67,8 @@ public class TracingConditionInterceptor implements IConditionInterceptor {
 
     private TraceSnapshot captureSnapshot(EventContext eventContext, ConditionContext conditionContext) {
         return TraceSnapshot.builder()
-                .eventSnapshot(new HashMap<>(eventContext.getEventData()))
-                .contextSnapshot(filterContextData(conditionContext.getData()))
+                .eventSnapshot(filterTraceData(eventContext.getEventData()))
+                .contextSnapshot(filterTraceData(conditionContext.getData()))
                 .build();
     }
 
@@ -81,21 +80,5 @@ public class TracingConditionInterceptor implements IConditionInterceptor {
     private String extractAlias(ConditionContext context) {
         Object alias = context.getData().get("alias");
         return alias != null ? alias.toString() : null;
-    }
-
-    /**
-     * Filters out internal keys (starting with __) from context data for the snapshot.
-     */
-    private Map<String, Object> filterContextData(Map<String, Object> data) {
-        if (data == null) {
-            return new HashMap<>();
-        }
-        Map<String, Object> filtered = new HashMap<>();
-        for (Map.Entry<String, Object> entry : data.entrySet()) {
-            if (!entry.getKey().startsWith("__")) {
-                filtered.put(entry.getKey(), entry.getValue());
-            }
-        }
-        return filtered;
     }
 }

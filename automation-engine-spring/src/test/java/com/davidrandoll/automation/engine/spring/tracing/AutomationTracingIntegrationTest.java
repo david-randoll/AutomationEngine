@@ -1,7 +1,5 @@
 package com.davidrandoll.automation.engine.spring.tracing;
 
-import com.davidrandoll.automation.engine.AutomationEngine;
-import com.davidrandoll.automation.engine.core.events.EventContext;
 import com.davidrandoll.automation.engine.core.result.AutomationResult;
 import com.davidrandoll.automation.engine.core.tracing.ExecutionTrace;
 import com.davidrandoll.automation.engine.spring.modules.events.time_based.TimeBasedEvent;
@@ -23,7 +21,8 @@ class AutomationTracingIntegrationTest extends AutomationEngineTest {
     void testExecuteAutomationWithYaml_tracingEnabled_capturesFullTrace() {
         var yaml = """
                 alias: Test Tracing Enabled
-                tracingEnabled: true
+                options:
+                  tracing: true
                 triggers:
                   - trigger: time
                     at: "14:00"
@@ -67,7 +66,8 @@ class AutomationTracingIntegrationTest extends AutomationEngineTest {
     void testExecuteAutomationWithYaml_tracingDisabled_noTrace() {
         var yaml = """
                 alias: Test Tracing Disabled
-                tracingEnabled: false
+                options:
+                  tracing: false
                 triggers:
                   - trigger: time
                     at: "15:00"
@@ -87,7 +87,8 @@ class AutomationTracingIntegrationTest extends AutomationEngineTest {
     void testExecuteAutomationWithYaml_tracingEnabledButNoTriggerMatch_capturesSkippedExecution() {
         var yaml = """
                 alias: Test Tracing Skipped Execution
-                tracingEnabled: true
+                options:
+                  tracing: true
                 triggers:
                   - trigger: time
                     at: "16:00"
@@ -104,18 +105,18 @@ class AutomationTracingIntegrationTest extends AutomationEngineTest {
 
         ExecutionTrace trace = (ExecutionTrace) result.getAdditionalFields().get("trace");
         assertThat(trace).isNotNull();
-        assertThat(trace.getTrace().getTriggers().get(0).isActivated()).isFalse();
+        assertThat(trace.getTrace().getTriggers().getFirst().isActivated()).isFalse();
     }
 
     @Test
     void testExecuteAutomationWithYaml_tracingCapturesBeforeAndAfterSnapshots() {
         var yaml = """
                 alias: Test Snapshot Capture
-                tracingEnabled: true
+                options:
+                  tracing: true
                 variables:
                   - variable: basic
-                    name: counter
-                    value: 0
+                    counter: 0
                 triggers:
                   - trigger: time
                     at: "17:00"
@@ -130,7 +131,7 @@ class AutomationTracingIntegrationTest extends AutomationEngineTest {
         AutomationResult result = engine.executeAutomationWithYaml(yaml, event);
 
         assertThat(result.isExecuted()).isTrue();
-        
+
         ExecutionTrace trace = (ExecutionTrace) result.getAdditionalFields().get("trace");
         assertThat(trace).isNotNull();
 
@@ -146,7 +147,8 @@ class AutomationTracingIntegrationTest extends AutomationEngineTest {
     void testExecuteAutomationWithYaml_tracingCapturesFailedCondition() {
         var yaml = """
                 alias: Test Failed Condition
-                tracingEnabled: true
+                options:
+                  tracing: true
                 triggers:
                   - trigger: time
                     at: "18:00"
@@ -162,7 +164,7 @@ class AutomationTracingIntegrationTest extends AutomationEngineTest {
         AutomationResult result = engine.executeAutomationWithYaml(yaml, event);
 
         assertThat(result.isExecuted()).isFalse();
-        
+
         ExecutionTrace trace = (ExecutionTrace) result.getAdditionalFields().get("trace");
         assertThat(trace).isNotNull();
         assertThat(trace.getTrace().getTriggers().get(0).isActivated()).isTrue();
@@ -174,17 +176,15 @@ class AutomationTracingIntegrationTest extends AutomationEngineTest {
     void testExecuteAutomationWithYaml_tracingCapturesMultipleVariables() {
         var yaml = """
                 alias: Test Multiple Variables
-                tracingEnabled: true
+                options:
+                  tracing: true
                 variables:
                   - variable: basic
-                    name: var1
-                    value: "value1"
+                    var1: "value1"
                   - variable: basic
-                    name: var2
-                    value: "value2"
+                    var2: "value2"
                   - variable: basic
-                    name: var3
-                    value: "{{ var1 }} and {{ var2 }}"
+                    var3: "{{ var1 }} and {{ var2 }}"
                 triggers:
                   - trigger: time
                     at: "19:00"
@@ -197,11 +197,11 @@ class AutomationTracingIntegrationTest extends AutomationEngineTest {
         AutomationResult result = engine.executeAutomationWithYaml(yaml, event);
 
         assertThat(result.isExecuted()).isTrue();
-        
+
         ExecutionTrace trace = (ExecutionTrace) result.getAdditionalFields().get("trace");
         assertThat(trace).isNotNull();
         assertThat(trace.getTrace().getVariables()).hasSize(3);
-        
+
         // Verify variable types are captured
         trace.getTrace().getVariables().forEach(varEntry -> {
             assertThat(varEntry.getType()).isEqualTo("basic");

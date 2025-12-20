@@ -14,6 +14,8 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.davidrandoll.automation.engine.core.tracing.utils.TraceUtils.filterTraceData;
+
 /**
  * Interceptor that captures trace information for result computation.
  */
@@ -69,7 +71,7 @@ public class TracingResultInterceptor implements IResultInterceptor {
 
     private TraceSnapshot captureSnapshot(EventContext eventContext, ResultContext resultContext) {
         return TraceSnapshot.builder()
-                .eventSnapshot(new HashMap<>(eventContext.getEventData()))
+                .eventSnapshot(filterTraceData(eventContext.getEventData()))
                 .contextSnapshot(convertJsonNodeToMap(resultContext.getData()))
                 .build();
     }

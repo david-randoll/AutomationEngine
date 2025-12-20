@@ -66,8 +66,8 @@ public class TracingVariableInterceptor implements IVariableInterceptor {
 
     private TraceSnapshot captureSnapshot(EventContext eventContext, VariableContext variableContext) {
         return TraceSnapshot.builder()
-                .eventSnapshot(new HashMap<>(eventContext.getEventData()))
-                .contextSnapshot(filterContextData(variableContext.getData()))
+                .eventSnapshot(filterTraceData(eventContext.getEventData()))
+                .contextSnapshot(filterTraceData(variableContext.getData()))
                 .build();
     }
 
@@ -84,7 +84,7 @@ public class TracingVariableInterceptor implements IVariableInterceptor {
     /**
      * Filters out internal keys (starting with __) from context data for the snapshot.
      */
-    private Map<String, Object> filterContextData(Map<String, Object> data) {
+    private Map<String, Object> filterTraceData(Map<String, Object> data) {
         if (data == null) {
             return new HashMap<>();
         }
