@@ -40,8 +40,9 @@ public class TriggerBuilder {
 
         var interceptingTrigger = new InterceptingTrigger(triggerInstance, triggerInterceptors);
         
-        // Add alias and description to params map for tracing interceptors
+        // Add alias, description, and type to params map for tracing interceptors
         Map<String, Object> params = new HashMap<>(trigger.getParams());
+        params.put("__type", trigger.getTrigger()); // Store type for tracing interceptors
         if (trigger.getAlias() != null) {
             params.put("alias", trigger.getAlias());
         }

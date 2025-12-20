@@ -41,8 +41,9 @@ public class ConditionBuilder {
 
         var interceptingCondition = new InterceptingCondition(conditionInstance, conditionInterceptors);
         
-        // Add alias and description to params map for tracing interceptors
+        // Add alias, description, and type to params map for tracing interceptors
         Map<String, Object> params = new HashMap<>(condition.getParams());
+        params.put("__type", condition.getCondition()); // Store type for tracing interceptors
         if (condition.getAlias() != null) {
             params.put("alias", condition.getAlias());
         }

@@ -42,8 +42,9 @@ public class ActionBuilder {
 
         var interceptingAction = new InterceptingAction(actionInstance, actionInterceptors);
         
-        // Create params map with alias and description included for tracing
+        // Create params map with alias, description, and type included for tracing
         Map<String, Object> params = new HashMap<>(action.getParams());
+        params.put("__type", action.getAction()); // Store type for tracing interceptors
         if (action.getAlias() != null) {
             params.put("alias", action.getAlias());
         }

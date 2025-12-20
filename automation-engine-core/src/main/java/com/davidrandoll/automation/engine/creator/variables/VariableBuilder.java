@@ -40,8 +40,9 @@ public class VariableBuilder {
 
         var interceptingVariable = new InterceptingVariable(variableInstance, variableInterceptors);
         
-        // Add alias and description to params map for tracing interceptors
+        // Add alias, description, and type to params map for tracing interceptors
         Map<String, Object> params = new HashMap<>(variable.getParams());
+        params.put("__type", variable.getVariable()); // Store type for tracing interceptors
         if (variable.getAlias() != null) {
             params.put("alias", variable.getAlias());
         }
