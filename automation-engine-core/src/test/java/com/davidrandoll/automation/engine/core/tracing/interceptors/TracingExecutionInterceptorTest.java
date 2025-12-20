@@ -12,6 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -37,8 +38,10 @@ class TracingExecutionInterceptorTest {
                 .message("Test message")
                 .build();
         eventContext = new EventContext(event);
-        // Create a real automation instead of mock to avoid copy constructor issues
-        automation = new Automation("test-automation", null, null, null, null, null);
+        // Create automation with tracing enabled
+        Map<String, Object> options = new HashMap<>();
+        options.put("tracing", true);
+        automation = new Automation("test-automation", options, null, null, null, null, null);
     }
 
     @Test

@@ -5,11 +5,13 @@ import com.davidrandoll.automation.engine.core.conditions.interceptors.IConditio
 import com.davidrandoll.automation.engine.core.conditions.interceptors.IConditionInterceptor;
 import com.davidrandoll.automation.engine.core.events.EventContext;
 import com.davidrandoll.automation.engine.core.tracing.ConditionTraceEntry;
+import com.davidrandoll.automation.engine.core.tracing.TraceChildren;
 import com.davidrandoll.automation.engine.core.tracing.TraceContext;
 import com.davidrandoll.automation.engine.core.tracing.TraceSnapshot;
 import lombok.extern.slf4j.Slf4j;
 
 import static com.davidrandoll.automation.engine.core.tracing.utils.TraceUtils.filterTraceData;
+import static com.davidrandoll.automation.engine.core.tracing.utils.TraceUtils.hasAnyChildren;
 
 /**
  * Interceptor that captures trace information for condition evaluation.
@@ -36,8 +38,17 @@ public class TracingConditionInterceptor implements IConditionInterceptor {
         // Capture before snapshot
         TraceSnapshot beforeSnapshot = captureSnapshot(eventContext, conditionContext);
 
-        // Execute the condition evaluation
-        boolean satisfied = chain.isSatisfied(eventContext, conditionContext);
+        // Enter nested scope for child tracing
+        TraceChildren children = traceContext.enterNestedScope();
+
+        boolean satisfied;
+        try {
+            // Execute the condition evaluation
+            satisfied = chain.isSatisfied(eventContext, conditionContext);
+        } finally {
+            // Exit nested scope
+            traceContext.exitNestedScope();
+        }
 
         long finishedAt = System.currentTimeMillis();
 
@@ -48,7 +59,7 @@ public class TracingConditionInterceptor implements IConditionInterceptor {
         String type = extractType(conditionContext);
         String alias = extractAlias(conditionContext);
 
-        // Create trace entry
+        // Create trace entry with children if any were added
         ConditionTraceEntry entry = ConditionTraceEntry.builder()
                 .type(type)
                 .alias(alias)
@@ -57,6 +68,7 @@ public class TracingConditionInterceptor implements IConditionInterceptor {
                 .before(beforeSnapshot)
                 .after(afterSnapshot)
                 .satisfied(satisfied)
+                .children(hasAnyChildren(children) ? children : null)
                 .build();
 
         traceContext.addCondition(entry);

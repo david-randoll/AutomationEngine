@@ -1,6 +1,7 @@
 package com.davidrandoll.automation.engine.core.tracing.interceptors;
 
 import com.davidrandoll.automation.engine.core.events.EventContext;
+import com.davidrandoll.automation.engine.core.tracing.TraceChildren;
 import com.davidrandoll.automation.engine.core.tracing.TraceContext;
 import com.davidrandoll.automation.engine.core.tracing.TraceSnapshot;
 import com.davidrandoll.automation.engine.core.tracing.VariableTraceEntry;
@@ -11,6 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.davidrandoll.automation.engine.core.tracing.utils.TraceUtils.hasAnyChildren;
 
 /**
  * Interceptor that captures trace information for variable resolution.
@@ -38,8 +41,16 @@ public class TracingVariableInterceptor implements IVariableInterceptor {
         // Capture before snapshot
         TraceSnapshot beforeSnapshot = captureSnapshot(eventContext, variableContext);
 
-        // Execute the variable resolution
-        chain.resolve(eventContext, variableContext);
+        // Enter nested scope for child tracing
+        TraceChildren children = traceContext.enterNestedScope();
+
+        try {
+            // Execute the variable resolution
+            chain.resolve(eventContext, variableContext);
+        } finally {
+            // Exit nested scope
+            traceContext.exitNestedScope();
+        }
 
         long finishedAt = System.currentTimeMillis();
 
@@ -50,7 +61,7 @@ public class TracingVariableInterceptor implements IVariableInterceptor {
         String type = extractType(variableContext);
         String alias = extractAlias(variableContext);
 
-        // Create trace entry
+        // Create trace entry with children if any were added
         VariableTraceEntry entry = VariableTraceEntry.builder()
                 .type(type)
                 .alias(alias)
@@ -58,6 +69,7 @@ public class TracingVariableInterceptor implements IVariableInterceptor {
                 .finishedAt(finishedAt)
                 .before(beforeSnapshot)
                 .after(afterSnapshot)
+                .children(hasAnyChildren(children) ? children : null)
                 .build();
 
         traceContext.addVariable(entry);

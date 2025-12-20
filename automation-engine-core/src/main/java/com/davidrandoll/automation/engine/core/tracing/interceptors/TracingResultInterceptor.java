@@ -5,6 +5,7 @@ import com.davidrandoll.automation.engine.core.result.ResultContext;
 import com.davidrandoll.automation.engine.core.result.interceptors.IResultChain;
 import com.davidrandoll.automation.engine.core.result.interceptors.IResultInterceptor;
 import com.davidrandoll.automation.engine.core.tracing.ResultTraceEntry;
+import com.davidrandoll.automation.engine.core.tracing.TraceChildren;
 import com.davidrandoll.automation.engine.core.tracing.TraceContext;
 import com.davidrandoll.automation.engine.core.tracing.TraceSnapshot;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -15,6 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.davidrandoll.automation.engine.core.tracing.utils.TraceUtils.filterTraceData;
+import static com.davidrandoll.automation.engine.core.tracing.utils.TraceUtils.hasAnyChildren;
 
 /**
  * Interceptor that captures trace information for result computation.
@@ -46,21 +48,31 @@ public class TracingResultInterceptor implements IResultInterceptor {
         // Capture before snapshot
         TraceSnapshot beforeSnapshot = captureSnapshot(eventContext, resultContext);
 
-        // Execute the result computation
-        Object result = chain.getExecutionSummary(eventContext, resultContext);
+        // Enter nested scope for child tracing
+        TraceChildren children = traceContext.enterNestedScope();
+
+        Object result;
+        try {
+            // Execute the result computation
+            result = chain.getExecutionSummary(eventContext, resultContext);
+        } finally {
+            // Exit nested scope
+            traceContext.exitNestedScope();
+        }
 
         long finishedAt = System.currentTimeMillis();
 
         // Capture after snapshot
         TraceSnapshot afterSnapshot = captureSnapshot(eventContext, resultContext);
 
-        // Create trace entry
+        // Create trace entry with children if any were added
         ResultTraceEntry entry = ResultTraceEntry.builder()
                 .startedAt(startedAt)
                 .finishedAt(finishedAt)
                 .before(beforeSnapshot)
                 .after(afterSnapshot)
                 .result(result)
+                .children(hasAnyChildren(children) ? children : null)
                 .build();
 
         traceContext.setResult(entry);

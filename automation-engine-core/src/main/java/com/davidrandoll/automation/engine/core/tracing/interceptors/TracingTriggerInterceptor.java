@@ -1,6 +1,7 @@
 package com.davidrandoll.automation.engine.core.tracing.interceptors;
 
 import com.davidrandoll.automation.engine.core.events.EventContext;
+import com.davidrandoll.automation.engine.core.tracing.TraceChildren;
 import com.davidrandoll.automation.engine.core.tracing.TraceContext;
 import com.davidrandoll.automation.engine.core.tracing.TraceSnapshot;
 import com.davidrandoll.automation.engine.core.tracing.TriggerTraceEntry;
@@ -10,6 +11,7 @@ import com.davidrandoll.automation.engine.core.triggers.interceptors.ITriggerInt
 import lombok.extern.slf4j.Slf4j;
 
 import static com.davidrandoll.automation.engine.core.tracing.utils.TraceUtils.filterTraceData;
+import static com.davidrandoll.automation.engine.core.tracing.utils.TraceUtils.hasAnyChildren;
 
 /**
  * Interceptor that captures trace information for trigger evaluation.
@@ -36,8 +38,17 @@ public class TracingTriggerInterceptor implements ITriggerInterceptor {
         // Capture before snapshot
         TraceSnapshot beforeSnapshot = captureSnapshot(eventContext, triggerContext);
 
-        // Execute the trigger evaluation
-        boolean activated = chain.isTriggered(eventContext, triggerContext);
+        // Enter nested scope for child tracing
+        TraceChildren children = traceContext.enterNestedScope();
+
+        boolean activated;
+        try {
+            // Execute the trigger evaluation
+            activated = chain.isTriggered(eventContext, triggerContext);
+        } finally {
+            // Exit nested scope
+            traceContext.exitNestedScope();
+        }
 
         long finishedAt = System.currentTimeMillis();
 
@@ -48,7 +59,7 @@ public class TracingTriggerInterceptor implements ITriggerInterceptor {
         String type = extractType(triggerContext);
         String alias = extractAlias(triggerContext);
 
-        // Create trace entry
+        // Create trace entry with children if any were added
         TriggerTraceEntry entry = TriggerTraceEntry.builder()
                 .type(type)
                 .alias(alias)
@@ -57,6 +68,7 @@ public class TracingTriggerInterceptor implements ITriggerInterceptor {
                 .before(beforeSnapshot)
                 .after(afterSnapshot)
                 .activated(activated)
+                .children(hasAnyChildren(children) ? children : null)
                 .build();
 
         traceContext.addTrigger(entry);
