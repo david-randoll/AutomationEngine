@@ -9,9 +9,7 @@ import com.davidrandoll.automation.engine.core.triggers.interceptors.ITriggerInt
 import com.davidrandoll.automation.engine.core.triggers.interceptors.InterceptingTrigger;
 import lombok.RequiredArgsConstructor;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import static java.util.Objects.isNull;
@@ -40,18 +38,7 @@ public class TriggerBuilder {
                 .orElseThrow(() -> new TriggerNotFoundException(trigger.getTrigger()));
 
         var interceptingTrigger = new InterceptingTrigger(triggerInstance, triggerInterceptors);
-
-        // Add alias, description, and type to params map for tracing interceptors
-        Map<String, Object> params = new HashMap<>(trigger.getParams());
-        params.put("__type", trigger.getTrigger()); // Store type for tracing interceptors
-        if (trigger.getAlias() != null) {
-            params.put("alias", trigger.getAlias());
-        }
-        if (trigger.getDescription() != null) {
-            params.put("description", trigger.getDescription());
-        }
-
-        var triggerContext = new TriggerContext(params);
+        var triggerContext = new TriggerContext(trigger.getParams());
         return event -> interceptingTrigger.isTriggered(event, triggerContext);
     }
 
