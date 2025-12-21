@@ -35,6 +35,7 @@
     </developers>
     <modules>
         <module>automation-engine-core</module>
+        <module>automation-engine-tracing</module>
         <module>automation-engine-templating</module>
         <module>spring-boot-starter-automation-engine</module>
         <module>automation-engine-spring-web</module>
