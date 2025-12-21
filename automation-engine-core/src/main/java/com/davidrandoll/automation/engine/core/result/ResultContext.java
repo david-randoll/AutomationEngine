@@ -4,6 +4,7 @@ import com.davidrandoll.automation.engine.creator.result.ResultDefinition;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.AllArgsConstructor;
@@ -25,6 +26,7 @@ public class ResultContext {
 
     @JsonIgnore
     @JsonAnySetter
+    @JsonProperty("0829b1b94f764e47b871865ea6628f34")
     private JsonNode data;
 
     public ResultContext(ResultDefinition definition) {

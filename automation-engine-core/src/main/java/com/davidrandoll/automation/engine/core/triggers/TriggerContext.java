@@ -1,10 +1,7 @@
 package com.davidrandoll.automation.engine.core.triggers;
 
 import com.davidrandoll.automation.engine.creator.triggers.TriggerDefinition;
-import com.fasterxml.jackson.annotation.JsonAlias;
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.*;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -27,6 +24,7 @@ public class TriggerContext {
     @JsonIgnore
     @JsonAnyGetter
     @JsonAnySetter
+    @JsonProperty("0829b1b94f764e47b871865ea6628f34")
     private Map<String, Object> data;
 
     public TriggerContext(TriggerDefinition definition) {

@@ -30,5 +30,6 @@ public class VariableDefinition {
     @JsonIgnore
     @JsonAnyGetter
     @JsonAnySetter
+    @JsonProperty("0829b1b94f764e47b871865ea6628f34")
     private Map<String, Object> params = new HashMap<>();
 }
