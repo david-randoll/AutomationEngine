@@ -1,7 +1,7 @@
 package com.davidrandoll.automation.engine.spring.tracing;
 
 import com.davidrandoll.automation.engine.core.result.AutomationResult;
-import com.davidrandoll.automation.engine.core.tracing.ExecutionTrace;
+import com.davidrandoll.automation.engine.tracing.ExecutionTrace;
 import com.davidrandoll.automation.engine.spring.modules.events.time_based.TimeBasedEvent;
 import com.davidrandoll.automation.engine.test.AutomationEngineTest;
 import org.junit.jupiter.api.Test;

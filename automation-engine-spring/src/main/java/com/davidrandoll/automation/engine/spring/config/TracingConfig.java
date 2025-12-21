@@ -3,10 +3,11 @@ package com.davidrandoll.automation.engine.spring.config;
 import com.davidrandoll.automation.engine.core.actions.interceptors.IActionInterceptor;
 import com.davidrandoll.automation.engine.core.conditions.interceptors.IConditionInterceptor;
 import com.davidrandoll.automation.engine.core.result.interceptors.IResultInterceptor;
-import com.davidrandoll.automation.engine.core.tracing.interceptors.*;
 import com.davidrandoll.automation.engine.core.triggers.interceptors.ITriggerInterceptor;
 import com.davidrandoll.automation.engine.core.variables.interceptors.IVariableInterceptor;
 import com.davidrandoll.automation.engine.orchestrator.interceptors.IAutomationExecutionInterceptor;
+import com.davidrandoll.automation.engine.tracing.interceptors.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -58,7 +59,7 @@ public class TracingConfig {
 
     @Bean("tracingResultInterceptor")
     @ConditionalOnMissingBean(name = "tracingResultInterceptor", ignored = TracingResultInterceptor.class)
-    public IResultInterceptor tracingResultInterceptor() {
-        return new TracingResultInterceptor();
+    public IResultInterceptor tracingResultInterceptor(ObjectMapper objectMapper) {
+        return new TracingResultInterceptor(objectMapper);
     }
 }
