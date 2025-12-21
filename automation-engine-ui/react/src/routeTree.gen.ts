@@ -9,12 +9,18 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as PlaygroundRouteImport } from './routes/playground'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as UserDefinedIndexRouteImport } from './routes/user-defined/index'
 import { Route as UserDefinedBlockTypeIndexRouteImport } from './routes/user-defined/$blockType/index'
 import { Route as UserDefinedBlockTypeNewRouteImport } from './routes/user-defined/$blockType/new'
 import { Route as UserDefinedBlockTypeEditRouteImport } from './routes/user-defined/$blockType/edit'
 
+const PlaygroundRoute = PlaygroundRouteImport.update({
+  id: '/playground',
+  path: '/playground',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -45,6 +51,7 @@ const UserDefinedBlockTypeEditRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/playground': typeof PlaygroundRoute
   '/user-defined': typeof UserDefinedIndexRoute
   '/user-defined/$blockType/edit': typeof UserDefinedBlockTypeEditRoute
   '/user-defined/$blockType/new': typeof UserDefinedBlockTypeNewRoute
@@ -52,6 +59,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/playground': typeof PlaygroundRoute
   '/user-defined': typeof UserDefinedIndexRoute
   '/user-defined/$blockType/edit': typeof UserDefinedBlockTypeEditRoute
   '/user-defined/$blockType/new': typeof UserDefinedBlockTypeNewRoute
@@ -60,6 +68,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/playground': typeof PlaygroundRoute
   '/user-defined/': typeof UserDefinedIndexRoute
   '/user-defined/$blockType/edit': typeof UserDefinedBlockTypeEditRoute
   '/user-defined/$blockType/new': typeof UserDefinedBlockTypeNewRoute
@@ -69,6 +78,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/playground'
     | '/user-defined'
     | '/user-defined/$blockType/edit'
     | '/user-defined/$blockType/new'
@@ -76,6 +86,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/playground'
     | '/user-defined'
     | '/user-defined/$blockType/edit'
     | '/user-defined/$blockType/new'
@@ -83,6 +94,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/playground'
     | '/user-defined/'
     | '/user-defined/$blockType/edit'
     | '/user-defined/$blockType/new'
@@ -91,6 +103,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  PlaygroundRoute: typeof PlaygroundRoute
   UserDefinedIndexRoute: typeof UserDefinedIndexRoute
   UserDefinedBlockTypeEditRoute: typeof UserDefinedBlockTypeEditRoute
   UserDefinedBlockTypeNewRoute: typeof UserDefinedBlockTypeNewRoute
@@ -99,6 +112,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/playground': {
+      id: '/playground'
+      path: '/playground'
+      fullPath: '/playground'
+      preLoaderRoute: typeof PlaygroundRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -139,6 +159,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  PlaygroundRoute: PlaygroundRoute,
   UserDefinedIndexRoute: UserDefinedIndexRoute,
   UserDefinedBlockTypeEditRoute: UserDefinedBlockTypeEditRoute,
   UserDefinedBlockTypeNewRoute: UserDefinedBlockTypeNewRoute,

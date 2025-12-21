@@ -17,8 +17,10 @@ import org.springframework.context.annotation.Configuration;
  * Configuration for automation tracing interceptors.
  * <p>
  * Tracing interceptors are always available but require both:
- * 1. Global configuration: <code>automation.engine.tracing.enabled=true</code> (read by TracingExecutionInterceptor)
- * 2. Per-automation flag: <code>tracingEnabled: true</code> in YAML/JSON definition
+ * 1. Global configuration: <code>automation.engine.tracing.enabled=true</code>
+ * (read by TracingExecutionInterceptor)
+ * 2. Per-automation flag: <code>tracingEnabled: true</code> in YAML/JSON
+ * definition
  * </p>
  */
 @Configuration
