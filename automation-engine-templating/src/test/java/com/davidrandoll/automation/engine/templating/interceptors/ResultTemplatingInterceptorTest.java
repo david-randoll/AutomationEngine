@@ -18,9 +18,7 @@ import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ResultTemplatingInterceptorTest {
@@ -42,7 +40,7 @@ class ResultTemplatingInterceptorTest {
         EventContext eventContext = mock(EventContext.class);
         ObjectNode data = objectMapper.createObjectNode();
         data.put("key", "value");
-        ResultContext resultContext = new ResultContext(data);
+        ResultContext resultContext = new ResultContext(null, null, null, data);
 
         IResultChain chain = mock(IResultChain.class);
         when(chain.autoEvaluateExpression()).thenReturn(true);
@@ -62,7 +60,7 @@ class ResultTemplatingInterceptorTest {
     @Test
     void testIntercept_AutoEvaluateFalse() {
         EventContext eventContext = mock(EventContext.class);
-        ResultContext resultContext = new ResultContext(objectMapper.createObjectNode());
+        ResultContext resultContext = new ResultContext(null, null, null, objectMapper.createObjectNode());
         IResultChain chain = mock(IResultChain.class);
         when(chain.autoEvaluateExpression()).thenReturn(false);
 

@@ -20,6 +20,7 @@ public class ConditionContext {
     private String description;
 
     @NotEmpty
+    @JsonIgnore
     @JsonAlias({"type", "condition"})
     private String condition;
 

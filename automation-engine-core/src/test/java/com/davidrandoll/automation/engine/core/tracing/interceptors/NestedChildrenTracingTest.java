@@ -87,10 +87,7 @@ class NestedChildrenTracingTest {
 
         VariableContext parentContext = new VariableContext("parent-variable", null, "parentVariable", Map.of());
 
-        Map<String, Object> childData = new HashMap<>();
-        childData.put("__type", "childVariable");
-        childData.put("alias", "child-variable");
-        VariableContext childContext = new VariableContext(childData);
+        VariableContext childContext = new VariableContext("child-variable", null, "childVariable", Map.of());
 
         doAnswer(invocation -> {
             childInterceptor.intercept(eventContext, childContext, (ec, vc) -> {
@@ -116,15 +113,9 @@ class NestedChildrenTracingTest {
         TracingTriggerInterceptor parentInterceptor = new TracingTriggerInterceptor();
         TracingTriggerInterceptor childInterceptor = new TracingTriggerInterceptor();
 
-        Map<String, Object> parentData = new HashMap<>();
-        parentData.put("__type", "parentTrigger");
-        parentData.put("alias", "parent-trigger");
-        TriggerContext parentContext = new TriggerContext(parentData);
+        TriggerContext parentContext = new TriggerContext("parent-trigger", null, "parentTrigger", Map.of());
 
-        Map<String, Object> childData = new HashMap<>();
-        childData.put("__type", "childTrigger");
-        childData.put("alias", "child-trigger");
-        TriggerContext childContext = new TriggerContext(childData);
+        TriggerContext childContext = new TriggerContext("child-trigger", null, "childTrigger", Map.of());
 
         when(triggerChain.isTriggered(any(), any())).thenAnswer(invocation -> {
             childInterceptor.intercept(eventContext, childContext, (ec, tc) -> true);
@@ -149,15 +140,9 @@ class NestedChildrenTracingTest {
         TracingConditionInterceptor parentInterceptor = new TracingConditionInterceptor();
         TracingConditionInterceptor childInterceptor = new TracingConditionInterceptor();
 
-        Map<String, Object> parentData = new HashMap<>();
-        parentData.put("__type", "parentCondition");
-        parentData.put("alias", "parent-condition");
-        ConditionContext parentContext = new ConditionContext(parentData);
+        ConditionContext parentContext = new ConditionContext("parent-condition", null, "parentCondition", Map.of());
 
-        Map<String, Object> childData = new HashMap<>();
-        childData.put("__type", "childCondition");
-        childData.put("alias", "child-condition");
-        ConditionContext childContext = new ConditionContext(childData);
+        ConditionContext childContext = new ConditionContext("child-condition", null, "childCondition", Map.of());
 
         when(conditionChain.isSatisfied(any(), any())).thenAnswer(invocation -> {
             childInterceptor.intercept(eventContext, childContext, (ec, cc) -> true);
@@ -181,10 +166,7 @@ class NestedChildrenTracingTest {
     void testEmptyChildrenNotAttached() {
         TracingActionInterceptor interceptor = new TracingActionInterceptor();
 
-        Map<String, Object> data = new HashMap<>();
-        data.put("__type", "simpleAction");
-        data.put("alias", "simple-action");
-        ActionContext context = new ActionContext(data);
+        ActionContext context = new ActionContext("simple-action", null, "simpleAction", Map.of());
 
         doAnswer(invocation -> null).when(actionChain).execute(any(), any());
 

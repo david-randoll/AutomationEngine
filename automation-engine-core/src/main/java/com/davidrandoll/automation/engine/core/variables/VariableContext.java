@@ -19,6 +19,7 @@ public class VariableContext {
     private String description;
 
     @JsonAlias({"variable", "type"})
+    @JsonIgnore
     private String variable = "basic";
 
     @JsonIgnore

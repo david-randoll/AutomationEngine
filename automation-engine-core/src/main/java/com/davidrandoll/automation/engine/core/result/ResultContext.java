@@ -20,6 +20,7 @@ public class ResultContext {
     private String description;
 
     @JsonAlias({"result", "return", "type"})
+    @JsonIgnore
     private String result = "basic";
 
     @JsonIgnore

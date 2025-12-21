@@ -41,10 +41,8 @@ class TracingActionInterceptorTest {
         eventContext = new EventContext(event);
 
         Map<String, Object> data = new HashMap<>();
-        data.put("__type", "loggerAction");
-        data.put("alias", "logUserInfo");
         data.put("message", "User logged in");
-        actionContext = new ActionContext(data);
+        actionContext = new ActionContext("logUserInfo", null, "loggerAction", data);
     }
 
     @Test

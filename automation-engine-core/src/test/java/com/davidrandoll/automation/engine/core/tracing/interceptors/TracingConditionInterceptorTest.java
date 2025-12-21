@@ -40,10 +40,8 @@ class TracingConditionInterceptorTest {
         eventContext = new EventContext(event);
 
         Map<String, Object> data = new HashMap<>();
-        data.put("__type", "expression");
-        data.put("alias", "Check user active");
         data.put("expression", "{{ userActive == true }}");
-        conditionContext = new ConditionContext(data);
+        conditionContext = new ConditionContext("Check user active", null, "expression", data);
     }
 
     @Test

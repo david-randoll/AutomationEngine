@@ -21,6 +21,7 @@ public class TriggerContext {
 
     @NotEmpty
     @JsonAlias({"type", "trigger"})
+    @JsonIgnore
     private String trigger;
 
     @JsonIgnore

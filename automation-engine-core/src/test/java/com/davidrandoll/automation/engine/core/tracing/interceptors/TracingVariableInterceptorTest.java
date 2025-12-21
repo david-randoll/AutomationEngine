@@ -41,10 +41,9 @@ class TracingVariableInterceptorTest {
         eventContext = new EventContext(event);
 
         Map<String, Object> data = new HashMap<>();
-        data.put("__type", "basic");
         data.put("alias", "myVariable");
         data.put("value", "testValue");
-        variableContext = new VariableContext(data);
+        variableContext = new VariableContext("myVariable", null, "basic", data);
     }
 
     @Test
@@ -119,9 +118,8 @@ class TracingVariableInterceptorTest {
     @Test
     void testIntercept_handlesNullAlias() {
         Map<String, Object> data = new HashMap<>();
-        data.put("__type", "basic");
         data.put("value", "testValue");
-        variableContext = new VariableContext(data);
+        variableContext = new VariableContext(null, null, "basic", data);
 
         TraceContext.getOrCreate(eventContext, "test-automation");
 

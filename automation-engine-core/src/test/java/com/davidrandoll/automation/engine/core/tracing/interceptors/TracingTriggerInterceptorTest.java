@@ -40,9 +40,7 @@ class TracingTriggerInterceptorTest {
         eventContext = new EventContext(event);
 
         Map<String, Object> data = new HashMap<>();
-        data.put("__type", "alwaysTrueTrigger");
-        data.put("alias", "myTrigger");
-        triggerContext = new TriggerContext(data);
+        triggerContext = new TriggerContext("myTrigger", null, "alwaysTrueTrigger", data);
     }
 
     @Test

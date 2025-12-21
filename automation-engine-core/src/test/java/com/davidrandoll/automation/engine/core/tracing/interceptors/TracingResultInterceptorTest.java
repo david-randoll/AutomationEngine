@@ -42,7 +42,7 @@ class TracingResultInterceptorTest {
 
         ObjectNode resultData = objectMapper.createObjectNode();
         resultData.put("summary", "Automation completed");
-        resultContext = new ResultContext(resultData);
+        resultContext = new ResultContext(null, null, "basic", resultData);
     }
 
     @Test
@@ -106,7 +106,7 @@ class TracingResultInterceptorTest {
 
     @Test
     void testIntercept_handlesNullJsonNode() {
-        ResultContext nullContext = new ResultContext(null);
+        ResultContext nullContext = new ResultContext();
         TraceContext.getOrCreate(eventContext, "test-automation");
         when(chain.getExecutionSummary(any(), any())).thenReturn("result");
 

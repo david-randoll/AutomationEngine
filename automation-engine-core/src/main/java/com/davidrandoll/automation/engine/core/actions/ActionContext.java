@@ -21,6 +21,7 @@ public class ActionContext {
 
     @NotEmpty
     @JsonAlias({"action", "type"})
+    @JsonIgnore
     private String action;
 
     @JsonIgnore
