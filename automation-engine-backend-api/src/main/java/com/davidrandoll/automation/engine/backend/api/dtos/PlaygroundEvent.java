@@ -1,6 +1,7 @@
 package com.davidrandoll.automation.engine.backend.api.dtos;
 
 import com.davidrandoll.automation.engine.core.events.IEvent;
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,11 +17,12 @@ import java.util.Map;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PlaygroundEvent implements IEvent {
+    @JsonAnyGetter
     private Map<String, Object> data = new HashMap<>();
 
     /**
      * Creates a PlaygroundEvent from the given input map.
-     * 
+     *
      * @param inputs the input data map
      * @return a new PlaygroundEvent
      */

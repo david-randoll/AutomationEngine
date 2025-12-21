@@ -2,7 +2,6 @@ import { useState, useCallback } from "react";
 import MonacoEditor from "@monaco-editor/react";
 import yaml from "js-yaml";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import TraceCanvas from "./TraceCanvas";
 import { playgroundApi } from "@/lib/playground-api";
@@ -161,59 +160,74 @@ export default function PlaygroundPage({ className }: PlaygroundPageProps) {
 
     return (
         <div className={`flex flex-col h-full ${className}`}>
-            {/* Mode Tabs */}
-            <Tabs
-                value={mode}
-                onValueChange={(v) => setMode(v as "execute" | "trace")}
-                className="w-full"
-            >
-                <div className="flex items-center justify-between border-b px-4 py-2 bg-white">
-                    <div className="flex items-center gap-4">
-                        <h1 className="text-lg font-semibold">Playground</h1>
-                        <TabsList>
-                            <TabsTrigger value="execute" className="gap-2">
-                                <FaPlay className="w-3 h-3" />
-                                Execute
-                            </TabsTrigger>
-                            <TabsTrigger value="trace" className="gap-2">
-                                <FaEye className="w-3 h-3" />
-                                View Trace
-                            </TabsTrigger>
-                        </TabsList>
-                    </div>
-                    {hasTrace && (
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={copyTrace}
-                            className="gap-2"
+            {/* Header with Mode Tabs */}
+            <div className="flex items-center justify-between border-b px-4 py-2 bg-white shrink-0">
+                <div className="flex items-center gap-4">
+                    <h1 className="text-lg font-semibold">Playground</h1>
+                    <div className="flex bg-muted rounded-lg p-0.5">
+                        <button
+                            onClick={() => setMode("execute")}
+                            className={`px-3 py-1.5 text-sm font-medium rounded-md flex items-center gap-2 transition-colors ${
+                                mode === "execute"
+                                    ? "bg-background text-foreground shadow-sm"
+                                    : "text-muted-foreground hover:text-foreground"
+                            }`}
                         >
-                            {copied ? (
-                                <>
-                                    <FaCheck className="w-3 h-3" />
-                                    Copied
-                                </>
-                            ) : (
-                                <>
-                                    <FaCopy className="w-3 h-3" />
-                                    Copy Trace
-                                </>
-                            )}
-                        </Button>
-                    )}
+                            <FaPlay className="w-3 h-3" />
+                            Execute
+                        </button>
+                        <button
+                            onClick={() => setMode("trace")}
+                            className={`px-3 py-1.5 text-sm font-medium rounded-md flex items-center gap-2 transition-colors ${
+                                mode === "trace"
+                                    ? "bg-background text-foreground shadow-sm"
+                                    : "text-muted-foreground hover:text-foreground"
+                            }`}
+                        >
+                            <FaEye className="w-3 h-3" />
+                            View Trace
+                        </button>
+                    </div>
                 </div>
+                {hasTrace && (
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={copyTrace}
+                        className="gap-2"
+                    >
+                        {copied ? (
+                            <>
+                                <FaCheck className="w-3 h-3" />
+                                Copied
+                            </>
+                        ) : (
+                            <>
+                                <FaCopy className="w-3 h-3" />
+                                Copy Trace
+                            </>
+                        )}
+                    </Button>
+                )}
+            </div>
 
-                <div className="flex-1 flex overflow-hidden">
-                    {/* Left Panel - Inputs */}
-                    <div className="w-[500px] border-r flex flex-col bg-white">
-                        <TabsContent value="execute" className="flex-1 flex flex-col m-0 p-0">
+            {/* Main Content */}
+            <div className="flex-1 flex overflow-hidden min-h-0">
+                {/* Left Panel - Inputs */}
+                <div className="w-[450px] border-r flex flex-col bg-white shrink-0">
+                    {mode === "execute" ? (
+                        <>
                             {/* Automation Editor */}
-                            <div className="flex-1 flex flex-col border-b">
-                                <div className="flex items-center justify-between px-3 py-2 border-b bg-gray-50">
-                                    <span className="text-sm font-medium text-gray-700">Automation (YAML/JSON)</span>
-                                    <span className="text-xs text-gray-400">{detectFormat(automation)}</span>
+                            <div className="flex-1 flex flex-col min-h-0 border-b">
+                                <div className="flex items-center justify-between px-3 py-2 border-b bg-gray-50 shrink-0">
+                                    <span className="text-sm font-medium text-gray-700">
+                                        Automation (YAML/JSON)
+                                    </span>
+                                    <span className="text-xs text-gray-400">
+                                        {detectFormat(automation)}
+                                    </span>
                                 </div>
-                                <div className="flex-1">
+                                <div className="flex-1 min-h-0">
                                     <MonacoEditor
                                         height="100%"
                                         language="yaml"
@@ -234,11 +248,13 @@ export default function PlaygroundPage({ className }: PlaygroundPageProps) {
                             </div>
 
                             {/* Inputs Editor */}
-                            <div className="h-[200px] flex flex-col">
-                                <div className="flex items-center justify-between px-3 py-2 border-b bg-gray-50">
-                                    <span className="text-sm font-medium text-gray-700">Event Inputs (JSON)</span>
+                            <div className="h-[180px] flex flex-col shrink-0">
+                                <div className="flex items-center justify-between px-3 py-2 border-b bg-gray-50 shrink-0">
+                                    <span className="text-sm font-medium text-gray-700">
+                                        Event Inputs (JSON)
+                                    </span>
                                 </div>
-                                <div className="flex-1">
+                                <div className="flex-1 min-h-0">
                                     <MonacoEditor
                                         height="100%"
                                         language="json"
@@ -258,7 +274,7 @@ export default function PlaygroundPage({ className }: PlaygroundPageProps) {
                             </div>
 
                             {/* Execute Button */}
-                            <div className="px-4 py-3 border-t bg-gray-50">
+                            <div className="px-4 py-3 border-t bg-gray-50 shrink-0">
                                 <Button
                                     onClick={handleExecute}
                                     disabled={loading}
@@ -269,15 +285,17 @@ export default function PlaygroundPage({ className }: PlaygroundPageProps) {
                                     {loading ? "Executing..." : "Execute"}
                                 </Button>
                             </div>
-                        </TabsContent>
-
-                        <TabsContent value="trace" className="flex-1 flex flex-col m-0 p-0">
+                        </>
+                    ) : (
+                        <>
                             {/* Trace JSON Editor */}
-                            <div className="flex-1 flex flex-col">
-                                <div className="flex items-center justify-between px-3 py-2 border-b bg-gray-50">
-                                    <span className="text-sm font-medium text-gray-700">Trace JSON</span>
+                            <div className="flex-1 flex flex-col min-h-0">
+                                <div className="flex items-center justify-between px-3 py-2 border-b bg-gray-50 shrink-0">
+                                    <span className="text-sm font-medium text-gray-700">
+                                        Trace JSON
+                                    </span>
                                 </div>
-                                <div className="flex-1">
+                                <div className="flex-1 min-h-0">
                                     <MonacoEditor
                                         height="100%"
                                         language="json"
@@ -298,7 +316,7 @@ export default function PlaygroundPage({ className }: PlaygroundPageProps) {
                             </div>
 
                             {/* Render Button */}
-                            <div className="px-4 py-3 border-t bg-gray-50">
+                            <div className="px-4 py-3 border-t bg-gray-50 shrink-0">
                                 <Button
                                     onClick={handleRenderTrace}
                                     className="w-full gap-2"
@@ -308,78 +326,89 @@ export default function PlaygroundPage({ className }: PlaygroundPageProps) {
                                     Render Trace
                                 </Button>
                             </div>
-                        </TabsContent>
-                    </div>
+                        </>
+                    )}
+                </div>
 
-                    {/* Right Panel - Trace Visualization */}
-                    <div className="flex-1 flex flex-col overflow-hidden">
-                        {/* Error Banner */}
-                        {error && (
-                            <div className="px-4 py-3 bg-red-50 border-b border-red-200 flex items-center gap-2 text-red-700">
-                                <FaExclamationTriangle className="w-4 h-4 flex-shrink-0" />
-                                <span className="text-sm">{error}</span>
-                            </div>
-                        )}
+                {/* Right Panel - Trace Visualization */}
+                <div className="flex-1 flex flex-col overflow-hidden min-h-0">
+                    {/* Error Banner */}
+                    {error && (
+                        <div className="px-4 py-3 bg-red-50 border-b border-red-200 flex items-center gap-2 text-red-700 shrink-0">
+                            <FaExclamationTriangle className="w-4 h-4 flex-shrink-0" />
+                            <span className="text-sm">{error}</span>
+                        </div>
+                    )}
 
-                        {/* Execution Result Banner */}
-                        {executed !== null && !error && (
-                            <div
-                                className={`px-4 py-3 border-b flex items-center gap-4 ${executed ? "bg-green-50 border-green-200" : "bg-yellow-50 border-yellow-200"
-                                    }`}
-                            >
-                                <div className="flex items-center gap-2">
-                                    {executed ? (
-                                        <FaCheck className="w-4 h-4 text-green-600" />
-                                    ) : (
-                                        <FaExclamationTriangle className="w-4 h-4 text-yellow-600" />
-                                    )}
-                                    <span className={`text-sm font-medium ${executed ? "text-green-700" : "text-yellow-700"}`}>
-                                        {executed ? "Executed Successfully" : "Skipped (conditions not met)"}
-                                    </span>
-                                </div>
-                                {result !== undefined && result !== null && (
-                                    <div className="flex items-center gap-2 text-sm text-gray-600">
-                                        <span>Result:</span>
-                                        <code className="bg-white px-2 py-0.5 rounded border text-xs">
-                                            {typeof result === "string" ? result : JSON.stringify(result)}
-                                        </code>
-                                    </div>
+                    {/* Execution Result Banner */}
+                    {executed !== null && !error && (
+                        <div
+                            className={`px-4 py-3 border-b flex items-center gap-4 shrink-0 ${
+                                executed
+                                    ? "bg-green-50 border-green-200"
+                                    : "bg-yellow-50 border-yellow-200"
+                            }`}
+                        >
+                            <div className="flex items-center gap-2">
+                                {executed ? (
+                                    <FaCheck className="w-4 h-4 text-green-600" />
+                                ) : (
+                                    <FaExclamationTriangle className="w-4 h-4 text-yellow-600" />
                                 )}
+                                <span
+                                    className={`text-sm font-medium ${
+                                        executed ? "text-green-700" : "text-yellow-700"
+                                    }`}
+                                >
+                                    {executed
+                                        ? "Executed Successfully"
+                                        : "Skipped (conditions not met)"}
+                                </span>
                             </div>
-                        )}
-
-                        {/* Trace Canvas */}
-                        <div className="flex-1">
-                            {hasTrace ? (
-                                <TraceCanvas trace={trace} className="h-full" />
-                            ) : (
-                                <div className="h-full flex items-center justify-center bg-gray-50">
-                                    <Card className="w-[400px]">
-                                        <CardHeader>
-                                            <CardTitle className="flex items-center gap-2">
-                                                <FaCode className="w-5 h-5 text-gray-400" />
-                                                No Trace Available
-                                            </CardTitle>
-                                            <CardDescription>
-                                                {mode === "execute"
-                                                    ? "Execute an automation to see the trace visualization."
-                                                    : "Paste a trace JSON and click 'Render Trace' to visualize."}
-                                            </CardDescription>
-                                        </CardHeader>
-                                        <CardContent>
-                                            <ul className="text-sm text-gray-500 space-y-2">
-                                                <li>• Each step shows timing and state changes</li>
-                                                <li>• Click nodes to see before/after snapshots</li>
-                                                <li>• Triggers and conditions show activation status</li>
-                                            </ul>
-                                        </CardContent>
-                                    </Card>
+                            {result !== undefined && result !== null && (
+                                <div className="flex items-center gap-2 text-sm text-gray-600">
+                                    <span>Result:</span>
+                                    <code className="bg-white px-2 py-0.5 rounded border text-xs">
+                                        {typeof result === "string"
+                                            ? result
+                                            : JSON.stringify(result)}
+                                    </code>
                                 </div>
                             )}
                         </div>
+                    )}
+
+                    {/* Trace Canvas */}
+                    <div className="flex-1 min-h-0">
+                        {hasTrace ? (
+                            <TraceCanvas trace={trace} className="h-full" />
+                        ) : (
+                            <div className="h-full flex items-center justify-center bg-gray-50">
+                                <Card className="w-[400px]">
+                                    <CardHeader>
+                                        <CardTitle className="flex items-center gap-2">
+                                            <FaCode className="w-5 h-5 text-gray-400" />
+                                            No Trace Available
+                                        </CardTitle>
+                                        <CardDescription>
+                                            {mode === "execute"
+                                                ? "Execute an automation to see the trace visualization."
+                                                : "Paste a trace JSON and click 'Render Trace' to visualize."}
+                                        </CardDescription>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <ul className="text-sm text-gray-500 space-y-2">
+                                            <li>• Each step shows timing and state changes</li>
+                                            <li>• Click nodes to see before/after snapshots</li>
+                                            <li>• Triggers and conditions show activation status</li>
+                                        </ul>
+                                    </CardContent>
+                                </Card>
+                            </div>
+                        )}
                     </div>
                 </div>
-            </Tabs>
+            </div>
         </div>
     );
 }
