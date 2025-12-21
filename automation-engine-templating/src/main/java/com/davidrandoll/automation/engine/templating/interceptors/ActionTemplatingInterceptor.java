@@ -58,7 +58,8 @@ public class ActionTemplatingInterceptor implements IActionInterceptor {
         }
 
         var mapCopy = processor.processIfNotAutomation(eventData, actionContext.getData());
-        chain.execute(eventContext, new ActionContext(actionContext, mapCopy));
+        actionContext.setData(mapCopy);
+        chain.execute(eventContext, actionContext);
         log.debug("ActionTemplatingInterceptor done.");
     }
 

@@ -293,8 +293,8 @@ export default function TraceCanvas({ trace, className }: TraceCanvasProps) {
             </div>
 
             {/* Detail Panel */}
-            <div className="w-[350px] border-l bg-white">
-                <TraceDetailPanel entry={selectedEntry} className="h-full border-0 rounded-none shadow-none" />
+            <div className="w-[350px] border-l bg-white flex flex-col overflow-hidden">
+                <TraceDetailPanel entry={selectedEntry} className="flex-1 min-h-0 border-0 rounded-none shadow-none" />
             </div>
         </div>
     );

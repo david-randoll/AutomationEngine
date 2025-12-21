@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import TraceCanvas from "./TraceCanvas";
 import { playgroundApi } from "@/lib/playground-api";
 import type { ExecutionTrace, AutomationFormat } from "@/types/trace";
-import { FaPlay, FaCode, FaEye, FaCopy, FaCheck, FaExclamationTriangle } from "react-icons/fa";
+import { FaPlay, FaEye, FaCopy, FaCheck, FaExclamationTriangle, FaCode } from "react-icons/fa";
 
 const DEFAULT_AUTOMATION = `alias: Hello World Example
 # Tracing is auto-enabled for playground
@@ -74,6 +74,7 @@ export default function PlaygroundPage({ className }: PlaygroundPageProps) {
     // Execute mode state
     const [automation, setAutomation] = useState(DEFAULT_AUTOMATION);
     const [inputs, setInputs] = useState(DEFAULT_INPUTS);
+    const [format, setFormat] = useState<AutomationFormat>("YAML");
 
     // Trace JSON mode state
     const [traceJsonInput, setTraceJsonInput] = useState(DEFAULT_TRACE_JSON);
@@ -86,12 +87,25 @@ export default function PlaygroundPage({ className }: PlaygroundPageProps) {
     const [loading, setLoading] = useState(false);
     const [copied, setCopied] = useState(false);
 
-    // Detect format from automation text
-    const detectFormat = useCallback((text: string): AutomationFormat => {
-        const trimmed = text.trim();
-        if (trimmed.startsWith("{")) return "JSON";
-        return "YAML";
-    }, []);
+    // Convert automation between formats
+    const handleFormatChange = useCallback((newFormat: AutomationFormat) => {
+        if (newFormat === format) return;
+        
+        try {
+            if (newFormat === "JSON") {
+                // Convert YAML to JSON
+                const parsed = yaml.load(automation);
+                setAutomation(JSON.stringify(parsed, null, 2));
+            } else {
+                // Convert JSON to YAML
+                const parsed = JSON.parse(automation);
+                setAutomation(yaml.dump(parsed, { indent: 2, lineWidth: -1 }));
+            }
+            setFormat(newFormat);
+        } catch (e) {
+            setError(`Failed to convert: ${(e as Error).message}`);
+        }
+    }, [automation, format]);
 
     // Execute the automation
     const handleExecute = useCallback(async () => {
@@ -113,10 +127,9 @@ export default function PlaygroundPage({ className }: PlaygroundPageProps) {
                 }
             }
 
-            const detectedFormat = detectFormat(automation);
             const response = await playgroundApi.execute({
                 automation,
-                format: detectedFormat,
+                format,
                 inputs: parsedInputs,
             });
 
@@ -131,7 +144,7 @@ export default function PlaygroundPage({ className }: PlaygroundPageProps) {
         } finally {
             setLoading(false);
         }
-    }, [automation, inputs, detectFormat]);
+    }, [automation, inputs, format]);
 
     // Parse trace JSON for visualization
     const handleRenderTrace = useCallback(() => {
@@ -221,16 +234,35 @@ export default function PlaygroundPage({ className }: PlaygroundPageProps) {
                             <div className="flex-1 flex flex-col min-h-0 border-b">
                                 <div className="flex items-center justify-between px-3 py-2 border-b bg-gray-50 shrink-0">
                                     <span className="text-sm font-medium text-gray-700">
-                                        Automation (YAML/JSON)
+                                        Automation
                                     </span>
-                                    <span className="text-xs text-gray-400">
-                                        {detectFormat(automation)}
-                                    </span>
+                                    <div className="flex bg-gray-200 rounded p-0.5">
+                                        <button
+                                            onClick={() => handleFormatChange("YAML")}
+                                            className={`px-2 py-0.5 text-xs font-medium rounded transition-colors ${
+                                                format === "YAML"
+                                                    ? "bg-white text-gray-900 shadow-sm"
+                                                    : "text-gray-500 hover:text-gray-700"
+                                            }`}
+                                        >
+                                            YAML
+                                        </button>
+                                        <button
+                                            onClick={() => handleFormatChange("JSON")}
+                                            className={`px-2 py-0.5 text-xs font-medium rounded transition-colors ${
+                                                format === "JSON"
+                                                    ? "bg-white text-gray-900 shadow-sm"
+                                                    : "text-gray-500 hover:text-gray-700"
+                                            }`}
+                                        >
+                                            JSON
+                                        </button>
+                                    </div>
                                 </div>
                                 <div className="flex-1 min-h-0">
                                     <MonacoEditor
                                         height="100%"
-                                        language="yaml"
+                                        language={format === "JSON" ? "json" : "yaml"}
                                         value={automation}
                                         onChange={(value) => setAutomation(value || "")}
                                         options={{
