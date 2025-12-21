@@ -42,7 +42,7 @@ public class TriggerTemplatingInterceptor implements ITriggerInterceptor {
         }
 
         var mapCopy = processor.processIfNotAutomation(eventData, triggerContext.getData());
-        var result = chain.isTriggered(eventContext, new TriggerContext(mapCopy));
+        var result = chain.isTriggered(eventContext, new TriggerContext(triggerContext, mapCopy));
         log.debug("TriggerTemplatingInterceptor: Trigger data processed successfully.");
         return result;
     }

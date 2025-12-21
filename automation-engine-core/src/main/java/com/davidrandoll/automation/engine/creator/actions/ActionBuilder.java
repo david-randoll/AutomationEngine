@@ -23,7 +23,8 @@ public class ActionBuilder {
     public BaseActionList resolve(List<ActionDefinition> actions) {
         var result = new BaseActionList();
 
-        if (isNull(actions)) return result;
+        if (isNull(actions))
+            return result;
 
         for (var action : actions) {
             IBaseAction newActionInstance = buildAction(action);
@@ -39,7 +40,7 @@ public class ActionBuilder {
                 .orElseThrow(() -> new ActionNotFoundException(action.getAction()));
 
         var interceptingAction = new InterceptingAction(actionInstance, actionInterceptors);
-        var actionContext = new ActionContext(action.getParams());
+        var actionContext = new ActionContext(action);
 
         return eventContext -> interceptingAction.execute(eventContext, actionContext);
     }

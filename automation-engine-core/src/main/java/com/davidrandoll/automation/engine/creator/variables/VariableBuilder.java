@@ -22,7 +22,8 @@ public class VariableBuilder {
     public BaseVariableList resolve(List<VariableDefinition> variables) {
         var result = new BaseVariableList();
 
-        if (isNull(variables)) return result;
+        if (isNull(variables))
+            return result;
 
         for (VariableDefinition variable : variables) {
             IBaseVariable newVariableInstance = buildVariable(variable);
@@ -37,11 +38,10 @@ public class VariableBuilder {
                 .orElseThrow(() -> new VariableNotFoundException(variable.getVariable()));
 
         var interceptingVariable = new InterceptingVariable(variableInstance, variableInterceptors);
-        var variableContext = new VariableContext(variable.getParams());
+        var variableContext = new VariableContext(variable);
 
         return event -> interceptingVariable.resolve(event, variableContext);
     }
-
 
     public void resolveVariables(EventContext eventContext, List<VariableDefinition> variables) {
         BaseVariableList resolvedVariables = resolve(variables);

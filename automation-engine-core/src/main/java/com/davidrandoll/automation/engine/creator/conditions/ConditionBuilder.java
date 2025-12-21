@@ -22,7 +22,8 @@ public class ConditionBuilder {
     public BaseConditionList resolve(List<ConditionDefinition> conditions) {
         var result = new BaseConditionList();
 
-        if (isNull(conditions)) return result;
+        if (isNull(conditions))
+            return result;
 
         for (var condition : conditions) {
             IBaseCondition newConditionInstance = buildCondition(condition);
@@ -38,7 +39,7 @@ public class ConditionBuilder {
                 .orElseThrow(() -> new ConditionNotFoundException(condition.getCondition()));
 
         var interceptingCondition = new InterceptingCondition(conditionInstance, conditionInterceptors);
-        var conditionContext = new ConditionContext(condition.getParams());
+        var conditionContext = new ConditionContext(condition);
 
         return eventContext -> interceptingCondition.isSatisfied(eventContext, conditionContext);
     }

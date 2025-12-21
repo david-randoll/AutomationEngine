@@ -1,8 +1,8 @@
 package com.davidrandoll.automation.engine.creator.parsers;
 
 import com.davidrandoll.automation.engine.core.Automation;
-import com.davidrandoll.automation.engine.creator.AutomationProcessor;
 import com.davidrandoll.automation.engine.creator.AutomationDefinition;
+import com.davidrandoll.automation.engine.creator.AutomationProcessor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -14,6 +14,7 @@ public class ManualAutomationBuilder implements IAutomationFormatParser<Automati
     @Override
     public Automation create(AutomationDefinition request) {
         log.info("Start creating automation: {}", request.getAlias());
+
         var automation = new Automation(
                 request.getAlias(),
                 request.getOptions(),
