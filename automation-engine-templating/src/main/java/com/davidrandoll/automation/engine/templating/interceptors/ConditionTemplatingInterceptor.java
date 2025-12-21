@@ -42,7 +42,7 @@ public class ConditionTemplatingInterceptor implements IConditionInterceptor {
         }
 
         var mapCopy = processor.processIfNotAutomation(eventData, conditionContext.getData());
-        var result = chain.isSatisfied(eventContext, new ConditionContext(mapCopy));
+        var result = chain.isSatisfied(eventContext, new ConditionContext(conditionContext, mapCopy));
         log.debug("ConditionTemplatingInterceptor: Condition data processed successfully.");
         return result;
     }

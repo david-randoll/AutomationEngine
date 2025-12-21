@@ -21,7 +21,7 @@ public interface TypedVariable<T extends IVariableContext> extends IVariable {
 
     @Override
     default void resolve(EventContext eventContext, VariableContext variableContext) {
-        T data = getTypeConverter().convert(variableContext.getData(), getContextType());
+        T data = getTypeConverter().convert(variableContext, getContextType());
         // Calling the proxied self to ensure AOP aspects are applied such as transactions, logging, etc.
         var self = getSelf();
         if (self == null)

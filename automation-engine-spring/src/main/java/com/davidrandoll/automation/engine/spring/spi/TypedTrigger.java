@@ -21,7 +21,7 @@ public interface TypedTrigger<T extends ITriggerContext> extends ITrigger {
 
     @Override
     default boolean isTriggered(EventContext eventContext, TriggerContext triggerContext) {
-        T data = getTypeConverter().convert(triggerContext.getData(), getContextType());
+        T data = getTypeConverter().convert(triggerContext, getContextType());
         // Calling the proxied self to ensure AOP aspects are applied such as transactions, logging, etc.
         var self = getSelf();
         if (self == null)

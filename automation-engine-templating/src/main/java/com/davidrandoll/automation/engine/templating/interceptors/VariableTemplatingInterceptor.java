@@ -60,7 +60,7 @@ public class VariableTemplatingInterceptor implements IVariableInterceptor {
         }
 
         var mapCopy = processor.processIfNotAutomation(eventData, variableContext.getData());
-        chain.resolve(eventContext, new VariableContext(mapCopy));
+        chain.resolve(eventContext, new VariableContext(variableContext, mapCopy));
         log.debug("VariableTemplatingInterceptor done.");
     }
 

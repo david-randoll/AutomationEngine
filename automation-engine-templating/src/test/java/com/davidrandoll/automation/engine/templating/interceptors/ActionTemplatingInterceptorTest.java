@@ -16,9 +16,7 @@ import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ActionTemplatingInterceptorTest {
@@ -40,7 +38,7 @@ class ActionTemplatingInterceptorTest {
         EventContext eventContext = mock(EventContext.class);
         Map<String, Object> data = new HashMap<>();
         data.put("key", "value");
-        ActionContext actionContext = new ActionContext(data);
+        ActionContext actionContext = new ActionContext(null, null, null, data);
 
         IActionChain chain = mock(IActionChain.class);
         when(chain.autoEvaluateExpression()).thenReturn(true);

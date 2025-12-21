@@ -21,7 +21,7 @@ public interface TypedCondition<T extends IConditionContext> extends ICondition 
 
     @Override
     default boolean isSatisfied(EventContext eventContext, ConditionContext conditionContext) {
-        T data = getTypeConverter().convert(conditionContext.getData(), getContextType());
+        T data = getTypeConverter().convert(conditionContext, getContextType());
         // Calling the proxied self to ensure AOP aspects are applied such as transactions, logging, etc.
         var self = getSelf();
         if (self == null)

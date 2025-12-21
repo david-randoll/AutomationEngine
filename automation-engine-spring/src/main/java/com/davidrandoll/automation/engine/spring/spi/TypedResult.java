@@ -21,7 +21,7 @@ public interface TypedResult<T extends IResultContext> extends IResult {
 
     @Override
     default Object getExecutionSummary(EventContext context, ResultContext resultContext) {
-        T data = getTypeConverter().convert(resultContext.getData(), getContextType());
+        T data = getTypeConverter().convert(resultContext.getResultData(), getContextType());
         // Calling the proxied self to ensure AOP aspects are applied such as transactions, logging, etc.
         var self = getSelf();
         if (self == null)

@@ -1,7 +1,7 @@
 package com.davidrandoll.automation.engine.example.time_based;
 
-import com.davidrandoll.automation.engine.core.Automation;
 import com.davidrandoll.automation.engine.AutomationEngine;
+import com.davidrandoll.automation.engine.core.Automation;
 import com.davidrandoll.automation.engine.core.actions.ActionContext;
 import com.davidrandoll.automation.engine.core.actions.BaseActionList;
 import com.davidrandoll.automation.engine.core.actions.IAction;
@@ -53,7 +53,7 @@ public class AutomationExample {
     private IBaseTrigger getTrigger() {
         var timeBasedTrigger = triggers.get("timeTrigger");
         var interceptingTrigger = new InterceptingTrigger(timeBasedTrigger, triggerInterceptors);
-        return event -> interceptingTrigger.isTriggered(event, new TriggerContext(Map.of(
+        return event -> interceptingTrigger.isTriggered(event, new TriggerContext(null, null, null, Map.of(
                 "at", LocalTime.of(23, 50)
         )));
     }
@@ -62,7 +62,7 @@ public class AutomationExample {
         IAction loggerAction = actions.get("loggerAction");
         var interceptingAction = new InterceptingAction(loggerAction, actionInterceptors);
 
-        return context -> interceptingAction.execute(context, new ActionContext(Map.of(
+        return context -> interceptingAction.execute(context, new ActionContext(null, null, null, Map.of(
                 "message", "Time based automation triggered at {{ time | time_format(pattern='hh:mm a') }}"
         )));
     }

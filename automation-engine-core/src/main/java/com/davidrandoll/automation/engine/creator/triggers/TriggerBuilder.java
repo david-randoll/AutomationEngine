@@ -22,7 +22,8 @@ public class TriggerBuilder {
     public BaseTriggerList resolve(List<TriggerDefinition> triggers) {
         var result = new BaseTriggerList();
 
-        if (isNull(triggers)) return result;
+        if (isNull(triggers))
+            return result;
 
         for (TriggerDefinition trigger : triggers) {
             IBaseTrigger newTriggerInstance = buildTrigger(trigger);
@@ -37,10 +38,9 @@ public class TriggerBuilder {
                 .orElseThrow(() -> new TriggerNotFoundException(trigger.getTrigger()));
 
         var interceptingTrigger = new InterceptingTrigger(triggerInstance, triggerInterceptors);
-        var triggerContext = new TriggerContext(trigger.getParams());
+        var triggerContext = new TriggerContext(trigger);
         return event -> interceptingTrigger.isTriggered(event, triggerContext);
     }
-
 
     public boolean anyTriggersTriggered(EventContext eventContext, List<TriggerDefinition> triggers) {
         BaseTriggerList resolvedTriggers = resolve(triggers);

@@ -17,10 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.anyMap;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -119,7 +116,7 @@ class JsonNodeVariableProcessorTest {
         data.put("key", "{{ value }}");
         data.put("number", 123);
 
-        ResultContext resultContext = new ResultContext(data);
+        ResultContext resultContext = new ResultContext(null, null, null, data);
 
         when(templateProcessor.process("{{ value }}", eventData)).thenReturn("processed");
 
