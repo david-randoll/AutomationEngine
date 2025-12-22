@@ -11,6 +11,7 @@ automation components and provides an interactive interface.
 ## Features
 
 - ✅ **Visual Automation Builder** - Drag-and-drop interface for building automations
+- ✅ **Automation Playground** - Execute automations and visualize execution traces with React Flow
 - ✅ **Schema-Driven UI** - Auto-generates forms from JSON schemas
 - ✅ **Live Preview** - See YAML/JSON output in real-time
 - ✅ **Component Browser** - Browse all available triggers, conditions, and actions
