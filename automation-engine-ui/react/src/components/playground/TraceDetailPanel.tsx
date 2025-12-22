@@ -200,6 +200,8 @@ export default function TraceDetailPanel({ entry, className }: TraceDetailPanelP
                                         renderSideBySide: true,
                                         enableSplitViewResizing: false,
                                         wordWrap: "on",
+                                        renderOverviewRuler: false,
+                                        overviewRulerLanes: 0,
                                     }}
                                 />
                             </div>
@@ -210,7 +212,7 @@ export default function TraceDetailPanel({ entry, className }: TraceDetailPanelP
 
             {/* Fullscreen Modal */}
             <Dialog open={fullscreenOpen} onOpenChange={setFullscreenOpen}>
-                <DialogContent className="max-w-[95vw] w-[95vw] max-h-[95vh] h-[95vh] flex flex-col p-0 gap-0">
+                <DialogContent className="max-w-[95vw] w-[95vw] sm:max-w-none max-h-[95vh] h-[95vh] flex flex-col p-0 gap-0">
                     <DialogHeader className="shrink-0 px-6 pt-6 pb-4 border-b">
                         <DialogTitle className="flex items-center justify-between">
                             <span className="text-lg">{entry.alias || entry.type || "Unknown"} - Diff View</span>
@@ -247,13 +249,15 @@ export default function TraceDetailPanel({ entry, className }: TraceDetailPanelP
                                 modified={afterContent}
                                 options={{
                                     readOnly: true,
-                                    minimap: { enabled: true },
+                                    minimap: { enabled: false },
                                     fontSize: 14,
                                     lineNumbers: "on",
                                     scrollBeyondLastLine: false,
                                     automaticLayout: true,
                                     renderSideBySide: true,
                                     wordWrap: "on",
+                                    renderOverviewRuler: false,
+                                    overviewRulerLanes: 0,
                                 }}
                             />
                         </div>
