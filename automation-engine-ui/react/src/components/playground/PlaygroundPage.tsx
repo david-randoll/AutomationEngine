@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import MonacoEditor from "@monaco-editor/react";
 import yaml from "js-yaml";
 import { Button } from "@/components/ui/button";
@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import TraceCanvas from "./TraceCanvas";
 import { playgroundApi } from "@/lib/playground-api";
 import type { ExecutionTrace, AutomationFormat } from "@/types/trace";
-import { FaPlay, FaEye, FaCopy, FaCheck, FaExclamationTriangle, FaCode } from "react-icons/fa";
+import { FaPlay, FaEye, FaCopy, FaCheck, FaExclamationTriangle, FaCode, FaGripVertical } from "react-icons/fa";
 
 const DEFAULT_AUTOMATION = `alias: Hello World Example
 # Tracing is auto-enabled for playground
@@ -86,6 +86,11 @@ export default function PlaygroundPage({ className }: PlaygroundPageProps) {
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const [copied, setCopied] = useState(false);
+    const [leftPanelWidth, setLeftPanelWidth] = useState(450);
+    const [rightPanelWidth, setRightPanelWidth] = useState(350);
+    const containerRef = useRef<HTMLDivElement>(null);
+    const isResizingLeft = useRef(false);
+    const isResizingRight = useRef(false);
 
     // Convert automation between formats
     const handleFormatChange = useCallback((newFormat: AutomationFormat) => {
@@ -171,6 +176,56 @@ export default function PlaygroundPage({ className }: PlaygroundPageProps) {
     // Computed values
     const hasTrace = !!trace;
 
+    // Resizing handlers
+    useEffect(() => {
+        const handleMouseMove = (e: MouseEvent) => {
+            if (!containerRef.current) return;
+
+            if (isResizingLeft.current) {
+                const containerRect = containerRef.current.getBoundingClientRect();
+                const newWidth = e.clientX - containerRect.left;
+                if (newWidth >= 300 && newWidth <= 700) {
+                    setLeftPanelWidth(newWidth);
+                }
+            }
+
+            if (isResizingRight.current) {
+                const containerRect = containerRef.current.getBoundingClientRect();
+                const newWidth = containerRect.right - e.clientX;
+                if (newWidth >= 300 && newWidth <= 700) {
+                    setRightPanelWidth(newWidth);
+                }
+            }
+        };
+
+        const handleMouseUp = () => {
+            isResizingLeft.current = false;
+            isResizingRight.current = false;
+            document.body.style.cursor = "";
+            document.body.style.userSelect = "";
+        };
+
+        document.addEventListener("mousemove", handleMouseMove);
+        document.addEventListener("mouseup", handleMouseUp);
+
+        return () => {
+            document.removeEventListener("mousemove", handleMouseMove);
+            document.removeEventListener("mouseup", handleMouseUp);
+        };
+    }, []);
+
+    const handleLeftResizeStart = () => {
+        isResizingLeft.current = true;
+        document.body.style.cursor = "col-resize";
+        document.body.style.userSelect = "none";
+    };
+
+    const handleRightResizeStart = () => {
+        isResizingRight.current = true;
+        document.body.style.cursor = "col-resize";
+        document.body.style.userSelect = "none";
+    };
+
     return (
         <div className={`flex flex-col h-full ${className}`}>
             {/* Header with Mode Tabs */}
@@ -181,8 +236,8 @@ export default function PlaygroundPage({ className }: PlaygroundPageProps) {
                         <button
                             onClick={() => setMode("execute")}
                             className={`px-3 py-1.5 text-sm font-medium rounded-md flex items-center gap-2 transition-colors ${mode === "execute"
-                                    ? "bg-background text-foreground shadow-sm"
-                                    : "text-muted-foreground hover:text-foreground"
+                                ? "bg-background text-foreground shadow-sm"
+                                : "text-muted-foreground hover:text-foreground"
                                 }`}
                         >
                             <FaPlay className="w-3 h-3" />
@@ -191,8 +246,8 @@ export default function PlaygroundPage({ className }: PlaygroundPageProps) {
                         <button
                             onClick={() => setMode("trace")}
                             className={`px-3 py-1.5 text-sm font-medium rounded-md flex items-center gap-2 transition-colors ${mode === "trace"
-                                    ? "bg-background text-foreground shadow-sm"
-                                    : "text-muted-foreground hover:text-foreground"
+                                ? "bg-background text-foreground shadow-sm"
+                                : "text-muted-foreground hover:text-foreground"
                                 }`}
                         >
                             <FaEye className="w-3 h-3" />
@@ -223,136 +278,144 @@ export default function PlaygroundPage({ className }: PlaygroundPageProps) {
             </div>
 
             {/* Main Content */}
-            <div className="flex-1 flex overflow-hidden min-h-0">
+            <div ref={containerRef} className="flex-1 flex overflow-hidden min-h-0">
                 {/* Left Panel - Inputs */}
-                <div className="w-[450px] border-r flex flex-col bg-white shrink-0">
-                    {mode === "execute" ? (
-                        <>
-                            {/* Automation Editor */}
-                            <div className="flex-1 flex flex-col min-h-0 border-b">
-                                <div className="flex items-center justify-between px-3 py-2 border-b bg-gray-50 shrink-0">
-                                    <span className="text-sm font-medium text-gray-700">
-                                        Automation
-                                    </span>
-                                    <div className="flex bg-gray-200 rounded p-0.5">
-                                        <button
-                                            onClick={() => handleFormatChange("YAML")}
-                                            className={`px-2 py-0.5 text-xs font-medium rounded transition-colors ${format === "YAML"
-                                                    ? "bg-white text-gray-900 shadow-sm"
-                                                    : "text-gray-500 hover:text-gray-700"
-                                                }`}
-                                        >
-                                            YAML
-                                        </button>
-                                        <button
-                                            onClick={() => handleFormatChange("JSON")}
-                                            className={`px-2 py-0.5 text-xs font-medium rounded transition-colors ${format === "JSON"
-                                                    ? "bg-white text-gray-900 shadow-sm"
-                                                    : "text-gray-500 hover:text-gray-700"
-                                                }`}
-                                        >
-                                            JSON
-                                        </button>
-                                    </div>
-                                </div>
-                                <div className="flex-1 min-h-0">
-                                    <MonacoEditor
-                                        height="100%"
-                                        language={format === "JSON" ? "json" : "yaml"}
-                                        value={automation}
-                                        onChange={(value) => setAutomation(value || "")}
-                                        options={{
-                                            minimap: { enabled: false },
-                                            fontSize: 13,
-                                            lineNumbers: "on",
-                                            scrollBeyondLastLine: false,
-                                            automaticLayout: true,
-                                            tabSize: 2,
-                                            wordWrap: "on",
-                                        }}
-                                    />
+                <div style={{ width: `${leftPanelWidth}px` }} className="border-r flex flex-col bg-white shrink-0 relative">{mode === "execute" ? (
+                    <>
+                        {/* Automation Editor */}
+                        <div className="flex-1 flex flex-col min-h-0 border-b">
+                            <div className="flex items-center justify-between px-3 py-2 border-b bg-gray-50 shrink-0">
+                                <span className="text-sm font-medium text-gray-700">
+                                    Automation
+                                </span>
+                                <div className="flex bg-gray-200 rounded p-0.5">
+                                    <button
+                                        onClick={() => handleFormatChange("YAML")}
+                                        className={`px-2 py-0.5 text-xs font-medium rounded transition-colors ${format === "YAML"
+                                            ? "bg-white text-gray-900 shadow-sm"
+                                            : "text-gray-500 hover:text-gray-700"
+                                            }`}
+                                    >
+                                        YAML
+                                    </button>
+                                    <button
+                                        onClick={() => handleFormatChange("JSON")}
+                                        className={`px-2 py-0.5 text-xs font-medium rounded transition-colors ${format === "JSON"
+                                            ? "bg-white text-gray-900 shadow-sm"
+                                            : "text-gray-500 hover:text-gray-700"
+                                            }`}
+                                    >
+                                        JSON
+                                    </button>
                                 </div>
                             </div>
+                            <div className="flex-1 min-h-0">
+                                <MonacoEditor
+                                    height="100%"
+                                    language={format === "JSON" ? "json" : "yaml"}
+                                    value={automation}
+                                    onChange={(value) => setAutomation(value || "")}
+                                    options={{
+                                        minimap: { enabled: false },
+                                        fontSize: 13,
+                                        lineNumbers: "on",
+                                        scrollBeyondLastLine: false,
+                                        automaticLayout: true,
+                                        tabSize: 2,
+                                        wordWrap: "on",
+                                    }}
+                                />
+                            </div>
+                        </div>
 
-                            {/* Inputs Editor */}
-                            <div className="h-[180px] flex flex-col shrink-0">
-                                <div className="flex items-center justify-between px-3 py-2 border-b bg-gray-50 shrink-0">
-                                    <span className="text-sm font-medium text-gray-700">
-                                        Event Inputs (JSON)
-                                    </span>
-                                </div>
-                                <div className="flex-1 min-h-0">
-                                    <MonacoEditor
-                                        height="100%"
-                                        language="json"
-                                        value={inputs}
-                                        onChange={(value) => setInputs(value || "{}")}
-                                        options={{
-                                            minimap: { enabled: false },
-                                            fontSize: 13,
-                                            lineNumbers: "on",
-                                            scrollBeyondLastLine: false,
-                                            automaticLayout: true,
-                                            tabSize: 2,
-                                        }}
-                                    />
-                                </div>
+                        {/* Inputs Editor */}
+                        <div className="h-[180px] flex flex-col shrink-0">
+                            <div className="flex items-center justify-between px-3 py-2 border-b bg-gray-50 shrink-0">
+                                <span className="text-sm font-medium text-gray-700">
+                                    Event Inputs (JSON)
+                                </span>
                             </div>
+                            <div className="flex-1 min-h-0">
+                                <MonacoEditor
+                                    height="100%"
+                                    language="json"
+                                    value={inputs}
+                                    onChange={(value) => setInputs(value || "{}")}
+                                    options={{
+                                        minimap: { enabled: false },
+                                        fontSize: 13,
+                                        lineNumbers: "on",
+                                        scrollBeyondLastLine: false,
+                                        automaticLayout: true,
+                                        tabSize: 2,
+                                    }}
+                                />
+                            </div>
+                        </div>
 
-                            {/* Execute Button */}
-                            <div className="px-4 py-3 border-t bg-gray-50 shrink-0">
-                                <Button
-                                    onClick={handleExecute}
-                                    disabled={loading}
-                                    className="w-full gap-2"
-                                    size="lg"
-                                >
-                                    <FaPlay className="w-4 h-4" />
-                                    {loading ? "Executing..." : "Execute"}
-                                </Button>
+                        {/* Execute Button */}
+                        <div className="px-4 py-3 border-t bg-gray-50 shrink-0">
+                            <Button
+                                onClick={handleExecute}
+                                disabled={loading}
+                                className="w-full gap-2"
+                                size="lg"
+                            >
+                                <FaPlay className="w-4 h-4" />
+                                {loading ? "Executing..." : "Execute"}
+                            </Button>
+                        </div>
+                    </>
+                ) : (
+                    <>
+                        {/* Trace JSON Editor */}
+                        <div className="flex-1 flex flex-col min-h-0">
+                            <div className="flex items-center justify-between px-3 py-2 border-b bg-gray-50 shrink-0">
+                                <span className="text-sm font-medium text-gray-700">
+                                    Trace JSON
+                                </span>
                             </div>
-                        </>
-                    ) : (
-                        <>
-                            {/* Trace JSON Editor */}
-                            <div className="flex-1 flex flex-col min-h-0">
-                                <div className="flex items-center justify-between px-3 py-2 border-b bg-gray-50 shrink-0">
-                                    <span className="text-sm font-medium text-gray-700">
-                                        Trace JSON
-                                    </span>
-                                </div>
-                                <div className="flex-1 min-h-0">
-                                    <MonacoEditor
-                                        height="100%"
-                                        language="json"
-                                        value={traceJsonInput}
-                                        onChange={(value) => setTraceJsonInput(value || "{}")}
-                                        options={{
-                                            minimap: { enabled: false },
-                                            fontSize: 13,
-                                            lineNumbers: "on",
-                                            scrollBeyondLastLine: false,
-                                            automaticLayout: true,
-                                            tabSize: 2,
-                                            wordWrap: "on",
-                                        }}
-                                    />
-                                </div>
+                            <div className="flex-1 min-h-0">
+                                <MonacoEditor
+                                    height="100%"
+                                    language="json"
+                                    value={traceJsonInput}
+                                    onChange={(value) => setTraceJsonInput(value || "{}")}
+                                    options={{
+                                        minimap: { enabled: false },
+                                        fontSize: 13,
+                                        lineNumbers: "on",
+                                        scrollBeyondLastLine: false,
+                                        automaticLayout: true,
+                                        tabSize: 2,
+                                        wordWrap: "on",
+                                    }}
+                                />
                             </div>
+                        </div>
 
-                            {/* Render Button */}
-                            <div className="px-4 py-3 border-t bg-gray-50 shrink-0">
-                                <Button
-                                    onClick={handleRenderTrace}
-                                    className="w-full gap-2"
-                                    size="lg"
-                                >
-                                    <FaEye className="w-4 h-4" />
-                                    Render Trace
-                                </Button>
-                            </div>
-                        </>
-                    )}
+                        {/* Render Button */}
+                        <div className="px-4 py-3 border-t bg-gray-50 shrink-0">
+                            <Button
+                                onClick={handleRenderTrace}
+                                className="w-full gap-2"
+                                size="lg"
+                            >
+                                <FaEye className="w-4 h-4" />
+                                Render Trace
+                            </Button>
+                        </div>
+                    </>
+                )}
+                    {/* Left resize handle */}
+                    <div
+                        onMouseDown={handleLeftResizeStart}
+                        className="absolute top-0 right-0 w-1 h-full cursor-col-resize hover:bg-blue-400 transition-colors group"
+                    >
+                        <div className="absolute top-1/2 right-0 -translate-y-1/2 translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <FaGripVertical className="w-3 h-3 text-gray-400" />
+                        </div>
+                    </div>
                 </div>
 
                 {/* Right Panel - Trace Visualization */}
@@ -369,8 +432,8 @@ export default function PlaygroundPage({ className }: PlaygroundPageProps) {
                     {executed !== null && !error && (
                         <div
                             className={`px-4 py-3 border-b flex items-center gap-4 shrink-0 ${executed
-                                    ? "bg-green-50 border-green-200"
-                                    : "bg-yellow-50 border-yellow-200"
+                                ? "bg-green-50 border-green-200"
+                                : "bg-yellow-50 border-yellow-200"
                                 }`}
                         >
                             <div className="flex items-center gap-2">
@@ -404,7 +467,13 @@ export default function PlaygroundPage({ className }: PlaygroundPageProps) {
                     {/* Trace Canvas */}
                     <div className="flex-1 min-h-0">
                         {hasTrace ? (
-                            <TraceCanvas trace={trace} className="h-full" />
+                            <TraceCanvas
+                                trace={trace}
+                                className="h-full"
+                                rightPanelWidth={rightPanelWidth}
+                                onRightPanelWidthChange={setRightPanelWidth}
+                                onRightResizeStart={handleRightResizeStart}
+                            />
                         ) : (
                             <div className="h-full flex items-center justify-center bg-gray-50">
                                 <Card className="w-[400px]">

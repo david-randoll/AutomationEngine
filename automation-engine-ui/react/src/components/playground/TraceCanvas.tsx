@@ -11,6 +11,7 @@ import {
     BackgroundVariant,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
+import { FaGripVertical } from "react-icons/fa";
 
 import TraceNode, { type TraceNodeData } from "./TraceNode";
 import TraceDetailPanel from "./TraceDetailPanel";
@@ -30,6 +31,9 @@ import type {
 interface TraceCanvasProps {
     trace: ExecutionTrace | null;
     className?: string;
+    rightPanelWidth?: number;
+    onRightPanelWidthChange?: (width: number) => void;
+    onRightResizeStart?: () => void;
 }
 
 const nodeTypes: NodeTypes = {
@@ -205,7 +209,12 @@ function traceToNodesAndEdges(trace: ExecutionTrace | null): {
 /**
  * React Flow canvas component for visualizing execution traces.
  */
-export default function TraceCanvas({ trace, className }: TraceCanvasProps) {
+export default function TraceCanvas({
+    trace,
+    className,
+    rightPanelWidth = 350,
+    onRightResizeStart,
+}: TraceCanvasProps) {
     const [selectedEntry, setSelectedEntry] = useState<TraceEntry | null>(null);
 
     // Convert trace to nodes and edges
@@ -293,7 +302,19 @@ export default function TraceCanvas({ trace, className }: TraceCanvasProps) {
             </div>
 
             {/* Detail Panel */}
-            <div className="w-[350px] border-l bg-white flex flex-col overflow-hidden">
+            <div
+                style={{ width: `${rightPanelWidth}px` }}
+                className="border-l bg-white flex flex-col overflow-hidden shrink-0 relative"
+            >
+                {/* Right resize handle */}
+                <div
+                    onMouseDown={onRightResizeStart}
+                    className="absolute top-0 left-0 w-1 h-full cursor-col-resize hover:bg-blue-400 transition-colors group z-10"
+                >
+                    <div className="absolute top-1/2 left-0 -translate-y-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <FaGripVertical className="w-3 h-3 text-gray-400" />
+                    </div>
+                </div>
                 <TraceDetailPanel entry={selectedEntry} className="flex-1 min-h-0 border-0 rounded-none shadow-none" />
             </div>
         </div>

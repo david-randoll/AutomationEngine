@@ -147,8 +147,8 @@ export default function TraceDetailPanel({ entry, className }: TraceDetailPanelP
                                         onClick={() => setDiffType("event")}
                                         disabled={!hasEventData}
                                         className={`px-2 py-0.5 text-xs font-medium rounded transition-colors ${diffType === "event"
-                                                ? "bg-white text-gray-900 shadow-sm"
-                                                : "text-gray-500 hover:text-gray-700"
+                                            ? "bg-white text-gray-900 shadow-sm"
+                                            : "text-gray-500 hover:text-gray-700"
                                             } ${!hasEventData ? "opacity-50 cursor-not-allowed" : ""}`}
                                     >
                                         Event Data
@@ -157,8 +157,8 @@ export default function TraceDetailPanel({ entry, className }: TraceDetailPanelP
                                         onClick={() => setDiffType("context")}
                                         disabled={!hasContextData}
                                         className={`px-2 py-0.5 text-xs font-medium rounded transition-colors ${diffType === "context"
-                                                ? "bg-white text-gray-900 shadow-sm"
-                                                : "text-gray-500 hover:text-gray-700"
+                                            ? "bg-white text-gray-900 shadow-sm"
+                                            : "text-gray-500 hover:text-gray-700"
                                             } ${!hasContextData ? "opacity-50 cursor-not-allowed" : ""}`}
                                     >
                                         Context Data
@@ -210,17 +210,17 @@ export default function TraceDetailPanel({ entry, className }: TraceDetailPanelP
 
             {/* Fullscreen Modal */}
             <Dialog open={fullscreenOpen} onOpenChange={setFullscreenOpen}>
-                <DialogContent className="max-w-[90vw] w-[90vw] h-[85vh] flex flex-col">
-                    <DialogHeader className="shrink-0">
+                <DialogContent className="max-w-[95vw] w-[95vw] max-h-[95vh] h-[95vh] flex flex-col p-0 gap-0">
+                    <DialogHeader className="shrink-0 px-6 pt-6 pb-4 border-b">
                         <DialogTitle className="flex items-center justify-between">
-                            <span>{entry.alias || entry.type || "Unknown"} - Diff View</span>
+                            <span className="text-lg">{entry.alias || entry.type || "Unknown"} - Diff View</span>
                             <div className="flex bg-gray-200 rounded p-0.5 mr-8">
                                 <button
                                     onClick={() => setDiffType("event")}
                                     disabled={!hasEventData}
-                                    className={`px-3 py-1 text-sm font-medium rounded transition-colors ${diffType === "event"
-                                            ? "bg-white text-gray-900 shadow-sm"
-                                            : "text-gray-500 hover:text-gray-700"
+                                    className={`px-4 py-1.5 text-sm font-medium rounded transition-colors ${diffType === "event"
+                                        ? "bg-white text-gray-900 shadow-sm"
+                                        : "text-gray-500 hover:text-gray-700"
                                         } ${!hasEventData ? "opacity-50 cursor-not-allowed" : ""}`}
                                 >
                                     Event Data
@@ -228,9 +228,9 @@ export default function TraceDetailPanel({ entry, className }: TraceDetailPanelP
                                 <button
                                     onClick={() => setDiffType("context")}
                                     disabled={!hasContextData}
-                                    className={`px-3 py-1 text-sm font-medium rounded transition-colors ${diffType === "context"
-                                            ? "bg-white text-gray-900 shadow-sm"
-                                            : "text-gray-500 hover:text-gray-700"
+                                    className={`px-4 py-1.5 text-sm font-medium rounded transition-colors ${diffType === "context"
+                                        ? "bg-white text-gray-900 shadow-sm"
+                                        : "text-gray-500 hover:text-gray-700"
                                         } ${!hasContextData ? "opacity-50 cursor-not-allowed" : ""}`}
                                 >
                                     Context Data
@@ -238,23 +238,25 @@ export default function TraceDetailPanel({ entry, className }: TraceDetailPanelP
                             </div>
                         </DialogTitle>
                     </DialogHeader>
-                    <div className="flex-1 min-h-0 border rounded overflow-hidden">
-                        <DiffEditor
-                            height="100%"
-                            language="json"
-                            original={beforeContent}
-                            modified={afterContent}
-                            options={{
-                                readOnly: true,
-                                minimap: { enabled: false },
-                                fontSize: 13,
-                                lineNumbers: "on",
-                                scrollBeyondLastLine: false,
-                                automaticLayout: true,
-                                renderSideBySide: true,
-                                wordWrap: "on",
-                            }}
-                        />
+                    <div className="flex-1 min-h-0 px-6 pb-6 pt-4">
+                        <div className="h-full border rounded overflow-hidden">
+                            <DiffEditor
+                                height="100%"
+                                language="json"
+                                original={beforeContent}
+                                modified={afterContent}
+                                options={{
+                                    readOnly: true,
+                                    minimap: { enabled: true },
+                                    fontSize: 14,
+                                    lineNumbers: "on",
+                                    scrollBeyondLastLine: false,
+                                    automaticLayout: true,
+                                    renderSideBySide: true,
+                                    wordWrap: "on",
+                                }}
+                            />
+                        </div>
                     </div>
                 </DialogContent>
             </Dialog>
