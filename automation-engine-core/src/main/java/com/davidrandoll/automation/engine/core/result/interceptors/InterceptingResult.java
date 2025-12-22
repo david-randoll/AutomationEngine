@@ -20,7 +20,7 @@ public class InterceptingResult implements IResult {
     @Override
     public Object getExecutionSummary(EventContext eventContext, ResultContext resultContext) {
         IResultChain chain = buildChain(0);
-        return chain.getExecutionSummary(eventContext, resultContext);
+        return chain.getExecutionSummary(eventContext, new ResultContext(resultContext));
     }
 
     private IResultChain buildChain(int index) {

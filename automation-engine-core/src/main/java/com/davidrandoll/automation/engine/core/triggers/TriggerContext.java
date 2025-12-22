@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Data
@@ -39,5 +40,14 @@ public class TriggerContext {
         this.description = other.getDescription();
         this.trigger = other.getTrigger();
         this.data = additionalData;
+    }
+
+    public TriggerContext(TriggerContext other) {
+        this(other, new HashMap<>(other.getData()));
+    }
+
+    public TriggerContext changeData(Map<String, Object> mapCopy) {
+        this.data = mapCopy;
+        return this;
     }
 }

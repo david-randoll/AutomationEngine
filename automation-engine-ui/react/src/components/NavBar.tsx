@@ -5,6 +5,7 @@ const NavBar = () => {
     const pathname = location.pathname;
     const isBuilder = pathname === "/" || pathname === "";
     const isUserDefined = pathname.startsWith("/user-defined");
+    const isPlayground = pathname.startsWith("/playground");
 
     return (
         <nav className="bg-white border-b shadow-sm">
@@ -25,6 +26,13 @@ const NavBar = () => {
                                 }`}
                         >
                             User-Defined Types
+                        </Link>
+                        <Link
+                            to="/playground"
+                            className={`px-3 py-1.5 text-sm rounded-md transition-colors ${isPlayground ? "bg-primary text-primary-foreground" : "text-gray-600 hover:bg-gray-100"
+                                }`}
+                        >
+                            Playground
                         </Link>
                     </div>
                 </div>

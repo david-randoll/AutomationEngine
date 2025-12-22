@@ -19,7 +19,7 @@ public class InterceptingAction implements IAction {
     @Override
     public void execute(EventContext eventContext, ActionContext actionContext) {
         IActionChain chain = buildChain(0);
-        chain.execute(eventContext, actionContext);
+        chain.execute(eventContext, new ActionContext(actionContext));
     }
 
     private IActionChain buildChain(int index) {

@@ -1,10 +1,12 @@
 # Automation Engine Tracing
 
-This module provides tracing and debugging capabilities for the Automation Engine, allowing users to track and analyze the execution of automations in detail.
+This module provides tracing and debugging capabilities for the Automation Engine, allowing users to track and analyze
+the execution of automations in detail.
 
 ## Features
 
-- **Execution Tracing**: Capture detailed execution traces of automations, including triggers, conditions, actions, variables, and results
+- **Execution Tracing**: Capture detailed execution traces of automations, including triggers, conditions, actions,
+  variables, and results
 - **Nested Child Tracking**: Track nested execution hierarchies for complex automations
 - **Before/After Snapshots**: Capture state before and after each component execution
 - **Timing Information**: Record precise timing for each component execution
@@ -33,6 +35,7 @@ ExecutionTrace trace = traceResult.getTrace();
 ### Trace Structure
 
 The `ExecutionTrace` contains:
+
 - **Variables**: List of variable resolutions with before/after snapshots
 - **Triggers**: List of trigger evaluations with activation status
 - **Conditions**: List of condition evaluations with satisfaction status
@@ -40,6 +43,7 @@ The `ExecutionTrace` contains:
 - **Result**: Final result computation
 
 Each entry includes:
+
 - Type and alias
 - Start and finish timestamps
 - Before and after snapshots (event state and context data)
@@ -73,4 +77,5 @@ Each entry includes:
 
 ## Integration
 
-This module integrates seamlessly with automation-engine-core through the interceptor pattern. The tracing interceptors can be registered with the `AutomationOrchestrator` to enable tracing for all automations.
+This module integrates seamlessly with automation-engine-core through the interceptor pattern. The tracing interceptors
+can be registered with the `AutomationOrchestrator` to enable tracing for all automations.
