@@ -58,15 +58,16 @@ const WorkflowCanvasMode = ({ path }: WorkflowCanvasModeProps) => {
         const newNodes: Node[] = [];
         const newEdges: Edge[] = [];
 
-        let xOffset = 0;
+        let nodeIdCounter = 0;
         const nodeSpacing = 300;
+        const verticalSpacing = 100;
         let prevNodeId: string | null = null;
 
         // Add a start node
         const startNode: Node = {
             id: "start",
             type: "workflowNode",
-            position: { x: xOffset, y: 200 },
+            position: { x: 0, y: 200 },
             data: {
                 label: "Start",
                 blockType: "start",
@@ -74,78 +75,126 @@ const WorkflowCanvasMode = ({ path }: WorkflowCanvasModeProps) => {
         };
         newNodes.push(startNode);
         prevNodeId = "start";
-        xOffset += nodeSpacing;
+
+        let currentX = nodeSpacing;
+        let currentY = 200;
+
+        /**
+         * Process a block and its children recursively
+         */
+        const processBlock = (
+            item: ModuleType,
+            area: Area,
+            index: number,
+            parentId: string | null,
+            depth: number = 0
+        ): { nodeId: string; maxX: number; maxY: number } => {
+            const nodeId = `${area}-${index}-${nodeIdCounter++}`;
+            const areaData = nameToArea(item.name);
+            const blockName = areaData ? Object.values(areaData)[0] : item.name;
+
+            const x = currentX + depth * nodeSpacing;
+            const y = currentY;
+
+            const node: Node = {
+                id: nodeId,
+                type: "workflowNode",
+                position: { x, y },
+                data: {
+                    label: (item.alias as string) || blockName || `${area} ${index + 1}`,
+                    blockType: area,
+                    blockName: item.name,
+                    description: item.description as string,
+                },
+            };
+            newNodes.push(node);
+
+            // Create edge from parent
+            if (parentId) {
+                newEdges.push({
+                    id: `e-${parentId}-${nodeId}`,
+                    source: parentId,
+                    target: nodeId,
+                    type: "smoothstep",
+                    animated: true,
+                });
+            }
+
+            let maxX = x;
+            let maxY = y;
+
+            // Process children blocks (e.g., ifThenElse action with then/else, forEach with actions)
+            const hasChildren = item.then || item.else || item.ifs || item.actions;
+            if (hasChildren) {
+                currentY += verticalSpacing;
+
+                // Process 'then' actions
+                if (item.then && Array.isArray(item.then)) {
+                    for (const [childIndex, childItem] of item.then.entries()) {
+                        const childResult = processBlock(childItem, "action", childIndex, nodeId, depth + 1);
+                        maxX = Math.max(maxX, childResult.maxX);
+                        maxY = Math.max(maxY, childResult.maxY);
+                        currentY = childResult.maxY + verticalSpacing;
+                    }
+                }
+
+                // Process 'else' actions
+                if (item.else && Array.isArray(item.else)) {
+                    for (const [childIndex, childItem] of item.else.entries()) {
+                        const childResult = processBlock(childItem, "action", childIndex, nodeId, depth + 1);
+                        maxX = Math.max(maxX, childResult.maxX);
+                        maxY = Math.max(maxY, childResult.maxY);
+                        currentY = childResult.maxY + verticalSpacing;
+                    }
+                }
+
+                // Process 'ifs' blocks (multiple if-then pairs)
+                if (item.ifs && Array.isArray(item.ifs)) {
+                    for (const ifBlock of item.ifs) {
+                        if (ifBlock.then && Array.isArray(ifBlock.then)) {
+                            for (const [childIndex, childItem] of ifBlock.then.entries()) {
+                                const childResult = processBlock(childItem, "action", childIndex, nodeId, depth + 1);
+                                maxX = Math.max(maxX, childResult.maxX);
+                                maxY = Math.max(maxY, childResult.maxY);
+                                currentY = childResult.maxY + verticalSpacing;
+                            }
+                        }
+                    }
+                }
+
+                // Process nested 'actions' (for sequence, parallel, forEach)
+                if (item.actions && Array.isArray(item.actions)) {
+                    for (const [childIndex, childItem] of item.actions.entries()) {
+                        const childResult = processBlock(childItem, "action", childIndex, nodeId, depth + 1);
+                        maxX = Math.max(maxX, childResult.maxX);
+                        maxY = Math.max(maxY, childResult.maxY);
+                        currentY = childResult.maxY + verticalSpacing;
+                    }
+                }
+            }
+
+            return { nodeId, maxX, maxY: currentY };
+        };
 
         // Process each area in order
         for (const area of AREA_ORDER) {
-            const pluralArea = `${area}s`; // variables, triggers, etc.
+            const pluralArea = `${area}s`;
             const items = data[pluralArea] as ModuleType[] | undefined;
 
             if (items && Array.isArray(items)) {
                 for (const [index, item] of items.entries()) {
-                    const nodeId = `${area}-${index}`;
-                    const areaData = nameToArea(item.name);
-                    const blockName = areaData ? Object.values(areaData)[0] : item.name;
-
-                    const node: Node = {
-                        id: nodeId,
-                        type: "workflowNode",
-                        position: { x: xOffset, y: 200 },
-                        data: {
-                            label: (item.alias as string) || blockName || `${area} ${index + 1}`,
-                            blockType: area,
-                            blockName: item.name,
-                            description: item.description as string,
-                        },
-                    };
-                    newNodes.push(node);
-
-                    // Create edge from previous node
-                    if (prevNodeId) {
-                        newEdges.push({
-                            id: `e-${prevNodeId}-${nodeId}`,
-                            source: prevNodeId,
-                            target: nodeId,
-                            type: "smoothstep",
-                            animated: true,
-                        });
-                    }
-
-                    prevNodeId = nodeId;
-                    xOffset += nodeSpacing;
+                    const result = processBlock(item, area, index, prevNodeId, 0);
+                    prevNodeId = result.nodeId;
+                    currentX = result.maxX + nodeSpacing;
+                    currentY = 200; // Reset Y for next top-level block
                 }
             } else if (data[area] && typeof data[area] === "object") {
                 // Single block (not array)
                 const item = data[area] as ModuleType;
-                const nodeId = `${area}-single`;
-                const areaData = nameToArea(item.name);
-                const blockName = areaData ? Object.values(areaData)[0] : item.name;
-
-                const node: Node = {
-                    id: nodeId,
-                    type: "workflowNode",
-                    position: { x: xOffset, y: 200 },
-                    data: {
-                        label: (item.alias as string) || blockName || area,
-                        blockType: area,
-                        blockName: item.name,
-                        description: item.description as string,
-                    },
-                };
-                newNodes.push(node);
-
-                if (prevNodeId) {
-                    newEdges.push({
-                        id: `e-${prevNodeId}-${nodeId}`,
-                        source: prevNodeId,
-                        target: nodeId,
-                        type: "smoothstep",
-                        animated: true,
-                    });
-                }
-
-                prevNodeId = nodeId;
-                xOffset += nodeSpacing;
+                const result = processBlock(item, area, 0, prevNodeId, 0);
+                prevNodeId = result.nodeId;
+                currentX = result.maxX + nodeSpacing;
+                currentY = 200;
             }
         }
 
@@ -153,7 +202,7 @@ const WorkflowCanvasMode = ({ path }: WorkflowCanvasModeProps) => {
         const endNode: Node = {
             id: "end",
             type: "workflowNode",
-            position: { x: xOffset, y: 200 },
+            position: { x: currentX, y: 200 },
             data: {
                 label: "End",
                 blockType: "end",
