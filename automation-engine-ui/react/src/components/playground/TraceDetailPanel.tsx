@@ -160,7 +160,7 @@ export default function TraceDetailPanel({ entry, className }: TraceDetailPanelP
                                             : "text-gray-500 hover:text-gray-700"
                                             }`}
                                     >
-                                        Result Value
+                                        Result
                                     </button>
                                 )}
                                 <button
@@ -171,7 +171,7 @@ export default function TraceDetailPanel({ entry, className }: TraceDetailPanelP
                                         : "text-gray-500 hover:text-gray-700"
                                         } ${!hasEventData ? "opacity-50 cursor-not-allowed" : ""}`}
                                 >
-                                    Event Data
+                                    Event
                                 </button>
                                 <button
                                     onClick={() => setDiffType("context")}
@@ -181,7 +181,7 @@ export default function TraceDetailPanel({ entry, className }: TraceDetailPanelP
                                         : "text-gray-500 hover:text-gray-700"
                                         } ${!hasContextData ? "opacity-50 cursor-not-allowed" : ""}`}
                                 >
-                                    Context Data
+                                    Context
                                 </button>
                             </div>
                             <Button
