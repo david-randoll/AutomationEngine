@@ -63,11 +63,37 @@ const WorkflowCanvasMode = ({ path }: WorkflowCanvasModeProps) => {
         const verticalSpacing = 100;
         let prevNodeId: string | null = null;
 
-        // Add a start node
+        // Helper to get display label: alias > type/name > "Unnamed"
+        const getBlockLabel = (item: ModuleType, area: Area): string => {
+            if (item.alias && typeof item.alias === "string" && item.alias.trim()) {
+                return item.alias;
+            }
+            // Try to get the type field (e.g., trigger, condition, action, variable, result)
+            const typeField = item[area] || item.trigger || item.condition || item.action || item.variable || item.result || item.name;
+            if (typeField && typeof typeField === "string" && typeField.trim()) {
+                return typeField;
+            }
+            return "Unnamed";
+        };
+
+        // Detect the area type from an item
+        const detectAreaType = (item: ModuleType): Area => {
+            if (item.action) return "action";
+            if (item.trigger) return "trigger";
+            if (item.condition) return "condition";
+            if (item.variable) return "variable";
+            if (item.result) return "result";
+            return "action"; // default fallback
+        };
+
+        // Top-to-bottom layout: Y increases downward, X increases for children (depth)
+        const horizontalSpacing = 250;
+
+        // Add a start node at top center
         const startNode: Node = {
             id: "start",
             type: "workflowNode",
-            position: { x: 0, y: 200 },
+            position: { x: 200, y: 0 },
             data: {
                 label: "Start",
                 blockType: "start",
@@ -76,11 +102,11 @@ const WorkflowCanvasMode = ({ path }: WorkflowCanvasModeProps) => {
         newNodes.push(startNode);
         prevNodeId = "start";
 
-        let currentX = nodeSpacing;
-        let currentY = 200;
+        let currentY = nodeSpacing;
+        let currentX = 200;
 
         /**
-         * Process a block and its children recursively
+         * Process a block and its children recursively (top-to-bottom layout)
          */
         const processBlock = (
             item: ModuleType,
@@ -90,10 +116,9 @@ const WorkflowCanvasMode = ({ path }: WorkflowCanvasModeProps) => {
             depth: number = 0
         ): { nodeId: string; maxX: number; maxY: number } => {
             const nodeId = `${area}-${index}-${nodeIdCounter++}`;
-            const areaData = nameToArea(item.name);
-            const blockName = areaData ? Object.values(areaData)[0] : item.name;
 
-            const x = currentX + depth * nodeSpacing;
+            // Position: X based on depth (children branch right), Y flows down
+            const x = currentX + depth * horizontalSpacing;
             const y = currentY;
 
             const node: Node = {
@@ -101,9 +126,9 @@ const WorkflowCanvasMode = ({ path }: WorkflowCanvasModeProps) => {
                 type: "workflowNode",
                 position: { x, y },
                 data: {
-                    label: (item.alias as string) || blockName || `${area} ${index + 1}`,
+                    label: getBlockLabel(item, area),
                     blockType: area,
-                    blockName: item.name,
+                    blockName: item[area] || item.name,
                     description: item.description as string,
                 },
             };
@@ -123,52 +148,72 @@ const WorkflowCanvasMode = ({ path }: WorkflowCanvasModeProps) => {
             let maxX = x;
             let maxY = y;
 
-            // Process children blocks (e.g., ifThenElse action with then/else, forEach with actions)
-            const hasChildren = item.then || item.else || item.ifs || item.actions;
-            if (hasChildren) {
-                currentY += verticalSpacing;
-
-                // Process 'then' actions
-                if (item.then && Array.isArray(item.then)) {
-                    for (const [childIndex, childItem] of item.then.entries()) {
-                        const childResult = processBlock(childItem, "action", childIndex, nodeId, depth + 1);
-                        maxX = Math.max(maxX, childResult.maxX);
-                        maxY = Math.max(maxY, childResult.maxY);
-                        currentY = childResult.maxY + verticalSpacing;
-                    }
+            // Helper to process child arrays
+            const processChildArray = (children: ModuleType[], childArea: Area) => {
+                for (const [childIndex, childItem] of children.entries()) {
+                    currentY += verticalSpacing;
+                    const childResult = processBlock(childItem, childArea, childIndex, nodeId, depth + 1);
+                    maxX = Math.max(maxX, childResult.maxX);
+                    maxY = Math.max(maxY, childResult.maxY);
                 }
+            };
 
-                // Process 'else' actions
-                if (item.else && Array.isArray(item.else)) {
-                    for (const [childIndex, childItem] of item.else.entries()) {
-                        const childResult = processBlock(childItem, "action", childIndex, nodeId, depth + 1);
-                        maxX = Math.max(maxX, childResult.maxX);
-                        maxY = Math.max(maxY, childResult.maxY);
-                        currentY = childResult.maxY + verticalSpacing;
-                    }
+            // Process all possible children types
+            // Variables
+            if (item.variables && Array.isArray(item.variables)) {
+                processChildArray(item.variables, "variable");
+            }
+            // Triggers
+            if (item.triggers && Array.isArray(item.triggers)) {
+                processChildArray(item.triggers, "trigger");
+            }
+            // Conditions
+            if (item.conditions && Array.isArray(item.conditions)) {
+                processChildArray(item.conditions, "condition");
+            }
+            // Actions (for sequence, parallel, forEach)
+            if (item.actions && Array.isArray(item.actions)) {
+                processChildArray(item.actions, "action");
+            }
+            // Results
+            if (item.results && Array.isArray(item.results)) {
+                processChildArray(item.results, "result");
+            }
+            // 'then' actions (ifThenElse)
+            if (item.then && Array.isArray(item.then)) {
+                for (const [childIndex, childItem] of item.then.entries()) {
+                    currentY += verticalSpacing;
+                    const detectedArea = detectAreaType(childItem);
+                    const childResult = processBlock(childItem, detectedArea, childIndex, nodeId, depth + 1);
+                    maxX = Math.max(maxX, childResult.maxX);
+                    maxY = Math.max(maxY, childResult.maxY);
                 }
-
-                // Process 'ifs' blocks (multiple if-then pairs)
-                if (item.ifs && Array.isArray(item.ifs)) {
-                    for (const ifBlock of item.ifs) {
-                        if (ifBlock.then && Array.isArray(ifBlock.then)) {
-                            for (const [childIndex, childItem] of ifBlock.then.entries()) {
-                                const childResult = processBlock(childItem, "action", childIndex, nodeId, depth + 1);
-                                maxX = Math.max(maxX, childResult.maxX);
-                                maxY = Math.max(maxY, childResult.maxY);
-                                currentY = childResult.maxY + verticalSpacing;
-                            }
+            }
+            // 'else' actions (ifThenElse)
+            if (item.else && Array.isArray(item.else)) {
+                for (const [childIndex, childItem] of item.else.entries()) {
+                    currentY += verticalSpacing;
+                    const detectedArea = detectAreaType(childItem);
+                    const childResult = processBlock(childItem, detectedArea, childIndex, nodeId, depth + 1);
+                    maxX = Math.max(maxX, childResult.maxX);
+                    maxY = Math.max(maxY, childResult.maxY);
+                }
+            }
+            // 'ifs' blocks (multiple if-then pairs)
+            if (item.ifs && Array.isArray(item.ifs)) {
+                for (const ifBlock of item.ifs) {
+                    // Each ifBlock may have conditions and then actions
+                    if (ifBlock.conditions && Array.isArray(ifBlock.conditions)) {
+                        processChildArray(ifBlock.conditions, "condition");
+                    }
+                    if (ifBlock.then && Array.isArray(ifBlock.then)) {
+                        for (const [childIndex, childItem] of ifBlock.then.entries()) {
+                            currentY += verticalSpacing;
+                            const detectedArea = detectAreaType(childItem);
+                            const childResult = processBlock(childItem, detectedArea, childIndex, nodeId, depth + 1);
+                            maxX = Math.max(maxX, childResult.maxX);
+                            maxY = Math.max(maxY, childResult.maxY);
                         }
-                    }
-                }
-
-                // Process nested 'actions' (for sequence, parallel, forEach)
-                if (item.actions && Array.isArray(item.actions)) {
-                    for (const [childIndex, childItem] of item.actions.entries()) {
-                        const childResult = processBlock(childItem, "action", childIndex, nodeId, depth + 1);
-                        maxX = Math.max(maxX, childResult.maxX);
-                        maxY = Math.max(maxY, childResult.maxY);
-                        currentY = childResult.maxY + verticalSpacing;
                     }
                 }
             }
@@ -176,7 +221,7 @@ const WorkflowCanvasMode = ({ path }: WorkflowCanvasModeProps) => {
             return { nodeId, maxX, maxY: currentY };
         };
 
-        // Process each area in order
+        // Process each area in order (top to bottom)
         for (const area of AREA_ORDER) {
             const pluralArea = `${area}s`;
             const items = data[pluralArea] as ModuleType[] | undefined;
@@ -185,24 +230,24 @@ const WorkflowCanvasMode = ({ path }: WorkflowCanvasModeProps) => {
                 for (const [index, item] of items.entries()) {
                     const result = processBlock(item, area, index, prevNodeId, 0);
                     prevNodeId = result.nodeId;
-                    currentX = result.maxX + nodeSpacing;
-                    currentY = 200; // Reset Y for next top-level block
+                    currentY = result.maxY + nodeSpacing;
+                    currentX = 200; // Reset X for next top-level block
                 }
             } else if (data[area] && typeof data[area] === "object") {
                 // Single block (not array)
                 const item = data[area] as ModuleType;
                 const result = processBlock(item, area, 0, prevNodeId, 0);
                 prevNodeId = result.nodeId;
-                currentX = result.maxX + nodeSpacing;
-                currentY = 200;
+                currentY = result.maxY + nodeSpacing;
+                currentX = 200;
             }
         }
 
-        // Add an end node
+        // Add an end node at the bottom
         const endNode: Node = {
             id: "end",
             type: "workflowNode",
-            position: { x: currentX, y: 200 },
+            position: { x: 200, y: currentY },
             data: {
                 label: "End",
                 blockType: "end",
