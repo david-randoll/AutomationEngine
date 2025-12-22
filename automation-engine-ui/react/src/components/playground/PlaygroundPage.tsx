@@ -90,7 +90,7 @@ export default function PlaygroundPage({ className }: PlaygroundPageProps) {
     // Convert automation between formats
     const handleFormatChange = useCallback((newFormat: AutomationFormat) => {
         if (newFormat === format) return;
-        
+
         try {
             if (newFormat === "JSON") {
                 // Convert YAML to JSON
@@ -180,22 +180,20 @@ export default function PlaygroundPage({ className }: PlaygroundPageProps) {
                     <div className="flex bg-muted rounded-lg p-0.5">
                         <button
                             onClick={() => setMode("execute")}
-                            className={`px-3 py-1.5 text-sm font-medium rounded-md flex items-center gap-2 transition-colors ${
-                                mode === "execute"
+                            className={`px-3 py-1.5 text-sm font-medium rounded-md flex items-center gap-2 transition-colors ${mode === "execute"
                                     ? "bg-background text-foreground shadow-sm"
                                     : "text-muted-foreground hover:text-foreground"
-                            }`}
+                                }`}
                         >
                             <FaPlay className="w-3 h-3" />
                             Execute
                         </button>
                         <button
                             onClick={() => setMode("trace")}
-                            className={`px-3 py-1.5 text-sm font-medium rounded-md flex items-center gap-2 transition-colors ${
-                                mode === "trace"
+                            className={`px-3 py-1.5 text-sm font-medium rounded-md flex items-center gap-2 transition-colors ${mode === "trace"
                                     ? "bg-background text-foreground shadow-sm"
                                     : "text-muted-foreground hover:text-foreground"
-                            }`}
+                                }`}
                         >
                             <FaEye className="w-3 h-3" />
                             View Trace
@@ -239,21 +237,19 @@ export default function PlaygroundPage({ className }: PlaygroundPageProps) {
                                     <div className="flex bg-gray-200 rounded p-0.5">
                                         <button
                                             onClick={() => handleFormatChange("YAML")}
-                                            className={`px-2 py-0.5 text-xs font-medium rounded transition-colors ${
-                                                format === "YAML"
+                                            className={`px-2 py-0.5 text-xs font-medium rounded transition-colors ${format === "YAML"
                                                     ? "bg-white text-gray-900 shadow-sm"
                                                     : "text-gray-500 hover:text-gray-700"
-                                            }`}
+                                                }`}
                                         >
                                             YAML
                                         </button>
                                         <button
                                             onClick={() => handleFormatChange("JSON")}
-                                            className={`px-2 py-0.5 text-xs font-medium rounded transition-colors ${
-                                                format === "JSON"
+                                            className={`px-2 py-0.5 text-xs font-medium rounded transition-colors ${format === "JSON"
                                                     ? "bg-white text-gray-900 shadow-sm"
                                                     : "text-gray-500 hover:text-gray-700"
-                                            }`}
+                                                }`}
                                         >
                                             JSON
                                         </button>
@@ -274,7 +270,6 @@ export default function PlaygroundPage({ className }: PlaygroundPageProps) {
                                             tabSize: 2,
                                             wordWrap: "on",
                                         }}
-                                        theme="vs-dark"
                                     />
                                 </div>
                             </div>
@@ -300,7 +295,6 @@ export default function PlaygroundPage({ className }: PlaygroundPageProps) {
                                             automaticLayout: true,
                                             tabSize: 2,
                                         }}
-                                        theme="vs-dark"
                                     />
                                 </div>
                             </div>
@@ -342,7 +336,6 @@ export default function PlaygroundPage({ className }: PlaygroundPageProps) {
                                             tabSize: 2,
                                             wordWrap: "on",
                                         }}
-                                        theme="vs-dark"
                                     />
                                 </div>
                             </div>
@@ -375,11 +368,10 @@ export default function PlaygroundPage({ className }: PlaygroundPageProps) {
                     {/* Execution Result Banner */}
                     {executed !== null && !error && (
                         <div
-                            className={`px-4 py-3 border-b flex items-center gap-4 shrink-0 ${
-                                executed
+                            className={`px-4 py-3 border-b flex items-center gap-4 shrink-0 ${executed
                                     ? "bg-green-50 border-green-200"
                                     : "bg-yellow-50 border-yellow-200"
-                            }`}
+                                }`}
                         >
                             <div className="flex items-center gap-2">
                                 {executed ? (
@@ -388,9 +380,8 @@ export default function PlaygroundPage({ className }: PlaygroundPageProps) {
                                     <FaExclamationTriangle className="w-4 h-4 text-yellow-600" />
                                 )}
                                 <span
-                                    className={`text-sm font-medium ${
-                                        executed ? "text-green-700" : "text-yellow-700"
-                                    }`}
+                                    className={`text-sm font-medium ${executed ? "text-green-700" : "text-yellow-700"
+                                        }`}
                                 >
                                     {executed
                                         ? "Executed Successfully"

@@ -46,12 +46,12 @@ export default function TraceDetailPanel({ entry, className }: TraceDetailPanelP
         if (!entry) {
             return { beforeContent: "{}", afterContent: "{}", hasEventData: false, hasContextData: false };
         }
-        
+
         const beforeEvent = getSnapshotJson(entry.before, "eventSnapshot");
         const afterEvent = getSnapshotJson(entry.after, "eventSnapshot");
         const beforeContext = getSnapshotJson(entry.before, "contextSnapshot");
         const afterContext = getSnapshotJson(entry.after, "contextSnapshot");
-        
+
         return {
             beforeContent: diffType === "event" ? beforeEvent : beforeContext,
             afterContent: diffType === "event" ? afterEvent : afterContext,
@@ -93,8 +93,8 @@ export default function TraceDetailPanel({ entry, className }: TraceDetailPanelP
                         {hasStatus && (
                             <span
                                 className={`flex items-center gap-1 text-xs px-2 py-1 rounded-full ${isSuccess
-                                        ? "bg-green-100 text-green-700"
-                                        : "bg-red-100 text-red-700"
+                                    ? "bg-green-100 text-green-700"
+                                    : "bg-red-100 text-red-700"
                                     }`}
                             >
                                 {isSuccess ? (
@@ -146,22 +146,20 @@ export default function TraceDetailPanel({ entry, className }: TraceDetailPanelP
                                     <button
                                         onClick={() => setDiffType("event")}
                                         disabled={!hasEventData}
-                                        className={`px-2 py-0.5 text-xs font-medium rounded transition-colors ${
-                                            diffType === "event"
+                                        className={`px-2 py-0.5 text-xs font-medium rounded transition-colors ${diffType === "event"
                                                 ? "bg-white text-gray-900 shadow-sm"
                                                 : "text-gray-500 hover:text-gray-700"
-                                        } ${!hasEventData ? "opacity-50 cursor-not-allowed" : ""}`}
+                                            } ${!hasEventData ? "opacity-50 cursor-not-allowed" : ""}`}
                                     >
                                         Event Data
                                     </button>
                                     <button
                                         onClick={() => setDiffType("context")}
                                         disabled={!hasContextData}
-                                        className={`px-2 py-0.5 text-xs font-medium rounded transition-colors ${
-                                            diffType === "context"
+                                        className={`px-2 py-0.5 text-xs font-medium rounded transition-colors ${diffType === "context"
                                                 ? "bg-white text-gray-900 shadow-sm"
                                                 : "text-gray-500 hover:text-gray-700"
-                                        } ${!hasContextData ? "opacity-50 cursor-not-allowed" : ""}`}
+                                            } ${!hasContextData ? "opacity-50 cursor-not-allowed" : ""}`}
                                     >
                                         Context Data
                                     </button>
@@ -176,7 +174,7 @@ export default function TraceDetailPanel({ entry, className }: TraceDetailPanelP
                                     <span className="text-xs">Fullscreen</span>
                                 </Button>
                             </div>
-                            
+
                             {/* Labels for Before/After */}
                             <div className="flex text-xs text-gray-500 mb-1 shrink-0">
                                 <div className="flex-1 flex items-center gap-1">
@@ -192,7 +190,6 @@ export default function TraceDetailPanel({ entry, className }: TraceDetailPanelP
                                     language="json"
                                     original={beforeContent}
                                     modified={afterContent}
-                                    theme="vs-dark"
                                     options={{
                                         readOnly: true,
                                         minimap: { enabled: false },
@@ -221,22 +218,20 @@ export default function TraceDetailPanel({ entry, className }: TraceDetailPanelP
                                 <button
                                     onClick={() => setDiffType("event")}
                                     disabled={!hasEventData}
-                                    className={`px-3 py-1 text-sm font-medium rounded transition-colors ${
-                                        diffType === "event"
+                                    className={`px-3 py-1 text-sm font-medium rounded transition-colors ${diffType === "event"
                                             ? "bg-white text-gray-900 shadow-sm"
                                             : "text-gray-500 hover:text-gray-700"
-                                    } ${!hasEventData ? "opacity-50 cursor-not-allowed" : ""}`}
+                                        } ${!hasEventData ? "opacity-50 cursor-not-allowed" : ""}`}
                                 >
                                     Event Data
                                 </button>
                                 <button
                                     onClick={() => setDiffType("context")}
                                     disabled={!hasContextData}
-                                    className={`px-3 py-1 text-sm font-medium rounded transition-colors ${
-                                        diffType === "context"
+                                    className={`px-3 py-1 text-sm font-medium rounded transition-colors ${diffType === "context"
                                             ? "bg-white text-gray-900 shadow-sm"
                                             : "text-gray-500 hover:text-gray-700"
-                                    } ${!hasContextData ? "opacity-50 cursor-not-allowed" : ""}`}
+                                        } ${!hasContextData ? "opacity-50 cursor-not-allowed" : ""}`}
                                 >
                                     Context Data
                                 </button>
@@ -249,7 +244,6 @@ export default function TraceDetailPanel({ entry, className }: TraceDetailPanelP
                             language="json"
                             original={beforeContent}
                             modified={afterContent}
-                            theme="vs-dark"
                             options={{
                                 readOnly: true,
                                 minimap: { enabled: false },
