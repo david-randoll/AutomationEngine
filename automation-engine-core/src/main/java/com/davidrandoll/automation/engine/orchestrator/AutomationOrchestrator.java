@@ -18,7 +18,7 @@ import java.util.function.BiConsumer;
 public class AutomationOrchestrator implements IAEOrchestrator {
     private final IEventPublisher publisher;
     private final List<Automation> automations = new CopyOnWriteArrayList<>();
-    
+
     @Override
     public List<Automation> getAutomations() {
         return new ArrayList<>(automations);
@@ -67,6 +67,7 @@ public class AutomationOrchestrator implements IAEOrchestrator {
     @Override
     public AutomationResult executeAutomation(Automation automation, EventContext eventContext) {
         AutomationResult result;
+
         automation.resolveVariables(eventContext);
         if (automation.anyTriggerActivated(eventContext) && automation.allConditionsMet(eventContext)) {
             log.debug("Automation triggered and conditions met. Executing actions.");

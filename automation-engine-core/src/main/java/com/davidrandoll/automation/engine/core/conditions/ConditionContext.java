@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Data
@@ -39,5 +40,14 @@ public class ConditionContext {
         this.description = other.getDescription();
         this.condition = other.getCondition();
         this.data = additionalData;
+    }
+
+    public ConditionContext(ConditionContext other) {
+        this(other, new HashMap<>(other.getData()));
+    }
+
+    public ConditionContext changeData(Map<String, Object> newData) {
+        this.data = newData;
+        return this;
     }
 }

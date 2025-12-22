@@ -19,7 +19,7 @@ public class InterceptingTrigger implements ITrigger {
     @Override
     public boolean isTriggered(EventContext eventContext, TriggerContext triggerContext) {
         ITriggerChain chain = buildChain(0);
-        return chain.isTriggered(eventContext, triggerContext);
+        return chain.isTriggered(eventContext, new TriggerContext(triggerContext));
     }
 
     private ITriggerChain buildChain(int index) {

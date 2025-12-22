@@ -19,7 +19,7 @@ public class InterceptingCondition implements ICondition {
     @Override
     public boolean isSatisfied(EventContext eventContext, ConditionContext context) {
         IConditionChain chain = buildChain(0);
-        return chain.isSatisfied(eventContext, context);
+        return chain.isSatisfied(eventContext, new ConditionContext(context));
     }
 
     private IConditionChain buildChain(int index) {

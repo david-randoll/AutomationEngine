@@ -43,6 +43,15 @@ public class ResultContext {
         this.data = additionalData;
     }
 
+    public ResultContext(ResultContext other) {
+        this(other, other.getData() != null ? other.getData().deepCopy() : null);
+    }
+
+    public ResultContext changeData(JsonNode newData) {
+        this.data = newData;
+        return this;
+    }
+
     public JsonNode getResultData() {
         // add the alias, description, and result type into the data node
         // if data is an object node, add fields, else return data as is

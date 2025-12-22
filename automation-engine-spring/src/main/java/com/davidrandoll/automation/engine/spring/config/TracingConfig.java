@@ -45,7 +45,7 @@ public class TracingConfig {
     }
 
     @Order(-2)
-    //@Bean("tracingTriggerInterceptor")
+    @Bean("tracingTriggerInterceptor")
     @ConditionalOnMissingBean(name = "tracingTriggerInterceptor", ignored = TracingTriggerInterceptor.class)
     public ITriggerInterceptor tracingTriggerInterceptor() {
         return new TracingTriggerInterceptor();
