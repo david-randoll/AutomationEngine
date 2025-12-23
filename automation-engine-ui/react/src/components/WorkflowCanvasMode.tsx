@@ -64,26 +64,39 @@ const WorkflowCanvasMode = ({ path }: WorkflowCanvasModeProps) => {
         let prevNodeId: string | null = null;
 
         // Helper to get display label: alias > type/name > "Unnamed"
-        const getBlockLabel = (item: ModuleType, area: Area): string => {
+        const getBlockLabel = (item: ModuleType, area?: Area): string => {
             if (item.alias && typeof item.alias === "string" && item.alias.trim()) {
                 return item.alias;
             }
             // Try to get the type field (e.g., trigger, condition, action, variable, result)
-            const typeField = item[area] || item.trigger || item.condition || item.action || item.variable || item.result || item.name;
+            if (area && item[area] && typeof item[area] === "string") {
+                return item[area] as string;
+            }
+            const typeField = item.trigger || item.condition || item.action || item.variable || item.result || item.name;
             if (typeField && typeof typeField === "string" && typeField.trim()) {
                 return typeField;
             }
             return "Unnamed";
         };
 
-        // Detect the area type from an item
-        const detectAreaType = (item: ModuleType): Area => {
+        // Detect the area type from x-block-type or field names
+        const detectAreaType = (item: any): Area => {
+            // Check for x-block-type first
+            if (item["x-block-type"]) {
+                return item["x-block-type"] as Area;
+            }
+            // Fallback to field detection
             if (item.action) return "action";
             if (item.trigger) return "trigger";
             if (item.condition) return "condition";
             if (item.variable) return "variable";
             if (item.result) return "result";
             return "action"; // default fallback
+        };
+
+        // Check if an object has x-block-type (is a block)
+        const isBlock = (value: any): boolean => {
+            return value && typeof value === "object" && (value["x-block-type"] || value.action || value.trigger || value.condition || value.variable || value.result);
         };
 
         // Top-to-bottom layout: Y increases downward, X increases for children (depth)
@@ -148,73 +161,31 @@ const WorkflowCanvasMode = ({ path }: WorkflowCanvasModeProps) => {
             let maxX = x;
             let maxY = y;
 
-            // Helper to process child arrays
-            const processChildArray = (children: ModuleType[], childArea: Area) => {
-                for (const [childIndex, childItem] of children.entries()) {
-                    currentY += verticalSpacing;
-                    const childResult = processBlock(childItem, childArea, childIndex, nodeId, depth + 1);
-                    maxX = Math.max(maxX, childResult.maxX);
-                    maxY = Math.max(maxY, childResult.maxY);
+            // Dynamically process all fields in the item that contain blocks
+            for (const [fieldName, fieldValue] of Object.entries(item)) {
+                // Skip non-block fields
+                if (fieldName === "alias" || fieldName === "description" || fieldName === "name" || fieldName === "x-block-type") {
+                    continue;
                 }
-            };
 
-            // Process all possible children types
-            // Variables
-            if (item.variables && Array.isArray(item.variables)) {
-                processChildArray(item.variables, "variable");
-            }
-            // Triggers
-            if (item.triggers && Array.isArray(item.triggers)) {
-                processChildArray(item.triggers, "trigger");
-            }
-            // Conditions
-            if (item.conditions && Array.isArray(item.conditions)) {
-                processChildArray(item.conditions, "condition");
-            }
-            // Actions (for sequence, parallel, forEach)
-            if (item.actions && Array.isArray(item.actions)) {
-                processChildArray(item.actions, "action");
-            }
-            // Results
-            if (item.results && Array.isArray(item.results)) {
-                processChildArray(item.results, "result");
-            }
-            // 'then' actions (ifThenElse)
-            if (item.then && Array.isArray(item.then)) {
-                for (const [childIndex, childItem] of item.then.entries()) {
-                    currentY += verticalSpacing;
-                    const detectedArea = detectAreaType(childItem);
-                    const childResult = processBlock(childItem, detectedArea, childIndex, nodeId, depth + 1);
-                    maxX = Math.max(maxX, childResult.maxX);
-                    maxY = Math.max(maxY, childResult.maxY);
-                }
-            }
-            // 'else' actions (ifThenElse)
-            if (item.else && Array.isArray(item.else)) {
-                for (const [childIndex, childItem] of item.else.entries()) {
-                    currentY += verticalSpacing;
-                    const detectedArea = detectAreaType(childItem);
-                    const childResult = processBlock(childItem, detectedArea, childIndex, nodeId, depth + 1);
-                    maxX = Math.max(maxX, childResult.maxX);
-                    maxY = Math.max(maxY, childResult.maxY);
-                }
-            }
-            // 'ifs' blocks (multiple if-then pairs)
-            if (item.ifs && Array.isArray(item.ifs)) {
-                for (const ifBlock of item.ifs) {
-                    // Each ifBlock may have conditions and then actions
-                    if (ifBlock.conditions && Array.isArray(ifBlock.conditions)) {
-                        processChildArray(ifBlock.conditions, "condition");
-                    }
-                    if (ifBlock.then && Array.isArray(ifBlock.then)) {
-                        for (const [childIndex, childItem] of ifBlock.then.entries()) {
+                if (Array.isArray(fieldValue)) {
+                    // Process array of blocks
+                    for (const [childIndex, childItem] of fieldValue.entries()) {
+                        if (isBlock(childItem)) {
                             currentY += verticalSpacing;
-                            const detectedArea = detectAreaType(childItem);
-                            const childResult = processBlock(childItem, detectedArea, childIndex, nodeId, depth + 1);
+                            const childArea = detectAreaType(childItem);
+                            const childResult = processBlock(childItem, childArea, childIndex, nodeId, depth + 1);
                             maxX = Math.max(maxX, childResult.maxX);
                             maxY = Math.max(maxY, childResult.maxY);
                         }
                     }
+                } else if (isBlock(fieldValue)) {
+                    // Process single block object
+                    currentY += verticalSpacing;
+                    const childArea = detectAreaType(fieldValue);
+                    const childResult = processBlock(fieldValue as ModuleType, childArea, 0, nodeId, depth + 1);
+                    maxX = Math.max(maxX, childResult.maxX);
+                    maxY = Math.max(maxY, childResult.maxY);
                 }
             }
 
