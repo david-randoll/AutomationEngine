@@ -60,7 +60,7 @@ const WorkflowCanvasMode = ({ path }: WorkflowCanvasModeProps) => {
 
         let nodeIdCounter = 0;
         const nodeSpacing = 150; // Reduced from 300 - shorter parent lines
-        const verticalSpacing = 80; // Reduced from 100 - tighter child spacing
+        const verticalSpacing = 150; // Increased from 80 - more vertical space between child nodes
         let prevNodeId: string | null = null;
 
         // Helper to get display label: alias > type/name > "Unnamed"
