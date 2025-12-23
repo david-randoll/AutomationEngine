@@ -169,14 +169,40 @@ const WorkflowCanvasMode = ({ path }: WorkflowCanvasModeProps) => {
                 }
 
                 if (Array.isArray(fieldValue)) {
-                    // Process array of blocks
+                    // Process array of blocks or containers
                     for (const [childIndex, childItem] of fieldValue.entries()) {
                         if (isBlock(childItem)) {
+                            // It's a block - render it
                             currentY += verticalSpacing;
                             const childArea = detectAreaType(childItem);
                             const childResult = processBlock(childItem, childArea, childIndex, nodeId, depth + 1);
                             maxX = Math.max(maxX, childResult.maxX);
                             maxY = Math.max(maxY, childResult.maxY);
+                        } else if (childItem && typeof childItem === "object") {
+                            // It's a container object - recursively process its fields
+                            for (const [nestedFieldName, nestedFieldValue] of Object.entries(childItem)) {
+                                if (nestedFieldName === "alias" || nestedFieldName === "description" || nestedFieldName === "name" || nestedFieldName === "x-block-type") {
+                                    continue;
+                                }
+                                
+                                if (Array.isArray(nestedFieldValue)) {
+                                    for (const [nestedIndex, nestedItem] of nestedFieldValue.entries()) {
+                                        if (isBlock(nestedItem)) {
+                                            currentY += verticalSpacing;
+                                            const nestedArea = detectAreaType(nestedItem);
+                                            const nestedResult = processBlock(nestedItem, nestedArea, nestedIndex, nodeId, depth + 1);
+                                            maxX = Math.max(maxX, nestedResult.maxX);
+                                            maxY = Math.max(maxY, nestedResult.maxY);
+                                        }
+                                    }
+                                } else if (isBlock(nestedFieldValue)) {
+                                    currentY += verticalSpacing;
+                                    const nestedArea = detectAreaType(nestedFieldValue);
+                                    const nestedResult = processBlock(nestedFieldValue as ModuleType, nestedArea, 0, nodeId, depth + 1);
+                                    maxX = Math.max(maxX, nestedResult.maxX);
+                                    maxY = Math.max(maxY, nestedResult.maxY);
+                                }
+                            }
                         }
                     }
                 } else if (isBlock(fieldValue)) {
@@ -186,6 +212,31 @@ const WorkflowCanvasMode = ({ path }: WorkflowCanvasModeProps) => {
                     const childResult = processBlock(fieldValue as ModuleType, childArea, 0, nodeId, depth + 1);
                     maxX = Math.max(maxX, childResult.maxX);
                     maxY = Math.max(maxY, childResult.maxY);
+                } else if (fieldValue && typeof fieldValue === "object") {
+                    // It's a container object - recursively process its fields
+                    for (const [nestedFieldName, nestedFieldValue] of Object.entries(fieldValue)) {
+                        if (nestedFieldName === "alias" || nestedFieldName === "description" || nestedFieldName === "name" || nestedFieldName === "x-block-type") {
+                            continue;
+                        }
+                        
+                        if (Array.isArray(nestedFieldValue)) {
+                            for (const [nestedIndex, nestedItem] of nestedFieldValue.entries()) {
+                                if (isBlock(nestedItem)) {
+                                    currentY += verticalSpacing;
+                                    const nestedArea = detectAreaType(nestedItem);
+                                    const nestedResult = processBlock(nestedItem, nestedArea, nestedIndex, nodeId, depth + 1);
+                                    maxX = Math.max(maxX, nestedResult.maxX);
+                                    maxY = Math.max(maxY, nestedResult.maxY);
+                                }
+                            }
+                        } else if (isBlock(nestedFieldValue)) {
+                            currentY += verticalSpacing;
+                            const nestedArea = detectAreaType(nestedFieldValue);
+                            const nestedResult = processBlock(nestedFieldValue as ModuleType, nestedArea, 0, nodeId, depth + 1);
+                            maxX = Math.max(maxX, nestedResult.maxX);
+                            maxY = Math.max(maxY, nestedResult.maxY);
+                        }
+                    }
                 }
             }
 
