@@ -19,7 +19,7 @@ public class InterceptingVariable implements IVariable {
     @Override
     public void resolve(EventContext eventContext, VariableContext variableContext) {
         IVariableChain chain = buildChain(0);
-        chain.resolve(eventContext, variableContext);
+        chain.resolve(eventContext, new VariableContext(variableContext));
     }
 
     private IVariableChain buildChain(int index) {

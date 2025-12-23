@@ -43,7 +43,7 @@ public class ResultTemplatingInterceptor implements IResultInterceptor {
         JsonNode jsonNodeCopy = objectMapper.valueToTree(resultContext.getData()); // Create a copy of the data
         jsonNodeCopy = processor.processIfNotAutomation(eventData, jsonNodeCopy);
 
-        var res = chain.getExecutionSummary(eventContext, new ResultContext(resultContext, jsonNodeCopy));
+        var res = chain.getExecutionSummary(eventContext, resultContext.changeData(jsonNodeCopy));
         log.debug("ConditionTemplatingInterceptor: Condition data processed successfully.");
         return res;
     }

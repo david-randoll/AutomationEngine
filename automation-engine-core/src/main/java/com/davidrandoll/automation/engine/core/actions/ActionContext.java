@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Data
@@ -39,5 +40,14 @@ public class ActionContext {
         this.description = other.getDescription();
         this.action = other.getAction();
         this.data = additionalData;
+    }
+
+    public ActionContext(ActionContext other) {
+        this(other, new HashMap<>(other.getData()));
+    }
+
+    public ActionContext changeData(Map<String, Object> newData) {
+        this.data = newData;
+        return this;
     }
 }
