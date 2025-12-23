@@ -59,8 +59,8 @@ const WorkflowCanvasMode = ({ path }: WorkflowCanvasModeProps) => {
         const newEdges: Edge[] = [];
 
         let nodeIdCounter = 0;
-        const nodeSpacing = 300;
-        const verticalSpacing = 100;
+        const nodeSpacing = 150; // Reduced from 300 - shorter parent lines
+        const verticalSpacing = 80; // Reduced from 100 - tighter child spacing
         let prevNodeId: string | null = null;
 
         // Helper to get display label: alias > type/name > "Unnamed"
@@ -100,7 +100,7 @@ const WorkflowCanvasMode = ({ path }: WorkflowCanvasModeProps) => {
         };
 
         // Top-to-bottom layout: Y increases downward, X increases for children (depth)
-        const horizontalSpacing = 250;
+        const horizontalSpacing = 350; // Increased from 250 - longer child lines
 
         // Add a start node at top center
         const startNode: Node = {
