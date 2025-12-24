@@ -173,7 +173,7 @@ const WorkflowCanvasMode = ({ path }: WorkflowCanvasModeProps) => {
                     for (const [childIndex, childItem] of fieldValue.entries()) {
                         if (isBlock(childItem)) {
                             // It's a block - render it
-                            currentY += verticalSpacing;
+                            currentY = Math.max(currentY, maxY) + verticalSpacing;
                             const childArea = detectAreaType(childItem);
                             const childResult = processBlock(childItem, childArea, childIndex, nodeId, depth + 1);
                             maxX = Math.max(maxX, childResult.maxX);
@@ -188,7 +188,7 @@ const WorkflowCanvasMode = ({ path }: WorkflowCanvasModeProps) => {
                                 if (Array.isArray(nestedFieldValue)) {
                                     for (const [nestedIndex, nestedItem] of nestedFieldValue.entries()) {
                                         if (isBlock(nestedItem)) {
-                                            currentY += verticalSpacing;
+                                            currentY = Math.max(currentY, maxY) + verticalSpacing;
                                             const nestedArea = detectAreaType(nestedItem);
                                             const nestedResult = processBlock(nestedItem, nestedArea, nestedIndex, nodeId, depth + 1);
                                             maxX = Math.max(maxX, nestedResult.maxX);
@@ -196,7 +196,7 @@ const WorkflowCanvasMode = ({ path }: WorkflowCanvasModeProps) => {
                                         }
                                     }
                                 } else if (isBlock(nestedFieldValue)) {
-                                    currentY += verticalSpacing;
+                                    currentY = Math.max(currentY, maxY) + verticalSpacing;
                                     const nestedArea = detectAreaType(nestedFieldValue);
                                     const nestedResult = processBlock(nestedFieldValue as ModuleType, nestedArea, 0, nodeId, depth + 1);
                                     maxX = Math.max(maxX, nestedResult.maxX);
@@ -207,7 +207,7 @@ const WorkflowCanvasMode = ({ path }: WorkflowCanvasModeProps) => {
                     }
                 } else if (isBlock(fieldValue)) {
                     // Process single block object
-                    currentY += verticalSpacing;
+                    currentY = Math.max(currentY, maxY) + verticalSpacing;
                     const childArea = detectAreaType(fieldValue);
                     const childResult = processBlock(fieldValue as ModuleType, childArea, 0, nodeId, depth + 1);
                     maxX = Math.max(maxX, childResult.maxX);
@@ -222,7 +222,7 @@ const WorkflowCanvasMode = ({ path }: WorkflowCanvasModeProps) => {
                         if (Array.isArray(nestedFieldValue)) {
                             for (const [nestedIndex, nestedItem] of nestedFieldValue.entries()) {
                                 if (isBlock(nestedItem)) {
-                                    currentY += verticalSpacing;
+                                    currentY = Math.max(currentY, maxY) + verticalSpacing;
                                     const nestedArea = detectAreaType(nestedItem);
                                     const nestedResult = processBlock(nestedItem, nestedArea, nestedIndex, nodeId, depth + 1);
                                     maxX = Math.max(maxX, nestedResult.maxX);
@@ -230,7 +230,7 @@ const WorkflowCanvasMode = ({ path }: WorkflowCanvasModeProps) => {
                                 }
                             }
                         } else if (isBlock(nestedFieldValue)) {
-                            currentY += verticalSpacing;
+                            currentY = Math.max(currentY, maxY) + verticalSpacing;
                             const nestedArea = detectAreaType(nestedFieldValue);
                             const nestedResult = processBlock(nestedFieldValue as ModuleType, nestedArea, 0, nodeId, depth + 1);
                             maxX = Math.max(maxX, nestedResult.maxX);
@@ -240,7 +240,7 @@ const WorkflowCanvasMode = ({ path }: WorkflowCanvasModeProps) => {
                 }
             }
 
-            return { nodeId, maxX, maxY: currentY };
+            return { nodeId, maxX, maxY: Math.max(maxY, currentY) };
         };
 
         // Process each area in order (top to bottom)
