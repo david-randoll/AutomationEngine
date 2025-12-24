@@ -155,6 +155,7 @@ class UserDefinedTriggerTest extends AutomationEngineTest {
                 triggers:
                   - trigger: userDefinedTrigger
                     name: nonExistentTrigger
+                    throwErrorIfNotFound: false
                 actions:
                   - action: logger
                     message: "This should not execute"

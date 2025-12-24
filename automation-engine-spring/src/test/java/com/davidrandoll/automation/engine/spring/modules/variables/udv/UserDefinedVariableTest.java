@@ -140,6 +140,7 @@ class UserDefinedVariableTest extends AutomationEngineTest {
                 variables:
                   - variable: userDefinedVariable
                     name: nonExistentVariable
+                    throwErrorIfNotFound: false
                 actions:
                   - action: logger
                     message: "Should still execute"

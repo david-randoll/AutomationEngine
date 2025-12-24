@@ -69,5 +69,7 @@ public class UserDefinedAction extends PluggableAction<UserDefinedActionContext>
             var result = processor.resolveResult(eventContext, definition.getResult());
             ec.addMetadata(ac.getStoreToVariable(), result);
         }
+
+        log.debug("Completed user-defined action: {}", ac.getName());
     }
 }

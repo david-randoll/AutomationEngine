@@ -125,6 +125,7 @@ class UserDefinedConditionTest extends AutomationEngineTest {
                 conditions:
                   - condition: userDefinedCondition
                     name: nonExistentCondition
+                    throwErrorIfNotFound: false
                 actions:
                   - action: logger
                     message: "This should not execute"
