@@ -56,11 +56,11 @@ const WorkflowNode = memo(({ data, selected }: NodeProps & { data: WorkflowNodeD
                 ${isTerminal ? "" : "cursor-pointer hover:shadow-lg"}
             `}
         >
-            {/* Input Handle */}
+            {/* Input Handle - Top for vertical flow */}
             {blockType !== "start" && (
                 <Handle
                     type="target"
-                    position={Position.Left}
+                    position={Position.Top}
                     className="!w-3 !h-3 !bg-gray-400 !border-2 !border-white"
                 />
             )}
@@ -115,11 +115,11 @@ const WorkflowNode = memo(({ data, selected }: NodeProps & { data: WorkflowNodeD
                 </div>
             )}
 
-            {/* Output Handle */}
+            {/* Output Handle - Bottom for vertical flow */}
             {blockType !== "end" && (
                 <Handle
                     type="source"
-                    position={Position.Right}
+                    position={Position.Bottom}
                     className="!w-3 !h-3 !bg-gray-400 !border-2 !border-white"
                 />
             )}

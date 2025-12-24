@@ -58,15 +58,55 @@ const WorkflowCanvasMode = ({ path }: WorkflowCanvasModeProps) => {
         const newNodes: Node[] = [];
         const newEdges: Edge[] = [];
 
-        let xOffset = 0;
-        const nodeSpacing = 300;
+        let nodeIdCounter = 0;
+        const nodeSpacing = 150; // Reduced from 300 - shorter parent lines
+        const verticalSpacing = 150; // Increased from 80 - more vertical space between child nodes
         let prevNodeId: string | null = null;
 
-        // Add a start node
+        // Helper to get display label: alias > type/name > "Unnamed"
+        const getBlockLabel = (item: ModuleType, area?: Area): string => {
+            if (item.alias && typeof item.alias === "string" && item.alias.trim()) {
+                return item.alias;
+            }
+            // Try to get the type field (e.g., trigger, condition, action, variable, result)
+            if (area && item[area] && typeof item[area] === "string") {
+                return item[area] as string;
+            }
+            const typeField = item.trigger || item.condition || item.action || item.variable || item.result || item.name;
+            if (typeField && typeof typeField === "string" && typeField.trim()) {
+                return typeField;
+            }
+            return "Unnamed";
+        };
+
+        // Detect the area type from x-block-type or field names
+        const detectAreaType = (item: any): Area => {
+            // Check for x-block-type first
+            if (item["x-block-type"]) {
+                return item["x-block-type"] as Area;
+            }
+            // Fallback to field detection
+            if (item.action) return "action";
+            if (item.trigger) return "trigger";
+            if (item.condition) return "condition";
+            if (item.variable) return "variable";
+            if (item.result) return "result";
+            return "action"; // default fallback
+        };
+
+        // Check if an object has x-block-type (is a block)
+        const isBlock = (value: any): boolean => {
+            return value && typeof value === "object" && (value["x-block-type"] || value.action || value.trigger || value.condition || value.variable || value.result);
+        };
+
+        // Top-to-bottom layout: Y increases downward, X increases for children (depth)
+        const horizontalSpacing = 350; // Increased from 250 - longer child lines
+
+        // Add a start node at top center
         const startNode: Node = {
             id: "start",
             type: "workflowNode",
-            position: { x: xOffset, y: 200 },
+            position: { x: 200, y: 0 },
             data: {
                 label: "Start",
                 blockType: "start",
@@ -74,86 +114,162 @@ const WorkflowCanvasMode = ({ path }: WorkflowCanvasModeProps) => {
         };
         newNodes.push(startNode);
         prevNodeId = "start";
-        xOffset += nodeSpacing;
 
-        // Process each area in order
+        let currentY = nodeSpacing;
+        let currentX = 200;
+
+        /**
+         * Process a block and its children recursively (top-to-bottom layout)
+         */
+        const processBlock = (
+            item: ModuleType,
+            area: Area,
+            index: number,
+            parentId: string | null,
+            depth: number = 0
+        ): { nodeId: string; maxX: number; maxY: number } => {
+            const nodeId = `${area}-${index}-${nodeIdCounter++}`;
+
+            // Position: X based on depth (children branch right), Y flows down
+            const x = currentX + depth * horizontalSpacing;
+            const y = currentY;
+
+            const node: Node = {
+                id: nodeId,
+                type: "workflowNode",
+                position: { x, y },
+                data: {
+                    label: getBlockLabel(item, area),
+                    blockType: area,
+                    blockName: item[area] || item.name,
+                    description: item.description as string,
+                },
+            };
+            newNodes.push(node);
+
+            // Create edge from parent
+            if (parentId) {
+                newEdges.push({
+                    id: `e-${parentId}-${nodeId}`,
+                    source: parentId,
+                    target: nodeId,
+                    type: "smoothstep",
+                    animated: true,
+                });
+            }
+
+            let maxX = x;
+            let maxY = y;
+
+            // Dynamically process all fields in the item that contain blocks
+            for (const [fieldName, fieldValue] of Object.entries(item)) {
+                // Skip non-block fields
+                if (fieldName === "alias" || fieldName === "description" || fieldName === "name" || fieldName === "x-block-type") {
+                    continue;
+                }
+
+                if (Array.isArray(fieldValue)) {
+                    // Process array of blocks or containers
+                    for (const [childIndex, childItem] of fieldValue.entries()) {
+                        if (isBlock(childItem)) {
+                            // It's a block - render it
+                            currentY = Math.max(currentY, maxY) + verticalSpacing;
+                            const childArea = detectAreaType(childItem);
+                            const childResult = processBlock(childItem, childArea, childIndex, nodeId, depth + 1);
+                            maxX = Math.max(maxX, childResult.maxX);
+                            maxY = Math.max(maxY, childResult.maxY);
+                        } else if (childItem && typeof childItem === "object") {
+                            // It's a container object - recursively process its fields
+                            for (const [nestedFieldName, nestedFieldValue] of Object.entries(childItem)) {
+                                if (nestedFieldName === "alias" || nestedFieldName === "description" || nestedFieldName === "name" || nestedFieldName === "x-block-type") {
+                                    continue;
+                                }
+                                
+                                if (Array.isArray(nestedFieldValue)) {
+                                    for (const [nestedIndex, nestedItem] of nestedFieldValue.entries()) {
+                                        if (isBlock(nestedItem)) {
+                                            currentY = Math.max(currentY, maxY) + verticalSpacing;
+                                            const nestedArea = detectAreaType(nestedItem);
+                                            const nestedResult = processBlock(nestedItem, nestedArea, nestedIndex, nodeId, depth + 1);
+                                            maxX = Math.max(maxX, nestedResult.maxX);
+                                            maxY = Math.max(maxY, nestedResult.maxY);
+                                        }
+                                    }
+                                } else if (isBlock(nestedFieldValue)) {
+                                    currentY = Math.max(currentY, maxY) + verticalSpacing;
+                                    const nestedArea = detectAreaType(nestedFieldValue);
+                                    const nestedResult = processBlock(nestedFieldValue as ModuleType, nestedArea, 0, nodeId, depth + 1);
+                                    maxX = Math.max(maxX, nestedResult.maxX);
+                                    maxY = Math.max(maxY, nestedResult.maxY);
+                                }
+                            }
+                        }
+                    }
+                } else if (isBlock(fieldValue)) {
+                    // Process single block object
+                    currentY = Math.max(currentY, maxY) + verticalSpacing;
+                    const childArea = detectAreaType(fieldValue);
+                    const childResult = processBlock(fieldValue as ModuleType, childArea, 0, nodeId, depth + 1);
+                    maxX = Math.max(maxX, childResult.maxX);
+                    maxY = Math.max(maxY, childResult.maxY);
+                } else if (fieldValue && typeof fieldValue === "object") {
+                    // It's a container object - recursively process its fields
+                    for (const [nestedFieldName, nestedFieldValue] of Object.entries(fieldValue)) {
+                        if (nestedFieldName === "alias" || nestedFieldName === "description" || nestedFieldName === "name" || nestedFieldName === "x-block-type") {
+                            continue;
+                        }
+                        
+                        if (Array.isArray(nestedFieldValue)) {
+                            for (const [nestedIndex, nestedItem] of nestedFieldValue.entries()) {
+                                if (isBlock(nestedItem)) {
+                                    currentY = Math.max(currentY, maxY) + verticalSpacing;
+                                    const nestedArea = detectAreaType(nestedItem);
+                                    const nestedResult = processBlock(nestedItem, nestedArea, nestedIndex, nodeId, depth + 1);
+                                    maxX = Math.max(maxX, nestedResult.maxX);
+                                    maxY = Math.max(maxY, nestedResult.maxY);
+                                }
+                            }
+                        } else if (isBlock(nestedFieldValue)) {
+                            currentY = Math.max(currentY, maxY) + verticalSpacing;
+                            const nestedArea = detectAreaType(nestedFieldValue);
+                            const nestedResult = processBlock(nestedFieldValue as ModuleType, nestedArea, 0, nodeId, depth + 1);
+                            maxX = Math.max(maxX, nestedResult.maxX);
+                            maxY = Math.max(maxY, nestedResult.maxY);
+                        }
+                    }
+                }
+            }
+
+            return { nodeId, maxX, maxY: Math.max(maxY, currentY) };
+        };
+
+        // Process each area in order (top to bottom)
         for (const area of AREA_ORDER) {
-            const pluralArea = `${area}s`; // variables, triggers, etc.
+            const pluralArea = `${area}s`;
             const items = data[pluralArea] as ModuleType[] | undefined;
 
             if (items && Array.isArray(items)) {
                 for (const [index, item] of items.entries()) {
-                    const nodeId = `${area}-${index}`;
-                    const areaData = nameToArea(item.name);
-                    const blockName = areaData ? Object.values(areaData)[0] : item.name;
-
-                    const node: Node = {
-                        id: nodeId,
-                        type: "workflowNode",
-                        position: { x: xOffset, y: 200 },
-                        data: {
-                            label: (item.alias as string) || blockName || `${area} ${index + 1}`,
-                            blockType: area,
-                            blockName: item.name,
-                            description: item.description as string,
-                        },
-                    };
-                    newNodes.push(node);
-
-                    // Create edge from previous node
-                    if (prevNodeId) {
-                        newEdges.push({
-                            id: `e-${prevNodeId}-${nodeId}`,
-                            source: prevNodeId,
-                            target: nodeId,
-                            type: "smoothstep",
-                            animated: true,
-                        });
-                    }
-
-                    prevNodeId = nodeId;
-                    xOffset += nodeSpacing;
+                    const result = processBlock(item, area, index, prevNodeId, 0);
+                    prevNodeId = result.nodeId;
+                    currentY = result.maxY + nodeSpacing;
+                    currentX = 200; // Reset X for next top-level block
                 }
             } else if (data[area] && typeof data[area] === "object") {
                 // Single block (not array)
                 const item = data[area] as ModuleType;
-                const nodeId = `${area}-single`;
-                const areaData = nameToArea(item.name);
-                const blockName = areaData ? Object.values(areaData)[0] : item.name;
-
-                const node: Node = {
-                    id: nodeId,
-                    type: "workflowNode",
-                    position: { x: xOffset, y: 200 },
-                    data: {
-                        label: (item.alias as string) || blockName || area,
-                        blockType: area,
-                        blockName: item.name,
-                        description: item.description as string,
-                    },
-                };
-                newNodes.push(node);
-
-                if (prevNodeId) {
-                    newEdges.push({
-                        id: `e-${prevNodeId}-${nodeId}`,
-                        source: prevNodeId,
-                        target: nodeId,
-                        type: "smoothstep",
-                        animated: true,
-                    });
-                }
-
-                prevNodeId = nodeId;
-                xOffset += nodeSpacing;
+                const result = processBlock(item, area, 0, prevNodeId, 0);
+                prevNodeId = result.nodeId;
+                currentY = result.maxY + nodeSpacing;
+                currentX = 200;
             }
         }
 
-        // Add an end node
+        // Add an end node at the bottom
         const endNode: Node = {
             id: "end",
             type: "workflowNode",
-            position: { x: xOffset, y: 200 },
+            position: { x: 200, y: currentY },
             data: {
                 label: "End",
                 blockType: "end",
