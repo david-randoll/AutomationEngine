@@ -5,8 +5,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.luaj.vm2.*;
-import org.luaj.vm2.lib.OneArgFunction;
+import org.luaj.vm2.Globals;
+import org.luaj.vm2.LuaError;
+import org.luaj.vm2.LuaTable;
+import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.lib.jse.JsePlatform;
 
 import java.util.*;
@@ -65,21 +67,15 @@ public class LuaScriptEngine {
      */
     public boolean executeAsBoolean(String script, Map<String, Object> variables) {
         Object result = execute(script, variables);
-        if (result == null) {
-            return false;
-        }
-        if (result instanceof Boolean) {
-            return (Boolean) result;
-        }
-        if (result instanceof Number) {
-            return ((Number) result).doubleValue() != 0;
-        }
-        if (result instanceof String) {
-            return !((String) result).isEmpty() &&
-                    !result.equals("false") &&
-                    !result.equals("nil");
-        }
-        return true;
+        return switch (result) {
+            case null -> false;
+            case Boolean b -> b;
+            case Number number -> number.doubleValue() != 0;
+            case String s -> !s.isEmpty() &&
+                             !result.equals("false") &&
+                             !result.equals("nil");
+            default -> true;
+        };
     }
 
     /**
@@ -103,29 +99,33 @@ public class LuaScriptEngine {
      */
     @SuppressWarnings("unchecked")
     public LuaValue toLuaValue(Object obj) {
-        if (obj == null) {
-            return LuaValue.NIL;
-        }
-        if (obj instanceof Boolean) {
-            return LuaValue.valueOf((Boolean) obj);
-        }
-        if (obj instanceof Number) {
-            if (obj instanceof Double || obj instanceof Float) {
-                return LuaValue.valueOf(((Number) obj).doubleValue());
+        switch (obj) {
+            case null -> {
+                return LuaValue.NIL;
             }
-            return LuaValue.valueOf(((Number) obj).longValue());
-        }
-        if (obj instanceof String) {
-            return LuaValue.valueOf((String) obj);
-        }
-        if (obj instanceof Map) {
-            return mapToLuaTable((Map<String, Object>) obj);
-        }
-        if (obj instanceof List) {
-            return listToLuaTable((List<?>) obj);
-        }
-        if (obj instanceof JsonNode) {
-            return jsonNodeToLuaValue((JsonNode) obj);
+            case Boolean b -> {
+                return LuaValue.valueOf(b);
+            }
+            case Number number -> {
+                if (obj instanceof Double || obj instanceof Float) {
+                    return LuaValue.valueOf(number.doubleValue());
+                }
+                return LuaValue.valueOf(number.longValue());
+            }
+            case String s -> {
+                return LuaValue.valueOf(s);
+            }
+            case Map<?, ?> map -> {
+                return mapToLuaTable((Map<String, Object>) map);
+            }
+            case List<?> list -> {
+                return listToLuaTable(list);
+            }
+            case JsonNode jsonNode -> {
+                return jsonNodeToLuaValue(jsonNode);
+            }
+            default -> {
+            }
         }
         // For other objects, try to convert to map using Jackson
         try {

@@ -83,7 +83,9 @@ log.info("User ID: " .. data.id)
 ```
 
 #### Extending the Lua Environment
-You can add your own custom functions or tables to the Lua environment by implementing the `ILuaFunctionContributor` interface and registering it as a Spring bean.
+
+You can add your own custom functions or tables to the Lua environment by implementing the `ILuaFunctionContributor`
+interface and registering it as a Spring bean.
 
 ```java
 @Component
