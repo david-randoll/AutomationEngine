@@ -69,8 +69,8 @@ public class AETemplatingConfig {
 
     @Bean(name = "templateProcessor")
     @ConditionalOnMissingBean(name = "templateProcessor", ignored = TemplateProcessor.class)
-    public TemplateProcessor templateProcessor(PebbleEngine pebbleEngine) {
-        return new TemplateProcessor(pebbleEngine);
+    public TemplateProcessor templateProcessor(PebbleEngine pebbleEngine, ObjectMapper mapper) {
+        return new TemplateProcessor(pebbleEngine, mapper);
     }
 
     /*

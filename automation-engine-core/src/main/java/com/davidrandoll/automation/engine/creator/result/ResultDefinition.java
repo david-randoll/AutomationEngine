@@ -8,6 +8,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldNameConstants;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -29,4 +32,16 @@ public class ResultDefinition {
     @JsonAnySetter
     @JsonProperty("0829b1b94f764e47b871865ea6628f34")
     private JsonNode params;
+
+    @JsonAnyGetter
+    public Map<String, Object> getResultsAsMap() {
+        if (params == null || params.isNull()) {
+            return Map.of();
+        }
+        // loop through the fields and convert to map
+        var map = new HashMap<String, Object>();
+        params.fieldNames()
+                .forEachRemaining(field -> map.put(field, params.get(field)));
+        return map;
+    }
 }

@@ -28,6 +28,9 @@ public class UserDefinedActionContext implements IActionContext {
     private String description;
     private String name;
 
+    private boolean throwErrorIfNotFound = true;
+    private String storeToVariable;
+
     @JsonAnyGetter
     @JsonAnySetter
     private Map<String, Object> parameters;

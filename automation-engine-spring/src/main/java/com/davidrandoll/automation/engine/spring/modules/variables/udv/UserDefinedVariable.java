@@ -4,7 +4,9 @@ import com.davidrandoll.automation.engine.core.events.EventContext;
 import com.davidrandoll.automation.engine.spring.spi.PluggableVariable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.util.ObjectUtils;
+import org.springframework.web.server.ResponseStatusException;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -20,6 +22,8 @@ public class UserDefinedVariable extends PluggableVariable<UserDefinedVariableCo
 
         var variableDefinition = registry.findVariable(vc.getName());
         if (variableDefinition.isEmpty()) {
+            if (vc.isThrowErrorIfNotFound())
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User-defined variable '" + vc.getName() + "' not found in registry");
             log.warn("User-defined variable '{}' not found in registry", vc.getName());
             return;
         }

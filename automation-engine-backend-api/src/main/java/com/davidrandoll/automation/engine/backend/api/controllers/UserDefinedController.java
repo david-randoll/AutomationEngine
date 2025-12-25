@@ -12,9 +12,11 @@ import com.davidrandoll.automation.engine.spring.modules.variables.udv.IUserDefi
 import com.davidrandoll.automation.engine.spring.modules.variables.udv.UserDefinedVariableDefinition;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -103,8 +105,11 @@ public class UserDefinedController {
     }
 
     @PutMapping("/{blockType}/{name}")
-    public ResponseEntity<?> update(@PathVariable String blockType, @PathVariable String name,
-            @RequestBody JsonNode definition) {
+    public ResponseEntity<?> update(@PathVariable String blockType, @PathVariable String name, @RequestBody JsonNode definition) {
+        var definitionName = definition.hasNonNull("name") ? definition.get("name").asText() : null;
+        if (ObjectUtils.isEmpty(definitionName)) {
+            ((ObjectNode) definition).put("name", name);
+        }
         return register(blockType, definition);
     }
 

@@ -31,7 +31,7 @@ public class EventContext {
     private final String source;
 
     public EventContext(IEvent event) {
-        if (isNull(event)) throw new IllegalArgumentException("Event cannot be null");
+        if (event == null) throw new IllegalArgumentException("Event cannot be null");
 
         this.event = event;
         this.metadata = new NullableConcurrentHashMap<>(); // some actions may be executed in parallel
