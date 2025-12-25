@@ -6,6 +6,7 @@ import com.davidrandoll.automation.engine.lua.results.LuaScriptResult;
 import com.davidrandoll.automation.engine.lua.triggers.LuaScriptTrigger;
 import com.davidrandoll.automation.engine.lua.variables.LuaScriptVariable;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,8 +19,20 @@ public class AELuaConfig {
 
     @Bean
     @ConditionalOnMissingBean
-    public LuaScriptEngine luaScriptEngine(ObjectMapper objectMapper) {
-        return new LuaScriptEngine(objectMapper);
+    public LuaScriptEngine luaScriptEngine(ObjectMapper objectMapper, List<ILuaFunctionContributor> contributors) {
+        return new LuaScriptEngine(objectMapper, contributors);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public LogLuaFunctionContributor logLuaFunctionContributor() {
+        return new LogLuaFunctionContributor();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public JsonLuaFunctionContributor jsonLuaFunctionContributor(ObjectMapper objectMapper) {
+        return new JsonLuaFunctionContributor(objectMapper);
     }
 
     @Bean("luaScriptAction")

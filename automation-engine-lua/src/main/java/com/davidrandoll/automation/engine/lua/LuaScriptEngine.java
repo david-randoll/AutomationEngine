@@ -22,6 +22,7 @@ import java.util.*;
 @RequiredArgsConstructor
 public class LuaScriptEngine {
     private final ObjectMapper mapper;
+    private final List<ILuaFunctionContributor> contributors;
 
     /**
      * Executes a Lua script with the provided variables/bindings.
@@ -38,11 +39,12 @@ public class LuaScriptEngine {
             globals.set(entry.getKey(), toLuaValue(entry.getValue()));
         }
 
-        // Add logging support
-        globals.set("log", createLogTable());
-
-        // Add JSON utilities
-        globals.set("json", createJsonTable());
+        // Apply all contributors
+        if (contributors != null) {
+            for (ILuaFunctionContributor contributor : contributors) {
+                contributor.contribute(globals, this);
+            }
+        }
 
         try {
             LuaValue chunk = globals.load(script);
@@ -100,7 +102,7 @@ public class LuaScriptEngine {
      * Converts a Java object to a LuaValue.
      */
     @SuppressWarnings("unchecked")
-    private LuaValue toLuaValue(Object obj) {
+    public LuaValue toLuaValue(Object obj) {
         if (obj == null) {
             return LuaValue.NIL;
         }
@@ -189,7 +191,7 @@ public class LuaScriptEngine {
     /**
      * Converts a LuaValue back to a Java object.
      */
-    private Object fromLuaValue(LuaValue value) {
+    public Object fromLuaValue(LuaValue value) {
         if (value == null || value.isnil()) {
             return null;
         }
@@ -245,81 +247,6 @@ public class LuaScriptEngine {
             map.put(keyStr, fromLuaValue(table.get(key)));
         }
         return map;
-    }
-
-    private LuaTable createLogTable() {
-        LuaTable logTable = new LuaTable();
-
-        logTable.set("info", new OneArgFunction() {
-            @Override
-            public LuaValue call(LuaValue arg) {
-                log.info("[Lua] {}", arg.tojstring());
-                return LuaValue.NIL;
-            }
-        });
-
-        logTable.set("warn", new OneArgFunction() {
-            @Override
-            public LuaValue call(LuaValue arg) {
-                log.warn("[Lua] {}", arg.tojstring());
-                return LuaValue.NIL;
-            }
-        });
-
-        logTable.set("error", new OneArgFunction() {
-            @Override
-            public LuaValue call(LuaValue arg) {
-                log.error("[Lua] {}", arg.tojstring());
-                return LuaValue.NIL;
-            }
-        });
-
-        logTable.set("debug", new OneArgFunction() {
-            @Override
-            public LuaValue call(LuaValue arg) {
-                log.debug("[Lua] {}", arg.tojstring());
-                return LuaValue.NIL;
-            }
-        });
-
-        return logTable;
-    }
-
-    private LuaTable createJsonTable() {
-        LuaTable jsonTable = new LuaTable();
-
-        // Create reference to this engine for use in anonymous classes
-        final LuaScriptEngine self = this;
-
-        jsonTable.set("encode", new OneArgFunction() {
-            @Override
-            public LuaValue call(LuaValue arg) {
-                try {
-                    Object javaValue = self.fromLuaValue(arg);
-                    String json = mapper.writeValueAsString(javaValue);
-                    return LuaValue.valueOf(json);
-                } catch (Exception e) {
-                    log.error("JSON encode error: {}", e.getMessage());
-                    return LuaValue.NIL;
-                }
-            }
-        });
-
-        jsonTable.set("decode", new OneArgFunction() {
-            @Override
-            public LuaValue call(LuaValue arg) {
-                try {
-                    String json = arg.tojstring();
-                    Object value = mapper.readValue(json, Object.class);
-                    return self.toLuaValue(value);
-                } catch (Exception e) {
-                    log.error("JSON decode error: {}", e.getMessage());
-                    return LuaValue.NIL;
-                }
-            }
-        });
-
-        return jsonTable;
     }
 
     /**

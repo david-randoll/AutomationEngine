@@ -82,6 +82,25 @@ local data = json.decode(jsonString)
 log.info("User ID: " .. data.id)
 ```
 
+#### Extending the Lua Environment
+You can add your own custom functions or tables to the Lua environment by implementing the `ILuaFunctionContributor` interface and registering it as a Spring bean.
+
+```java
+@Component
+public class MyCustomContributor implements ILuaFunctionContributor {
+    @Override
+    public void contribute(Globals globals, LuaScriptEngine engine) {
+        globals.set("myFunc", new OneArgFunction() {
+            @Override
+            public LuaValue call(LuaValue arg) {
+                String input = arg.tojstring();
+                return LuaValue.valueOf("Processed: " .. input);
+            }
+        });
+    }
+}
+```
+
 #### Standard Lua Libraries
 
 The environment includes standard Lua libraries:

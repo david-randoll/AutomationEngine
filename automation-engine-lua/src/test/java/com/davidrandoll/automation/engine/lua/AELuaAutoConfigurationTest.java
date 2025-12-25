@@ -31,6 +31,20 @@ class AELuaAutoConfigurationTest {
     }
 
     @Test
+    void shouldConfigureLogLuaFunctionContributor() {
+        LogLuaFunctionContributor bean = context.getBean(LogLuaFunctionContributor.class);
+        assertThat(bean).isNotNull()
+                .as("LogLuaFunctionContributor should be configured to provide logging to Lua");
+    }
+
+    @Test
+    void shouldConfigureJsonLuaFunctionContributor() {
+        JsonLuaFunctionContributor bean = context.getBean(JsonLuaFunctionContributor.class);
+        assertThat(bean).isNotNull()
+                .as("JsonLuaFunctionContributor should be configured to provide JSON utilities to Lua");
+    }
+
+    @Test
     void shouldConfigureLuaScriptAction() {
         LuaScriptAction bean = context.getBean(LuaScriptAction.class);
         assertThat(bean).isNotNull()

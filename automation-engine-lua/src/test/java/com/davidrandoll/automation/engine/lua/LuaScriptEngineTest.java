@@ -24,7 +24,11 @@ class LuaScriptEngineTest {
     @BeforeEach
     void setUp() {
         objectMapper = new ObjectMapper();
-        luaEngine = new LuaScriptEngine(objectMapper);
+        List<ILuaFunctionContributor> contributors = List.of(
+                new LogLuaFunctionContributor(),
+                new JsonLuaFunctionContributor(objectMapper)
+        );
+        luaEngine = new LuaScriptEngine(objectMapper, contributors);
     }
 
     @Test
