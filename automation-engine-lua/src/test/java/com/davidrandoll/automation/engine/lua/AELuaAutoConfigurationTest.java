@@ -5,6 +5,7 @@ import com.davidrandoll.automation.engine.lua.conditions.LuaScriptCondition;
 import com.davidrandoll.automation.engine.lua.results.LuaScriptResult;
 import com.davidrandoll.automation.engine.lua.triggers.LuaScriptTrigger;
 import com.davidrandoll.automation.engine.lua.variables.LuaScriptVariable;
+import com.davidrandoll.automation.engine.test.AutomationEngineApplication;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

@@ -48,7 +48,7 @@ class LuaScriptActionTest extends AutomationEngineTest {
                 actions:
                   - action: luaScript
                     script: |
-                      log.info("Event time: " .. tostring(event.time))
+                      log.info("Event time: " .. tostring(time))
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
@@ -69,13 +69,14 @@ class LuaScriptActionTest extends AutomationEngineTest {
                   - trigger: alwaysTrue
                 actions:
                   - action: luaScript
+                    storeToVariable: "lua"
                     script: |
                       return {
                         computedValue = 42,
                         greeting = "Hello from Lua"
                       }
                   - action: logger
-                    message: "Computed: {{ computedValue }}, Greeting: {{ greeting }}"
+                    message: "Computed: {{ lua.computedValue }}, Greeting: {{ lua.greeting }}"
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
@@ -96,6 +97,7 @@ class LuaScriptActionTest extends AutomationEngineTest {
                   - trigger: alwaysTrue
                 actions:
                   - action: luaScript
+                    storeToVariable: "lua"
                     script: |
                       local numbers = {1, 2, 3, 4, 5}
                       local sum = 0
@@ -107,7 +109,7 @@ class LuaScriptActionTest extends AutomationEngineTest {
                         average = sum / #numbers
                       }
                   - action: logger
-                    message: "Sum: {{ sum }}, Average: {{ average }}"
+                    message: "Sum: {{ lua.sum }}, Average: {{ lua.average }}"
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
@@ -171,6 +173,7 @@ class LuaScriptActionTest extends AutomationEngineTest {
                   - trigger: alwaysTrue
                 actions:
                   - action: luaScript
+                    storeToVariable: "lua"
                     script: |
                       local data = {name = "test", value = 123}
                       local encoded = json.encode(data)
@@ -181,7 +184,7 @@ class LuaScriptActionTest extends AutomationEngineTest {
                         decodedName = decoded.name
                       }
                   - action: logger
-                    message: "Decoded name: {{ decodedName }}"
+                    message: "Decoded name: {{ lua.decodedName }}"
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);

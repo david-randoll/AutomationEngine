@@ -33,30 +33,13 @@ public class LuaScriptAction extends PluggableAction<LuaScriptActionContext> {
         log.debug("Executing Lua script action: {}", ac.getAlias());
 
         // Build bindings for the Lua script
-        Map<String, Object> bindings = new HashMap<>();
-        bindings.put("event", ec.getEventData());
-        bindings.put("metadata", ec.getMetadata());
-
-        // Create a result table that the script can populate
-        Map<String, Object> result = new HashMap<>();
-        bindings.put("result", result);
+        Map<String, Object> bindings = new HashMap<>(ec.getEventData());
 
         try {
             // Execute the script
             Object scriptResult = luaEngine.execute(ac.getScript(), bindings);
 
-            // If the script returns a map, merge it with the result table
-            if (scriptResult instanceof Map) {
-                @SuppressWarnings("unchecked")
-                Map<String, Object> returnedMap = (Map<String, Object>) scriptResult;
-                result.putAll(returnedMap);
-            }
-
-            // Add any results to the event context metadata
-            if (!result.isEmpty()) {
-                ec.addMetadata(result);
-                log.debug("LuaScriptAction added {} variables to metadata", result.size());
-            }
+            ec.addMetadata(ac.getStoreToVariable(), scriptResult);
 
             log.info("LuaScriptAction executed successfully: {}", ac.getAlias());
         } catch (LuaScriptEngine.LuaScriptExecutionException e) {

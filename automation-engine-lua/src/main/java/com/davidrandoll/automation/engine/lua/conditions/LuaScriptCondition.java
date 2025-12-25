@@ -31,9 +31,7 @@ public class LuaScriptCondition extends PluggableCondition<LuaScriptConditionCon
 
         log.debug("Evaluating Lua script condition: {}", cc.getAlias());
 
-        Map<String, Object> bindings = new HashMap<>();
-        bindings.put("event", ec.getEventData());
-        bindings.put("metadata", ec.getMetadata());
+        Map<String, Object> bindings = new HashMap<>(ec.getEventData());
 
         try {
             boolean result = luaEngine.executeAsBoolean(cc.getScript(), bindings);

@@ -8,6 +8,12 @@
     <runConfiguration name="All in automation-engine-spring-events" type="JUnit" />
     <runConfiguration name="All in automation-engine-jdbc" type="JUnit" />
     <runConfiguration name="All in automation-engine-spring" type="JUnit" />
+    <runConfiguration name="All in automation-engine-backend-api" type="JUnit" />
+    <runConfiguration name="All in automation-engine-core" type="JUnit" />
+    <runConfiguration name="All in automation-engine-spring-tx" type="JUnit" />
+    <runConfiguration name="All in automation-engine-tracing" type="JUnit" />
+    <runConfiguration name="All in automation-engine-ui" type="JUnit" />
+    <runConfiguration name="All in automation-engine-lua" type="JUnit" />
     <method v="2" />
   </configuration>
 </component>

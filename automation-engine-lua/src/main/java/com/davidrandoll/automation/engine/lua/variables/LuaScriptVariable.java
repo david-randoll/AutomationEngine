@@ -5,7 +5,7 @@ import com.davidrandoll.automation.engine.lua.LuaScriptEngine;
 import com.davidrandoll.automation.engine.spring.spi.PluggableVariable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.util.StringUtils;
+import org.springframework.util.ObjectUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,25 +25,33 @@ public class LuaScriptVariable extends PluggableVariable<LuaScriptVariableContex
 
     @Override
     public void resolve(EventContext ec, LuaScriptVariableContext vc) {
-        if (!StringUtils.hasText(vc.getScript())) {
+        if (ObjectUtils.isEmpty(vc.getScript())) {
             log.warn("LuaScriptVariable skipped: script is null or blank");
             return;
         }
 
         log.debug("Resolving Lua script variable: {}", vc.getAlias());
 
-        Map<String, Object> bindings = new HashMap<>();
-        bindings.put("event", ec.getEventData());
-        bindings.put("metadata", ec.getMetadata());
+        Map<String, Object> bindings = new HashMap<>(ec.getEventData());
 
         try {
-            Map<String, Object> result = luaEngine.executeAsMap(vc.getScript(), bindings);
+            var result = luaEngine.execute(vc.getScript(), bindings);
 
-            if (!result.isEmpty()) {
-                ec.addMetadata(result);
-                log.info("LuaScriptVariable '{}' added {} variables to metadata", vc.getAlias(), result.size());
+            if (!ObjectUtils.isEmpty(vc.getName())) {
+                ec.addMetadata(vc.getName(), result);
             } else {
-                log.debug("LuaScriptVariable '{}' returned no variables", vc.getAlias());
+                if (result instanceof Map<?, ?> mapResult) {
+                    for (var entry : mapResult.entrySet()) {
+                        if (entry.getKey() == null) {
+                            log.warn("LuaScriptVariable returned a null key, skipping this entry.");
+                            continue;
+                        }
+                        String key = entry.getKey().toString();
+                        ec.addMetadata(key, entry.getValue());
+                    }
+                } else {
+                    log.warn("LuaScriptVariable result is not a table, and no name provided to store the result.");
+                }
             }
         } catch (LuaScriptEngine.LuaScriptExecutionException e) {
             log.error("LuaScriptVariable failed: {}", e.getMessage());

@@ -82,7 +82,7 @@ class LuaScriptConditionTest extends AutomationEngineTest {
                   - trigger: alwaysTrue
                 conditions:
                   - condition: luaScriptCondition
-                    script: "return event.userRole == 'admin' and event.accessLevel >= 5"
+                    script: "return userRole == 'admin' and accessLevel >= 5"
                 actions:
                   - action: logger
                     message: "Admin access granted!"
@@ -107,7 +107,7 @@ class LuaScriptConditionTest extends AutomationEngineTest {
                   - trigger: alwaysTrue
                 conditions:
                   - condition: luaScriptCondition
-                    script: "return event.userRole == 'admin' and event.accessLevel >= 10"
+                    script: "return userRole == 'admin' and accessLevel >= 10"
                 actions:
                   - action: logger
                     message: "This should not appear"
@@ -134,8 +134,8 @@ class LuaScriptConditionTest extends AutomationEngineTest {
                   - condition: luaScriptCondition
                     script: |
                       -- Check if user is admin or verified user with high access
-                      local isAdmin = event.userRole == 'admin'
-                      local isVerifiedPowerUser = event.isVerified and event.accessLevel >= 3
+                      local isAdmin = userRole == 'admin'
+                      local isVerifiedPowerUser = isVerified and accessLevel >= 3
                       return isAdmin or isVerifiedPowerUser
                 actions:
                   - action: logger
@@ -161,9 +161,9 @@ class LuaScriptConditionTest extends AutomationEngineTest {
                   - trigger: alwaysTrue
                 conditions:
                   - condition: luaScriptCondition
-                    script: "return event.userRole == 'admin'"
+                    script: "return userRole == 'admin'"
                   - condition: luaScriptCondition
-                    script: "return event.isVerified == true"
+                    script: "return isVerified == true"
                 actions:
                   - action: logger
                     message: "Both conditions met!"

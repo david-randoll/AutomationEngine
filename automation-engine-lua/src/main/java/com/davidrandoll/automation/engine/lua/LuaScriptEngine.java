@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.luaj.vm2.*;
+import org.luaj.vm2.lib.OneArgFunction;
 import org.luaj.vm2.lib.jse.JsePlatform;
 
 import java.util.*;
@@ -249,7 +250,7 @@ public class LuaScriptEngine {
     private LuaTable createLogTable() {
         LuaTable logTable = new LuaTable();
 
-        logTable.set("info", new LuaFunction() {
+        logTable.set("info", new OneArgFunction() {
             @Override
             public LuaValue call(LuaValue arg) {
                 log.info("[Lua] {}", arg.tojstring());
@@ -257,7 +258,7 @@ public class LuaScriptEngine {
             }
         });
 
-        logTable.set("warn", new LuaFunction() {
+        logTable.set("warn", new OneArgFunction() {
             @Override
             public LuaValue call(LuaValue arg) {
                 log.warn("[Lua] {}", arg.tojstring());
@@ -265,7 +266,7 @@ public class LuaScriptEngine {
             }
         });
 
-        logTable.set("error", new LuaFunction() {
+        logTable.set("error", new OneArgFunction() {
             @Override
             public LuaValue call(LuaValue arg) {
                 log.error("[Lua] {}", arg.tojstring());
@@ -273,7 +274,7 @@ public class LuaScriptEngine {
             }
         });
 
-        logTable.set("debug", new LuaFunction() {
+        logTable.set("debug", new OneArgFunction() {
             @Override
             public LuaValue call(LuaValue arg) {
                 log.debug("[Lua] {}", arg.tojstring());
@@ -287,11 +288,14 @@ public class LuaScriptEngine {
     private LuaTable createJsonTable() {
         LuaTable jsonTable = new LuaTable();
 
-        jsonTable.set("encode", new LuaFunction() {
+        // Create reference to this engine for use in anonymous classes
+        final LuaScriptEngine self = this;
+
+        jsonTable.set("encode", new OneArgFunction() {
             @Override
             public LuaValue call(LuaValue arg) {
                 try {
-                    Object javaValue = fromLuaValue(arg);
+                    Object javaValue = self.fromLuaValue(arg);
                     String json = mapper.writeValueAsString(javaValue);
                     return LuaValue.valueOf(json);
                 } catch (Exception e) {
@@ -301,13 +305,13 @@ public class LuaScriptEngine {
             }
         });
 
-        jsonTable.set("decode", new LuaFunction() {
+        jsonTable.set("decode", new OneArgFunction() {
             @Override
             public LuaValue call(LuaValue arg) {
                 try {
                     String json = arg.tojstring();
                     Object value = mapper.readValue(json, Object.class);
-                    return toLuaValue(value);
+                    return self.toLuaValue(value);
                 } catch (Exception e) {
                     log.error("JSON decode error: {}", e.getMessage());
                     return LuaValue.NIL;

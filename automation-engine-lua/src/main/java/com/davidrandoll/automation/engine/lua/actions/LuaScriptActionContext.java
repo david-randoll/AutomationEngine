@@ -37,4 +37,6 @@ public class LuaScriptActionContext implements IActionContext {
      */
     @JsonAlias({"script", "lua", "code"})
     private String script;
+
+    private String storeToVariable = "lua";
 }

@@ -32,6 +32,7 @@ class LuaScriptVariableTest extends AutomationEngineTest {
                 alias: lua-variable-basic
                 variables:
                   - variable: luaScriptVariable
+                    name: greeting
                     script: |
                       return {
                         greeting = "Hello, World!"
@@ -40,7 +41,7 @@ class LuaScriptVariableTest extends AutomationEngineTest {
                   - trigger: alwaysTrue
                 actions:
                   - action: logger
-                    message: "{{ greeting }}"
+                    message: "{{ greeting.greeting }}"
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
@@ -59,16 +60,17 @@ class LuaScriptVariableTest extends AutomationEngineTest {
                 alias: lua-variable-event-data
                 variables:
                   - variable: luaScriptVariable
+                    name: userInfo
                     script: |
                       return {
-                        fullName = event.firstName .. " " .. event.lastName,
-                        isAdult = event.age >= 18
+                        fullName = firstName .. " " .. lastName,
+                        isAdult = age >= 18
                       }
                 triggers:
                   - trigger: alwaysTrue
                 actions:
                   - action: logger
-                    message: "User: {{ fullName }}, Adult: {{ isAdult }}"
+                    message: "User: {{ userInfo.fullName }}, Adult: {{ userInfo.isAdult }}"
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
@@ -87,17 +89,18 @@ class LuaScriptVariableTest extends AutomationEngineTest {
                 alias: lua-variable-math
                 variables:
                   - variable: luaScriptVariable
+                    name: ageInfo
                     script: |
-                      local birthYear = 2024 - event.age
+                      local birthYear = 2024 - age
                       return {
                         birthYear = birthYear,
-                        nextBirthday = event.age + 1
+                        nextBirthday = age + 1
                       }
                 triggers:
                   - trigger: alwaysTrue
                 actions:
                   - action: logger
-                    message: "Birth year: {{ birthYear }}, Next age: {{ nextBirthday }}"
+                    message: "Birth year: {{ ageInfo.birthYear }}, Next age: {{ ageInfo.nextBirthday }}"
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
@@ -116,18 +119,17 @@ class LuaScriptVariableTest extends AutomationEngineTest {
                 alias: lua-variable-conditional
                 variables:
                   - variable: luaScriptVariable
+                    name: ageGroup
                     script: |
                       local ageGroup
-                      if event.age < 18 then
+                      if age < 18 then
                         ageGroup = "minor"
-                      elseif event.age < 65 then
+                      elseif age < 65 then
                         ageGroup = "adult"
                       else
                         ageGroup = "senior"
                       end
-                      return {
-                        ageGroup = ageGroup
-                      }
+                      return ageGroup
                 triggers:
                   - trigger: alwaysTrue
                 actions:
@@ -153,12 +155,12 @@ class LuaScriptVariableTest extends AutomationEngineTest {
                   - variable: luaScriptVariable
                     script: |
                       return {
-                        upperFirst = string.upper(event.firstName)
+                        upperFirst = string.upper(firstName)
                       }
                   - variable: luaScriptVariable
                     script: |
                       return {
-                        upperLast = string.upper(event.lastName)
+                        upperLast = string.upper(lastName)
                       }
                 triggers:
                   - trigger: alwaysTrue
@@ -183,6 +185,7 @@ class LuaScriptVariableTest extends AutomationEngineTest {
                 alias: lua-variable-empty
                 variables:
                   - variable: luaScriptVariable
+                    name: emptyVar
                     script: ""
                 triggers:
                   - trigger: alwaysTrue
@@ -207,6 +210,7 @@ class LuaScriptVariableTest extends AutomationEngineTest {
                 alias: lua-variable-error
                 variables:
                   - variable: luaScriptVariable
+                    name: faultyVar
                     script: "invalid lua {{"
                 triggers:
                   - trigger: alwaysTrue
@@ -230,6 +234,7 @@ class LuaScriptVariableTest extends AutomationEngineTest {
                 alias: lua-variable-no-return
                 variables:
                   - variable: luaScriptVariable
+                    name: noReturnVar
                     script: |
                       local x = 5
                       -- No return statement

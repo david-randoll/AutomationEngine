@@ -34,9 +34,7 @@ public class LuaScriptResult extends PluggableResult<LuaScriptResultContext> {
 
         log.debug("Generating Lua script result: {}", rc.getAlias());
 
-        Map<String, Object> bindings = new HashMap<>();
-        bindings.put("event", ec.getEventData());
-        bindings.put("metadata", ec.getMetadata());
+        Map<String, Object> bindings = new HashMap<>(ec.getEventData());
 
         try {
             Object result = luaEngine.execute(rc.getScript(), bindings);

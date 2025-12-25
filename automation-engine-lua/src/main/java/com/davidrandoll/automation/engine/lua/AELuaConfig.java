@@ -22,8 +22,8 @@ public class AELuaConfig {
         return new LuaScriptEngine(objectMapper);
     }
 
-    @Bean("luaScript")
-    @ConditionalOnMissingBean(name = "luaScript", ignored = LuaScriptAction.class)
+    @Bean("luaScriptAction")
+    @ConditionalOnMissingBean(name = "luaScriptAction", ignored = LuaScriptAction.class)
     public LuaScriptAction luaScriptAction(LuaScriptEngine luaEngine) {
         return new LuaScriptAction(luaEngine);
     }

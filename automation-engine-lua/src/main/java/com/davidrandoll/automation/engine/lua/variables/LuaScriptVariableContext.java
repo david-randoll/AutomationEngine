@@ -30,6 +30,9 @@ public class LuaScriptVariableContext implements IVariableContext {
      */
     private String description;
 
+    @JsonAlias({"name", "variableName"})
+    private String name;
+
     /**
      * The Lua script to execute.
      * The script has access to 'event', 'metadata', 'log', and 'json' objects.

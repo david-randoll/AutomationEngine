@@ -76,7 +76,7 @@ class LuaScriptTriggerTest extends AutomationEngineTest {
                 alias: lua-trigger-event-condition
                 triggers:
                   - trigger: luaScriptTrigger
-                    script: "return event.priority == 'HIGH' and event.count > 3"
+                    script: "return priority == 'HIGH' and count > 3"
                 actions:
                   - action: logger
                     message: "High priority event with count > 3"
@@ -99,7 +99,7 @@ class LuaScriptTriggerTest extends AutomationEngineTest {
                 alias: lua-trigger-event-condition-not-met
                 triggers:
                   - trigger: luaScriptTrigger
-                    script: "return event.priority == 'HIGH' and event.count > 10"
+                    script: "return priority == 'HIGH' and count > 10"
                 actions:
                   - action: logger
                     message: "This should not appear"
@@ -123,9 +123,9 @@ class LuaScriptTriggerTest extends AutomationEngineTest {
                 triggers:
                   - trigger: luaScriptTrigger
                     script: |
-                      local isHighPriority = event.priority == 'HIGH'
-                      local hasMinCount = event.count >= 5
-                      local isActive = event.status == 'active'
+                      local isHighPriority = priority == 'HIGH'
+                      local hasMinCount = count >= 5
+                      local isActive = status == 'active'
                       return isHighPriority and hasMinCount and isActive
                 actions:
                   - action: logger

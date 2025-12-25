@@ -10,8 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 
 /**
  * Integration tests for LuaScriptResult.
@@ -51,7 +50,7 @@ class LuaScriptResultTest extends AutomationEngineTest {
         var result = engine.executeAutomationWithYaml(yaml, context);
 
         assertThat(result.isExecuted()).isTrue();
-        JsonNode executionResult = (JsonNode) result.getExecutionResult();
+        JsonNode executionResult = (JsonNode) result.get();
         assertThat(executionResult.get("status").asText()).isEqualTo("success");
         assertThat(executionResult.get("message").asText()).isEqualTo("Operation completed");
     }
@@ -69,9 +68,9 @@ class LuaScriptResultTest extends AutomationEngineTest {
                   result: luaScriptResult
                   script: |
                     return {
-                      orderId = event.orderId,
-                      processedAmount = event.amount * 1.1,
-                      originalStatus = event.status
+                      orderId = orderId,
+                      processedAmount = amount * 1.1,
+                      originalStatus = status
                     }
                 """;
 
@@ -79,9 +78,11 @@ class LuaScriptResultTest extends AutomationEngineTest {
         var result = engine.executeAutomationWithYaml(yaml, context);
 
         assertThat(result.isExecuted()).isTrue();
-        JsonNode executionResult = (JsonNode) result.getExecutionResult();
+        JsonNode executionResult = (JsonNode) result.get();
         assertThat(executionResult.get("orderId").asText()).isEqualTo("ORD-456");
-        assertThat(executionResult.get("processedAmount").asDouble()).isEqualTo(110.0);
+        assertThat(executionResult.get("processedAmount").asDouble())
+                .isCloseTo(110.0, within(0.000001));
+
         assertThat(executionResult.get("originalStatus").asText()).isEqualTo("pending");
     }
 
@@ -103,7 +104,7 @@ class LuaScriptResultTest extends AutomationEngineTest {
         var result = engine.executeAutomationWithYaml(yaml, context);
 
         assertThat(result.isExecuted()).isTrue();
-        JsonNode executionResult = (JsonNode) result.getExecutionResult();
+        JsonNode executionResult = (JsonNode) result.get();
         assertThat(executionResult.asInt()).isEqualTo(42);
     }
 
@@ -118,14 +119,14 @@ class LuaScriptResultTest extends AutomationEngineTest {
                     message: "Processing..."
                 result:
                   result: luaScriptResult
-                  script: "return 'Order processed: ' .. event.orderId"
+                  script: "return 'Order processed: ' .. orderId"
                 """;
 
         var context = EventContext.of(new OrderEvent("ORD-999", 75.0, "completed"));
         var result = engine.executeAutomationWithYaml(yaml, context);
 
         assertThat(result.isExecuted()).isTrue();
-        JsonNode executionResult = (JsonNode) result.getExecutionResult();
+        JsonNode executionResult = (JsonNode) result.get();
         assertThat(executionResult.asText()).isEqualTo("Order processed: ORD-999");
     }
 
@@ -151,7 +152,7 @@ class LuaScriptResultTest extends AutomationEngineTest {
         var result = engine.executeAutomationWithYaml(yaml, context);
 
         assertThat(result.isExecuted()).isTrue();
-        JsonNode executionResult = (JsonNode) result.getExecutionResult();
+        JsonNode executionResult = (JsonNode) result.get();
         assertThat(executionResult.get("items").isArray()).isTrue();
         assertThat(executionResult.get("items").size()).isEqualTo(5);
         assertThat(executionResult.get("tags").isArray()).isTrue();
@@ -173,8 +174,8 @@ class LuaScriptResultTest extends AutomationEngineTest {
                   result: luaScriptResult
                   script: |
                     return {
-                      orderId = event.orderId,
-                      processor = metadata.processedBy
+                      orderId = orderId,
+                      processor = processedBy
                     }
                 """;
 
@@ -182,7 +183,7 @@ class LuaScriptResultTest extends AutomationEngineTest {
         var result = engine.executeAutomationWithYaml(yaml, context);
 
         assertThat(result.isExecuted()).isTrue();
-        JsonNode executionResult = (JsonNode) result.getExecutionResult();
+        JsonNode executionResult = (JsonNode) result.get();
         assertThat(executionResult.get("orderId").asText()).isEqualTo("ORD-222");
         assertThat(executionResult.get("processor").asText()).isEqualTo("automation-engine");
     }
@@ -205,7 +206,7 @@ class LuaScriptResultTest extends AutomationEngineTest {
         var result = engine.executeAutomationWithYaml(yaml, context);
 
         assertThat(result.isExecuted()).isTrue();
-        JsonNode executionResult = (JsonNode) result.getExecutionResult();
+        JsonNode executionResult = (JsonNode) result.get();
         assertThat(executionResult.isNull()).isTrue();
     }
 

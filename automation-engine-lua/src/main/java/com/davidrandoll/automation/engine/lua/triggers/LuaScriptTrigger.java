@@ -31,9 +31,7 @@ public class LuaScriptTrigger extends PluggableTrigger<LuaScriptTriggerContext> 
 
         log.debug("Evaluating Lua script trigger: {}", tc.getAlias());
 
-        Map<String, Object> bindings = new HashMap<>();
-        bindings.put("event", ec.getEventData());
-        bindings.put("metadata", ec.getMetadata());
+        Map<String, Object> bindings = new HashMap<>(ec.getEventData());
 
         try {
             boolean result = luaEngine.executeAsBoolean(tc.getScript(), bindings);
