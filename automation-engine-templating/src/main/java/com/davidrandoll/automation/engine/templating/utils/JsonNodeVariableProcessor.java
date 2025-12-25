@@ -2,7 +2,6 @@ package com.davidrandoll.automation.engine.templating.utils;
 
 import com.davidrandoll.automation.engine.core.result.ResultContext;
 import com.davidrandoll.automation.engine.templating.TemplateProcessor;
-import com.davidrandoll.automation.engine.templating.interceptors.ResultTemplatingInterceptor;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -64,7 +63,7 @@ public class JsonNodeVariableProcessor {
                 return parseStringToJsonNode(processedText);
             } catch (IOException e) {
                 log.error("Error processing template for text node: {}. Error: {}", node.asText(), e.getMessage());
-                throw new ResultTemplatingInterceptor.AutomationEngineProcessingException(e);
+                throw new AutomationEngineProcessingException(e);
             }
         }
 
@@ -121,10 +120,16 @@ public class JsonNodeVariableProcessor {
                     entry.setValue(parseStringToJsonNode(processedValue));
                 } catch (IOException e) {
                     log.error("Error processing template for key: {}. Error: {}", entry.getKey(), e.getMessage());
-                    throw new ResultTemplatingInterceptor.AutomationEngineProcessingException(e);
+                    throw new AutomationEngineProcessingException(e);
                 }
             }
         }
         return jsonNodeCopy;
+    }
+
+    public static class AutomationEngineProcessingException extends RuntimeException {
+        public AutomationEngineProcessingException(Throwable cause) {
+            super(cause);
+        }
     }
 }

@@ -84,6 +84,12 @@
         </dependency>
         <dependency>
             <groupId>com.davidrandoll</groupId>
+            <artifactId>automation-engine-tracing</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.davidrandoll</groupId>
             <artifactId>automation-engine-test</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>

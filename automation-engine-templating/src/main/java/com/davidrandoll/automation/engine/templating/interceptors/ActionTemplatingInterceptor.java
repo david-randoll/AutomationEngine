@@ -61,10 +61,4 @@ public class ActionTemplatingInterceptor implements IActionInterceptor {
         chain.execute(eventContext, actionContext.changeData(mapCopy));
         log.debug("ActionTemplatingInterceptor done.");
     }
-
-    public static class AutomationEngineProcessingException extends RuntimeException {
-        public AutomationEngineProcessingException(Throwable cause) {
-            super(cause);
-        }
-    }
 }
