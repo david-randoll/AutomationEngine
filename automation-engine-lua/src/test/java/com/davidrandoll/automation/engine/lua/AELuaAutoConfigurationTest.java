@@ -2,6 +2,8 @@ package com.davidrandoll.automation.engine.lua;
 
 import com.davidrandoll.automation.engine.lua.actions.LuaScriptAction;
 import com.davidrandoll.automation.engine.lua.conditions.LuaScriptCondition;
+import com.davidrandoll.automation.engine.lua.functions.JsonLuaFunctionContributor;
+import com.davidrandoll.automation.engine.lua.functions.LogLuaFunctionContributor;
 import com.davidrandoll.automation.engine.lua.results.LuaScriptResult;
 import com.davidrandoll.automation.engine.lua.triggers.LuaScriptTrigger;
 import com.davidrandoll.automation.engine.lua.variables.LuaScriptVariable;

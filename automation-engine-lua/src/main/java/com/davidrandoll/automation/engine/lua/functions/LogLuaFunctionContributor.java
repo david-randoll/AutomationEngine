@@ -1,5 +1,6 @@
-package com.davidrandoll.automation.engine.lua;
+package com.davidrandoll.automation.engine.lua.functions;
 
+import com.davidrandoll.automation.engine.lua.LuaScriptEngine;
 import lombok.extern.slf4j.Slf4j;
 import org.luaj.vm2.Globals;
 import org.luaj.vm2.LuaTable;

@@ -1,5 +1,8 @@
 package com.davidrandoll.automation.engine.lua;
 
+import com.davidrandoll.automation.engine.lua.functions.ILuaFunctionContributor;
+import com.davidrandoll.automation.engine.lua.functions.JsonLuaFunctionContributor;
+import com.davidrandoll.automation.engine.lua.functions.LogLuaFunctionContributor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -186,21 +189,22 @@ class LuaScriptEngineTest {
 
     @Test
     void testExecuteAsMap_ReturnsNonTable() {
-        Map<String, Object> result = luaEngine.executeAsMap("return 42", Map.of());
-        assertThat(result).isEmpty();
+        assertThatThrownBy(() ->
+                luaEngine.executeAsMap("return 42", Map.of())
+        ).isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     void testLogFunctions() {
         // Just verifying that log functions don't throw exceptions
-        assertThatNoException().isThrownBy(() -> 
-            luaEngine.execute("""
-                log.info("Info message")
-                log.warn("Warning message")
-                log.error("Error message")
-                log.debug("Debug message")
-                return true
-                """, Map.of())
+        assertThatNoException().isThrownBy(() ->
+                luaEngine.execute("""
+                        log.info("Info message")
+                        log.warn("Warning message")
+                        log.error("Error message")
+                        log.debug("Debug message")
+                        return true
+                        """, Map.of())
         );
     }
 
@@ -227,15 +231,15 @@ class LuaScriptEngineTest {
 
     @Test
     void testScriptError_ThrowsException() {
-        assertThatThrownBy(() -> 
-            luaEngine.execute("invalid lua syntax {{{", Map.of())
+        assertThatThrownBy(() ->
+                luaEngine.execute("invalid lua syntax {{{", Map.of())
         ).isInstanceOf(LuaScriptEngine.LuaScriptExecutionException.class);
     }
 
     @Test
     void testRuntimeError_ThrowsException() {
-        assertThatThrownBy(() -> 
-            luaEngine.execute("return undefinedFunction()", Map.of())
+        assertThatThrownBy(() ->
+                luaEngine.execute("return undefinedFunction()", Map.of())
         ).isInstanceOf(LuaScriptEngine.LuaScriptExecutionException.class);
     }
 
@@ -265,7 +269,7 @@ class LuaScriptEngineTest {
         complexEvent.put("name", "Test");
         complexEvent.put("numbers", List.of(1, 2, 3));
         complexEvent.put("nested", Map.of("key", "value"));
-        
+
         Object result = luaEngine.execute("""
                 return {
                     eventName = event.name,
@@ -273,7 +277,7 @@ class LuaScriptEngineTest {
                     nestedValue = event.nested.key
                 }
                 """, Map.of("event", complexEvent));
-        
+
         assertThat(result).isInstanceOf(Map.class);
         @SuppressWarnings("unchecked")
         Map<String, Object> map = (Map<String, Object>) result;
@@ -286,7 +290,7 @@ class LuaScriptEngineTest {
     void testNullHandling() {
         Map<String, Object> bindings = new HashMap<>();
         bindings.put("nullValue", null);
-        
+
         boolean result = luaEngine.executeAsBoolean("return nullValue == nil", bindings);
         assertThat(result).isTrue();
     }

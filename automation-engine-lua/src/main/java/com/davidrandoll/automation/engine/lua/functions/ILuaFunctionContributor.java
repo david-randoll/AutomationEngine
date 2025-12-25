@@ -1,5 +1,6 @@
-package com.davidrandoll.automation.engine.lua;
+package com.davidrandoll.automation.engine.lua.functions;
 
+import com.davidrandoll.automation.engine.lua.LuaScriptEngine;
 import org.luaj.vm2.Globals;
 
 /**
