@@ -63,10 +63,4 @@ public class VariableTemplatingInterceptor implements IVariableInterceptor {
         chain.resolve(eventContext, variableContext.changeData(mapCopy));
         log.debug("VariableTemplatingInterceptor done.");
     }
-
-    public static class AutomationEngineProcessingException extends RuntimeException {
-        public AutomationEngineProcessingException(Throwable cause) {
-            super(cause);
-        }
-    }
 }

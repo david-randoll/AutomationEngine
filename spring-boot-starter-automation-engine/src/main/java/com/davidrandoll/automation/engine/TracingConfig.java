@@ -1,4 +1,4 @@
-package com.davidrandoll.automation.engine.spring.config;
+package com.davidrandoll.automation.engine;
 
 import com.davidrandoll.automation.engine.core.actions.interceptors.IActionInterceptor;
 import com.davidrandoll.automation.engine.core.conditions.interceptors.IConditionInterceptor;

@@ -47,10 +47,4 @@ public class ResultTemplatingInterceptor implements IResultInterceptor {
         log.debug("ConditionTemplatingInterceptor: Condition data processed successfully.");
         return res;
     }
-
-    public static class AutomationEngineProcessingException extends RuntimeException {
-        public AutomationEngineProcessingException(Throwable cause) {
-            super(cause);
-        }
-    }
 }

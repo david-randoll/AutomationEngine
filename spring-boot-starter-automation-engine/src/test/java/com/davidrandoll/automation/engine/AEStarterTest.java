@@ -4,22 +4,18 @@ import com.davidrandoll.automation.engine.core.events.IEvent;
 import com.davidrandoll.automation.engine.creator.AutomationFactory;
 import com.davidrandoll.automation.engine.lua.LuaScriptEngine;
 import com.davidrandoll.automation.engine.orchestrator.IAEOrchestrator;
+import com.davidrandoll.automation.engine.test.AutomationEngineTest;
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(classes = AEStarterApplication.class)
-public class AEStarterTest {
-
-    @Autowired
-    private AutomationEngine engine;
+class AEStarterTest extends AutomationEngineTest {
 
     @Autowired
     private ApplicationContext context;

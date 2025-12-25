@@ -27,11 +27,6 @@
         </dependency>
         <dependency>
             <groupId>com.davidrandoll</groupId>
-            <artifactId>automation-engine-tracing</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.davidrandoll</groupId>
             <artifactId>automation-engine-templating</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
