@@ -37,6 +37,7 @@
         <module>automation-engine-core</module>
         <module>automation-engine-tracing</module>
         <module>automation-engine-templating</module>
+        <module>automation-engine-lua</module>
         <module>spring-boot-starter-automation-engine</module>
         <module>automation-engine-spring-web</module>
         <module>automation-engine-spring-events</module>
