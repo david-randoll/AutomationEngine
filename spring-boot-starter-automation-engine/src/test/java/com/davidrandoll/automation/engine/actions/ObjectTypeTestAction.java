@@ -5,7 +5,6 @@ import com.davidrandoll.automation.engine.core.events.EventContext;
 import com.davidrandoll.automation.engine.spring.spi.PluggableAction;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
@@ -14,23 +13,20 @@ import java.util.Map;
  * Test action to verify that SpEL returns objects (arrays, lists, maps) instead of strings.
  * This is only used in tests to validate templating behavior.
  */
-@Component("objectTypeTestAction")
 @Slf4j
 public class ObjectTypeTestAction extends PluggableAction<ObjectTypeTestAction.ObjectTypeTestActionContext> {
-
-    // Static field to allow tests to access the last executed context
     public static ObjectTypeTestActionContext lastContext;
 
     @Override
     public void doExecute(EventContext ec, ObjectTypeTestActionContext ac) {
         // Store context for test access
         lastContext = ac;
-        
+
         Object testValue = ac.getTestValue();
-        
+
         // Log the actual type received
         log.info("Received type: {}", testValue != null ? testValue.getClass().getName() : "null");
-        
+
         if (testValue instanceof List) {
             List<?> list = (List<?>) testValue;
             log.info("Received List with {} elements: {}", list.size(), list);
@@ -57,10 +53,10 @@ public class ObjectTypeTestAction extends PluggableAction<ObjectTypeTestAction.O
     public static class ObjectTypeTestActionContext implements IActionContext {
         private String alias;
         private String description;
-        
+
         // Input: the value to test (can be any type when using SpEL)
         private Object testValue;
-        
+
         // Outputs: set by the action to verify what was received
         private String receivedType;
         private Integer listSize;
