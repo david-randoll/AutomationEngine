@@ -38,7 +38,18 @@ public class TemplateProcessor {
         Map<String, Object> processedVariables = mapper.convertValue(variables, new TypeReference<>() {
         });
 
+        // Try exact match first, then case-insensitive match
         ITemplateEngine engine = engines.get(templatingType);
+        if (engine == null && templatingType != null) {
+            // Try case-insensitive lookup
+            engine = engines.entrySet().stream()
+                    .filter(e -> e.getKey().equalsIgnoreCase(templatingType))
+                    .map(Map.Entry::getValue)
+                    .findFirst()
+                    .orElse(null);
+        }
+        
+        // Fallback to default engine
         if (engine == null) {
             engine = engines.get(defaultEngine);
         }
