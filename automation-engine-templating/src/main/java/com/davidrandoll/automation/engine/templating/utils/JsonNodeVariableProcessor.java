@@ -35,7 +35,7 @@ public class JsonNodeVariableProcessor {
     }
 
     public Map<String, Object> processIfNotAutomation(Map<String, Object> eventData, Map<String, Object> map,
-            String templatingType) {
+                                                      String templatingType) {
         JsonNode node = mapper.valueToTree(map);
         node = processIfNotAutomation(eventData, node, templatingType);
         return mapper.convertValue(node, new TypeReference<>() {
@@ -116,7 +116,7 @@ public class JsonNodeVariableProcessor {
      *
      * @param value the string value to parse
      * @return JsonNode with the appropriate type (IntNode, BooleanNode, etc.) or
-     *         TextNode if not parseable
+     * TextNode if not parseable
      */
     private JsonNode parseStringToJsonNode(String value) {
         if (value == null) {
@@ -148,7 +148,7 @@ public class JsonNodeVariableProcessor {
 
     public JsonNode processOnlyString(Map<String, Object> eventData, ResultContext resultContext) {
         JsonNode jsonNodeCopy = resultContext.getData();
-        for (Iterator<Map.Entry<String, JsonNode>> it = jsonNodeCopy.fields(); it.hasNext();) {
+        for (Iterator<Map.Entry<String, JsonNode>> it = jsonNodeCopy.fields(); it.hasNext(); ) {
             var entry = it.next();
             if (entry.getValue().isTextual()) {
                 String valueStr = entry.getValue().asText();
@@ -177,16 +177,14 @@ public class JsonNodeVariableProcessor {
     public String getTemplatingType(EventContext eventContext, Map<String, Object> options) {
         // 1. Block level (actions, conditions, triggers, result, variable)
         String blockType = getFromOptions(options);
-        if (blockType != null)
-            return blockType;
+        if (!ObjectUtils.isEmpty(blockType)) return blockType;
 
         // 2. Automation level
         if (eventContext != null) {
             Object automationOptions = eventContext.getMetadata(AutomationOptionsInterceptor.AUTOMATION_OPTIONS_KEY);
-            if (automationOptions instanceof Map) {
-                String automationType = getFromOptions((Map<String, Object>) automationOptions);
-                if (automationType != null)
-                    return automationType;
+            if (automationOptions instanceof Map<?, ?> automationOptionsMap) {
+                String automationType = getFromOptions(automationOptionsMap);
+                if (!ObjectUtils.isEmpty(automationType)) return automationType;
             }
         }
 
@@ -194,7 +192,7 @@ public class JsonNodeVariableProcessor {
         return properties.getDefaultEngine();
     }
 
-    private String getFromOptions(Map<String, Object> options) {
+    private String getFromOptions(Map<?, ?> options) {
         if (ObjectUtils.isEmpty(options))
             return null;
         try {
