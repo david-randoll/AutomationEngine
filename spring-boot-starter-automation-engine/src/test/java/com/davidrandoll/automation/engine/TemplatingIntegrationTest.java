@@ -3,6 +3,7 @@ package com.davidrandoll.automation.engine;
 import com.davidrandoll.automation.engine.actions.ObjectTypeTestAction;
 import com.davidrandoll.automation.engine.core.events.IEvent;
 import com.davidrandoll.automation.engine.test.AutomationEngineTest;
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -96,6 +97,90 @@ class TemplatingIntegrationTest extends AutomationEngineTest {
 
         assertThat(result.isExecuted()).isTrue();
         assertThat(String.join("\n", logAppender.getLoggedMessages())).contains("Default: DefaultTest");
+    }
+
+    @Test
+    void shouldExecuteWithAutomationLevelSpelTemplating() {
+        String yaml = """
+                alias: automation-level-spel-test
+                options:
+                  templatingType: "spel"
+                triggers:
+                  - trigger: alwaysTrue
+                variables:
+                  - variable: basic
+                    greeting: "Hello"
+                    userName: "Charlie"
+                actions:
+                  - action: logger
+                    message: "#{greeting} #{userName}!"
+                """;
+
+        TestEvent event = new TestEvent("Charlie", "789");
+        var result = engine.executeAutomationWithYaml(yaml, event);
+
+        assertThat(result.isExecuted()).isTrue();
+        assertThat(String.join("\n", logAppender.getLoggedMessages())).contains("Hello Charlie!");
+    }
+
+    @Test
+    void shouldPrioritizeBlockLevelOverAutomationLevelTemplating() {
+        String yaml = """
+                alias: priority-test
+                options:
+                  templatingType: "spel"
+                triggers:
+                  - trigger: alwaysTrue
+                variables:
+                  - variable: basic
+                    greeting: "Hello"
+                    userName: "Dave"
+                actions:
+                  - action: logger
+                    message: "Pebble: {{ greeting }} {{ userName }}!"
+                    options:
+                      templatingType: "pebble"
+                  - action: logger
+                    message: "Spel: #{greeting} #{userName}!"
+                """;
+
+        TestEvent event = new TestEvent("Dave", "000");
+        var result = engine.executeAutomationWithYaml(yaml, event);
+
+        assertThat(result.isExecuted()).isTrue();
+        String logs = String.join("\n", logAppender.getLoggedMessages());
+        assertThat(logs).contains("Pebble: Hello Dave!");
+        assertThat(logs).contains("Spel: Hello Dave!");
+    }
+
+    @Test
+    void shouldApplyAutomationLevelTemplatingToAllBlocks() {
+        String yaml = """
+                alias: all-blocks-spel-test
+                options:
+                  templatingType: "spel"
+                triggers:
+                  - trigger: alwaysTrue
+                    description: "Trigger with #{event.name}"
+                conditions:
+                  - condition: alwaysTrue
+                    description: "Condition with #{event.name}"
+                variables:
+                  - variable: basic
+                    var1: "Value: #{event.value}"
+                actions:
+                  - action: logger
+                    message: "Action: #{var1}"
+                result:
+                  summary: "Result: #{var1}"
+                """;
+
+        TestEvent event = new TestEvent("Eve", "111");
+        var result = engine.executeAutomationWithYaml(yaml, event);
+
+        assertThat(result.isExecuted()).isTrue();
+        assertThat(String.join("\n", logAppender.getLoggedMessages())).contains("Action: Value: 111");
+        assertThat(((JsonNode) result.get()).get("summary").asText()).isEqualTo("Result: Value: 111");
     }
 
     @Test
