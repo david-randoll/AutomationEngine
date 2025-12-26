@@ -10,17 +10,26 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class TransactionalExecutionInterceptor implements IAutomationExecutionInterceptor {
-
     private final TransactionalRunner transactionalRunner;
 
     @Override
     public AutomationResult intercept(Automation automation, EventContext context, IAutomationExecutionChain chain) {
-        Object transactional = automation.getOptions().get("transactional");
-
-        if (Boolean.TRUE.equals(transactional)) {
+        if (isTransactional(automation)) {
             return transactionalRunner.runInTransaction(() -> chain.proceed(automation, context));
         }
 
         return chain.proceed(automation, context);
+    }
+
+    private static boolean isTransactional(Automation automation) {
+        Object transactional = automation.getOptions().get("transactional");
+        if (transactional instanceof Boolean bool) return bool;
+        if (transactional instanceof String str) {
+            return "true".equalsIgnoreCase(str) || "yes".equalsIgnoreCase(str) || "1".equals(str);
+        }
+        if (transactional instanceof Number num) {
+            return num.intValue() != 0;
+        }
+        return false;
     }
 }
