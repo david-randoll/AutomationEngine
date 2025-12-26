@@ -1,5 +1,6 @@
 package com.davidrandoll.automation.engine.templating.extensions.filters;
 
+import com.davidrandoll.automation.engine.templating.pebbles.extensions.filters.FromJsonFilter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.pebbletemplates.pebble.error.PebbleException;
 import org.junit.jupiter.api.BeforeEach;

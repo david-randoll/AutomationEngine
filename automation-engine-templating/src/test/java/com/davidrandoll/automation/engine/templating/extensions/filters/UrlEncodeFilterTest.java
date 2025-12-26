@@ -1,5 +1,6 @@
 package com.davidrandoll.automation.engine.templating.extensions.filters;
 
+import com.davidrandoll.automation.engine.templating.pebbles.extensions.filters.UrlEncodeFilter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

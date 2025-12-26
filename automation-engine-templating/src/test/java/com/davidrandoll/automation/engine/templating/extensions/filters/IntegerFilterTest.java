@@ -1,5 +1,6 @@
 package com.davidrandoll.automation.engine.templating.extensions.filters;
 
+import com.davidrandoll.automation.engine.templating.pebbles.extensions.filters.IntegerFilter;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;

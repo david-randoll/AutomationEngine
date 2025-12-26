@@ -12,8 +12,6 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.ObjectUtils;
 
-import java.util.Map;
-
 import static org.apache.commons.lang3.BooleanUtils.isFalse;
 
 /**
@@ -43,16 +41,10 @@ public class ConditionTemplatingInterceptor implements IConditionInterceptor {
             return chain.isSatisfied(eventContext, conditionContext);
         }
 
-        String templatingType = getTemplatingType(conditionContext.getOptions());
+        String templatingType = processor.getTemplatingType(conditionContext.getOptions());
         var mapCopy = processor.processIfNotAutomation(eventData, conditionContext.getData(), templatingType);
         var result = chain.isSatisfied(eventContext, conditionContext.changeData(mapCopy));
         log.debug("ConditionTemplatingInterceptor: Condition data processed successfully.");
         return result;
-    }
-
-    private String getTemplatingType(Map<String, Object> options) {
-        if (ObjectUtils.isEmpty(options)) return "pebble";
-        Object type = options.getOrDefault("templatingType", options.get("templateType"));
-        return type instanceof String s ? s : "pebble";
     }
 }

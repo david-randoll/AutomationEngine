@@ -1,5 +1,6 @@
-package com.davidrandoll.automation.engine.templating.engines;
+package com.davidrandoll.automation.engine.templating.spel;
 
+import com.davidrandoll.automation.engine.templating.ITemplateEngine;
 import org.springframework.context.expression.MapAccessor;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
@@ -14,11 +15,6 @@ import java.util.Map;
  */
 public class SpelTemplateEngine implements ITemplateEngine {
     private final ExpressionParser parser = new SpelExpressionParser();
-
-    @Override
-    public String getType() {
-        return "spel";
-    }
 
     @Override
     public String process(String templateString, Map<String, Object> variables) {

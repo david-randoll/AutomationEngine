@@ -1,18 +1,12 @@
-package com.davidrandoll.automation.engine.templating.engines;
+package com.davidrandoll.automation.engine.templating;
 
 import java.util.Map;
 
 /**
  * Interface for templating engines.
  */
+@FunctionalInterface
 public interface ITemplateEngine {
-    /**
-     * Returns the type of the templating engine.
-     *
-     * @return The type of the templating engine.
-     */
-    String getType();
-
     /**
      * Processes a template string with the provided variables.
      *

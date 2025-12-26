@@ -12,8 +12,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.ObjectUtils;
 
-import java.util.Map;
-
 import static org.apache.commons.lang3.BooleanUtils.isFalse;
 
 /**
@@ -42,18 +40,12 @@ public class ResultTemplatingInterceptor implements IResultInterceptor {
             return chain.getExecutionSummary(eventContext, resultContext);
         }
 
-        String templatingType = getTemplatingType(resultContext.getOptions());
+        String templatingType = processor.getTemplatingType(resultContext.getOptions());
         JsonNode jsonNodeCopy = objectMapper.valueToTree(resultContext.getData()); // Create a copy of the data
         jsonNodeCopy = processor.processIfNotAutomation(eventData, jsonNodeCopy, templatingType);
 
         var res = chain.getExecutionSummary(eventContext, resultContext.changeData(jsonNodeCopy));
         log.debug("ResultTemplatingInterceptor: Result data processed successfully.");
         return res;
-    }
-
-    private String getTemplatingType(Map<String, Object> options) {
-        if (ObjectUtils.isEmpty(options)) return "pebble";
-        Object type = options.getOrDefault("templatingType", options.get("templateType"));
-        return type instanceof String s ? s : "pebble";
     }
 }

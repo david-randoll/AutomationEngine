@@ -1,4 +1,4 @@
-package com.davidrandoll.automation.engine.templating.config;
+package com.davidrandoll.automation.engine.templating;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

@@ -2,12 +2,10 @@ package com.davidrandoll.automation.engine.templating;
 
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.davidrandoll.automation.engine.templating.engines.ITemplateEngine;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -19,7 +17,7 @@ import java.util.Map;
  */
 @RequiredArgsConstructor
 public class TemplateProcessor {
-    private final List<ITemplateEngine> engines;
+    private final Map<String, ITemplateEngine> engines;
     private final String defaultEngine;
     private final ObjectMapper mapper;
 
@@ -36,13 +34,12 @@ public class TemplateProcessor {
     }
 
     public String process(String templateString, Map<String, Object> variables, String templatingType) throws IOException {
+        // Copy variables to ensure compatibility with the templating engine
+        // Some engines like Pebble may have issues with certain data structures (like JsonNode)
         Map<String, Object> processedVariables = mapper.convertValue(variables, new TypeReference<>() {
         });
 
-        ITemplateEngine engine = engines.stream()
-                .filter(e -> e.getType().equalsIgnoreCase(templatingType))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("No template engine found for type: " + templatingType));
+        ITemplateEngine engine = engines.get(templatingType);
 
         return engine.process(templateString, processedVariables);
     }

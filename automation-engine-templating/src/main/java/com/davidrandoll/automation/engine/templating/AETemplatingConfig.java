@@ -1,12 +1,10 @@
 package com.davidrandoll.automation.engine.templating;
 
-import com.davidrandoll.automation.engine.templating.config.AETemplatingProperties;
-import com.davidrandoll.automation.engine.templating.engines.ITemplateEngine;
-import com.davidrandoll.automation.engine.templating.engines.PebbleTemplateEngine;
-import com.davidrandoll.automation.engine.templating.engines.SpelTemplateEngine;
-import com.davidrandoll.automation.engine.templating.extensions.AEPebbleExtension;
-import com.davidrandoll.automation.engine.templating.extensions.filters.*;
 import com.davidrandoll.automation.engine.templating.interceptors.*;
+import com.davidrandoll.automation.engine.templating.pebbles.PebbleTemplateEngine;
+import com.davidrandoll.automation.engine.templating.pebbles.extensions.AEPebbleExtension;
+import com.davidrandoll.automation.engine.templating.pebbles.extensions.filters.*;
+import com.davidrandoll.automation.engine.templating.spel.SpelTemplateEngine;
 import com.davidrandoll.automation.engine.templating.utils.JsonNodeVariableProcessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.pebbletemplates.boot.autoconfigure.PebbleProperties;
@@ -67,27 +65,27 @@ public class AETemplatingConfig {
         return new VariableTemplatingInterceptor(processor, objectMapper);
     }
 
-    @Bean
-    @ConditionalOnMissingBean
-    public JsonNodeVariableProcessor jsonNodeVariableProcessor(TemplateProcessor templateProcessor, ObjectMapper mapper) {
-        return new JsonNodeVariableProcessor(templateProcessor, mapper);
+    @Bean("jsonNodeVariableProcessor")
+    @ConditionalOnMissingBean(name = "jsonNodeVariableProcessor", ignored = JsonNodeVariableProcessor.class)
+    public JsonNodeVariableProcessor jsonNodeVariableProcessor(TemplateProcessor templateProcessor, ObjectMapper mapper, AETemplatingProperties properties) {
+        return new JsonNodeVariableProcessor(templateProcessor, mapper, properties);
     }
 
-    @Bean
-    @ConditionalOnMissingBean
+    @Bean("pebbleTemplateEngine")
+    @ConditionalOnMissingBean(name = "pebbleTemplateEngine", ignored = PebbleTemplateEngine.class)
     public PebbleTemplateEngine pebbleTemplateEngine(PebbleEngine pebbleEngine) {
         return new PebbleTemplateEngine(pebbleEngine);
     }
 
-    @Bean
-    @ConditionalOnMissingBean
+    @Bean("spelTemplateEngine")
+    @ConditionalOnMissingBean(name = "spelTemplateEngine", ignored = SpelTemplateEngine.class)
     public SpelTemplateEngine spelTemplateEngine() {
         return new SpelTemplateEngine();
     }
 
     @Bean(name = "templateProcessor")
     @ConditionalOnMissingBean(name = "templateProcessor", ignored = TemplateProcessor.class)
-    public TemplateProcessor templateProcessor(List<ITemplateEngine> engines, AETemplatingProperties properties, ObjectMapper mapper) {
+    public TemplateProcessor templateProcessor(Map<String, ITemplateEngine> engines, AETemplatingProperties properties, ObjectMapper mapper) {
         return new TemplateProcessor(engines, properties.getDefaultEngine(), mapper);
     }
 

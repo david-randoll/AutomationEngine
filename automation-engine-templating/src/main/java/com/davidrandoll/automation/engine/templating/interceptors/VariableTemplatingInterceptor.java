@@ -12,8 +12,6 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.ObjectUtils;
 
-import java.util.Map;
-
 import static org.apache.commons.lang3.BooleanUtils.isFalse;
 
 /**
@@ -46,15 +44,9 @@ public class VariableTemplatingInterceptor implements IVariableInterceptor {
             return;
         }
 
-        String templatingType = getTemplatingType(variableContext.getOptions());
+        String templatingType = processor.getTemplatingType(variableContext.getOptions());
         var mapCopy = processor.processIfNotAutomation(eventData, variableContext.getData(), templatingType);
         chain.resolve(eventContext, variableContext.changeData(mapCopy));
         log.debug("VariableTemplatingInterceptor: Variable data processed successfully.");
-    }
-
-    private String getTemplatingType(Map<String, Object> options) {
-        if (ObjectUtils.isEmpty(options)) return "pebble";
-        Object type = options.getOrDefault("templatingType", options.get("templateType"));
-        return type instanceof String s ? s : "pebble";
     }
 }

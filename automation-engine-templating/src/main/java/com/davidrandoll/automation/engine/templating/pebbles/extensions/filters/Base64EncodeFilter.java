@@ -1,4 +1,4 @@
-package com.davidrandoll.automation.engine.templating.extensions.filters;
+package com.davidrandoll.automation.engine.templating.pebbles.extensions.filters;
 
 import io.pebbletemplates.pebble.error.PebbleException;
 import io.pebbletemplates.pebble.extension.Filter;
@@ -11,11 +11,12 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Decodes a Base64 string.
+ * Encodes a string to Base64.
  * <p>
- * Usage: {{ encodedString | base64decode }}
+ * Usage: {{ 'username:password' | base64encode }}
+ * Usage in HTTP header: Authorization: Basic {{ credentials | base64encode }}
  */
-public class Base64DecodeFilter implements Filter {
+public class Base64EncodeFilter implements Filter {
 
     @Override
     public List<String> getArgumentNames() {
@@ -28,16 +29,11 @@ public class Base64DecodeFilter implements Filter {
             return null;
         }
 
-        if (!(input instanceof String)) {
-            throw new PebbleException(null, "base64decode filter expects a string input", lineNumber, self != null ? self.getName() : null);
-        }
-
         try {
-            String inputStr = (String) input;
-            byte[] decodedBytes = Base64.getDecoder().decode(inputStr);
-            return new String(decodedBytes, StandardCharsets.UTF_8);
+            String inputStr = input.toString();
+            return Base64.getEncoder().encodeToString(inputStr.getBytes(StandardCharsets.UTF_8));
         } catch (Exception e) {
-            throw new PebbleException(e, "Failed to decode Base64 string", lineNumber, self != null ? self.getName() : null);
+            throw new PebbleException(e, "Failed to encode to Base64", lineNumber, self.getName());
         }
     }
 }

@@ -1,6 +1,8 @@
 package com.davidrandoll.automation.engine.templating.utils;
 
 import com.davidrandoll.automation.engine.core.result.ResultContext;
+import com.davidrandoll.automation.engine.templating.AETemplatingProperties;
+import com.davidrandoll.automation.engine.templating.ContextOption;
 import com.davidrandoll.automation.engine.templating.TemplateProcessor;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -22,6 +24,7 @@ import java.util.Set;
 public class JsonNodeVariableProcessor {
     private final TemplateProcessor templateProcessor;
     private final ObjectMapper mapper;
+    private final AETemplatingProperties properties;
     private static final Set<String> AUTOMATION_FIELDS = Set.of("action", "variable", "condition", "trigger", "result");
 
     public Map<String, Object> processIfNotAutomation(Map<String, Object> eventData, Map<String, Object> map) {
@@ -139,5 +142,13 @@ public class JsonNodeVariableProcessor {
         public AutomationEngineProcessingException(Throwable cause) {
             super(cause);
         }
+    }
+
+    public String getTemplatingType(Map<String, Object> options) {
+        var resultFormat = "%sTemplateEngine";
+        ContextOption contextOption = mapper.convertValue(options, ContextOption.class);
+        if (ObjectUtils.isEmpty(contextOption) || ObjectUtils.isEmpty(contextOption.getTemplatingType()))
+            return resultFormat.formatted(properties.getDefaultEngine());
+        return resultFormat.formatted(contextOption.getTemplatingType());
     }
 }

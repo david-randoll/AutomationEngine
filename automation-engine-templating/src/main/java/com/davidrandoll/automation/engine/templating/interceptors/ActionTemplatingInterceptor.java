@@ -11,8 +11,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.ObjectUtils;
 
-import java.util.Map;
-
 import static org.apache.commons.lang3.BooleanUtils.isFalse;
 
 /**
@@ -58,17 +56,9 @@ public class ActionTemplatingInterceptor implements IActionInterceptor {
             return;
         }
 
-        String templatingType = getTemplatingType(actionContext.getOptions());
+        String templatingType = processor.getTemplatingType(actionContext.getOptions());
         var mapCopy = processor.processIfNotAutomation(eventData, actionContext.getData(), templatingType);
         chain.execute(eventContext, actionContext.changeData(mapCopy));
         log.debug("ActionTemplatingInterceptor done.");
-    }
-
-    private String getTemplatingType(Map<String, Object> options) {
-        if (ObjectUtils.isEmpty(options)) {
-            return "pebble";
-        }
-        Object type = options.getOrDefault("templatingType", options.get("templateType"));
-        return type instanceof String s ? s : "pebble";
     }
 }

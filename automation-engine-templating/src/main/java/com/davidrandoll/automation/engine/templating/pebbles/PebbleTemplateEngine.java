@@ -1,5 +1,6 @@
-package com.davidrandoll.automation.engine.templating.engines;
+package com.davidrandoll.automation.engine.templating.pebbles;
 
+import com.davidrandoll.automation.engine.templating.ITemplateEngine;
 import io.pebbletemplates.pebble.PebbleEngine;
 import io.pebbletemplates.pebble.template.PebbleTemplate;
 import lombok.RequiredArgsConstructor;
@@ -14,11 +15,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class PebbleTemplateEngine implements ITemplateEngine {
     private final PebbleEngine pebbleEngine;
-
-    @Override
-    public String getType() {
-        return "pebble";
-    }
 
     @Override
     public String process(String templateString, Map<String, Object> variables) {
