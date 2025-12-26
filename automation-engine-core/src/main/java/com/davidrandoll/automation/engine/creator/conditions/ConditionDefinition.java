@@ -19,11 +19,13 @@ import java.util.Map;
 @JsonPropertyOrder({
         ConditionDefinition.Fields.alias,
         ConditionDefinition.Fields.description,
+        ConditionDefinition.Fields.options,
         ConditionDefinition.Fields.condition
 })
 public class ConditionDefinition {
     private String alias;
     private String description;
+    private Map<String, Object> options = new HashMap<>();
 
     @NotEmpty
     @JsonAlias({"type", "condition"})

@@ -13,9 +13,10 @@ import java.util.Map;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ActionContext {
+public class ActionContext implements IActionContext {
     private String alias;
     private String description;
+    private Map<String, Object> options = new HashMap<>();
 
     @NotEmpty
     @JsonAlias({"action", "type"})
@@ -31,6 +32,7 @@ public class ActionContext {
     public ActionContext(ActionDefinition definition) {
         this.alias = definition.getAlias();
         this.description = definition.getDescription();
+        this.options = definition.getOptions();
         this.action = definition.getAction();
         this.data = definition.getParams();
     }
@@ -38,6 +40,7 @@ public class ActionContext {
     public ActionContext(ActionContext other, Map<String, Object> additionalData) {
         this.alias = other.getAlias();
         this.description = other.getDescription();
+        this.options = other.getOptions();
         this.action = other.getAction();
         this.data = additionalData;
     }

@@ -12,9 +12,10 @@ import java.util.Map;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class VariableContext {
+public class VariableContext implements IVariableContext {
     private String alias;
     private String description;
+    private Map<String, Object> options = new HashMap<>();
 
     @JsonAlias({"variable", "type"})
     @JsonIgnore
@@ -29,6 +30,7 @@ public class VariableContext {
     public VariableContext(VariableDefinition definition) {
         this.alias = definition.getAlias();
         this.description = definition.getDescription();
+        this.options = definition.getOptions();
         this.variable = definition.getVariable();
         this.data = definition.getParams();
     }
@@ -36,6 +38,7 @@ public class VariableContext {
     public VariableContext(VariableContext other, Map<String, Object> additionalData) {
         this.alias = other.getAlias();
         this.description = other.getDescription();
+        this.options = other.getOptions();
         this.variable = other.getVariable();
         this.data = additionalData;
     }

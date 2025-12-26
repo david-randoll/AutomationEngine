@@ -13,9 +13,10 @@ import java.util.Map;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ConditionContext {
+public class ConditionContext implements IConditionContext {
     private String alias;
     private String description;
+    private Map<String, Object> options = new HashMap<>();
 
     @NotEmpty
     @JsonIgnore
@@ -31,6 +32,7 @@ public class ConditionContext {
     public ConditionContext(ConditionDefinition definition) {
         this.alias = definition.getAlias();
         this.description = definition.getDescription();
+        this.options = definition.getOptions();
         this.condition = definition.getCondition();
         this.data = definition.getParams();
     }
@@ -38,6 +40,7 @@ public class ConditionContext {
     public ConditionContext(ConditionContext other, Map<String, Object> additionalData) {
         this.alias = other.getAlias();
         this.description = other.getDescription();
+        this.options = other.getOptions();
         this.condition = other.getCondition();
         this.data = additionalData;
     }

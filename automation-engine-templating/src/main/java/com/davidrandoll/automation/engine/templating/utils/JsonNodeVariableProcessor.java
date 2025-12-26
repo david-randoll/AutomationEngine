@@ -25,13 +25,21 @@ public class JsonNodeVariableProcessor {
     private static final Set<String> AUTOMATION_FIELDS = Set.of("action", "variable", "condition", "trigger", "result");
 
     public Map<String, Object> processIfNotAutomation(Map<String, Object> eventData, Map<String, Object> map) {
+        return processIfNotAutomation(eventData, map, "pebble");
+    }
+
+    public Map<String, Object> processIfNotAutomation(Map<String, Object> eventData, Map<String, Object> map, String templatingType) {
         JsonNode node = mapper.valueToTree(map);
-        node = processIfNotAutomation(eventData, node);
+        node = processIfNotAutomation(eventData, node, templatingType);
         return mapper.convertValue(node, new TypeReference<>() {
         });
     }
 
     public JsonNode processIfNotAutomation(Map<String, Object> eventData, JsonNode node) {
+        return processIfNotAutomation(eventData, node, "pebble");
+    }
+
+    public JsonNode processIfNotAutomation(Map<String, Object> eventData, JsonNode node, String templatingType) {
         if (node == null || node.isNull())
             return node;
 
@@ -44,7 +52,7 @@ public class JsonNodeVariableProcessor {
             node.fields().forEachRemaining(entry -> {
                 String fieldName = entry.getKey();
                 JsonNode child = entry.getValue();
-                processedNode.set(fieldName, processIfNotAutomation(eventData, child));
+                processedNode.set(fieldName, processIfNotAutomation(eventData, child, templatingType));
             });
             return processedNode;
         }
@@ -52,14 +60,14 @@ public class JsonNodeVariableProcessor {
         if (node.isArray()) {
             ArrayNode processedArray = mapper.createArrayNode();
             for (JsonNode item : node) {
-                processedArray.add(processIfNotAutomation(eventData, item));
+                processedArray.add(processIfNotAutomation(eventData, item, templatingType));
             }
             return processedArray;
         }
 
         if (node.isTextual()) {
             try {
-                String processedText = templateProcessor.process(node.asText(), eventData);
+                String processedText = templateProcessor.process(node.asText(), eventData, templatingType);
                 return parseStringToJsonNode(processedText);
             } catch (IOException e) {
                 log.error("Error processing template for text node: {}. Error: {}", node.asText(), e.getMessage());

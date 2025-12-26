@@ -2,13 +2,12 @@ package com.davidrandoll.automation.engine.templating;
 
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.davidrandoll.automation.engine.templating.engines.ITemplateEngine;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.pebbletemplates.pebble.PebbleEngine;
-import io.pebbletemplates.pebble.template.PebbleTemplate;
 import lombok.RequiredArgsConstructor;
 
 import java.io.IOException;
-import java.io.StringWriter;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -20,7 +19,8 @@ import java.util.Map;
  */
 @RequiredArgsConstructor
 public class TemplateProcessor {
-    private final PebbleEngine pebbleEngine;
+    private final List<ITemplateEngine> engines;
+    private final String defaultEngine;
     private final ObjectMapper mapper;
 
     /**
@@ -32,15 +32,18 @@ public class TemplateProcessor {
      * @throws IOException If there is an error during template processing.
      */
     public String process(String templateString, Map<String, Object> variables) throws IOException {
-        // need to ensure that variables don't have any JsonNode values. because pebble can't handle them directly
+        return process(templateString, variables, defaultEngine);
+    }
+
+    public String process(String templateString, Map<String, Object> variables, String templatingType) throws IOException {
         Map<String, Object> processedVariables = mapper.convertValue(variables, new TypeReference<>() {
         });
 
-        PebbleTemplate template = pebbleEngine.getLiteralTemplate(templateString);
+        ITemplateEngine engine = engines.stream()
+                .filter(e -> e.getType().equalsIgnoreCase(templatingType))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("No template engine found for type: " + templatingType));
 
-        try (StringWriter writer = new StringWriter()) {
-            template.evaluate(writer, processedVariables);
-            return writer.toString();
-        }
+        return engine.process(templateString, processedVariables);
     }
 }

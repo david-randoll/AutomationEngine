@@ -13,9 +13,10 @@ import java.util.Map;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class TriggerContext {
+public class TriggerContext implements ITriggerContext {
     private String alias;
     private String description;
+    private Map<String, Object> options = new HashMap<>();
 
     @NotEmpty
     @JsonAlias({"type", "trigger"})
@@ -31,6 +32,7 @@ public class TriggerContext {
     public TriggerContext(TriggerDefinition definition) {
         this.alias = definition.getAlias();
         this.description = definition.getDescription();
+        this.options = definition.getOptions();
         this.trigger = definition.getTrigger();
         this.data = definition.getParams();
     }
@@ -38,6 +40,7 @@ public class TriggerContext {
     public TriggerContext(TriggerContext other, Map<String, Object> additionalData) {
         this.alias = other.getAlias();
         this.description = other.getDescription();
+        this.options = other.getOptions();
         this.trigger = other.getTrigger();
         this.data = additionalData;
     }

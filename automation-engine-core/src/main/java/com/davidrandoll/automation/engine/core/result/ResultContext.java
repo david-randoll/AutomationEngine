@@ -12,13 +12,17 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldNameConstants;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldNameConstants
-public class ResultContext {
+public class ResultContext implements IResultContext {
     private String alias;
     private String description;
+    private Map<String, Object> options = new HashMap<>();
 
     @JsonAlias({"result", "return", "type"})
     @JsonIgnore
@@ -32,6 +36,7 @@ public class ResultContext {
     public ResultContext(ResultDefinition definition) {
         this.alias = definition.getAlias();
         this.description = definition.getDescription();
+        this.options = definition.getOptions();
         this.result = definition.getResult();
         this.data = definition.getParams();
     }
@@ -39,6 +44,7 @@ public class ResultContext {
     public ResultContext(ResultContext other, JsonNode additionalData) {
         this.alias = other.getAlias();
         this.description = other.getDescription();
+        this.options = other.getOptions();
         this.result = other.getResult();
         this.data = additionalData;
     }

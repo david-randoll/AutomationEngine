@@ -19,11 +19,13 @@ import java.util.Map;
 @JsonPropertyOrder({
         TriggerDefinition.Fields.alias,
         TriggerDefinition.Fields.description,
+        TriggerDefinition.Fields.options,
         TriggerDefinition.Fields.trigger
 })
 public class TriggerDefinition {
     private String alias;
     private String description;
+    private Map<String, Object> options = new HashMap<>();
 
     @NotEmpty
     @JsonAlias({"type", "trigger"})

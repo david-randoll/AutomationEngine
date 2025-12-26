@@ -18,11 +18,13 @@ import java.util.Map;
 @JsonPropertyOrder({
         VariableDefinition.Fields.alias,
         VariableDefinition.Fields.description,
+        VariableDefinition.Fields.options,
         VariableDefinition.Fields.variable
 })
 public class VariableDefinition {
     private String alias;
     private String description;
+    private Map<String, Object> options = new HashMap<>();
 
     @JsonAlias({"variable", "type"})
     private String variable = "basic";

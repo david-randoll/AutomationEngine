@@ -1,5 +1,9 @@
 package com.davidrandoll.automation.engine.templating;
 
+import com.davidrandoll.automation.engine.templating.config.AETemplatingProperties;
+import com.davidrandoll.automation.engine.templating.engines.ITemplateEngine;
+import com.davidrandoll.automation.engine.templating.engines.PebbleTemplateEngine;
+import com.davidrandoll.automation.engine.templating.engines.SpelTemplateEngine;
 import com.davidrandoll.automation.engine.templating.extensions.AEPebbleExtension;
 import com.davidrandoll.automation.engine.templating.extensions.filters.*;
 import com.davidrandoll.automation.engine.templating.interceptors.*;
@@ -16,6 +20,7 @@ import io.pebbletemplates.pebble.operator.UnaryOperator;
 import io.pebbletemplates.pebble.tokenParser.TokenParser;
 import io.pebbletemplates.spring.extension.SpringExtension;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -25,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 
 @Configuration
+@EnableConfigurationProperties(AETemplatingProperties.class)
 public class AETemplatingConfig {
     @Bean(name = "actionTemplatingInterceptor")
     @Order(-1)
@@ -67,10 +73,22 @@ public class AETemplatingConfig {
         return new JsonNodeVariableProcessor(templateProcessor, mapper);
     }
 
+    @Bean
+    @ConditionalOnMissingBean
+    public PebbleTemplateEngine pebbleTemplateEngine(PebbleEngine pebbleEngine) {
+        return new PebbleTemplateEngine(pebbleEngine);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public SpelTemplateEngine spelTemplateEngine() {
+        return new SpelTemplateEngine();
+    }
+
     @Bean(name = "templateProcessor")
     @ConditionalOnMissingBean(name = "templateProcessor", ignored = TemplateProcessor.class)
-    public TemplateProcessor templateProcessor(PebbleEngine pebbleEngine, ObjectMapper mapper) {
-        return new TemplateProcessor(pebbleEngine, mapper);
+    public TemplateProcessor templateProcessor(List<ITemplateEngine> engines, AETemplatingProperties properties, ObjectMapper mapper) {
+        return new TemplateProcessor(engines, properties.getDefaultEngine(), mapper);
     }
 
     /*
