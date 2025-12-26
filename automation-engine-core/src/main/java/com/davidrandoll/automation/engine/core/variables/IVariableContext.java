@@ -5,5 +5,7 @@ import java.util.Map;
 public interface IVariableContext {
     String getAlias();
     String getDescription();
-    Map<String, Object> getOptions();
+    default Map<String, Object> getOptions() {
+        return Map.of();
+    }
 }
