@@ -128,4 +128,38 @@ class JsonNodeVariableProcessorTest {
         assertEquals("processed", result.get("key").asText());
         assertEquals(123, result.get("number").asInt());
     }
+
+    @Test
+    void testGetTemplatingType() {
+        // Test with explicit spel
+        Map<String, Object> optionsSpel = Map.of("templatingType", "spel");
+        assertEquals("spel", processor.getTemplatingType(optionsSpel));
+
+        // Test with explicit pebble
+        Map<String, Object> optionsPebble = Map.of("templatingType", "pebble");
+        assertEquals("pebble", processor.getTemplatingType(optionsPebble));
+
+        // Test with null options
+        assertEquals("pebble", processor.getTemplatingType(null));
+
+        // Test with empty options
+        assertEquals("pebble", processor.getTemplatingType(new HashMap<>()));
+
+        // Test with options but no templatingType
+        assertEquals("pebble", processor.getTemplatingType(Map.of("other", "value")));
+    }
+
+    @Test
+    void testProcessIfNotAutomation_WithSpelOption() throws IOException {
+        Map<String, Object> eventData = new HashMap<>();
+        Map<String, Object> inputMap = new HashMap<>();
+        inputMap.put("key", "#{ value }");
+        inputMap.put("options", Map.of("templatingType", "spel"));
+
+        when(templateProcessor.process(eq("#{ value }"), eq(eventData), eq("spel"))).thenReturn("processed");
+
+        Map<String, Object> result = processor.processIfNotAutomation(eventData, inputMap);
+
+        assertEquals("processed", result.get("key"));
+    }
 }

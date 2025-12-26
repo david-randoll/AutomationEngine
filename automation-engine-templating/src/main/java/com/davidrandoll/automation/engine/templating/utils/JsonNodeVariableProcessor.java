@@ -28,7 +28,8 @@ public class JsonNodeVariableProcessor {
     private static final Set<String> AUTOMATION_FIELDS = Set.of("action", "variable", "condition", "trigger", "result");
 
     public Map<String, Object> processIfNotAutomation(Map<String, Object> eventData, Map<String, Object> map) {
-        return processIfNotAutomation(eventData, map, "pebble");
+        String templatingType = getTemplatingType((Map<String, Object>) map.get("options"));
+        return processIfNotAutomation(eventData, map, templatingType);
     }
 
     public Map<String, Object> processIfNotAutomation(Map<String, Object> eventData, Map<String, Object> map, String templatingType) {
@@ -55,7 +56,11 @@ public class JsonNodeVariableProcessor {
             node.fields().forEachRemaining(entry -> {
                 String fieldName = entry.getKey();
                 JsonNode child = entry.getValue();
-                processedNode.set(fieldName, processIfNotAutomation(eventData, child, templatingType));
+                if ("options".equals(fieldName)) {
+                    processedNode.set(fieldName, child);
+                } else {
+                    processedNode.set(fieldName, processIfNotAutomation(eventData, child, templatingType));
+                }
             });
             return processedNode;
         }

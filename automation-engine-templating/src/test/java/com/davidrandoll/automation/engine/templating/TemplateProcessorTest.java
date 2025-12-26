@@ -3,6 +3,7 @@ package com.davidrandoll.automation.engine.templating;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -26,6 +27,23 @@ class TemplateProcessorTest {
     void testProcessTemplate(String template, Map<String, Object> data, String expectedOutput) throws Exception {
         String result = templateProcessor.process(template, data);
         Assertions.assertEquals(expectedOutput, result);
+    }
+
+    @Test
+    void testProcessWithTemplatingType() throws Exception {
+        Map<String, Object> data = Map.of("name", "Alice");
+
+        // Test Pebble (explicit)
+        String pebbleResult = templateProcessor.process("Hello, {{ name }}!", data, "pebble");
+        Assertions.assertEquals("Hello, Alice!", pebbleResult);
+
+        // Test SpEL (explicit)
+        String spelResult = templateProcessor.process("Hello, #{name}!", data, "spel");
+        Assertions.assertEquals("Hello, Alice!", spelResult);
+
+        // Test Default (null) - should use default engine (pebble)
+        String defaultResult = templateProcessor.process("Hello, {{ name }}!", data, null);
+        Assertions.assertEquals("Hello, Alice!", defaultResult);
     }
 
     static Stream<Arguments> provideTemplatesAndData() {

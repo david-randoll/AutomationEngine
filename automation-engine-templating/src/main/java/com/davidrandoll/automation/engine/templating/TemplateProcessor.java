@@ -40,6 +40,13 @@ public class TemplateProcessor {
         });
 
         ITemplateEngine engine = engines.get(templatingType);
+        if (engine == null) {
+            engine = engines.get(defaultEngine);
+        }
+
+        if (engine == null) {
+            throw new IllegalArgumentException("No templating engine found for type: " + templatingType + " and default engine: " + defaultEngine);
+        }
 
         return engine.process(templateString, processedVariables);
     }
