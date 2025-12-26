@@ -25,7 +25,7 @@ class TemplateProcessorTest {
         @ParameterizedTest
         @MethodSource("provideTemplatesAndData")
         void testProcessTemplate(String template, Map<String, Object> data, String expectedOutput) throws Exception {
-                String result = templateProcessor.process(template, data);
+                String result = (String) templateProcessor.process(template, data);
                 Assertions.assertEquals(expectedOutput, result);
         }
 
@@ -34,16 +34,57 @@ class TemplateProcessorTest {
                 Map<String, Object> data = Map.of("name", "Alice");
 
                 // Test Pebble (explicit)
-                String pebbleResult = templateProcessor.process("Hello, {{ name }}!", data, "pebble");
+                String pebbleResult = (String) templateProcessor.process("Hello, {{ name }}!", data, "pebble");
                 Assertions.assertEquals("Hello, Alice!", pebbleResult);
 
                 // Test SpEL (explicit)
-                String spelResult = templateProcessor.process("Hello, #{name}!", data, "spel");
+                String spelResult = (String) templateProcessor.process("Hello, #{name}!", data, "spel");
                 Assertions.assertEquals("Hello, Alice!", spelResult);
 
                 // Test Default (null) - should use default engine (pebble)
-                String defaultResult = templateProcessor.process("Hello, {{ name }}!", data, null);
+                String defaultResult = (String) templateProcessor.process("Hello, {{ name }}!", data, null);
                 Assertions.assertEquals("Hello, Alice!", defaultResult);
+        }
+
+        @Test
+        void testSpelReturnsArrays() throws Exception {
+                Map<String, Object> data = Map.of(
+                        "numbers", new int[]{1, 2, 3, 4, 5},
+                        "names", List.of("Alice", "Bob", "Charlie")
+                );
+
+                // SpEL converts arrays to ArrayList and returns as Object, not String
+                Object numbersResult = templateProcessor.process("#{numbers}", data, "spel");
+                Assertions.assertTrue(numbersResult instanceof List, "SpEL should return List, not String");
+                Assertions.assertEquals(List.of(1, 2, 3, 4, 5), numbersResult);
+                
+                // SpEL should return List objects, not strings
+                Object namesResult = templateProcessor.process("#{names}", data, "spel");
+                Assertions.assertTrue(namesResult instanceof List, "SpEL should return List, not String");
+                Assertions.assertEquals(List.of("Alice", "Bob", "Charlie"), namesResult);
+        }
+
+        @Test
+        void testSpelReturnsObjects() throws Exception {
+                Map<String, Object> user = Map.of("name", "John", "age", 30);
+                Map<String, Object> data = Map.of("user", user);
+
+                // SpEL should return Map objects, not strings
+                Object userResult = templateProcessor.process("#{user}", data, "spel");
+                Assertions.assertTrue(userResult instanceof Map, "SpEL should return Map, not String");
+                Assertions.assertEquals(user, userResult);
+        }
+
+        @Test
+        void testPebbleStillReturnsStrings() throws Exception {
+                Map<String, Object> data = Map.of(
+                        "numbers", List.of(1, 2, 3)
+                );
+
+                // Pebble should still return strings
+                Object result = templateProcessor.process("{{ numbers }}", data, "pebble");
+                Assertions.assertTrue(result instanceof String, "Pebble should return String");
+                Assertions.assertEquals("[1, 2, 3]", result);
         }
 
         static Stream<Arguments> provideTemplatesAndData() {

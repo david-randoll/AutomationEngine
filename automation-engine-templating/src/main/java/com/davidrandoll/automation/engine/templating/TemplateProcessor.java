@@ -25,14 +25,14 @@ public class TemplateProcessor {
      *
      * @param templateString The template string to process.
      * @param variables      A map of variables to be used in the template.
-     * @return The rendered template as a string.
+     * @return The rendered template as an Object (String for Pebble, Object for SpEL).
      * @throws IOException If there is an error during template processing.
      */
-    public String process(String templateString, Map<String, Object> variables) throws IOException {
+    public Object process(String templateString, Map<String, Object> variables) throws IOException {
         return process(templateString, variables, defaultEngine);
     }
 
-    public String process(String templateString, Map<String, Object> variables, String templatingType) {
+    public Object process(String templateString, Map<String, Object> variables, String templatingType) {
         // Copy variables to ensure compatibility with the templating engine
         // Some engines like Pebble may have issues with certain data structures (like JsonNode)
         Map<String, Object> processedVariables = mapper.convertValue(variables, new TypeReference<>() {

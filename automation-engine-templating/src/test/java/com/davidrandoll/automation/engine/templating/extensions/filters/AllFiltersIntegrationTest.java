@@ -28,7 +28,7 @@ class AllFiltersIntegrationTest {
         String template = "{{ user | json }}";
         Map<String, Object> data = Map.of("user", Map.of("name", "Alice", "age", 30));
 
-        String result = templateProcessor.process(template, data);
+        String result = (String) templateProcessor.process(template, data);
 
         assertThat(result).contains("\"name\":\"Alice\"");
         assertThat(result).contains("\"age\":30");
@@ -39,7 +39,7 @@ class AllFiltersIntegrationTest {
         String template = "{{ user | json(pretty=true) }}";
         Map<String, Object> data = Map.of("user", Map.of("name", "Bob"));
 
-        String result = templateProcessor.process(template, data);
+        String result = (String) templateProcessor.process(template, data);
 
         assertThat(result).contains("\"name\"");
         assertThat(result).contains("\n"); // Pretty print includes newlines
@@ -50,7 +50,7 @@ class AllFiltersIntegrationTest {
         String template = "{% set parsed = jsonStr | fromJson %}{{ parsed.name }}";
         Map<String, Object> data = Map.of("jsonStr", "{\"name\":\"Charlie\",\"age\":25}");
 
-        String result = templateProcessor.process(template, data);
+        String result = (String) templateProcessor.process(template, data);
 
         assertThat(result).isEqualTo("Charlie");
     }
@@ -61,7 +61,7 @@ class AllFiltersIntegrationTest {
         LocalDateTime timestamp = LocalDateTime.of(2023, 12, 25, 14, 30);
         Map<String, Object> data = Map.of("timestamp", timestamp);
 
-        String result = templateProcessor.process(template, data);
+        String result = (String) templateProcessor.process(template, data);
 
         assertThat(result).isEqualTo("2023-12-25");
     }
@@ -71,7 +71,7 @@ class AllFiltersIntegrationTest {
         String template = "{{ missing | coalesce('default') }}";
         Map<String, Object> data = Map.of();
 
-        String result = templateProcessor.process(template, data);
+        String result = (String) templateProcessor.process(template, data);
 
         assertThat(result).isEqualTo("default");
     }
@@ -81,7 +81,7 @@ class AllFiltersIntegrationTest {
         String template = "{{ value | coalesce('default') }}";
         Map<String, Object> data = Map.of("value", "actual");
 
-        String result = templateProcessor.process(template, data);
+        String result = (String) templateProcessor.process(template, data);
 
         assertThat(result).isEqualTo("actual");
     }
@@ -91,7 +91,7 @@ class AllFiltersIntegrationTest {
         String template = "{{ text | base64encode }}";
         Map<String, Object> data = Map.of("text", "hello");
 
-        String result = templateProcessor.process(template, data);
+        String result = (String) templateProcessor.process(template, data);
 
         assertThat(result).isEqualTo("aGVsbG8=");
     }
@@ -101,7 +101,7 @@ class AllFiltersIntegrationTest {
         String template = "{{ encoded | base64decode }}";
         Map<String, Object> data = Map.of("encoded", "aGVsbG8=");
 
-        String result = templateProcessor.process(template, data);
+        String result = (String) templateProcessor.process(template, data);
 
         assertThat(result).isEqualTo("hello");
     }
@@ -111,7 +111,7 @@ class AllFiltersIntegrationTest {
         String template = "{{ text | urlEncode }}";
         Map<String, Object> data = Map.of("text", "hello world");
 
-        String result = templateProcessor.process(template, data);
+        String result = (String) templateProcessor.process(template, data);
 
         assertThat(result).isEqualTo("hello+world");
     }
@@ -121,7 +121,7 @@ class AllFiltersIntegrationTest {
         String template = "{{ encoded | urlDecode }}";
         Map<String, Object> data = Map.of("encoded", "hello+world");
 
-        String result = templateProcessor.process(template, data);
+        String result = (String) templateProcessor.process(template, data);
 
         assertThat(result).isEqualTo("hello world");
     }
@@ -132,7 +132,7 @@ class AllFiltersIntegrationTest {
         String template = "{{ text | base64encode | urlEncode }}";
         Map<String, Object> data = Map.of("text", "hello world");
 
-        String result = templateProcessor.process(template, data);
+        String result = (String) templateProcessor.process(template, data);
 
         assertThat(result).isNotNull();
         assertThat(result).isNotEmpty();
@@ -153,7 +153,7 @@ class AllFiltersIntegrationTest {
         );
         Map<String, Object> data = Map.of("user", user);
 
-        String result = templateProcessor.process(template, data);
+        String result = (String) templateProcessor.process(template, data);
 
         assertThat(result).contains("User: Alice");
         assertThat(result).contains("Created: Dec 25, 2023");

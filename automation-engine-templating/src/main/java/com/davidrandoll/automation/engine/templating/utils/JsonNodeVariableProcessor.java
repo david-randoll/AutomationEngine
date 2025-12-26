@@ -75,12 +75,34 @@ public class JsonNodeVariableProcessor {
         }
 
         if (node.isTextual()) {
-            String processedText = templateProcessor.process(node.asText(), eventData, templatingType);
-            return parseStringToJsonNode(processedText);
+            Object processedValue = templateProcessor.process(node.asText(), eventData, templatingType);
+            return convertObjectToJsonNode(processedValue);
         }
 
         // For other types (numbers, booleans, etc.), leave them as is
         return node;
+    }
+
+    /**
+     * Converts an Object to the appropriate JsonNode type.
+     * Handles various types including String, List, Map, primitives, etc.
+     * For strings, attempts to parse as JSON to preserve type information.
+     *
+     * @param value the object value to convert
+     * @return JsonNode with the appropriate type
+     */
+    private JsonNode convertObjectToJsonNode(Object value) {
+        if (value == null) {
+            return mapper.nullNode();
+        }
+        
+        // If it's a String, try to parse it as JSON first (for backward compatibility with Pebble)
+        if (value instanceof String) {
+            return parseStringToJsonNode((String) value);
+        }
+        
+        // For non-string objects (like arrays, maps, etc. from SpEL), convert directly
+        return mapper.valueToTree(value);
     }
 
     /**
@@ -128,8 +150,8 @@ public class JsonNodeVariableProcessor {
             if (entry.getValue().isTextual()) {
                 String valueStr = entry.getValue().asText();
                 try {
-                    String processedValue = templateProcessor.process(valueStr, eventData);
-                    entry.setValue(parseStringToJsonNode(processedValue));
+                    Object processedValue = templateProcessor.process(valueStr, eventData);
+                    entry.setValue(convertObjectToJsonNode(processedValue));
                 } catch (IOException e) {
                     log.error("Error processing template for key: {}. Error: {}", entry.getKey(), e.getMessage());
                     throw new AutomationEngineProcessingException(e);

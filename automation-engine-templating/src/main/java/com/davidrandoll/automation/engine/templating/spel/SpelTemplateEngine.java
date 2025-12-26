@@ -17,10 +17,10 @@ public class SpelTemplateEngine implements ITemplateEngine {
     private final ExpressionParser parser = new SpelExpressionParser();
 
     @Override
-    public String process(String templateString, Map<String, Object> variables) {
+    public Object process(String templateString, Map<String, Object> variables) {
         StandardEvaluationContext context = new StandardEvaluationContext(variables);
         context.addPropertyAccessor(new MapAccessor());
         Expression expression = parser.parseExpression(templateString, ParserContext.TEMPLATE_EXPRESSION);
-        return expression.getValue(context, String.class);
+        return expression.getValue(context, Object.class);
     }
 }

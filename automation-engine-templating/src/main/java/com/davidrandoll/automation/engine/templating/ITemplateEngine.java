@@ -12,7 +12,7 @@ public interface ITemplateEngine {
      *
      * @param templateString The template string to process.
      * @param variables      A map of variables to be used in the template.
-     * @return The rendered template as a string.
+     * @return The rendered template as an Object (String for Pebble, Object for SpEL).
      */
-    String process(String templateString, Map<String, Object> variables);
+    Object process(String templateString, Map<String, Object> variables);
 }
