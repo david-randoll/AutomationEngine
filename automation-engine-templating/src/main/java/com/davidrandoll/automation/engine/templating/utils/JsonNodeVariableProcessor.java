@@ -145,10 +145,17 @@ public class JsonNodeVariableProcessor {
     }
 
     public String getTemplatingType(Map<String, Object> options) {
-        var resultFormat = "%sTemplateEngine";
-        ContextOption contextOption = mapper.convertValue(options, ContextOption.class);
-        if (ObjectUtils.isEmpty(contextOption) || ObjectUtils.isEmpty(contextOption.getTemplatingType()))
-            return resultFormat.formatted(properties.getDefaultEngine());
-        return resultFormat.formatted(contextOption.getTemplatingType());
+        if (ObjectUtils.isEmpty(options)) {
+            return properties.getDefaultEngine();
+        }
+        try {
+            ContextOption contextOption = mapper.convertValue(options, ContextOption.class);
+            if (contextOption == null || ObjectUtils.isEmpty(contextOption.getTemplatingType())) {
+                return properties.getDefaultEngine();
+            }
+            return contextOption.getTemplatingType();
+        } catch (Exception e) {
+            return properties.getDefaultEngine();
+        }
     }
 }

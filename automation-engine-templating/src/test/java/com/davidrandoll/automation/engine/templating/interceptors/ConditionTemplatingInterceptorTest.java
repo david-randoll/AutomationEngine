@@ -16,6 +16,7 @@ import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -49,11 +50,12 @@ class ConditionTemplatingInterceptorTest {
         eventData.put("some", "data");
         when(eventContext.getEventData(objectMapper)).thenReturn(eventData);
 
-        when(processor.processIfNotAutomation(eq(eventData), eq(data))).thenReturn(data);
+        when(processor.getTemplatingType(any())).thenReturn("pebble");
+        when(processor.processIfNotAutomation(eq(eventData), eq(data), eq("pebble"))).thenReturn(data);
 
         interceptor.intercept(eventContext, conditionContext, chain);
 
-        verify(processor).processIfNotAutomation(eq(eventData), eq(data));
+        verify(processor).processIfNotAutomation(eq(eventData), eq(data), eq("pebble"));
         verify(chain).isSatisfied(eq(eventContext), any(ConditionContext.class));
     }
 }

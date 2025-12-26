@@ -19,6 +19,8 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -42,7 +44,7 @@ class JsonNodeVariableProcessorTest {
         Map<String, Object> inputMap = new HashMap<>();
         inputMap.put("key", "{{ value }}");
 
-        when(templateProcessor.process("{{ value }}", eventData)).thenReturn("processed");
+        when(templateProcessor.process(eq("{{ value }}"), eq(eventData), anyString())).thenReturn("processed");
 
         Map<String, Object> result = processor.processIfNotAutomation(eventData, inputMap);
 
@@ -54,7 +56,7 @@ class JsonNodeVariableProcessorTest {
         Map<String, Object> eventData = new HashMap<>();
         JsonNode input = new TextNode("{{ value }}");
 
-        when(templateProcessor.process("{{ value }}", eventData)).thenReturn("processed");
+        when(templateProcessor.process(eq("{{ value }}"), eq(eventData), anyString())).thenReturn("processed");
 
         JsonNode result = processor.processIfNotAutomation(eventData, input);
 
@@ -68,7 +70,7 @@ class JsonNodeVariableProcessorTest {
         ObjectNode input = mapper.createObjectNode();
         input.put("key", "{{ value }}");
 
-        when(templateProcessor.process("{{ value }}", eventData)).thenReturn("processed");
+        when(templateProcessor.process(eq("{{ value }}"), eq(eventData), anyString())).thenReturn("processed");
 
         JsonNode result = processor.processIfNotAutomation(eventData, input);
 
@@ -83,7 +85,7 @@ class JsonNodeVariableProcessorTest {
         obj.put("key", "{{ value }}");
         JsonNode input = mapper.createArrayNode().add(obj);
 
-        when(templateProcessor.process("{{ value }}", eventData)).thenReturn("processed");
+        when(templateProcessor.process(eq("{{ value }}"), eq(eventData), anyString())).thenReturn("processed");
 
         JsonNode result = processor.processIfNotAutomation(eventData, input);
 

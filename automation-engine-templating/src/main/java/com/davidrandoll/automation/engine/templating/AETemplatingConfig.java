@@ -71,14 +71,14 @@ public class AETemplatingConfig {
         return new JsonNodeVariableProcessor(templateProcessor, mapper, properties);
     }
 
-    @Bean("pebbleTemplateEngine")
-    @ConditionalOnMissingBean(name = "pebbleTemplateEngine", ignored = PebbleTemplateEngine.class)
+    @Bean("pebble")
+    @ConditionalOnMissingBean(name = "pebble", ignored = PebbleTemplateEngine.class)
     public PebbleTemplateEngine pebbleTemplateEngine(PebbleEngine pebbleEngine) {
         return new PebbleTemplateEngine(pebbleEngine);
     }
 
-    @Bean("spelTemplateEngine")
-    @ConditionalOnMissingBean(name = "spelTemplateEngine", ignored = SpelTemplateEngine.class)
+    @Bean("spel")
+    @ConditionalOnMissingBean(name = "spel", ignored = SpelTemplateEngine.class)
     public SpelTemplateEngine spelTemplateEngine() {
         return new SpelTemplateEngine();
     }
