@@ -41,7 +41,7 @@ class ConditionTemplatingInterceptorTest {
         EventContext eventContext = mock(EventContext.class);
         Map<String, Object> data = new HashMap<>();
         data.put("key", "value");
-        ConditionContext conditionContext = new ConditionContext(null, null, null,data);
+        ConditionContext conditionContext = new ConditionContext(null, null, null, data);
 
         IConditionChain chain = mock(IConditionChain.class);
         when(chain.autoEvaluateExpression()).thenReturn(true);

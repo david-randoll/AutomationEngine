@@ -1,6 +1,5 @@
 package com.davidrandoll.automation.engine.templating;
 
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +32,7 @@ public class TemplateProcessor {
         return process(templateString, variables, defaultEngine);
     }
 
-    public String process(String templateString, Map<String, Object> variables, String templatingType) throws IOException {
+    public String process(String templateString, Map<String, Object> variables, String templatingType) {
         // Copy variables to ensure compatibility with the templating engine
         // Some engines like Pebble may have issues with certain data structures (like JsonNode)
         Map<String, Object> processedVariables = mapper.convertValue(variables, new TypeReference<>() {

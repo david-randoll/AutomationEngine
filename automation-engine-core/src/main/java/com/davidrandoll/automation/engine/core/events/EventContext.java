@@ -66,7 +66,9 @@ public class EventContext {
      */
     public Map<String, Object> getEventData() {
         var result = new HashMap<String, Object>();
-        result.putAll(ReflectionUtils.buildMapFromObject(event));
+        var eventData = ReflectionUtils.buildMapFromObject(event);
+        result.putAll(eventData);
+        result.put("event", eventData);
         result.putAll(metadata);
         return result;
     }
@@ -76,6 +78,7 @@ public class EventContext {
         Map<String, Object> eventData = mapper.convertValue(event, new TypeReference<>() {
         });
         result.putAll(eventData);
+        result.put("event", eventData);
         result.putAll(metadata);
         return result;
     }
@@ -143,7 +146,8 @@ public class EventContext {
                 // check the class before if it is the same as clazz
                 // if yes return the class at i+1
                 // return the class at i-1
-                if (i < 1 || i + 1 >= stackTraces.length) break;
+                if (i < 1 || i + 1 >= stackTraces.length)
+                    break;
                 var foundCallingClass = clazz.getName().equals(stackTraces[i - 1].getClassName());
                 if (foundCallingClass) {
                     return stackTraces[i + 1].getClassName();

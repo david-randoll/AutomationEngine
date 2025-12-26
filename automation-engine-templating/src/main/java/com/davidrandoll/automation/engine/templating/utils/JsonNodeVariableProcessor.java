@@ -32,7 +32,8 @@ public class JsonNodeVariableProcessor {
         return processIfNotAutomation(eventData, map, templatingType);
     }
 
-    public Map<String, Object> processIfNotAutomation(Map<String, Object> eventData, Map<String, Object> map, String templatingType) {
+    public Map<String, Object> processIfNotAutomation(Map<String, Object> eventData, Map<String, Object> map,
+                                                      String templatingType) {
         JsonNode node = mapper.valueToTree(map);
         node = processIfNotAutomation(eventData, node, templatingType);
         return mapper.convertValue(node, new TypeReference<>() {
@@ -74,13 +75,8 @@ public class JsonNodeVariableProcessor {
         }
 
         if (node.isTextual()) {
-            try {
-                String processedText = templateProcessor.process(node.asText(), eventData, templatingType);
-                return parseStringToJsonNode(processedText);
-            } catch (IOException e) {
-                log.error("Error processing template for text node: {}. Error: {}", node.asText(), e.getMessage());
-                throw new AutomationEngineProcessingException(e);
-            }
+            String processedText = templateProcessor.process(node.asText(), eventData, templatingType);
+            return parseStringToJsonNode(processedText);
         }
 
         // For other types (numbers, booleans, etc.), leave them as is

@@ -17,7 +17,8 @@ import static org.apache.commons.lang3.BooleanUtils.isFalse;
 /**
  * Interceptor for processing condition data using templating.
  * <p>
- * This interceptor processes the condition context data by replacing any placeholders
+ * This interceptor processes the condition context data by replacing any
+ * placeholders
  * in the strings with corresponding values from the event context.
  * It uses a {@link TemplateProcessor} to perform the templating.
  * </p>

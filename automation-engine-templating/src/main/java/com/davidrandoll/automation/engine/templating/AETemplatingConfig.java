@@ -176,8 +176,7 @@ public class AETemplatingConfig {
                 tests,
                 functions,
                 nodeVisitorFactories,
-                attributeResolvers
-        );
+                attributeResolvers);
     }
 
     @Bean

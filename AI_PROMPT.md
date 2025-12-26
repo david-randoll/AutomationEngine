@@ -11,7 +11,24 @@ engine.
 
 ---
 
-## 🏗️ Automation Structure
+## � Templating
+
+The engine supports two templating engines:
+
+1. **Pebble (Default):** Uses `{{ expression }}` syntax. Best for simple string interpolation and basic logic.
+2. **SpEL (Spring Expression Language):** Uses `#{expression}` syntax. Best for complex Java-like expressions,
+   accessing Spring beans, or nested object manipulation.
+
+Most blocks (triggers, conditions, actions, variables) support an `options` field to specify the templating engine:
+
+```yaml
+options:
+  templatingType: "spel" # or "pebble"
+```
+
+---
+
+## �🏗️ Automation Structure
 
 An automation file contains:
 
@@ -73,7 +90,10 @@ _Events that start the automation flow._
 
 **`templateTrigger`**
 
-- **Parameters:** `expression` (string - Pebble/boolean)
+- **Parameters:**
+    - `expression` (string - Pebble/SpEL/boolean)
+    - `options` (object, optional)
+        - `templatingType` (string, optional) - "pebble" (default) or "spel"
 - **Example:**
   ```yaml
   triggers:
@@ -81,6 +101,14 @@ _Events that start the automation flow._
       alias: "Template Expression Trigger"
       description: "Triggers when expression evaluates to true"
       expression: "{{ status == 'active' }}"
+  ```
+  ```yaml
+  triggers:
+    - trigger: template
+      alias: "SpEL Expression Trigger"
+      expression: "#{status == 'active'}"
+      options:
+        templatingType: "spel"
   ```
 
 **`timeTrigger`**
@@ -545,6 +573,7 @@ _Tasks executed by the automation._
     - `else` (Action[], optional) - Actions to execute if condition is false
     - `ifs` (array of objects, optional) - Multiple if-then pairs
 - **Example:**
+
   ```yaml
   actions:
     - action: ifThenElse
@@ -879,6 +908,7 @@ _Data storage for use within the automation._
     - `else` (object) - Variables to set if condition is false
     - `ifs` (array of objects, optional) - Multiple if-then pairs
 - **Example:**
+
   ```yaml
   variables:
     - variable: ifThenElse
@@ -895,19 +925,19 @@ _Data storage for use within the automation._
   variables:
     - variable: ifThenElse
       ifs:
-      - if:
-          - condition: time
-            before: "12:00"
-            then:
-          - greeting: "Good morning!"
-      - if:
-          - condition: time
-            after: "12:00"
-            before: "18:00"
-            then:
-          - greeting: "Good afternoon!"
-            else:
-          - greeting: "Good evening!"
+        - if:
+            - condition: time
+              before: "12:00"
+              then:
+            - greeting: "Good morning!"
+        - if:
+            - condition: time
+              after: "12:00"
+              before: "18:00"
+              then:
+            - greeting: "Good afternoon!"
+              else:
+            - greeting: "Good evening!"
   ```
 
 Note: The `ifs` structure allows for multiple condition-variable pairs, with an optional final `else`. Do not mix `if`/

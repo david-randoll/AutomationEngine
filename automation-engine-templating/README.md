@@ -1,20 +1,26 @@
 # automation-engine-templating
 
-Provides Pebble template engine integration for dynamic expression evaluation in AutomationEngine.
+Provides Pebble and SpEL template engine integration for dynamic expression evaluation in AutomationEngine.
 
 ## Overview
 
-This module integrates the [Pebble template engine](https://pebbletemplates.io/) to enable dynamic value resolution
-using the `{{ expression }}` syntax throughout automations. Template expressions can access event properties, variables,
-and metadata.
+This module integrates the [Pebble template engine](https://pebbletemplates.io/) and
+[Spring Expression Language (SpEL)](https://docs.spring.io/spring-framework/docs/current/reference/html/core.html#expressions)
+to enable dynamic value resolution throughout automations.
+
+- **Pebble** uses the `{{ expression }}` syntax.
+- **SpEL** uses the `#{expression}` syntax.
+
+Template expressions can access event properties, variables, and metadata.
 
 ## Key Features
 
-- ✅ **Expression Evaluation** - Process `{{ }}` template expressions
-- ✅ **Event Access** - Access event properties: `{{ event.user.email }}`
-- ✅ **Variable Access** - Use automation variables: `{{ myVariable }}`
-- ✅ **Metadata Access** - Access stored values: `{{ storedResult.id }}`
-- ✅ **Conditional Logic** - Support for `if/else`, loops, filters
+- ✅ **Multi-Engine Support** - Support for both Pebble and SpEL
+- ✅ **Expression Evaluation** - Process `{{ }}` (Pebble) or `#{ }` (SpEL) template expressions
+- ✅ **Event Access** - Access event properties: `{{ event.user.email }}` or `#{event.user.email}`
+- ✅ **Variable Access** - Use automation variables: `{{ myVariable }}` or `#{myVariable}`
+- ✅ **Metadata Access** - Access stored values: `{{ storedResult.id }}` or `#{storedResult.id}`
+- ✅ **Conditional Logic** - Support for `if/else`, loops, filters (Pebble) and complex Java expressions (SpEL)
 - ✅ **Custom Functions** - Extensible with custom Pebble functions
 - ✅ **Type Safety** - Automatic type conversion and null handling
 
@@ -24,7 +30,7 @@ and metadata.
 
 `com.davidrandoll.automation.engine.templating.TemplateProcessor`
 
-Main class for processing Pebble templates.
+Main class for processing templates. It delegates to the appropriate engine based on the provided `templatingType`.
 
 **Usage:**
 
@@ -38,9 +44,18 @@ public void processTemplate() {
         "count", 5
     );
 
-    String result = templateProcessor.process(
+    // Using Pebble (default)
+    String pebbleResult = templateProcessor.process(
         "Hello {{ user.name }}, you have {{ count }} messages",
         context
+    );
+    // Result: "Hello John, you have 5 messages"
+
+    // Using SpEL
+    String spelResult = templateProcessor.process(
+        "Hello #{user.name}, you have #{count} messages",
+        context,
+        "spel"
     );
     // Result: "Hello John, you have 5 messages"
 }
@@ -96,22 +111,26 @@ Pebble provides many built-in filters. AutomationEngine extends these with custo
 #### Custom Filters
 
 **Data Conversion:**
+
 - `json` - Convert objects to JSON: `{{ event.user | json }}`
 - `fromJson` - Parse JSON strings: `{{ jsonString | fromJson.name }}`
 - `int` - Convert to integer: `{{ value | int }}`
 
 **Date/Time Formatting:**
+
 - `date_format` - Format dates: `{{ event.createdAt | date_format('yyyy-MM-dd HH:mm:ss') }}`
 - `time_format` - Format times: `{{ event.time | time_format('HH:mm a') }}`
 - `number_format` - Format numbers: `{{ value | number_format(2) }}`
 
 **Encoding/Decoding:**
+
 - `base64encode` - Encode to Base64: `{{ credentials | base64encode }}`
 - `base64decode` - Decode from Base64: `{{ encoded | base64decode }}`
 - `urlEncode` - URL encode: `{{ searchTerm | urlEncode }}`
 - `urlDecode` - URL decode: `{{ encoded | urlDecode }}`
 
 **Utility:**
+
 - `coalesce` - First non-null value: `{{ event.assignee | coalesce('unassigned') }}`
 
 See [FILTERS.md](FILTERS.md) for detailed documentation and examples.
@@ -126,7 +145,6 @@ capitalize: "{{ event.title | capitalize }}"
 
 # Number filters
 formatted: "{{ event.amount | numberformat('#,##0.00') }}"
-
 
 # Default values
 value: "{{ event.optional | default('N/A') }}"
