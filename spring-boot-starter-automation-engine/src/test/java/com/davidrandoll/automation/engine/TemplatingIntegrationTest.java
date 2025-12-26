@@ -1,14 +1,20 @@
 package com.davidrandoll.automation.engine;
 
+import com.davidrandoll.automation.engine.actions.ObjectTypeTestAction;
 import com.davidrandoll.automation.engine.core.events.IEvent;
 import com.davidrandoll.automation.engine.test.AutomationEngineTest;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.Test;
+import org.springframework.context.annotation.Import;
+
+import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Import(TestConfig.class)
 class TemplatingIntegrationTest extends AutomationEngineTest {
 
     @Data
@@ -17,6 +23,10 @@ class TemplatingIntegrationTest extends AutomationEngineTest {
     private static class TestEvent implements IEvent {
         private String name;
         private String value;
+    }
+
+    // Simple test event implementation
+    private static class SimpleEvent implements IEvent {
     }
 
     @Test
@@ -613,4 +623,194 @@ class TemplatingIntegrationTest extends AutomationEngineTest {
         assertThat(result.isExecuted()).isTrue();
         // May be 0.30000000000000004 due to floating point arithmetic
         assertThat(String.join("\n", logAppender.getLoggedMessages())).containsPattern("0\\.3\\d*");
-    }}
+    }
+
+    @Test
+    void shouldReturnArrayWhenUsingSpel() {
+        // Test that SpEL returns an actual array/list, not a string
+        String yaml = """
+                alias: spel-array-test
+                triggers:
+                  - trigger: alwaysTrue
+                variables:
+                  - variable: basic
+                    testArray: "#{new int[]{1, 2, 3, 4, 5}}"
+                    options:
+                      templatingType: "spel"
+                actions:
+                  - action: objectTypeTest
+                    testValue: "#{testArray}"
+                    options:
+                      templatingType: "spel"
+                """;
+
+        var result = engine.executeAutomationWithYaml(yaml, new SimpleEvent());
+        assertThat(result.isExecuted()).isTrue();
+
+        // Verify the action context to check what type was received
+        var actionContext = ObjectTypeTestAction.lastContext;
+        assertThat(actionContext).isNotNull();
+
+        // Should receive a List (SpEL converts arrays to Lists)
+        assertThat(actionContext.getReceivedType()).isEqualTo("List");
+        assertThat(actionContext.getListSize()).isEqualTo(5);
+        assertThat(actionContext.getTestValue()).isInstanceOf(List.class);
+    }
+
+    @Test
+    void shouldReturnListWhenUsingSpel() {
+        // Test that SpEL returns an actual List object, not a string
+        String yaml = """
+                alias: spel-list-test
+                triggers:
+                  - trigger: alwaysTrue
+                variables:
+                  - variable: basic
+                    testList: "#{{'apple', 'banana', 'cherry'}}"
+                    options:
+                      templatingType: "spel"
+                actions:
+                  - action: objectTypeTest
+                    testValue: "#{testList}"
+                    options:
+                      templatingType: "spel"
+                """;
+
+        var result = engine.executeAutomationWithYaml(yaml, new SimpleEvent());
+        assertThat(result.isExecuted()).isTrue();
+
+        var actionContext = ObjectTypeTestAction.lastContext;
+        assertThat(actionContext).isNotNull();
+
+        assertThat(actionContext.getReceivedType()).isEqualTo("List");
+        assertThat(actionContext.getListSize()).isEqualTo(3);
+        assertThat(actionContext.getTestValue()).isInstanceOf(List.class);
+
+        @SuppressWarnings("unchecked")
+        List<String> list = (List<String>) actionContext.getTestValue();
+        assertThat(list).containsExactly("apple", "banana", "cherry");
+    }
+
+    @Test
+    void shouldReturnMapWhenUsingSpel() {
+        // Test that SpEL returns an actual Map object, not a string
+        String yaml = """
+                alias: spel-map-test
+                triggers:
+                  - trigger: alwaysTrue
+                variables:
+                  - variable: basic
+                    testMap: "#{{name: 'John', age: 30, active: true}}"
+                    options:
+                      templatingType: "spel"
+                actions:
+                  - action: objectTypeTest
+                    testValue: "#{testMap}"
+                    options:
+                      templatingType: "spel"
+                """;
+
+        var result = engine.executeAutomationWithYaml(yaml, new SimpleEvent());
+        assertThat(result.isExecuted()).isTrue();
+
+        var actionContext = ObjectTypeTestAction.lastContext;
+        assertThat(actionContext).isNotNull();
+
+        assertThat(actionContext.getReceivedType()).isEqualTo("Map");
+        assertThat(actionContext.getMapSize()).isEqualTo(3);
+        assertThat(actionContext.getTestValue()).isInstanceOf(Map.class);
+
+        @SuppressWarnings("unchecked")
+        Map<String, Object> map = (Map<String, Object>) actionContext.getTestValue();
+        assertThat(map.get("name")).isEqualTo("John");
+        assertThat(map.get("age")).isEqualTo(30);
+        assertThat(map.get("active")).isEqualTo(true);
+    }
+
+    @Test
+    void shouldReturnStringWhenUsingPebble() {
+        // Test that Pebble still returns strings (for comparison)
+        String yaml = """
+                alias: pebble-string-test
+                triggers:
+                  - trigger: alwaysTrue
+                variables:
+                  - variable: basic
+                    testValue: "This is a string"
+                actions:
+                  - action: objectTypeTest
+                    testValue: "{{ testValue }}"
+                """;
+
+        var result = engine.executeAutomationWithYaml(yaml, new SimpleEvent());
+        assertThat(result.isExecuted()).isTrue();
+
+        var actionContext = ObjectTypeTestAction.lastContext;
+        assertThat(actionContext).isNotNull();
+
+        // Pebble should return a String
+        assertThat(actionContext.getReceivedType()).isEqualTo("String");
+        assertThat(actionContext.getTestValue()).isInstanceOf(String.class);
+        assertThat(actionContext.getTestValue()).isEqualTo("This is a string");
+    }
+
+    @Test
+    void shouldReturnIntegerWhenUsingSpel() {
+        // Test that SpEL returns numeric types, not strings
+        String yaml = """
+                alias: spel-number-test
+                triggers:
+                  - trigger: alwaysTrue
+                variables:
+                  - variable: basic
+                    testNumber: "#{10 + 20}"
+                    options:
+                      templatingType: "spel"
+                actions:
+                  - action: objectTypeTest
+                    testValue: "#{testNumber}"
+                    options:
+                      templatingType: "spel"
+                """;
+
+        var result = engine.executeAutomationWithYaml(yaml, new SimpleEvent());
+        assertThat(result.isExecuted()).isTrue();
+
+        var actionContext = ObjectTypeTestAction.lastContext;
+        assertThat(actionContext).isNotNull();
+
+        assertThat(actionContext.getReceivedType()).isEqualTo("Integer");
+        assertThat(actionContext.getTestValue()).isInstanceOf(Integer.class);
+        assertThat(actionContext.getTestValue()).isEqualTo(30);
+    }
+
+    @Test
+    void shouldReturnBooleanWhenUsingSpel() {
+        // Test that SpEL returns boolean types, not strings
+        String yaml = """
+                alias: spel-boolean-test
+                triggers:
+                  - trigger: alwaysTrue
+                variables:
+                  - variable: basic
+                    testBool: "#{5 > 3}"
+                    options:
+                      templatingType: "spel"
+                actions:
+                  - action: objectTypeTest
+                    testValue: "#{testBool}"
+                    options:
+                      templatingType: "spel"
+                """;
+
+        var result = engine.executeAutomationWithYaml(yaml, new SimpleEvent());
+        assertThat(result.isExecuted()).isTrue();
+
+        var actionContext = ObjectTypeTestAction.lastContext;
+        assertThat(actionContext).isNotNull();
+
+        assertThat(actionContext.getReceivedType()).isEqualTo("Boolean");
+        assertThat(actionContext.getTestValue()).isInstanceOf(Boolean.class);
+        assertThat(actionContext.getTestValue()).isEqualTo(true);
+    }
+}
