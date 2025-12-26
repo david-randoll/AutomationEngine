@@ -27,16 +27,13 @@ class JsonNodeVariableProcessorTest {
     @Mock
     private TemplateProcessor templateProcessor;
 
-    @Mock
-    private AETemplatingProperties properties;
-
     private ObjectMapper mapper;
     private JsonNodeVariableProcessor processor;
 
     @BeforeEach
     void setUp() {
         mapper = new ObjectMapper();
-        processor = new JsonNodeVariableProcessor(templateProcessor, mapper, properties);
+        processor = new JsonNodeVariableProcessor(templateProcessor, mapper, new AETemplatingProperties());
     }
 
     @Test

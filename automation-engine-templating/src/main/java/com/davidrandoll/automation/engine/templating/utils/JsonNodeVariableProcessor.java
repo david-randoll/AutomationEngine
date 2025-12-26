@@ -39,7 +39,7 @@ public class JsonNodeVariableProcessor {
     }
 
     public JsonNode processIfNotAutomation(Map<String, Object> eventData, JsonNode node) {
-        return processIfNotAutomation(eventData, node, "pebble");
+        return processIfNotAutomation(eventData, node, properties.getDefaultEngine());
     }
 
     public JsonNode processIfNotAutomation(Map<String, Object> eventData, JsonNode node, String templatingType) {
