@@ -16,6 +16,7 @@ import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -47,11 +48,12 @@ class TriggerTemplatingInterceptorTest {
         eventData.put("some", "data");
         when(eventContext.getEventData(objectMapper)).thenReturn(eventData);
 
-        when(processor.processIfNotAutomation(eq(eventData), eq(data))).thenReturn(data);
+        when(processor.getTemplatingType(any(), any())).thenReturn("pebble");
+        when(processor.processIfNotAutomation(eq(eventData), eq(data), eq("pebble"))).thenReturn(data);
 
         interceptor.intercept(eventContext, triggerContext, chain);
 
-        verify(processor).processIfNotAutomation(eq(eventData), eq(data));
+        verify(processor).processIfNotAutomation(eq(eventData), eq(data), eq("pebble"));
         verify(chain).isTriggered(eq(eventContext), any(TriggerContext.class));
     }
 

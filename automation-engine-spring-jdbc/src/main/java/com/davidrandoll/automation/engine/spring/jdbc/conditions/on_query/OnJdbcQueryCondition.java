@@ -13,7 +13,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class OnJdbcQueryCondition extends PluggableCondition<OnJdbcQueryConditionContext> {
     private final NamedParameterJdbcTemplate jdbcTemplate;
-    private final TemplateProcessor pebble;
+    private final TemplateProcessor templateProcessor;
 
     @Override
     public boolean autoEvaluateExpression() {
@@ -32,7 +32,7 @@ public class OnJdbcQueryCondition extends PluggableCondition<OnJdbcQueryConditio
         context.put("event", ec);
 
         try {
-            String result = pebble.process(cc.getExpression(), context);
+            String result = (String) templateProcessor.process(cc.getExpression(), context);
             return Boolean.TRUE.toString().equalsIgnoreCase(result);
         } catch (Exception e) {
             throw new RuntimeException("Error processing expression: " + cc.getExpression(), e);

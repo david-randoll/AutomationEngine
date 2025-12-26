@@ -13,9 +13,10 @@ import java.util.Map;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class TriggerContext {
+public class TriggerContext implements ITriggerContext {
     private String alias;
     private String description;
+    private Map<String, Object> options = new HashMap<>();
 
     @NotEmpty
     @JsonAlias({"type", "trigger"})
@@ -28,18 +29,24 @@ public class TriggerContext {
     @JsonProperty("0829b1b94f764e47b871865ea6628f34")
     private Map<String, Object> data;
 
+    public TriggerContext(String alias, String description, String type, Map<String, Object> data) {
+        this.alias = alias;
+        this.description = description;
+        this.trigger = type;
+        this.data = data != null ? data : new HashMap<>();
+    }
+
+    public TriggerContext(String alias, String description, String action, Map<String, Object> data, Map<String, Object> options) {
+        this(alias, description, action, data);
+        this.options = options;
+    }
+
     public TriggerContext(TriggerDefinition definition) {
-        this.alias = definition.getAlias();
-        this.description = definition.getDescription();
-        this.trigger = definition.getTrigger();
-        this.data = definition.getParams();
+        this(definition.getAlias(), definition.getDescription(), definition.getTrigger(), definition.getParams(), definition.getOptions());
     }
 
     public TriggerContext(TriggerContext other, Map<String, Object> additionalData) {
-        this.alias = other.getAlias();
-        this.description = other.getDescription();
-        this.trigger = other.getTrigger();
-        this.data = additionalData;
+        this(other.getAlias(), other.getDescription(), other.getTrigger(), additionalData, other.getOptions());
     }
 
     public TriggerContext(TriggerContext other) {

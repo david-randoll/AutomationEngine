@@ -1,4 +1,4 @@
-package com.davidrandoll.automation.engine.templating.extensions;
+package com.davidrandoll.automation.engine.templating.pebbles.extensions;
 
 import io.pebbletemplates.pebble.attributes.AttributeResolver;
 import io.pebbletemplates.pebble.extension.*;

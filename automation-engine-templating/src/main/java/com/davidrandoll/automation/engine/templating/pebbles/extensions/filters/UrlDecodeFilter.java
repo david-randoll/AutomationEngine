@@ -1,22 +1,21 @@
-package com.davidrandoll.automation.engine.templating.extensions.filters;
+package com.davidrandoll.automation.engine.templating.pebbles.extensions.filters;
 
 import io.pebbletemplates.pebble.error.PebbleException;
 import io.pebbletemplates.pebble.extension.Filter;
 import io.pebbletemplates.pebble.template.EvaluationContext;
 import io.pebbletemplates.pebble.template.PebbleTemplate;
 
+import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 
 /**
- * Encodes a string to Base64.
+ * URL-decodes a string.
  * <p>
- * Usage: {{ 'username:password' | base64encode }}
- * Usage in HTTP header: Authorization: Basic {{ credentials | base64encode }}
+ * Usage: {{ encodedParam | urlDecode }}
  */
-public class Base64EncodeFilter implements Filter {
+public class UrlDecodeFilter implements Filter {
 
     @Override
     public List<String> getArgumentNames() {
@@ -29,11 +28,14 @@ public class Base64EncodeFilter implements Filter {
             return null;
         }
 
+        if (!(input instanceof String)) {
+            throw new PebbleException(null, "urlDecode filter expects a string input", lineNumber, self != null ? self.getName() : null);
+        }
+
         try {
-            String inputStr = input.toString();
-            return Base64.getEncoder().encodeToString(inputStr.getBytes(StandardCharsets.UTF_8));
+            return URLDecoder.decode((String) input, StandardCharsets.UTF_8);
         } catch (Exception e) {
-            throw new PebbleException(e, "Failed to encode to Base64", lineNumber, self.getName());
+            throw new PebbleException(e, "Failed to URL-decode string", lineNumber, self != null ? self.getName() : null);
         }
     }
 }

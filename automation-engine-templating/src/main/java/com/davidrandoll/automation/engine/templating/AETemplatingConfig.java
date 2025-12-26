@@ -1,8 +1,10 @@
 package com.davidrandoll.automation.engine.templating;
 
-import com.davidrandoll.automation.engine.templating.extensions.AEPebbleExtension;
-import com.davidrandoll.automation.engine.templating.extensions.filters.*;
 import com.davidrandoll.automation.engine.templating.interceptors.*;
+import com.davidrandoll.automation.engine.templating.pebbles.PebbleTemplateEngine;
+import com.davidrandoll.automation.engine.templating.pebbles.extensions.AEPebbleExtension;
+import com.davidrandoll.automation.engine.templating.pebbles.extensions.filters.*;
+import com.davidrandoll.automation.engine.templating.spel.SpelTemplateEngine;
 import com.davidrandoll.automation.engine.templating.utils.JsonNodeVariableProcessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.pebbletemplates.boot.autoconfigure.PebbleProperties;
@@ -16,6 +18,7 @@ import io.pebbletemplates.pebble.operator.UnaryOperator;
 import io.pebbletemplates.pebble.tokenParser.TokenParser;
 import io.pebbletemplates.spring.extension.SpringExtension;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -25,7 +28,15 @@ import java.util.List;
 import java.util.Map;
 
 @Configuration
+@EnableConfigurationProperties(AETemplatingProperties.class)
 public class AETemplatingConfig {
+    @Bean(name = "automationOptionsInterceptor")
+    @Order(-100) // Run before other interceptors to ensure options are available
+    @ConditionalOnMissingBean(name = "automationOptionsInterceptor", ignored = AutomationOptionsInterceptor.class)
+    public AutomationOptionsInterceptor automationOptionsInterceptor() {
+        return new AutomationOptionsInterceptor();
+    }
+
     @Bean(name = "actionTemplatingInterceptor")
     @Order(-1)
     @ConditionalOnMissingBean(name = "actionTemplatingInterceptor", ignored = ActionTemplatingInterceptor.class)
@@ -61,16 +72,28 @@ public class AETemplatingConfig {
         return new VariableTemplatingInterceptor(processor, objectMapper);
     }
 
-    @Bean
-    @ConditionalOnMissingBean
-    public JsonNodeVariableProcessor jsonNodeVariableProcessor(TemplateProcessor templateProcessor, ObjectMapper mapper) {
-        return new JsonNodeVariableProcessor(templateProcessor, mapper);
+    @Bean("jsonNodeVariableProcessor")
+    @ConditionalOnMissingBean(name = "jsonNodeVariableProcessor", ignored = JsonNodeVariableProcessor.class)
+    public JsonNodeVariableProcessor jsonNodeVariableProcessor(TemplateProcessor templateProcessor, ObjectMapper mapper, AETemplatingProperties properties) {
+        return new JsonNodeVariableProcessor(templateProcessor, mapper, properties);
+    }
+
+    @Bean("pebble")
+    @ConditionalOnMissingBean(name = "pebble", ignored = PebbleTemplateEngine.class)
+    public PebbleTemplateEngine pebbleTemplateEngine(PebbleEngine pebbleEngine) {
+        return new PebbleTemplateEngine(pebbleEngine);
+    }
+
+    @Bean("spel")
+    @ConditionalOnMissingBean(name = "spel", ignored = SpelTemplateEngine.class)
+    public SpelTemplateEngine spelTemplateEngine() {
+        return new SpelTemplateEngine();
     }
 
     @Bean(name = "templateProcessor")
     @ConditionalOnMissingBean(name = "templateProcessor", ignored = TemplateProcessor.class)
-    public TemplateProcessor templateProcessor(PebbleEngine pebbleEngine, ObjectMapper mapper) {
-        return new TemplateProcessor(pebbleEngine, mapper);
+    public TemplateProcessor templateProcessor(Map<String, ITemplateEngine> engines, AETemplatingProperties properties, ObjectMapper mapper) {
+        return new TemplateProcessor(engines, properties.getDefaultEngine(), mapper);
     }
 
     /*
@@ -160,8 +183,7 @@ public class AETemplatingConfig {
                 tests,
                 functions,
                 nodeVisitorFactories,
-                attributeResolvers
-        );
+                attributeResolvers);
     }
 
     @Bean

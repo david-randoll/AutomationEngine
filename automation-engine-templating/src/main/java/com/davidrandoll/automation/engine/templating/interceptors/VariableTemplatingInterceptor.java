@@ -29,21 +29,6 @@ public class VariableTemplatingInterceptor implements IVariableInterceptor {
     private final JsonNodeVariableProcessor processor;
     private final ObjectMapper objectMapper;
 
-    /**
-     * Intercepts a variable to process and apply templated data.
-     * <p>
-     * Assumes that all strings in the action context are templated.
-     * For example, the context map could contain a key-value pair like:
-     * "message": "Hello {{name}}". The templateProcessor will replace
-     * the placeholder {{name}} with the corresponding value from the event context.
-     * If a string does not contain a template, it remains unchanged.
-     *
-     * @param eventContext    the event context providing data for template
-     *                        replacement
-     * @param variableContext the variable context containing data to process
-     * @param chain           the variable to set after processing
-     */
-
     @Override
     @SneakyThrows
     public void intercept(EventContext eventContext, VariableContext variableContext, IVariableChain chain) {
@@ -59,8 +44,9 @@ public class VariableTemplatingInterceptor implements IVariableInterceptor {
             return;
         }
 
-        var mapCopy = processor.processIfNotAutomation(eventData, variableContext.getData());
+        String templatingType = processor.getTemplatingType(eventContext, variableContext.getOptions());
+        var mapCopy = processor.processIfNotAutomation(eventData, variableContext.getData(), templatingType);
         chain.resolve(eventContext, variableContext.changeData(mapCopy));
-        log.debug("VariableTemplatingInterceptor done.");
+        log.debug("VariableTemplatingInterceptor: Variable data processed successfully.");
     }
 }

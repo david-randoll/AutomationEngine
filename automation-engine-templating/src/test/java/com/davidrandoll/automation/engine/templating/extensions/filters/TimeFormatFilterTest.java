@@ -1,7 +1,7 @@
 package com.davidrandoll.automation.engine.templating.extensions.filters;
 
+import com.davidrandoll.automation.engine.templating.pebbles.extensions.filters.TimeFormatFilter;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import java.time.LocalTime;
 import java.util.Map;

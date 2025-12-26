@@ -1,7 +1,10 @@
 package com.davidrandoll.automation.engine.templating.utils;
 
+import com.davidrandoll.automation.engine.core.events.EventContext;
 import com.davidrandoll.automation.engine.core.result.ResultContext;
+import com.davidrandoll.automation.engine.templating.AETemplatingProperties;
 import com.davidrandoll.automation.engine.templating.TemplateProcessor;
+import com.davidrandoll.automation.engine.templating.interceptors.AutomationOptionsInterceptor;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -18,6 +21,8 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -32,7 +37,7 @@ class JsonNodeVariableProcessorTest {
     @BeforeEach
     void setUp() {
         mapper = new ObjectMapper();
-        processor = new JsonNodeVariableProcessor(templateProcessor, mapper);
+        processor = new JsonNodeVariableProcessor(templateProcessor, mapper, new AETemplatingProperties());
     }
 
     @Test
@@ -41,7 +46,7 @@ class JsonNodeVariableProcessorTest {
         Map<String, Object> inputMap = new HashMap<>();
         inputMap.put("key", "{{ value }}");
 
-        when(templateProcessor.process("{{ value }}", eventData)).thenReturn("processed");
+        when(templateProcessor.process(eq("{{ value }}"), eq(eventData), anyString())).thenReturn("processed");
 
         Map<String, Object> result = processor.processIfNotAutomation(eventData, inputMap);
 
@@ -53,7 +58,7 @@ class JsonNodeVariableProcessorTest {
         Map<String, Object> eventData = new HashMap<>();
         JsonNode input = new TextNode("{{ value }}");
 
-        when(templateProcessor.process("{{ value }}", eventData)).thenReturn("processed");
+        when(templateProcessor.process(eq("{{ value }}"), eq(eventData), anyString())).thenReturn("processed");
 
         JsonNode result = processor.processIfNotAutomation(eventData, input);
 
@@ -67,7 +72,7 @@ class JsonNodeVariableProcessorTest {
         ObjectNode input = mapper.createObjectNode();
         input.put("key", "{{ value }}");
 
-        when(templateProcessor.process("{{ value }}", eventData)).thenReturn("processed");
+        when(templateProcessor.process(eq("{{ value }}"), eq(eventData), anyString())).thenReturn("processed");
 
         JsonNode result = processor.processIfNotAutomation(eventData, input);
 
@@ -82,7 +87,7 @@ class JsonNodeVariableProcessorTest {
         obj.put("key", "{{ value }}");
         JsonNode input = mapper.createArrayNode().add(obj);
 
-        when(templateProcessor.process("{{ value }}", eventData)).thenReturn("processed");
+        when(templateProcessor.process(eq("{{ value }}"), eq(eventData), anyString())).thenReturn("processed");
 
         JsonNode result = processor.processIfNotAutomation(eventData, input);
 
@@ -124,5 +129,59 @@ class JsonNodeVariableProcessorTest {
 
         assertEquals("processed", result.get("key").asText());
         assertEquals(123, result.get("number").asInt());
+    }
+
+    @Test
+    void testGetTemplatingType() {
+        // Test with explicit spel
+        Map<String, Object> optionsSpel = Map.of("templatingType", "spel");
+        assertEquals("spel", processor.getTemplatingType(optionsSpel));
+
+        // Test with explicit pebble
+        Map<String, Object> optionsPebble = Map.of("templatingType", "pebble");
+        assertEquals("pebble", processor.getTemplatingType(optionsPebble));
+
+        // Test with null options
+        assertEquals("pebble", processor.getTemplatingType(null));
+
+        // Test with empty options
+        assertEquals("pebble", processor.getTemplatingType(new HashMap<>()));
+
+        // Test with options but no templatingType
+        assertEquals("pebble", processor.getTemplatingType(Map.of("other", "value")));
+    }
+
+    @Test
+    void testGetTemplatingType_WithAutomationOptions() {
+        EventContext eventContext = mock(EventContext.class);
+        Map<String, Object> automationOptions = Map.of("templatingType", "spel");
+        when(eventContext.getMetadata(AutomationOptionsInterceptor.AUTOMATION_OPTIONS_KEY))
+                .thenReturn(automationOptions);
+
+        // 1. Block level priority
+        Map<String, Object> blockOptions = Map.of("templatingType", "pebble");
+        assertEquals("pebble", processor.getTemplatingType(eventContext, blockOptions));
+
+        // 2. Automation level priority
+        assertEquals("spel", processor.getTemplatingType(eventContext, null));
+        assertEquals("spel", processor.getTemplatingType(eventContext, new HashMap<>()));
+
+        // 3. Default priority
+        when(eventContext.getMetadata(AutomationOptionsInterceptor.AUTOMATION_OPTIONS_KEY)).thenReturn(null);
+        assertEquals("pebble", processor.getTemplatingType(eventContext, null));
+    }
+
+    @Test
+    void testProcessIfNotAutomation_WithSpelOption() throws IOException {
+        Map<String, Object> eventData = new HashMap<>();
+        Map<String, Object> inputMap = new HashMap<>();
+        inputMap.put("key", "#{ value }");
+        inputMap.put("options", Map.of("templatingType", "spel"));
+
+        when(templateProcessor.process(eq("#{ value }"), eq(eventData), eq("spel"))).thenReturn("processed");
+
+        Map<String, Object> result = processor.processIfNotAutomation(eventData, inputMap);
+
+        assertEquals("processed", result.get("key"));
     }
 }

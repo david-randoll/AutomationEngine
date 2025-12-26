@@ -15,7 +15,7 @@ import org.springframework.context.ApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class AEStarterTest extends AutomationEngineTest {
+class LuaTest extends AutomationEngineTest {
 
     @Autowired
     private ApplicationContext context;

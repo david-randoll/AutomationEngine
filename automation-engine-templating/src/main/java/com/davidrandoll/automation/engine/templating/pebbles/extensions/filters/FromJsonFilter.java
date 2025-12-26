@@ -1,4 +1,4 @@
-package com.davidrandoll.automation.engine.templating.extensions.filters;
+package com.davidrandoll.automation.engine.templating.pebbles.extensions.filters;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.pebbletemplates.pebble.error.PebbleException;

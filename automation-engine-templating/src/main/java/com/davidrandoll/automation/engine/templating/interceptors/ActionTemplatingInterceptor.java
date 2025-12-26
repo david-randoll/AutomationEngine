@@ -42,7 +42,6 @@ public class ActionTemplatingInterceptor implements IActionInterceptor {
      * @param actionContext the action context containing data to process
      * @param chain         the action to be executed after processing
      */
-
     @Override
     public void intercept(EventContext eventContext, ActionContext actionContext, IActionChain chain) {
         log.debug("ActionTemplatingInterceptor: Processing action data...");
@@ -57,7 +56,8 @@ public class ActionTemplatingInterceptor implements IActionInterceptor {
             return;
         }
 
-        var mapCopy = processor.processIfNotAutomation(eventData, actionContext.getData());
+        String templatingType = processor.getTemplatingType(eventContext, actionContext.getOptions());
+        var mapCopy = processor.processIfNotAutomation(eventData, actionContext.getData(), templatingType);
         chain.execute(eventContext, actionContext.changeData(mapCopy));
         log.debug("ActionTemplatingInterceptor done.");
     }

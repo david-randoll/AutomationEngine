@@ -18,6 +18,7 @@ import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -49,11 +50,12 @@ class ResultTemplatingInterceptorTest {
         eventData.put("some", "data");
         when(eventContext.getEventData(objectMapper)).thenReturn(eventData);
 
-        when(processor.processIfNotAutomation(eq(eventData), any(JsonNode.class))).thenReturn(data);
+        when(processor.getTemplatingType(any(), any())).thenReturn("pebble");
+        when(processor.processIfNotAutomation(eq(eventData), any(JsonNode.class), eq("pebble"))).thenReturn(data);
 
         interceptor.intercept(eventContext, resultContext, chain);
 
-        verify(processor).processIfNotAutomation(eq(eventData), any(JsonNode.class));
+        verify(processor).processIfNotAutomation(eq(eventData), any(JsonNode.class), eq("pebble"));
         verify(chain).getExecutionSummary(eq(eventContext), any(ResultContext.class));
     }
 

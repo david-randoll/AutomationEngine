@@ -13,7 +13,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class OnJdbcQueryTrigger extends PluggableTrigger<OnJdbcQueryTriggerContext> {
     private final NamedParameterJdbcTemplate jdbcTemplate;
-    private final TemplateProcessor pebble;
+    private final TemplateProcessor templateProcessor;
 
     @Override
     public boolean isTriggered(EventContext ec, OnJdbcQueryTriggerContext tc) {
@@ -27,7 +27,7 @@ public class OnJdbcQueryTrigger extends PluggableTrigger<OnJdbcQueryTriggerConte
         context.put("event", ec);
 
         try {
-            String result = pebble.process(tc.getExpression(), context);
+            String result = (String) templateProcessor.process(tc.getExpression(), context);
             return Boolean.TRUE.toString().equalsIgnoreCase(result);
         } catch (Exception e) {
             throw new RuntimeException("Error processing expression: " + tc.getExpression(), e);

@@ -25,9 +25,11 @@ public class LoggerActionContext implements IActionContext {
     /** Human-readable description of what this action does */
     private String description;
 
-    /** Log level for the message (TRACE, DEBUG, INFO, WARN, ERROR). Defaults to INFO */
+    /**
+     * Log level for the message (TRACE, DEBUG, INFO, WARN, ERROR). Defaults to INFO
+     */
     private Level level = Level.INFO;
 
     /** Message to log. Supports template expressions for dynamic content */
-    private String message = "No message";
+    private Object message = "No message";
 }

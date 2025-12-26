@@ -17,7 +17,8 @@ import static org.apache.commons.lang3.BooleanUtils.isFalse;
 /**
  * Interceptor for processing result data using templating.
  * <p>
- * This interceptor processes the result context data by replacing any placeholders
+ * This interceptor processes the result context data by replacing any
+ * placeholders
  * in the strings with corresponding values from the event context.
  * It uses a {@link TemplateProcessor} to perform the templating.
  * </p>
@@ -30,7 +31,7 @@ public class ResultTemplatingInterceptor implements IResultInterceptor {
 
     @Override
     public Object intercept(EventContext eventContext, ResultContext resultContext, IResultChain chain) {
-        log.debug("ConditionTemplatingInterceptor: Processing result data...");
+        log.debug("ResultTemplatingInterceptor: Processing result data...");
         if (isFalse(chain.autoEvaluateExpression())) {
             return chain.getExecutionSummary(eventContext, resultContext);
         }
@@ -40,11 +41,12 @@ public class ResultTemplatingInterceptor implements IResultInterceptor {
             return chain.getExecutionSummary(eventContext, resultContext);
         }
 
+        String templatingType = processor.getTemplatingType(eventContext, resultContext.getOptions());
         JsonNode jsonNodeCopy = objectMapper.valueToTree(resultContext.getData()); // Create a copy of the data
-        jsonNodeCopy = processor.processIfNotAutomation(eventData, jsonNodeCopy);
+        jsonNodeCopy = processor.processIfNotAutomation(eventData, jsonNodeCopy, templatingType);
 
         var res = chain.getExecutionSummary(eventContext, resultContext.changeData(jsonNodeCopy));
-        log.debug("ConditionTemplatingInterceptor: Condition data processed successfully.");
+        log.debug("ResultTemplatingInterceptor: Result data processed successfully.");
         return res;
     }
 }

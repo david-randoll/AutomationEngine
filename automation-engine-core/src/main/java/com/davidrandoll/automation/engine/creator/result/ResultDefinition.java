@@ -19,11 +19,13 @@ import java.util.Map;
 @JsonPropertyOrder({
         ResultDefinition.Fields.alias,
         ResultDefinition.Fields.description,
+        ResultDefinition.Fields.options,
         ResultDefinition.Fields.result
 })
 public class ResultDefinition {
     private String alias;
     private String description;
+    private Map<String, Object> options = new HashMap<>();
 
     @JsonAlias({"result", "return", "type"})
     private String result = "basic";
