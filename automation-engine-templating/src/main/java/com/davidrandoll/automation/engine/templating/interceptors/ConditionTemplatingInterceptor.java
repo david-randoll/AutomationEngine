@@ -42,7 +42,7 @@ public class ConditionTemplatingInterceptor implements IConditionInterceptor {
             return chain.isSatisfied(eventContext, conditionContext);
         }
 
-        String templatingType = processor.getTemplatingType(conditionContext.getOptions());
+        String templatingType = processor.getTemplatingType(eventContext, conditionContext.getOptions());
         var mapCopy = processor.processIfNotAutomation(eventData, conditionContext.getData(), templatingType);
         var result = chain.isSatisfied(eventContext, conditionContext.changeData(mapCopy));
         log.debug("ConditionTemplatingInterceptor: Condition data processed successfully.");

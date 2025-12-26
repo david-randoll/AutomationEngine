@@ -1,9 +1,11 @@
 package com.davidrandoll.automation.engine.templating.utils;
 
+import com.davidrandoll.automation.engine.core.events.EventContext;
 import com.davidrandoll.automation.engine.core.result.ResultContext;
 import com.davidrandoll.automation.engine.templating.AETemplatingProperties;
 import com.davidrandoll.automation.engine.templating.ContextOption;
 import com.davidrandoll.automation.engine.templating.TemplateProcessor;
+import com.davidrandoll.automation.engine.templating.interceptors.AutomationOptionsInterceptor;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -28,12 +30,12 @@ public class JsonNodeVariableProcessor {
     private static final Set<String> AUTOMATION_FIELDS = Set.of("action", "variable", "condition", "trigger", "result");
 
     public Map<String, Object> processIfNotAutomation(Map<String, Object> eventData, Map<String, Object> map) {
-        String templatingType = getTemplatingType((Map<String, Object>) map.get("options"));
+        String templatingType = getTemplatingType(null, (Map<String, Object>) map.get("options"));
         return processIfNotAutomation(eventData, map, templatingType);
     }
 
     public Map<String, Object> processIfNotAutomation(Map<String, Object> eventData, Map<String, Object> map,
-                                                      String templatingType) {
+            String templatingType) {
         JsonNode node = mapper.valueToTree(map);
         node = processIfNotAutomation(eventData, node, templatingType);
         return mapper.convertValue(node, new TypeReference<>() {
@@ -95,12 +97,13 @@ public class JsonNodeVariableProcessor {
         if (value == null) {
             return mapper.nullNode();
         }
-        
-        // If it's a String, try to parse it as JSON first (for backward compatibility with Pebble)
+
+        // If it's a String, try to parse it as JSON first (for backward compatibility
+        // with Pebble)
         if (value instanceof String) {
             return parseStringToJsonNode((String) value);
         }
-        
+
         // For non-string objects (like arrays, maps, etc. from SpEL), convert directly
         return mapper.valueToTree(value);
     }
@@ -113,7 +116,7 @@ public class JsonNodeVariableProcessor {
      *
      * @param value the string value to parse
      * @return JsonNode with the appropriate type (IntNode, BooleanNode, etc.) or
-     * TextNode if not parseable
+     *         TextNode if not parseable
      */
     private JsonNode parseStringToJsonNode(String value) {
         if (value == null) {
@@ -145,7 +148,7 @@ public class JsonNodeVariableProcessor {
 
     public JsonNode processOnlyString(Map<String, Object> eventData, ResultContext resultContext) {
         JsonNode jsonNodeCopy = resultContext.getData();
-        for (Iterator<Map.Entry<String, JsonNode>> it = jsonNodeCopy.fields(); it.hasNext(); ) {
+        for (Iterator<Map.Entry<String, JsonNode>> it = jsonNodeCopy.fields(); it.hasNext();) {
             var entry = it.next();
             if (entry.getValue().isTextual()) {
                 String valueStr = entry.getValue().asText();
@@ -168,17 +171,39 @@ public class JsonNodeVariableProcessor {
     }
 
     public String getTemplatingType(Map<String, Object> options) {
-        if (ObjectUtils.isEmpty(options)) {
-            return properties.getDefaultEngine();
+        return getTemplatingType(null, options);
+    }
+
+    public String getTemplatingType(EventContext eventContext, Map<String, Object> options) {
+        // 1. Block level (actions, conditions, triggers, result, variable)
+        String blockType = getFromOptions(options);
+        if (blockType != null)
+            return blockType;
+
+        // 2. Automation level
+        if (eventContext != null) {
+            Object automationOptions = eventContext.getMetadata(AutomationOptionsInterceptor.AUTOMATION_OPTIONS_KEY);
+            if (automationOptions instanceof Map) {
+                String automationType = getFromOptions((Map<String, Object>) automationOptions);
+                if (automationType != null)
+                    return automationType;
+            }
         }
+
+        // 3. Default from configuration properties
+        return properties.getDefaultEngine();
+    }
+
+    private String getFromOptions(Map<String, Object> options) {
+        if (ObjectUtils.isEmpty(options))
+            return null;
         try {
             ContextOption contextOption = mapper.convertValue(options, ContextOption.class);
-            if (contextOption == null || ObjectUtils.isEmpty(contextOption.getTemplatingType())) {
-                return properties.getDefaultEngine();
+            if (contextOption != null && !ObjectUtils.isEmpty(contextOption.getTemplatingType())) {
+                return contextOption.getTemplatingType();
             }
-            return contextOption.getTemplatingType();
-        } catch (Exception e) {
-            return properties.getDefaultEngine();
+        } catch (Exception ignored) {
         }
+        return null;
     }
 }

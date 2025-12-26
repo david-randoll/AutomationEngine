@@ -50,7 +50,7 @@ class ResultTemplatingInterceptorTest {
         eventData.put("some", "data");
         when(eventContext.getEventData(objectMapper)).thenReturn(eventData);
 
-        when(processor.getTemplatingType(any())).thenReturn("pebble");
+        when(processor.getTemplatingType(any(), any())).thenReturn("pebble");
         when(processor.processIfNotAutomation(eq(eventData), any(JsonNode.class), eq("pebble"))).thenReturn(data);
 
         interceptor.intercept(eventContext, resultContext, chain);

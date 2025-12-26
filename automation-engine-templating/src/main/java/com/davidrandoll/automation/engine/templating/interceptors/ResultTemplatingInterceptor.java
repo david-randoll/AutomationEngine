@@ -17,7 +17,8 @@ import static org.apache.commons.lang3.BooleanUtils.isFalse;
 /**
  * Interceptor for processing result data using templating.
  * <p>
- * This interceptor processes the result context data by replacing any placeholders
+ * This interceptor processes the result context data by replacing any
+ * placeholders
  * in the strings with corresponding values from the event context.
  * It uses a {@link TemplateProcessor} to perform the templating.
  * </p>
@@ -40,7 +41,7 @@ public class ResultTemplatingInterceptor implements IResultInterceptor {
             return chain.getExecutionSummary(eventContext, resultContext);
         }
 
-        String templatingType = processor.getTemplatingType(resultContext.getOptions());
+        String templatingType = processor.getTemplatingType(eventContext, resultContext.getOptions());
         JsonNode jsonNodeCopy = objectMapper.valueToTree(resultContext.getData()); // Create a copy of the data
         jsonNodeCopy = processor.processIfNotAutomation(eventData, jsonNodeCopy, templatingType);
 

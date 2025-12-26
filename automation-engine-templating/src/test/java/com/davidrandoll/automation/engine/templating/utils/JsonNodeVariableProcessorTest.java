@@ -1,8 +1,10 @@
 package com.davidrandoll.automation.engine.templating.utils;
 
+import com.davidrandoll.automation.engine.core.events.EventContext;
 import com.davidrandoll.automation.engine.core.result.ResultContext;
 import com.davidrandoll.automation.engine.templating.AETemplatingProperties;
 import com.davidrandoll.automation.engine.templating.TemplateProcessor;
+import com.davidrandoll.automation.engine.templating.interceptors.AutomationOptionsInterceptor;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -19,8 +21,8 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -147,6 +149,26 @@ class JsonNodeVariableProcessorTest {
 
         // Test with options but no templatingType
         assertEquals("pebble", processor.getTemplatingType(Map.of("other", "value")));
+    }
+
+    @Test
+    void testGetTemplatingType_WithAutomationOptions() {
+        EventContext eventContext = mock(EventContext.class);
+        Map<String, Object> automationOptions = Map.of("templatingType", "spel");
+        when(eventContext.getMetadata(AutomationOptionsInterceptor.AUTOMATION_OPTIONS_KEY))
+                .thenReturn(automationOptions);
+
+        // 1. Block level priority
+        Map<String, Object> blockOptions = Map.of("templatingType", "pebble");
+        assertEquals("pebble", processor.getTemplatingType(eventContext, blockOptions));
+
+        // 2. Automation level priority
+        assertEquals("spel", processor.getTemplatingType(eventContext, null));
+        assertEquals("spel", processor.getTemplatingType(eventContext, new HashMap<>()));
+
+        // 3. Default priority
+        when(eventContext.getMetadata(AutomationOptionsInterceptor.AUTOMATION_OPTIONS_KEY)).thenReturn(null);
+        assertEquals("pebble", processor.getTemplatingType(eventContext, null));
     }
 
     @Test

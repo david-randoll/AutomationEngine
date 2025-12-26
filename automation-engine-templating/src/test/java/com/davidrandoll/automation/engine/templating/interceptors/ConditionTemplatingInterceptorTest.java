@@ -50,7 +50,7 @@ class ConditionTemplatingInterceptorTest {
         eventData.put("some", "data");
         when(eventContext.getEventData(objectMapper)).thenReturn(eventData);
 
-        when(processor.getTemplatingType(any())).thenReturn("pebble");
+        when(processor.getTemplatingType(any(), any())).thenReturn("pebble");
         when(processor.processIfNotAutomation(eq(eventData), eq(data), eq("pebble"))).thenReturn(data);
 
         interceptor.intercept(eventContext, conditionContext, chain);

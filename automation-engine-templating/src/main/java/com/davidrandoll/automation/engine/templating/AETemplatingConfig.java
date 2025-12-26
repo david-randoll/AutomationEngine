@@ -30,6 +30,13 @@ import java.util.Map;
 @Configuration
 @EnableConfigurationProperties(AETemplatingProperties.class)
 public class AETemplatingConfig {
+    @Bean(name = "automationOptionsInterceptor")
+    @Order(-100) // Run before other interceptors to ensure options are available
+    @ConditionalOnMissingBean(name = "automationOptionsInterceptor", ignored = AutomationOptionsInterceptor.class)
+    public AutomationOptionsInterceptor automationOptionsInterceptor() {
+        return new AutomationOptionsInterceptor();
+    }
+
     @Bean(name = "actionTemplatingInterceptor")
     @Order(-1)
     @ConditionalOnMissingBean(name = "actionTemplatingInterceptor", ignored = ActionTemplatingInterceptor.class)

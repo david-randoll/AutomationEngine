@@ -17,7 +17,8 @@ import static org.apache.commons.lang3.BooleanUtils.isFalse;
 /**
  * Interceptor for processing trigger data using templating.
  * <p>
- * This interceptor processes the trigger context data by replacing any placeholders
+ * This interceptor processes the trigger context data by replacing any
+ * placeholders
  * in the strings with corresponding values from the event context.
  * It uses a {@link TemplateProcessor} to perform the templating.
  * </p>
@@ -41,7 +42,7 @@ public class TriggerTemplatingInterceptor implements ITriggerInterceptor {
             return chain.isTriggered(eventContext, triggerContext);
         }
 
-        String templatingType = processor.getTemplatingType(triggerContext.getOptions());
+        String templatingType = processor.getTemplatingType(eventContext, triggerContext.getOptions());
         var mapCopy = processor.processIfNotAutomation(eventData, triggerContext.getData(), templatingType);
         var result = chain.isTriggered(eventContext, triggerContext.changeData(mapCopy));
         log.debug("TriggerTemplatingInterceptor: Trigger data processed successfully.");

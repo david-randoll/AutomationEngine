@@ -44,7 +44,7 @@ public class VariableTemplatingInterceptor implements IVariableInterceptor {
             return;
         }
 
-        String templatingType = processor.getTemplatingType(variableContext.getOptions());
+        String templatingType = processor.getTemplatingType(eventContext, variableContext.getOptions());
         var mapCopy = processor.processIfNotAutomation(eventData, variableContext.getData(), templatingType);
         chain.resolve(eventContext, variableContext.changeData(mapCopy));
         log.debug("VariableTemplatingInterceptor: Variable data processed successfully.");

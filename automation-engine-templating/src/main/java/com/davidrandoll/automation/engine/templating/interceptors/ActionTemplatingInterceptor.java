@@ -56,7 +56,7 @@ public class ActionTemplatingInterceptor implements IActionInterceptor {
             return;
         }
 
-        String templatingType = processor.getTemplatingType(actionContext.getOptions());
+        String templatingType = processor.getTemplatingType(eventContext, actionContext.getOptions());
         var mapCopy = processor.processIfNotAutomation(eventData, actionContext.getData(), templatingType);
         chain.execute(eventContext, actionContext.changeData(mapCopy));
         log.debug("ActionTemplatingInterceptor done.");
