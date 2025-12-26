@@ -29,20 +29,24 @@ public class ConditionContext implements IConditionContext {
     @JsonProperty("0829b1b94f764e47b871865ea6628f34")
     private Map<String, Object> data;
 
+    public ConditionContext(String alias, String description, String type, Map<String, Object> data) {
+        this.alias = alias;
+        this.description = description;
+        this.condition = type;
+        this.data = data != null ? data : new HashMap<>();
+    }
+
+    public ConditionContext(String alias, String description, String action, Map<String, Object> data, Map<String, Object> options) {
+        this(alias, description, action, data);
+        this.options = options;
+    }
+
     public ConditionContext(ConditionDefinition definition) {
-        this.alias = definition.getAlias();
-        this.description = definition.getDescription();
-        this.options = definition.getOptions();
-        this.condition = definition.getCondition();
-        this.data = definition.getParams();
+        this(definition.getAlias(), definition.getDescription(), definition.getCondition(), definition.getParams(), definition.getOptions());
     }
 
     public ConditionContext(ConditionContext other, Map<String, Object> additionalData) {
-        this.alias = other.getAlias();
-        this.description = other.getDescription();
-        this.options = other.getOptions();
-        this.condition = other.getCondition();
-        this.data = additionalData;
+        this(other.getAlias(), other.getDescription(), other.getCondition(), additionalData, other.getOptions());
     }
 
     public ConditionContext(ConditionContext other) {

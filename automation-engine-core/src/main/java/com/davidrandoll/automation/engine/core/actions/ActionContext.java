@@ -3,7 +3,6 @@ package com.davidrandoll.automation.engine.core.actions;
 import com.davidrandoll.automation.engine.creator.actions.ActionDefinition;
 import com.fasterxml.jackson.annotation.*;
 import jakarta.validation.constraints.NotEmpty;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,7 +10,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
 public class ActionContext implements IActionContext {
     private String alias;
@@ -29,20 +27,24 @@ public class ActionContext implements IActionContext {
     @JsonProperty("0829b1b94f764e47b871865ea6628f34")
     private Map<String, Object> data;
 
+    public ActionContext(String alias, String description, String type, Map<String, Object> data) {
+        this.alias = alias;
+        this.description = description;
+        this.action = type;
+        this.data = data != null ? data : new HashMap<>();
+    }
+
+    public ActionContext(String alias, String description, String action, Map<String, Object> data, Map<String, Object> options) {
+        this(alias, description, action, data);
+        this.options = options;
+    }
+
     public ActionContext(ActionDefinition definition) {
-        this.alias = definition.getAlias();
-        this.description = definition.getDescription();
-        this.options = definition.getOptions();
-        this.action = definition.getAction();
-        this.data = definition.getParams();
+        this(definition.getAlias(), definition.getDescription(), definition.getAction(), definition.getParams(), definition.getOptions());
     }
 
     public ActionContext(ActionContext other, Map<String, Object> additionalData) {
-        this.alias = other.getAlias();
-        this.description = other.getDescription();
-        this.options = other.getOptions();
-        this.action = other.getAction();
-        this.data = additionalData;
+        this(other.getAlias(), other.getDescription(), other.getAction(), additionalData, other.getOptions());
     }
 
     public ActionContext(ActionContext other) {

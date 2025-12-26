@@ -1,6 +1,7 @@
 package com.davidrandoll.automation.engine.templating.utils;
 
 import com.davidrandoll.automation.engine.core.result.ResultContext;
+import com.davidrandoll.automation.engine.templating.AETemplatingProperties;
 import com.davidrandoll.automation.engine.templating.TemplateProcessor;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -26,13 +27,16 @@ class JsonNodeVariableProcessorTest {
     @Mock
     private TemplateProcessor templateProcessor;
 
+    @Mock
+    private AETemplatingProperties properties;
+
     private ObjectMapper mapper;
     private JsonNodeVariableProcessor processor;
 
     @BeforeEach
     void setUp() {
         mapper = new ObjectMapper();
-        processor = new JsonNodeVariableProcessor(templateProcessor, mapper);
+        processor = new JsonNodeVariableProcessor(templateProcessor, mapper, properties);
     }
 
     @Test

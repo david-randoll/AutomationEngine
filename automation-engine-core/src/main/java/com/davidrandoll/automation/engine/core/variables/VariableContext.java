@@ -2,7 +2,6 @@ package com.davidrandoll.automation.engine.core.variables;
 
 import com.davidrandoll.automation.engine.creator.variables.VariableDefinition;
 import com.fasterxml.jackson.annotation.*;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -10,7 +9,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
 public class VariableContext implements IVariableContext {
     private String alias;
@@ -27,20 +25,24 @@ public class VariableContext implements IVariableContext {
     @JsonProperty("0829b1b94f764e47b871865ea6628f34")
     private Map<String, Object> data;
 
+    public VariableContext(String alias, String description, String type, Map<String, Object> data) {
+        this.alias = alias;
+        this.description = description;
+        this.variable = type;
+        this.data = data != null ? data : new HashMap<>();
+    }
+
+    public VariableContext(String alias, String description, String action, Map<String, Object> data, Map<String, Object> options) {
+        this(alias, description, action, data);
+        this.options = options;
+    }
+
     public VariableContext(VariableDefinition definition) {
-        this.alias = definition.getAlias();
-        this.description = definition.getDescription();
-        this.options = definition.getOptions();
-        this.variable = definition.getVariable();
-        this.data = definition.getParams();
+        this(definition.getAlias(), definition.getDescription(), definition.getVariable(), definition.getParams(), definition.getOptions());
     }
 
     public VariableContext(VariableContext other, Map<String, Object> additionalData) {
-        this.alias = other.getAlias();
-        this.description = other.getDescription();
-        this.options = other.getOptions();
-        this.variable = other.getVariable();
-        this.data = additionalData;
+        this(other.getAlias(), other.getDescription(), other.getVariable(), additionalData, other.getOptions());
     }
 
     public VariableContext(VariableContext other) {

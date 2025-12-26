@@ -33,20 +33,24 @@ public class ResultContext implements IResultContext {
     @JsonProperty("0829b1b94f764e47b871865ea6628f34")
     private JsonNode data;
 
+    public ResultContext(String alias, String description, String type, JsonNode data) {
+        this.alias = alias;
+        this.description = description;
+        this.result = type;
+        this.data = data;
+    }
+
+    public ResultContext(String alias, String description, String result, JsonNode data, Map<String, Object> options) {
+        this(alias, description, result, data);
+        this.options = options;
+    }
+
     public ResultContext(ResultDefinition definition) {
-        this.alias = definition.getAlias();
-        this.description = definition.getDescription();
-        this.options = definition.getOptions();
-        this.result = definition.getResult();
-        this.data = definition.getParams();
+        this(definition.getAlias(), definition.getDescription(), definition.getResult(), definition.getParams(), definition.getOptions());
     }
 
     public ResultContext(ResultContext other, JsonNode additionalData) {
-        this.alias = other.getAlias();
-        this.description = other.getDescription();
-        this.options = other.getOptions();
-        this.result = other.getResult();
-        this.data = additionalData;
+        this(other.getAlias(), other.getDescription(), other.getResult(), additionalData, other.getOptions());
     }
 
     public ResultContext(ResultContext other) {
