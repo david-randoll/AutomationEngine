@@ -1,4 +1,6 @@
 import { Controller, useFormContext } from "react-hook-form";
+import { Info } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import ModuleList from "@/components/ModuleList";
@@ -21,6 +23,22 @@ interface FieldRendererProps {
     pathInData: Path;
     onAddBlock: (blockType: Area, pathInData: Path, targetIsArray: boolean) => void;
 }
+
+const LabelWithHelp = ({ title, helpText }: { title: string; helpText?: string }) => (
+    <div className="flex items-center gap-1.5">
+        <label className="block text-sm font-medium">{capitalize(title)}</label>
+        {helpText && (
+            <Tooltip>
+                <TooltipTrigger asChild>
+                    <Info size={14} className="text-gray-400 cursor-help hover:text-gray-600 transition-colors" />
+                </TooltipTrigger>
+                <TooltipContent>
+                    <p>{helpText}</p>
+                </TooltipContent>
+            </Tooltip>
+        )}
+    </div>
+);
 
 const FieldRenderer = ({ fieldKey, schema, rootSchema, pathInData, onAddBlock }: FieldRendererProps) => {
     const { control, getValues, resetField } = useFormContext();
@@ -217,8 +235,17 @@ const FieldRenderer = ({ fieldKey, schema, rootSchema, pathInData, onAddBlock }:
                         )}
                     />
                     <span className="text-sm font-medium">{capitalize(title)}</span>
+                    {helpText && (
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Info size={14} className="text-gray-400 cursor-help hover:text-gray-600 transition-colors ml-1" />
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p>{helpText}</p>
+                            </TooltipContent>
+                        </Tooltip>
+                    )}
                 </label>
-                {helpText && <p className="text-xs text-gray-500 ml-6">{helpText}</p>}
             </div>
         );
     }
@@ -228,7 +255,7 @@ const FieldRenderer = ({ fieldKey, schema, rootSchema, pathInData, onAddBlock }:
         return (
             <div key={name} className="space-y-1">
                 <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium">{capitalize(title)}</span>
+                    <LabelWithHelp title={title} helpText={helpText} />
                     <Controller
                         control={control}
                         name={name}
@@ -246,7 +273,6 @@ const FieldRenderer = ({ fieldKey, schema, rootSchema, pathInData, onAddBlock }:
                         )}
                     />
                 </div>
-                {helpText && <p className="text-xs text-gray-500">{helpText}</p>}
             </div>
         );
     }
@@ -255,7 +281,7 @@ const FieldRenderer = ({ fieldKey, schema, rootSchema, pathInData, onAddBlock }:
     if (presentationWidget === "number" || type === "number") {
         return (
             <div key={name} className="space-y-1">
-                <label className="block text-sm font-medium">{capitalize(title)}</label>
+                <LabelWithHelp title={title} helpText={helpText} />
                 <Controller
                     control={control}
                     name={name}
@@ -272,7 +298,6 @@ const FieldRenderer = ({ fieldKey, schema, rootSchema, pathInData, onAddBlock }:
                         />
                     )}
                 />
-                {helpText && <p className="text-xs text-gray-500">{helpText}</p>}
             </div>
         );
     }
@@ -290,7 +315,7 @@ const FieldRenderer = ({ fieldKey, schema, rootSchema, pathInData, onAddBlock }:
                     render={({ field }) => (
                         <>
                             <div className="flex justify-between items-center">
-                                <label className="text-sm font-medium">{capitalize(title)}</label>
+                                <LabelWithHelp title={title} helpText={helpText} />
                                 <span className="text-sm text-gray-500">{field.value ?? min}</span>
                             </div>
                             <input
@@ -306,7 +331,6 @@ const FieldRenderer = ({ fieldKey, schema, rootSchema, pathInData, onAddBlock }:
                         </>
                     )}
                 />
-                {helpText && <p className="text-xs text-gray-500">{helpText}</p>}
             </div>
         );
     }
@@ -318,7 +342,7 @@ const FieldRenderer = ({ fieldKey, schema, rootSchema, pathInData, onAddBlock }:
         
         return (
             <div key={name} className="space-y-1">
-                <label className="block text-sm font-medium">{capitalize(title)}</label>
+                <LabelWithHelp title={title} helpText={helpText} />
                 <Controller
                     control={control}
                     name={name}
@@ -341,7 +365,6 @@ const FieldRenderer = ({ fieldKey, schema, rootSchema, pathInData, onAddBlock }:
                         </Select>
                     )}
                 />
-                {helpText && <p className="text-xs text-gray-500">{helpText}</p>}
             </div>
         );
     }
@@ -353,7 +376,7 @@ const FieldRenderer = ({ fieldKey, schema, rootSchema, pathInData, onAddBlock }:
         
         return (
             <div key={name} className="space-y-2">
-                <label className="block text-sm font-medium">{capitalize(title)}</label>
+                <LabelWithHelp title={title} helpText={helpText} />
                 <Controller
                     control={control}
                     name={name}
@@ -375,7 +398,6 @@ const FieldRenderer = ({ fieldKey, schema, rootSchema, pathInData, onAddBlock }:
                         </div>
                     )}
                 />
-                {helpText && <p className="text-xs text-gray-500">{helpText}</p>}
             </div>
         );
     }
@@ -384,7 +406,7 @@ const FieldRenderer = ({ fieldKey, schema, rootSchema, pathInData, onAddBlock }:
     if (presentationWidget === "textarea") {
         return (
             <div key={name} className="space-y-1">
-                <label className="block text-sm font-medium">{capitalize(title)}</label>
+                <LabelWithHelp title={title} helpText={helpText} />
                 <Controller
                     control={control}
                     name={name}
@@ -398,7 +420,6 @@ const FieldRenderer = ({ fieldKey, schema, rootSchema, pathInData, onAddBlock }:
                         />
                     )}
                 />
-                {helpText && <p className="text-xs text-gray-500">{helpText}</p>}
             </div>
         );
     }
@@ -416,7 +437,7 @@ const FieldRenderer = ({ fieldKey, schema, rootSchema, pathInData, onAddBlock }:
 
         return (
             <div key={name} className="space-y-1">
-                <label className="block text-sm font-medium">{capitalize(title)}</label>
+                <LabelWithHelp title={title} helpText={helpText} />
                 <Controller
                     control={control}
                     name={name}
@@ -432,7 +453,6 @@ const FieldRenderer = ({ fieldKey, schema, rootSchema, pathInData, onAddBlock }:
                         </div>
                     )}
                 />
-                {helpText && <p className="text-xs text-gray-500">{helpText}</p>}
             </div>
         );
     }
@@ -441,7 +461,7 @@ const FieldRenderer = ({ fieldKey, schema, rootSchema, pathInData, onAddBlock }:
     if (presentationWidget === "date") {
         return (
             <div key={name} className="space-y-1">
-                <label className="block text-sm font-medium">{capitalize(title)}</label>
+                <LabelWithHelp title={title} helpText={helpText} />
                 <Controller
                     control={control}
                     name={name}
@@ -454,7 +474,6 @@ const FieldRenderer = ({ fieldKey, schema, rootSchema, pathInData, onAddBlock }:
                         />
                     )}
                 />
-                {helpText && <p className="text-xs text-gray-500">{helpText}</p>}
             </div>
         );
     }
@@ -463,7 +482,7 @@ const FieldRenderer = ({ fieldKey, schema, rootSchema, pathInData, onAddBlock }:
     if (presentationWidget === "time") {
         return (
             <div key={name} className="space-y-1">
-                <label className="block text-sm font-medium">{capitalize(title)}</label>
+                <LabelWithHelp title={title} helpText={helpText} />
                 <Controller
                     control={control}
                     name={name}
@@ -476,7 +495,6 @@ const FieldRenderer = ({ fieldKey, schema, rootSchema, pathInData, onAddBlock }:
                         />
                     )}
                 />
-                {helpText && <p className="text-xs text-gray-500">{helpText}</p>}
             </div>
         );
     }
@@ -485,7 +503,7 @@ const FieldRenderer = ({ fieldKey, schema, rootSchema, pathInData, onAddBlock }:
     if (presentationWidget === "datetime") {
         return (
             <div key={name} className="space-y-1">
-                <label className="block text-sm font-medium">{capitalize(title)}</label>
+                <LabelWithHelp title={title} helpText={helpText} />
                 <Controller
                     control={control}
                     name={name}
@@ -498,7 +516,6 @@ const FieldRenderer = ({ fieldKey, schema, rootSchema, pathInData, onAddBlock }:
                         />
                     )}
                 />
-                {helpText && <p className="text-xs text-gray-500">{helpText}</p>}
             </div>
         );
     }
@@ -507,7 +524,7 @@ const FieldRenderer = ({ fieldKey, schema, rootSchema, pathInData, onAddBlock }:
     if (presentationWidget === "color") {
         return (
             <div key={name} className="space-y-1">
-                <label className="block text-sm font-medium">{capitalize(title)}</label>
+                <LabelWithHelp title={title} helpText={helpText} />
                 <Controller
                     control={control}
                     name={name}
@@ -531,7 +548,6 @@ const FieldRenderer = ({ fieldKey, schema, rootSchema, pathInData, onAddBlock }:
                         </div>
                     )}
                 />
-                {helpText && <p className="text-xs text-gray-500">{helpText}</p>}
             </div>
         );
     }
@@ -540,7 +556,7 @@ const FieldRenderer = ({ fieldKey, schema, rootSchema, pathInData, onAddBlock }:
     if (presentationWidget === "file") {
         return (
             <div key={name} className="space-y-1">
-                <label className="block text-sm font-medium">{capitalize(title)}</label>
+                <LabelWithHelp title={title} helpText={helpText} />
                 <Controller
                     control={control}
                     name={name}
@@ -558,7 +574,6 @@ const FieldRenderer = ({ fieldKey, schema, rootSchema, pathInData, onAddBlock }:
                         />
                     )}
                 />
-                {helpText && <p className="text-xs text-gray-500">{helpText}</p>}
             </div>
         );
     }
@@ -570,7 +585,7 @@ const FieldRenderer = ({ fieldKey, schema, rootSchema, pathInData, onAddBlock }:
         if (CustomWidget) {
             return (
                 <div key={name} className="space-y-1">
-                    <label className="block text-sm font-medium">{capitalize(title)}</label>
+                    <LabelWithHelp title={title} helpText={helpText} />
                     <Controller
                         control={control}
                         name={name}
@@ -586,7 +601,6 @@ const FieldRenderer = ({ fieldKey, schema, rootSchema, pathInData, onAddBlock }:
                             />
                         )}
                     />
-                    {helpText && <p className="text-xs text-gray-500">{helpText}</p>}
                 </div>
             );
         } else {
@@ -597,7 +611,7 @@ const FieldRenderer = ({ fieldKey, schema, rootSchema, pathInData, onAddBlock }:
     // Default string input (fallback)
     return (
         <div key={name} className="space-y-1">
-            <label className="block text-sm font-medium">{capitalize(title)}</label>
+            <LabelWithHelp title={title} helpText={helpText} />
             <Controller
                 control={control}
                 name={name}
@@ -611,7 +625,6 @@ const FieldRenderer = ({ fieldKey, schema, rootSchema, pathInData, onAddBlock }:
                     />
                 )}
             />
-            {helpText && <p className="text-xs text-gray-500">{helpText}</p>}
         </div>
     );
 };
