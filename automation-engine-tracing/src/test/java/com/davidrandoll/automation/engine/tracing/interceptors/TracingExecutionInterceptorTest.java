@@ -32,7 +32,8 @@ class TracingExecutionInterceptorTest {
 
     @BeforeEach
     void setUp() {
-        interceptor = new TracingExecutionInterceptor(true);
+        interceptor = new TracingExecutionInterceptor(true, trace -> {
+        });
         TestEvent event = TestEvent.builder()
                 .eventType("TEST")
                 .message("Test message")
@@ -99,7 +100,8 @@ class TracingExecutionInterceptorTest {
 
     @Test
     void testConstructor_withTracingDisabled() {
-        TracingExecutionInterceptor disabledInterceptor = new TracingExecutionInterceptor(false);
+        TracingExecutionInterceptor disabledInterceptor = new TracingExecutionInterceptor(false, trace -> {
+        });
 
         assertThat(disabledInterceptor.isTracingEnabled()).isFalse();
     }

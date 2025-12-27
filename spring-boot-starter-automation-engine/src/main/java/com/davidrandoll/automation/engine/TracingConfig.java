@@ -8,12 +8,14 @@ import com.davidrandoll.automation.engine.core.result.interceptors.IResultInterc
 import com.davidrandoll.automation.engine.core.triggers.interceptors.ITriggerInterceptor;
 import com.davidrandoll.automation.engine.core.variables.interceptors.IVariableInterceptor;
 import com.davidrandoll.automation.engine.orchestrator.interceptors.IAutomationExecutionInterceptor;
+import com.davidrandoll.automation.engine.tracing.ITracingPublisher;
 import com.davidrandoll.automation.engine.tracing.TracingAppender;
 import com.davidrandoll.automation.engine.tracing.interceptors.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -32,13 +34,19 @@ import org.springframework.core.annotation.Order;
 @ConditionalOnProperty(prefix = "automation-engine.tracing", name = "enabled", havingValue = "true", matchIfMissing = true)
 public class TracingConfig {
 
+    @Bean
+    @ConditionalOnMissingBean(ITracingPublisher.class)
+    public ITracingPublisher tracingPublisher(ApplicationEventPublisher publisher) {
+        return publisher::publishEvent;
+    }
+
     @Order(-2)
     @Bean("tracingExecutionInterceptor")
     @ConditionalOnMissingBean(name = "tracingExecutionInterceptor", ignored = TracingExecutionInterceptor.class)
-    public IAutomationExecutionInterceptor tracingExecutionInterceptor() {
+    public IAutomationExecutionInterceptor tracingExecutionInterceptor(ITracingPublisher publisher) {
         // Tracing is enabled by default when this bean is created
         // Individual automations control tracing via their options.tracing flag
-        return new TracingExecutionInterceptor(true);
+        return new TracingExecutionInterceptor(true, publisher);
     }
 
     @Order(-2)

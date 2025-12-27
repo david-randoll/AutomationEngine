@@ -6,6 +6,7 @@ import com.davidrandoll.automation.engine.core.result.AutomationResult;
 import com.davidrandoll.automation.engine.orchestrator.interceptors.IAutomationExecutionChain;
 import com.davidrandoll.automation.engine.orchestrator.interceptors.IAutomationExecutionInterceptor;
 import com.davidrandoll.automation.engine.tracing.ExecutionTrace;
+import com.davidrandoll.automation.engine.tracing.ITracingPublisher;
 import com.davidrandoll.automation.engine.tracing.TraceContext;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class TracingExecutionInterceptor implements IAutomationExecutionInterceptor {
     private final boolean tracingEnabled;
+    private final ITracingPublisher publisher;
 
     @Override
     public AutomationResult intercept(Automation automation, EventContext context, IAutomationExecutionChain chain) {
@@ -56,6 +58,8 @@ public class TracingExecutionInterceptor implements IAutomationExecutionIntercep
             // Create new result with trace attached in additional fields
             Map<String, Object> additionalFields = new HashMap<>(result.getAdditionalFields());
             additionalFields.put(ExecutionTrace.TRACE_KEY, executionTrace);
+
+            publisher.publish(executionTrace);
 
             return AutomationResult.executedWithAdditionalFields(
                     result.getAutomation(),
