@@ -14,10 +14,12 @@ public class JsonSchemaConfig {
         JakartaValidationModule jakartaValidationModule = new JakartaValidationModule();
         JacksonModule jacksonModule = new JacksonModule(JacksonOption.RESPECT_JSONPROPERTY_ORDER);
         JavadocDescriptionModule javadocDescriptionModule = new JavadocDescriptionModule();
+        PresentationHintModule presentationHintModule = new PresentationHintModule();
         SchemaGeneratorConfigBuilder configBuilder = new SchemaGeneratorConfigBuilder(SchemaVersion.DRAFT_2020_12, OptionPreset.PLAIN_JSON);
         configBuilder.with(jakartaValidationModule);
         configBuilder.with(jacksonModule);
         configBuilder.with(javadocDescriptionModule);
+        configBuilder.with(presentationHintModule);
         configBuilder.with(new JsonAnySetterAsAdditionalPropsModule());
         configBuilder.with(new BlockTypeDefinitionModule());
         configBuilder.with(new NestedClassPrefixModule());

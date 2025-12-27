@@ -10,6 +10,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "./
 import { Button } from "./ui/button";
 import ModuleEditor from "./ModuleEditor";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
+import { customWidgetRegistry } from "@/lib/CustomWidgetRegistry";
 import type { Path, Area, ModuleType, JsonSchema } from "@/types/types";
 
 interface FieldRendererProps {
@@ -37,6 +38,18 @@ const FieldRenderer = ({ fieldKey, schema, rootSchema, pathInData, onAddBlock }:
     const type = resolvedSch?.type || "string";
     const name = pathInData.join(".");
     const title = String(fieldKey);
+
+    // Extract presentation hints from schema
+    const presentationWidget = resolvedSch?.["x-presentation-widget"] as string | undefined;
+    const placeholder = resolvedSch?.["x-presentation-placeholder"] as string | undefined;
+    const helpText = resolvedSch?.["x-presentation-help"] as string | undefined;
+    const dropdownOptions = resolvedSch?.["x-presentation-dropdown-options"] as string[] | undefined;
+    const dropdownLabels = resolvedSch?.["x-presentation-dropdown-labels"] as string[] | undefined;
+    const monacoLanguage = resolvedSch?.["x-presentation-monaco-language"] as string | undefined;
+    const customComponent = resolvedSch?.["x-presentation-custom-component"] as string | undefined;
+    const readOnly = resolvedSch?.["x-presentation-readonly"] as boolean | undefined;
+    const validation = resolvedSch?.["x-presentation-validation"] as Record<string, unknown> | undefined;
+    const customProps = resolvedSch?.["x-presentation-custom-props"] as Record<string, unknown> | undefined;
 
     if (type === "array" && resolvedSch.items) {
         const itemsSchema = resolveSchema(resolvedSch.items as JsonSchema, rootSchema);
@@ -183,27 +196,35 @@ const FieldRenderer = ({ fieldKey, schema, rootSchema, pathInData, onAddBlock }:
 
     if (type === "boolean") {
         return (
-            <label key={name} className="inline-flex items-center space-x-2">
-                <Controller
-                    control={control}
-                    name={name}
-                    render={({ field }) => (
-                        <input
-                            type="checkbox"
-                            {...field}
-                            checked={Boolean(field.value)}
-                            onChange={(e) => field.onChange(e.target.checked)}
-                        />
-                    )}
-                />
-                <span>{capitalize(title)}</span>
-            </label>
+            <div key={name} className="space-y-1">
+                <label className="inline-flex items-center space-x-2">
+                    <Controller
+                        control={control}
+                        name={name}
+                        render={({ field }) => (
+                            <input
+                                type="checkbox"
+                                {...field}
+                                checked={Boolean(field.value)}
+                                onChange={(e) => field.onChange(e.target.checked)}
+                                disabled={readOnly}
+                                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                            />
+                        )}
+                    />
+                    <span className="text-sm font-medium">{capitalize(title)}</span>
+                </label>
+                {helpText && <p className="text-xs text-gray-500 ml-6">{helpText}</p>}
+            </div>
         );
     }
 
     if (type === "number") {
+        const min = validation?.min as number | undefined ?? resolvedSch.minimum as number | undefined;
+        const max = validation?.max as number | undefined ?? resolvedSch.maximum as number | undefined;
+        
         return (
-            <div key={name}>
+            <div key={name} className="space-y-1">
                 <label className="block text-sm font-medium">{capitalize(title)}</label>
                 <Controller
                     control={control}
@@ -212,43 +233,141 @@ const FieldRenderer = ({ fieldKey, schema, rootSchema, pathInData, onAddBlock }:
                         <Input
                             {...field}
                             type="number"
+                            placeholder={placeholder}
+                            min={min}
+                            max={max}
+                            disabled={readOnly}
                             onChange={(e) => field.onChange(parseFloat(e.target.value))}
-                            value={field.value}
+                            value={field.value ?? ""}
                         />
                     )}
                 />
+                {helpText && <p className="text-xs text-gray-500">{helpText}</p>}
             </div>
         );
     }
 
-    if (type === "string" && resolvedSch.enum) {
+    // Handle dropdowns - either from presentation hint or enum
+    if (presentationWidget === "dropdown" || (type === "string" && resolvedSch.enum)) {
+        const options = dropdownOptions || (resolvedSch.enum as string[]) || [];
+        const labels = dropdownLabels || options;
+        
         return (
-            <div key={name}>
+            <div key={name} className="space-y-1">
                 <label className="block text-sm font-medium">{capitalize(title)}</label>
                 <Controller
                     control={control}
                     name={name}
                     render={({ field }) => (
-                        <Select value={field.value || ""} onValueChange={(value) => field.onChange(value)}>
+                        <Select 
+                            value={field.value || ""} 
+                            onValueChange={(value) => field.onChange(value)}
+                            disabled={readOnly}
+                        >
                             <SelectTrigger className="w-full">
-                                <SelectValue placeholder={`Select ${capitalize(title)}`} />
+                                <SelectValue placeholder={placeholder || `Select ${capitalize(title)}`} />
                             </SelectTrigger>
                             <SelectContent>
-                                {(resolvedSch.enum as string[]).map((enumValue: string) => (
-                                    <SelectItem key={enumValue} value={enumValue}>
-                                        {capitalize(enumValue)}
+                                {options.map((option: string, idx: number) => (
+                                    <SelectItem key={option} value={option}>
+                                        {labels[idx] || capitalize(option)}
                                     </SelectItem>
                                 ))}
                             </SelectContent>
                         </Select>
                     )}
                 />
+                {helpText && <p className="text-xs text-gray-500">{helpText}</p>}
             </div>
         );
     }
 
+    // Handle custom widgets
+    if (presentationWidget === "custom" && customComponent) {
+        const CustomWidget = customWidgetRegistry.get(customComponent);
+        
+        if (CustomWidget) {
+            return (
+                <div key={name} className="space-y-1">
+                    <label className="block text-sm font-medium">{capitalize(title)}</label>
+                    <Controller
+                        control={control}
+                        name={name}
+                        render={({ field }) => (
+                            <CustomWidget
+                                name={name}
+                                value={field.value}
+                                onChange={field.onChange}
+                                control={control}
+                                schema={resolvedSch}
+                                customProps={customProps}
+                                label={capitalize(title)}
+                            />
+                        )}
+                    />
+                    {helpText && <p className="text-xs text-gray-500">{helpText}</p>}
+                </div>
+            );
+        } else {
+            console.warn(`Custom widget "${customComponent}" not found in registry`);
+        }
+    }
+
+    // Handle textarea widget
+    if (presentationWidget === "textarea") {
+        return (
+            <div key={name} className="space-y-1">
+                <label className="block text-sm font-medium">{capitalize(title)}</label>
+                <Controller
+                    control={control}
+                    name={name}
+                    render={({ field }) => (
+                        <Textarea
+                            {...field}
+                            placeholder={placeholder}
+                            disabled={readOnly}
+                            rows={4}
+                            value={field.value || ""}
+                        />
+                    )}
+                />
+                {helpText && <p className="text-xs text-gray-500">{helpText}</p>}
+            </div>
+        );
+    }
+
+    // Handle Monaco editor widget
+    if (presentationWidget === "monaco_editor" && monacoLanguage) {
+        // TODO: Implement Monaco editor integration
+        // For now, fall back to textarea with a note
+        return (
+            <div key={name} className="space-y-1">
+                <label className="block text-sm font-medium">
+                    {capitalize(title)}
+                    <span className="ml-2 text-xs text-gray-400">(Monaco editor - coming soon, using textarea)</span>
+                </label>
+                <Controller
+                    control={control}
+                    name={name}
+                    render={({ field }) => (
+                        <Textarea
+                            {...field}
+                            placeholder={placeholder || `Enter ${monacoLanguage} code`}
+                            disabled={readOnly}
+                            rows={10}
+                            value={field.value || ""}
+                            className="font-mono text-sm"
+                        />
+                    )}
+                />
+                {helpText && <p className="text-xs text-gray-500">{helpText}</p>}
+            </div>
+        );
+    }
+
+    // Default string input (fallback)
     return (
-        <div key={name}>
+        <div key={name} className="space-y-1">
             <label className="block text-sm font-medium">{capitalize(title)}</label>
             <Controller
                 control={control}
@@ -257,11 +376,14 @@ const FieldRenderer = ({ fieldKey, schema, rootSchema, pathInData, onAddBlock }:
                     <Input
                         {...field}
                         type="text"
+                        placeholder={placeholder}
+                        disabled={readOnly}
                         onChange={(e) => field.onChange(e.target.value)}
                         value={field.value || ""}
                     />
                 )}
             />
+            {helpText && <p className="text-xs text-gray-500">{helpText}</p>}
         </div>
     );
 };

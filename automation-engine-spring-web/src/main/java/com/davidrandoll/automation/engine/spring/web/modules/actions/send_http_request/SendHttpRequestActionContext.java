@@ -5,6 +5,7 @@ import com.davidrandoll.automation.engine.spring.web.events.AEHttpRequestEvent;
 import com.davidrandoll.automation.engine.spring.web.events.AEHttpResponseEvent;
 import com.davidrandoll.automation.engine.spring.web.jackson.flexible_multi_value_map.FlexibleMultiValueMap;
 import com.davidrandoll.automation.engine.spring.modules.triggers.always_true.AlwaysTrueTrigger;
+import com.davidrandoll.automation.spi.annotation.PresentationHint;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Data;
@@ -44,9 +45,16 @@ public class SendHttpRequestActionContext implements IActionContext {
     private String description;
 
     /** Target URL for the HTTP request. Supports template expressions */
+    @PresentationHint(
+        placeholder = "https://api.example.com/endpoint",
+        helpText = "Full URL including protocol. Supports template expressions like {{ event.userId }}"
+    )
     private String url;
 
     /** HTTP method to use (GET, POST, PUT, DELETE, etc.) */
+    @PresentationHint(
+        helpText = "HTTP method: GET (retrieve), POST (create), PUT (update), DELETE (remove), PATCH (partial update)"
+    )
     private HttpMethod method;
 
     /** HTTP headers to include in the request */
@@ -55,12 +63,24 @@ public class SendHttpRequestActionContext implements IActionContext {
     private HttpHeaders headers;
 
     /** Content-Type for the request body. Defaults to application/json */
+    @PresentationHint(
+        helpText = "MIME type of the request body (e.g., application/json, application/xml, multipart/form-data)"
+    )
     private MediaType contentType = MediaType.APPLICATION_JSON;
 
     /** Request body content. Can be a JSON object, string, or form data depending on contentType */
+    @PresentationHint(
+        widget = PresentationHint.Widget.TEXTAREA,
+        placeholder = "{\"key\": \"value\"}",
+        helpText = "Request payload. Can be JSON, XML, or form data based on Content-Type. Supports template expressions."
+    )
     private Object body;
 
     /** Variable name to store the HTTP response. If not specified, response is not stored */
+    @PresentationHint(
+        placeholder = "responseData",
+        helpText = "Variable name to store the response for later use in the automation"
+    )
     private String storeToVariable;
 
     /**

@@ -9,6 +9,9 @@ import './styles.css'
 import reportWebVitals from './reportWebVitals.ts'
 import { getConfigValue } from './lib/agent.ts'
 
+// Register custom widgets
+import './components/widgets/ColorPickerWidget'
+
 const contextPath = (getConfigValue("contextPath") + getConfigValue("uiPath")).replace(/\/+$/, '')
 // Create a new router instance
 const router = createRouter({
