@@ -6,6 +6,7 @@ import com.davidrandoll.automation.engine.core.result.AutomationResult;
 import com.davidrandoll.automation.engine.orchestrator.interceptors.IAutomationExecutionChain;
 import com.davidrandoll.automation.engine.orchestrator.interceptors.IAutomationExecutionInterceptor;
 import com.davidrandoll.automation.engine.tracing.ExecutionTrace;
+import com.davidrandoll.automation.engine.tracing.ITracingPublisher;
 import com.davidrandoll.automation.engine.tracing.TraceContext;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class TracingExecutionInterceptor implements IAutomationExecutionInterceptor {
     private final boolean tracingEnabled;
+    private final ITracingPublisher publisher;
 
     @Override
     public AutomationResult intercept(Automation automation, EventContext context, IAutomationExecutionChain chain) {
@@ -41,26 +43,33 @@ public class TracingExecutionInterceptor implements IAutomationExecutionIntercep
 
         // Initialize trace context and store in event context metadata
         TraceContext traceContext = TraceContext.getOrCreate(context, automation.getAlias());
+        TraceContext.setThreadContext(traceContext);
 
-        // Proceed with execution (all component interceptors will add their traces)
-        AutomationResult result = chain.proceed(automation, context);
+        try {
+            // Proceed with execution (all component interceptors will add their traces)
+            AutomationResult result = chain.proceed(automation, context);
 
-        // Complete the trace and get the final execution trace
-        ExecutionTrace executionTrace = traceContext.complete();
+            // Complete the trace and get the final execution trace
+            ExecutionTrace executionTrace = traceContext.complete();
 
-        log.debug("Trace capture completed for automation: {}, executionId: {}",
-                automation.getAlias(), executionTrace.getExecutionId());
+            log.debug("Trace capture completed for automation: {}, executionId: {}",
+                    automation.getAlias(), executionTrace.getExecutionId());
 
-        // Create new result with trace attached in additional fields
-        Map<String, Object> additionalFields = new HashMap<>(result.getAdditionalFields());
-        additionalFields.put(ExecutionTrace.TRACE_KEY, executionTrace);
+            // Create new result with trace attached in additional fields
+            Map<String, Object> additionalFields = new HashMap<>(result.getAdditionalFields());
+            additionalFields.put(ExecutionTrace.TRACE_KEY, executionTrace);
 
-        return AutomationResult.executedWithAdditionalFields(
-                result.getAutomation(),
-                result.getContext(),
-                result.orElse(null),
-                result.isExecuted(),
-                additionalFields
-        );
+            publisher.publish(executionTrace);
+
+            return AutomationResult.executedWithAdditionalFields(
+                    result.getAutomation(),
+                    result.getContext(),
+                    result.orElse(null),
+                    result.isExecuted(),
+                    additionalFields
+            );
+        } finally {
+            TraceContext.clearThreadContext();
+        }
     }
 }

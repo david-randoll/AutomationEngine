@@ -1,9 +1,13 @@
 package com.davidrandoll.automation.engine.tracing;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Base class for all trace entries.
@@ -48,4 +52,10 @@ public abstract class BaseTraceEntry {
      * Nested children entries for composite operations.
      */
     private TraceChildren children;
+
+    /**
+     * Captured log messages produced during execution of this component.
+     */
+    @Builder.Default
+    private List<LogEntry> logs = new ArrayList<>();
 }

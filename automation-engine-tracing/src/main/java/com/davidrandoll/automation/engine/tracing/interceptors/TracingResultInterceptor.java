@@ -4,6 +4,7 @@ import com.davidrandoll.automation.engine.core.events.EventContext;
 import com.davidrandoll.automation.engine.core.result.ResultContext;
 import com.davidrandoll.automation.engine.core.result.interceptors.IResultChain;
 import com.davidrandoll.automation.engine.core.result.interceptors.IResultInterceptor;
+import com.davidrandoll.automation.engine.tracing.LogEntry;
 import com.davidrandoll.automation.engine.tracing.ResultTraceEntry;
 import com.davidrandoll.automation.engine.tracing.TraceChildren;
 import com.davidrandoll.automation.engine.tracing.TraceContext;
@@ -14,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static com.davidrandoll.automation.engine.tracing.utils.TraceUtils.filterTraceData;
@@ -43,6 +45,7 @@ public class TracingResultInterceptor implements IResultInterceptor {
 
         // Enter nested scope for child tracing
         TraceChildren children = traceContext.enterNestedScope();
+        traceContext.startLogCapture();
 
         Object result;
         try {
@@ -53,6 +56,7 @@ public class TracingResultInterceptor implements IResultInterceptor {
             traceContext.exitNestedScope();
         }
 
+        List<LogEntry> logs = traceContext.stopLogCapture();
         long finishedAt = System.currentTimeMillis();
 
         // Capture after snapshot
@@ -68,6 +72,7 @@ public class TracingResultInterceptor implements IResultInterceptor {
                 .after(afterSnapshot)
                 .result(result)
                 .children(hasAnyChildren(children) ? children : null)
+                .logs(logs)
                 .build();
 
         traceContext.setResult(entry);

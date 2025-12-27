@@ -6,7 +6,14 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import TraceCanvas from "./TraceCanvas";
 import { playgroundApi } from "@/lib/playground-api";
 import type { ExecutionTrace, AutomationFormat } from "@/types/trace";
-import { FaPlay, FaEye, FaCopy, FaCheck, FaExclamationTriangle, FaCode, FaGripVertical } from "react-icons/fa";
+import { FaPlay, FaEye, FaCopy, FaCheck, FaExclamationTriangle, FaCode, FaGripVertical, FaListAlt } from "react-icons/fa";
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
+import LogsViewer from "./LogsViewer";
 
 const DEFAULT_AUTOMATION = `alias: Hello World Example
 # Tracing is auto-enabled for playground
@@ -86,6 +93,7 @@ export default function PlaygroundPage({ className }: PlaygroundPageProps) {
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const [copied, setCopied] = useState(false);
+    const [logsModalOpen, setLogsModalOpen] = useState(false);
     const [leftPanelWidth, setLeftPanelWidth] = useState(450);
     const [rightPanelWidth, setRightPanelWidth] = useState(350);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -256,24 +264,37 @@ export default function PlaygroundPage({ className }: PlaygroundPageProps) {
                     </div>
                 </div>
                 {hasTrace && (
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={copyTrace}
-                        className="gap-2"
-                    >
-                        {copied ? (
-                            <>
-                                <FaCheck className="w-3 h-3" />
-                                Copied
-                            </>
-                        ) : (
-                            <>
-                                <FaCopy className="w-3 h-3" />
-                                Copy Trace
-                            </>
+                    <div className="flex gap-2">
+                        {trace.logs && trace.logs.length > 0 && (
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setLogsModalOpen(true)}
+                                className="gap-2"
+                            >
+                                <FaListAlt className="w-3 h-3" />
+                                View Logs ({trace.logs.length})
+                            </Button>
                         )}
-                    </Button>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={copyTrace}
+                            className="gap-2"
+                        >
+                            {copied ? (
+                                <>
+                                    <FaCheck className="w-3 h-3" />
+                                    Copied
+                                </>
+                            ) : (
+                                <>
+                                    <FaCopy className="w-3 h-3" />
+                                    Copy Trace
+                                </>
+                            )}
+                        </Button>
+                    </div>
                 )}
             </div>
 
@@ -501,6 +522,23 @@ export default function PlaygroundPage({ className }: PlaygroundPageProps) {
                     </div>
                 </div>
             </div>
+
+            {/* Logs Modal */}
+            <Dialog open={logsModalOpen} onOpenChange={setLogsModalOpen}>
+                <DialogContent className="max-w-[90vw] w-[90vw] sm:max-w-none max-h-[90vh] h-[90vh] flex flex-col p-0 gap-0">
+                    <DialogHeader className="shrink-0 px-6 pt-6 pb-4 border-b">
+                        <DialogTitle className="text-lg">All Execution Logs</DialogTitle>
+                    </DialogHeader>
+                    <div className="flex-1 min-h-0 px-6 pb-6 pt-4">
+                        <LogsViewer 
+                            logs={trace?.logs} 
+                            title=""
+                            maxHeight="100%"
+                            className="h-full"
+                        />
+                    </div>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }
