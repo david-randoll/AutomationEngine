@@ -9,7 +9,8 @@ import java.util.Map;
 @UtilityClass
 public class TraceUtils {
     /**
-     * Filters out internal keys (starting with __) from context data for the snapshot.
+     * Filters out internal keys (starting with __) from context data for the
+     * snapshot.
      */
     public static Map<String, Object> filterTraceData(Map<String, Object> data) {
         if (data == null) {
@@ -32,9 +33,9 @@ public class TraceUtils {
             return false;
         }
         return !children.getVariables().isEmpty()
-               || !children.getTriggers().isEmpty()
-               || !children.getConditions().isEmpty()
-               || !children.getActions().isEmpty()
-               || children.getResult() != null;
+                || !children.getTriggers().isEmpty()
+                || !children.getConditions().isEmpty()
+                || !children.getActions().isEmpty()
+                || children.getResult() != null;
     }
 }

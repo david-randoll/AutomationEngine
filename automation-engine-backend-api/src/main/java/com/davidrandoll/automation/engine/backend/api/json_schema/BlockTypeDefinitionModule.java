@@ -8,7 +8,7 @@ import com.davidrandoll.automation.engine.creator.variables.VariableDefinition;
 import com.github.victools.jsonschema.generator.Module;
 import com.github.victools.jsonschema.generator.SchemaGeneratorConfigBuilder;
 
-public class BlockTypeDefinitionModule implements Module {
+class BlockTypeDefinitionModule implements Module {
     @Override
     public void applyToConfigBuilder(SchemaGeneratorConfigBuilder builder) {
         builder.forTypesInGeneral()

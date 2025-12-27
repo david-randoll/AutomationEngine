@@ -8,7 +8,7 @@ import com.davidrandoll.automation.engine.core.events.EventContext;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class ActionChain implements IActionChain {
+class ActionChain implements IActionChain {
     private final IActionChain delegate;
     private final IAction action;
 

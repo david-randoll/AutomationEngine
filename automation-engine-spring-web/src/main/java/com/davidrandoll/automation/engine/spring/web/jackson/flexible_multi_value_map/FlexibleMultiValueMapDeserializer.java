@@ -9,7 +9,7 @@ import org.springframework.util.MultiValueMap;
 
 import java.io.IOException;
 
-public class FlexibleMultiValueMapDeserializer extends JsonDeserializer<MultiValueMap<String, String>> {
+class FlexibleMultiValueMapDeserializer extends JsonDeserializer<MultiValueMap<String, String>> {
 
     @Override
     public MultiValueMap<String, String> deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {

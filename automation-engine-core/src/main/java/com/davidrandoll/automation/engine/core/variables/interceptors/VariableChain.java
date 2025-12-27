@@ -6,7 +6,7 @@ import com.davidrandoll.automation.engine.core.variables.VariableContext;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class VariableChain implements IVariableChain {
+class VariableChain implements IVariableChain {
     private final IVariableChain delegate;
     private final IVariable variable;
 

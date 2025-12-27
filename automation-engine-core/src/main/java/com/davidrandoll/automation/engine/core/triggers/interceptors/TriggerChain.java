@@ -6,7 +6,7 @@ import com.davidrandoll.automation.engine.core.triggers.TriggerContext;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class TriggerChain implements ITriggerChain {
+class TriggerChain implements ITriggerChain {
     private final ITriggerChain delegate;
     private final ITrigger trigger;
 

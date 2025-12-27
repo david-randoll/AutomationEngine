@@ -8,7 +8,8 @@ import java.lang.reflect.Type;
 @UtilityClass
 public class GenericTypeResolver {
     public static Class<?> getGenericParameterClass(Class<?> clazz) {
-        if (clazz == null) throw new IllegalArgumentException("Class cannot be null");
+        if (clazz == null)
+            throw new IllegalArgumentException("Class cannot be null");
 
         try {
             Type superClass = clazz.getGenericSuperclass();

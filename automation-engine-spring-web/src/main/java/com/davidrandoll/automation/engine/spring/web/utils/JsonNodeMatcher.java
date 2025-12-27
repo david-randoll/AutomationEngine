@@ -20,8 +20,10 @@ public class JsonNodeMatcher {
     }
 
     private static boolean matchesNode(JsonNode expected, JsonNode actual) {
-        if (isNull(expected)) return true;
-        if (isNull(actual)) return false;
+        if (isNull(expected))
+            return true;
+        if (isNull(actual))
+            return false;
 
         if (expected.isObject()) {
             return matchesObject(expected, actual);
@@ -51,17 +53,20 @@ public class JsonNodeMatcher {
     }
 
     private static boolean matchesArray(JsonNode expected, JsonNode actual) {
-        if (expected.isEmpty() && actual.isEmpty()) return true;
+        if (expected.isEmpty() && actual.isEmpty())
+            return true;
         if (!actual.isArray()) {
             for (JsonNode expectedElement : expected) {
-                if (matchesNode(expectedElement, actual)) return true;
+                if (matchesNode(expectedElement, actual))
+                    return true;
             }
             return false;
         }
 
         for (JsonNode expectedElement : expected) {
             for (JsonNode actualElement : actual) {
-                if (matchesNode(expectedElement, actualElement)) return true;
+                if (matchesNode(expectedElement, actualElement))
+                    return true;
             }
         }
         return false;
@@ -81,14 +86,16 @@ public class JsonNodeMatcher {
     }
 
     private static JsonNode findRecursive(JsonNode current, String[] parts, int index) {
-        if (current == null || index >= parts.length) return current;
+        if (current == null || index >= parts.length)
+            return current;
 
         String key = parts[index].trim();
 
         if ("*".equals(key)) {
             for (Map.Entry<String, JsonNode> entry : iterable(current.fields())) {
                 JsonNode result = findRecursive(entry.getValue(), parts, index + 1);
-                if (result != null) return result;
+                if (result != null)
+                    return result;
             }
             return null;
         } else {
@@ -108,7 +115,8 @@ public class JsonNodeMatcher {
         try {
             Pattern pattern = Pattern.compile(key, Pattern.CASE_INSENSITIVE);
             for (Map.Entry<String, JsonNode> field : iterable(node.fields())) {
-                if (pattern.matcher(field.getKey()).matches()) return field.getValue();
+                if (pattern.matcher(field.getKey()).matches())
+                    return field.getValue();
             }
         } catch (PatternSyntaxException e) {
             throw new AutomationEngineInvalidRegexException(key, e);
@@ -116,7 +124,6 @@ public class JsonNodeMatcher {
 
         return null;
     }
-
 
     static <T> Iterable<T> iterable(Iterator<T> iterator) {
         return () -> iterator;

@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class FlexibleMapObjectDeserializer extends JsonDeserializer<Map<String, Object>> {
+class FlexibleMapObjectDeserializer extends JsonDeserializer<Map<String, Object>> {
 
     @Override
     public Map<String, Object> deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {

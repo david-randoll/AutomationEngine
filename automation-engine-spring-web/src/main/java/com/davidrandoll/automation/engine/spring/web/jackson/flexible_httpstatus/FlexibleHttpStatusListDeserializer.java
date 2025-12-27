@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
-public class FlexibleHttpStatusListDeserializer extends JsonDeserializer<List<HttpStatus>> {
+class FlexibleHttpStatusListDeserializer extends JsonDeserializer<List<HttpStatus>> {
 
     @Override
     public List<HttpStatus> deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {

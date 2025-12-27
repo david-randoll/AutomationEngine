@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FlexibleHttpMethodListDeserializer extends JsonDeserializer<List<HttpMethodEnum>> {
+class FlexibleHttpMethodListDeserializer extends JsonDeserializer<List<HttpMethodEnum>> {
 
     @Override
     public List<HttpMethodEnum> deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {

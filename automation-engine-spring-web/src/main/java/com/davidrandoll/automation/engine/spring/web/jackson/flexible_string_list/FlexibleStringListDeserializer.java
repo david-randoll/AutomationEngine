@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @NoArgsConstructor
-public class FlexibleStringListDeserializer extends JsonDeserializer<List<String>> implements ContextualDeserializer {
+class FlexibleStringListDeserializer extends JsonDeserializer<List<String>> implements ContextualDeserializer {
 
     @Override
     public List<String> deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {

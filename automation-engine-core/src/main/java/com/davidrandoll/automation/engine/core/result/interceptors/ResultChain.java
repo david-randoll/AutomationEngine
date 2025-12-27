@@ -6,7 +6,7 @@ import com.davidrandoll.automation.engine.core.result.ResultContext;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class ResultChain implements IResultChain {
+class ResultChain implements IResultChain {
     private final IResultChain delegate;
     private final IResult result;
 
