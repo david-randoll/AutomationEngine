@@ -12,24 +12,13 @@ class JavadocDescriptionModule implements Module {
     @Override
     public void applyToConfigBuilder(SchemaGeneratorConfigBuilder builder) {
         builder.forFields()
-                .withDescriptionResolver(field -> {
+                .withInstanceAttributeOverride((attributes, field, context) -> {
                     // Check for @SchemaDescription annotation
                     SchemaDescription annotation = field.getAnnotation(SchemaDescription.class);
+                    if (attributes.get("x-presentation-help") != null) return;
                     if (annotation != null) {
-                        return annotation.value();
+                        attributes.put("x-presentation-help", annotation.value());
                     }
-                    return null;
-                });
-
-        builder.forTypesInGeneral()
-                .withDescriptionResolver(scope -> {
-                    // Check for @SchemaDescription annotation on types
-                    SchemaDescription annotation = scope.getType().getErasedType().getAnnotation(SchemaDescription.class);
-                    if (annotation != null) {
-                        return annotation.value();
-                    }
-                    return null;
                 });
     }
 }
-
