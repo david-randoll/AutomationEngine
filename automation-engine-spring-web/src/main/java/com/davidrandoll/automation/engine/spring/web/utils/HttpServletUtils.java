@@ -12,13 +12,15 @@ import java.io.IOException;
 @UtilityClass
 public class HttpServletUtils {
     public static String normalizedUrl(String url) {
-        if (url == null) return null;
+        if (url == null)
+            return null;
         return url.replaceAll("/$", "");
     }
 
     public static JsonNode toJsonNode(String contentType, Object body, ObjectMapper objectMapper) {
         var factory = JsonNodeFactory.instance;
-        if (body == null) return factory.nullNode();
+        if (body == null)
+            return factory.nullNode();
         try {
             if (contentType != null && contentType.contains("json")) {
                 return objectMapper.readTree(body.toString());

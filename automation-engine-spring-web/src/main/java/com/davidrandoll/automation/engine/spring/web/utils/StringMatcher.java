@@ -48,8 +48,10 @@ public class StringMatcher {
             return matchesCondition(ctx, actual.asText(), mapper);
         }
 
-        if (isNull(expected)) return true;
-        if (isNull(actual)) return false;
+        if (isNull(expected))
+            return true;
+        if (isNull(actual))
+            return false;
 
         if (expected.isObject()) {
             return matchesJsonObject(expected, actual, mapper);
@@ -73,16 +75,19 @@ public class StringMatcher {
     }
 
     private static boolean matchesJsonArray(JsonNode expected, JsonNode actual, ObjectMapper mapper) {
-        if (expected.isEmpty() && actual.isEmpty()) return true;
+        if (expected.isEmpty() && actual.isEmpty())
+            return true;
         if (!actual.isArray()) {
             for (JsonNode expectedElement : expected) {
-                if (matchesNode(expectedElement, actual, mapper)) return true;
+                if (matchesNode(expectedElement, actual, mapper))
+                    return true;
             }
             return false;
         }
         for (JsonNode expectedElement : expected) {
             for (JsonNode actualElement : actual) {
-                if (matchesNode(expectedElement, actualElement, mapper)) return true;
+                if (matchesNode(expectedElement, actualElement, mapper))
+                    return true;
             }
         }
         return false;
@@ -113,7 +118,8 @@ public class StringMatcher {
     }
 
     private static boolean isLikelyMatchContext(ObjectMapper mapper, JsonNode node) {
-        if (!node.isObject()) return false;
+        if (!node.isObject())
+            return false;
         var ctx = mapper.convertValue(node, MatchContext.class);
         return ctx.hasAnyOperations();
     }

@@ -7,7 +7,7 @@ import com.github.victools.jsonschema.generator.SchemaGeneratorConfigBuilder;
  * Custom Victools module to extract field descriptions from @SchemaDescription annotation.
  * This module also falls back to extracting Javadoc comments at compile time if available.
  */
-public class JavadocDescriptionModule implements Module {
+class JavadocDescriptionModule implements Module {
 
     @Override
     public void applyToConfigBuilder(SchemaGeneratorConfigBuilder builder) {

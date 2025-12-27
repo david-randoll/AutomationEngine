@@ -6,7 +6,7 @@ import com.davidrandoll.automation.engine.core.events.EventContext;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class ConditionChain implements IConditionChain {
+class ConditionChain implements IConditionChain {
     private final IConditionChain delegate;
     private final ICondition condition;
 

@@ -11,7 +11,7 @@ import com.github.victools.jsonschema.generator.SchemaGeneratorConfigBuilder;
  * - Regular class: "MyClass" becomes "com.example.MyClass"
  * - Nested class: "IfThenBlock" becomes "com.example.IfThenElseActionContext.IfThenBlock"
  */
-public class NestedClassPrefixModule implements Module {
+class NestedClassPrefixModule implements Module {
     @Override
     public void applyToConfigBuilder(SchemaGeneratorConfigBuilder builder) {
         builder.forTypesInGeneral()
