@@ -34,4 +34,9 @@ public class LogEntry {
      * Timestamp when the log was created
      */
     private Instant timestamp;
+
+    /**
+     * The log level (ERROR, WARN, INFO, DEBUG, TRACE)
+     */
+    private String level;
 }

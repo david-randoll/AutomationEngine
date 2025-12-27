@@ -18,6 +18,7 @@ public class TracingAppender extends AppenderBase<ILoggingEvent> {
                 .arguments(event.getArgumentArray())
                 .formattedMessage(event.getFormattedMessage())
                 .timestamp(Instant.ofEpochMilli(event.getTimeStamp()))
+                .level(event.getLevel().toString())
                 .build();
         TraceContext.recordLog(logEntry);
     }

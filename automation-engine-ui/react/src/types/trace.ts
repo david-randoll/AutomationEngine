@@ -15,6 +15,8 @@ export interface LogEntry {
   formattedMessage?: string;
   /** Timestamp when the log was created (ISO string) */
   timestamp?: string;
+  /** The log level (ERROR, WARN, INFO, DEBUG, TRACE) */
+  level?: string;
 }
 
 /**
