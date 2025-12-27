@@ -4,6 +4,22 @@
  */
 
 /**
+ * Structured log entry with detailed information.
+ */
+export interface LogEntry {
+  /** The log message template (before argument substitution) */
+  message?: string;
+  /** Arguments passed to the logger */
+  arguments?: unknown[];
+  /** The fully formatted log message */
+  formattedMessage?: string;
+  /** Timestamp when the log was created (ISO string) */
+  timestamp?: string;
+  /** The log level (ERROR, WARN, INFO, DEBUG, TRACE) */
+  level?: string;
+}
+
+/**
  * Snapshot of state at a point in time during execution.
  */
 export interface TraceSnapshot {
@@ -43,6 +59,8 @@ export interface BaseTraceEntry {
   after?: TraceSnapshot;
   /** Nested children entries for composite operations */
   children?: TraceChildren;
+  /** Logs captured during this component's execution */
+  logs?: LogEntry[];
 }
 
 /**
@@ -108,6 +126,8 @@ export interface ExecutionTrace {
   finishedAt?: number;
   /** The trace data containing all component executions */
   trace?: TraceData;
+  /** All logs captured during the entire automation execution (aggregated from all components) */
+  logs?: LogEntry[];
 }
 
 /**

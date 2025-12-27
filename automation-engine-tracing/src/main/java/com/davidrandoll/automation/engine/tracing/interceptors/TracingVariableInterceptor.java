@@ -1,6 +1,7 @@
 package com.davidrandoll.automation.engine.tracing.interceptors;
 
 import com.davidrandoll.automation.engine.core.events.EventContext;
+import com.davidrandoll.automation.engine.tracing.LogEntry;
 import com.davidrandoll.automation.engine.tracing.TraceChildren;
 import com.davidrandoll.automation.engine.tracing.TraceContext;
 import com.davidrandoll.automation.engine.tracing.TraceSnapshot;
@@ -9,6 +10,8 @@ import com.davidrandoll.automation.engine.core.variables.VariableContext;
 import com.davidrandoll.automation.engine.core.variables.interceptors.IVariableChain;
 import com.davidrandoll.automation.engine.core.variables.interceptors.IVariableInterceptor;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.List;
 
 import static com.davidrandoll.automation.engine.tracing.utils.TraceUtils.filterTraceData;
 import static com.davidrandoll.automation.engine.tracing.utils.TraceUtils.hasAnyChildren;
@@ -36,6 +39,7 @@ public class TracingVariableInterceptor implements IVariableInterceptor {
 
         // Enter nested scope for child tracing
         TraceChildren children = traceContext.enterNestedScope();
+        traceContext.startLogCapture();
 
         try {
             // Execute the variable resolution
@@ -45,6 +49,7 @@ public class TracingVariableInterceptor implements IVariableInterceptor {
             traceContext.exitNestedScope();
         }
 
+        List<LogEntry> logs = traceContext.stopLogCapture();
         long finishedAt = System.currentTimeMillis();
 
         // Capture after snapshot
@@ -63,6 +68,7 @@ public class TracingVariableInterceptor implements IVariableInterceptor {
                 .before(beforeSnapshot)
                 .after(afterSnapshot)
                 .children(hasAnyChildren(children) ? children : null)
+                .logs(logs)
                 .build();
 
         traceContext.addVariable(entry);

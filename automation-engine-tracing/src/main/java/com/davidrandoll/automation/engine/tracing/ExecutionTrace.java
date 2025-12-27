@@ -46,6 +46,12 @@ public class ExecutionTrace {
     private TraceData trace = new TraceData();
 
     /**
+     * All logs captured during the entire automation execution (aggregated from all components).
+     */
+    @Builder.Default
+    private List<LogEntry> logs = new ArrayList<>();
+
+    /**
      * Inner class containing the categorized trace entries.
      */
     @Data

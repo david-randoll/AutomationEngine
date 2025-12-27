@@ -5,10 +5,13 @@ import com.davidrandoll.automation.engine.core.actions.interceptors.IActionChain
 import com.davidrandoll.automation.engine.core.actions.interceptors.IActionInterceptor;
 import com.davidrandoll.automation.engine.core.events.EventContext;
 import com.davidrandoll.automation.engine.tracing.ActionTraceEntry;
+import com.davidrandoll.automation.engine.tracing.LogEntry;
 import com.davidrandoll.automation.engine.tracing.TraceChildren;
 import com.davidrandoll.automation.engine.tracing.TraceContext;
 import com.davidrandoll.automation.engine.tracing.TraceSnapshot;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.List;
 
 import static com.davidrandoll.automation.engine.tracing.utils.TraceUtils.filterTraceData;
 import static com.davidrandoll.automation.engine.tracing.utils.TraceUtils.hasAnyChildren;
@@ -42,6 +45,7 @@ public class TracingActionInterceptor implements IActionInterceptor {
         // Check if this action might have children (e.g., ifThenElse, forEachAction)
         // and enter nested scope for child tracing
         TraceChildren children = traceContext.enterNestedScope();
+        traceContext.startLogCapture();
 
         try {
             // Execute the action
@@ -51,6 +55,7 @@ public class TracingActionInterceptor implements IActionInterceptor {
             traceContext.exitNestedScope();
         }
 
+        List<LogEntry> logs = traceContext.stopLogCapture();
         long finishedAt = System.currentTimeMillis();
 
         // Capture after snapshot
@@ -69,6 +74,7 @@ public class TracingActionInterceptor implements IActionInterceptor {
                 .before(beforeSnapshot)
                 .after(afterSnapshot)
                 .children(hasAnyChildren(children) ? children : null)
+                .logs(logs)
                 .build();
 
         traceContext.addAction(entry);

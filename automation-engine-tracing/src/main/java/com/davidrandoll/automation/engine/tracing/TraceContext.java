@@ -2,18 +2,28 @@ package com.davidrandoll.automation.engine.tracing;
 
 import com.davidrandoll.automation.engine.core.events.EventContext;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Context holder for trace data during automation execution.
  * Stored in EventContext metadata to track trace entries hierarchically.
  * <p>
- * Uses a stack-based approach to handle nested children (e.g., ifThenElse actions
+ * Uses a stack-based approach to handle nested children (e.g., ifThenElse
+ * actions
  * that contain nested conditions and actions).
  * </p>
  */
 public class TraceContext {
+    /**
+     * ThreadLocal to store the TraceContext for the current thread.
+     * Used by TracingAppender to record logs.
+     */
+    private static final ThreadLocal<TraceContext> CURRENT = new ThreadLocal<>();
+
     /**
      * Key used to store TraceContext in EventContext metadata.
      */
@@ -27,9 +37,15 @@ public class TraceContext {
     /**
      * Stack of TraceChildren for handling nested operations.
      * The bottom of the stack is the root trace data (converted to TraceChildren).
-     * When entering a nested scope (e.g., inside ifThenElse), a new TraceChildren is pushed.
+     * When entering a nested scope (e.g., inside ifThenElse), a new TraceChildren
+     * is pushed.
      */
     private final Deque<TraceChildren> childrenStack = new LinkedList<>();
+
+    /**
+     * Stack of log buffers for handling nested operations.
+     */
+    private final Deque<List<LogEntry>> logBufferStack = new LinkedList<>();
 
     public TraceContext(String alias) {
         this.executionTrace = ExecutionTrace.builder()
@@ -38,6 +54,59 @@ public class TraceContext {
                 .build();
         // Initialize with root level (wrapped as TraceChildren for uniform handling)
         this.childrenStack.push(createRootTraceChildren());
+        // Start capturing logs at the trace level (for automation-level logs)
+        this.startLogCapture();
+    }
+
+    /**
+     * Sets the TraceContext for the current thread.
+     */
+    public static void setThreadContext(TraceContext context) {
+        CURRENT.set(context);
+    }
+
+    /**
+     * Clears the TraceContext for the current thread.
+     */
+    public static void clearThreadContext() {
+        CURRENT.remove();
+    }
+
+    /**
+     * Records a log message in the current scope.
+     */
+    public static void recordLog(LogEntry logEntry) {
+        TraceContext context = CURRENT.get();
+        if (context != null) {
+            context.addLogToCurrentScope(logEntry);
+        }
+    }
+
+    private void addLogToCurrentScope(LogEntry logEntry) {
+        if (!logBufferStack.isEmpty()) {
+            // Add to current component's buffer (top of stack)
+            logBufferStack.peek().add(logEntry);
+            
+            // ALSO add to trace-level buffer (bottom of stack) if we're in a component scope
+            if (logBufferStack.size() > 1) {
+                // Get the root trace-level buffer (peekLast gets bottom of Deque)
+                logBufferStack.peekLast().add(logEntry);
+            }
+        }
+    }
+
+    /**
+     * Starts capturing logs for a new component.
+     */
+    public void startLogCapture() {
+        logBufferStack.push(new ArrayList<>());
+    }
+
+    /**
+     * Stops capturing logs and returns the captured messages.
+     */
+    public List<LogEntry> stopLogCapture() {
+        return logBufferStack.isEmpty() ? Collections.emptyList() : logBufferStack.pop();
     }
 
     /**
@@ -65,7 +134,8 @@ public class TraceContext {
      */
     public static TraceContext get(EventContext eventContext) {
         Object existing = eventContext.getMetadata().get(TRACE_CONTEXT_KEY);
-        if (existing instanceof TraceContext traceContext) return traceContext;
+        if (existing instanceof TraceContext traceContext)
+            return traceContext;
         return null;
     }
 
@@ -145,6 +215,11 @@ public class TraceContext {
      */
     public ExecutionTrace complete() {
         executionTrace.setFinishedAt(System.currentTimeMillis());
+
+        // Stop trace-level log capture - all logs (trace + component) are already in this buffer
+        List<LogEntry> allLogs = this.stopLogCapture();
+        executionTrace.setLogs(allLogs);
+
         // Transfer from root TraceChildren to ExecutionTrace.TraceData
         TraceChildren root = childrenStack.peekLast();
         if (root != null) {
@@ -170,4 +245,5 @@ public class TraceContext {
     public ExecutionTrace getExecutionTrace() {
         return executionTrace;
     }
+
 }
