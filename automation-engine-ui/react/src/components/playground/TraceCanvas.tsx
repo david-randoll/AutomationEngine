@@ -15,6 +15,7 @@ import { FaGripVertical } from "react-icons/fa";
 
 import TraceNode, { type TraceNodeData } from "./TraceNode";
 import TraceDetailPanel from "./TraceDetailPanel";
+import LogsViewer from "./LogsViewer";
 import type {
     ExecutionTrace,
     TraceEntry,
@@ -263,7 +264,19 @@ export default function TraceCanvas({
     }
 
     return (
-        <div className={`flex h-full ${className}`}>
+        <div className={`flex flex-col h-full ${className}`}>
+            {/* Trace-level logs section */}
+            {trace.logs && trace.logs.length > 0 && (
+                <div className="shrink-0 border-b bg-white px-4 py-3">
+                    <LogsViewer 
+                        logs={trace.logs} 
+                        title="All Execution Logs"
+                        maxHeight="150px"
+                    />
+                </div>
+            )}
+            
+            <div className="flex flex-1 min-h-0">
             {/* React Flow Canvas */}
             <div className="flex-1 relative">
                 <ReactFlow
@@ -316,6 +329,7 @@ export default function TraceCanvas({
                     </div>
                 </div>
                 <TraceDetailPanel entry={selectedEntry} className="flex-1 min-h-0 border-0 rounded-none shadow-none" />
+            </div>
             </div>
         </div>
     );

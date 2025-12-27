@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import type { TraceEntry, TraceSnapshot } from "@/types/trace";
 import { FaCheck, FaTimes, FaClock, FaExpand, FaExchangeAlt } from "react-icons/fa";
+import LogsViewer from "./LogsViewer";
 
 interface TraceDetailPanelProps {
     entry: TraceEntry | null;
@@ -147,9 +148,19 @@ export default function TraceDetailPanel({ entry, className }: TraceDetailPanelP
                         )}
                     </div>
                 </CardHeader>
-                <CardContent className="pt-0 flex-1 flex flex-col min-h-0">
-                    <div className="flex-1 flex flex-col min-h-0">
-                        {/* Diff controls */}
+                <CardContent className="pt-0 flex-1 flex flex-col min-h-0 gap-3">
+                    {/* Logs Section */}
+                    {entry.logs && entry.logs.length > 0 && (
+                        <div className="shrink-0">
+                            <LogsViewer 
+                                logs={entry.logs} 
+                                title="Component Logs"
+                                maxHeight="200px"
+                            />
+                        </div>
+                    )}
+                    
+                    <div className="flex-1 flex flex-col min-h-0">{/* Diff controls */}
                         <div className="flex items-center justify-between mb-2 shrink-0">
                             <div className="flex bg-gray-200 rounded p-0.5">
                                 {hasResultData && (
