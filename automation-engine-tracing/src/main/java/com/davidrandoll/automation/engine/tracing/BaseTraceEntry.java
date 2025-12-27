@@ -57,5 +57,5 @@ public abstract class BaseTraceEntry {
      * Captured log messages produced during execution of this component.
      */
     @Builder.Default
-    private List<String> logs = new ArrayList<>();
+    private List<LogEntry> logs = new ArrayList<>();
 }

@@ -1,6 +1,7 @@
 package com.davidrandoll.automation.engine.tracing.interceptors;
 
 import com.davidrandoll.automation.engine.core.events.EventContext;
+import com.davidrandoll.automation.engine.tracing.LogEntry;
 import com.davidrandoll.automation.engine.tracing.TraceChildren;
 import com.davidrandoll.automation.engine.tracing.TraceContext;
 import com.davidrandoll.automation.engine.tracing.TraceSnapshot;
@@ -48,7 +49,7 @@ public class TracingVariableInterceptor implements IVariableInterceptor {
             traceContext.exitNestedScope();
         }
 
-        List<String> logs = traceContext.stopLogCapture();
+        List<LogEntry> logs = traceContext.stopLogCapture();
         long finishedAt = System.currentTimeMillis();
 
         // Capture after snapshot

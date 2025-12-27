@@ -4,6 +4,7 @@ import com.davidrandoll.automation.engine.core.events.EventContext;
 import com.davidrandoll.automation.engine.core.result.ResultContext;
 import com.davidrandoll.automation.engine.core.result.interceptors.IResultChain;
 import com.davidrandoll.automation.engine.core.result.interceptors.IResultInterceptor;
+import com.davidrandoll.automation.engine.tracing.LogEntry;
 import com.davidrandoll.automation.engine.tracing.ResultTraceEntry;
 import com.davidrandoll.automation.engine.tracing.TraceChildren;
 import com.davidrandoll.automation.engine.tracing.TraceContext;
@@ -55,7 +56,7 @@ public class TracingResultInterceptor implements IResultInterceptor {
             traceContext.exitNestedScope();
         }
 
-        List<String> logs = traceContext.stopLogCapture();
+        List<LogEntry> logs = traceContext.stopLogCapture();
         long finishedAt = System.currentTimeMillis();
 
         // Capture after snapshot

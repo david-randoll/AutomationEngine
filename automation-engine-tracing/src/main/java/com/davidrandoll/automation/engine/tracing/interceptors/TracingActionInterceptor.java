@@ -5,6 +5,7 @@ import com.davidrandoll.automation.engine.core.actions.interceptors.IActionChain
 import com.davidrandoll.automation.engine.core.actions.interceptors.IActionInterceptor;
 import com.davidrandoll.automation.engine.core.events.EventContext;
 import com.davidrandoll.automation.engine.tracing.ActionTraceEntry;
+import com.davidrandoll.automation.engine.tracing.LogEntry;
 import com.davidrandoll.automation.engine.tracing.TraceChildren;
 import com.davidrandoll.automation.engine.tracing.TraceContext;
 import com.davidrandoll.automation.engine.tracing.TraceSnapshot;
@@ -54,7 +55,7 @@ public class TracingActionInterceptor implements IActionInterceptor {
             traceContext.exitNestedScope();
         }
 
-        List<String> logs = traceContext.stopLogCapture();
+        List<LogEntry> logs = traceContext.stopLogCapture();
         long finishedAt = System.currentTimeMillis();
 
         // Capture after snapshot
