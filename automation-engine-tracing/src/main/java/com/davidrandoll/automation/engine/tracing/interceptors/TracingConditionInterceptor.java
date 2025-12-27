@@ -10,6 +10,8 @@ import com.davidrandoll.automation.engine.tracing.TraceContext;
 import com.davidrandoll.automation.engine.tracing.TraceSnapshot;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.List;
+
 import static com.davidrandoll.automation.engine.tracing.utils.TraceUtils.filterTraceData;
 import static com.davidrandoll.automation.engine.tracing.utils.TraceUtils.hasAnyChildren;
 
@@ -35,6 +37,7 @@ public class TracingConditionInterceptor implements IConditionInterceptor {
 
         // Enter nested scope for child tracing
         TraceChildren children = traceContext.enterNestedScope();
+        traceContext.startLogCapture();
 
         boolean satisfied;
         try {
@@ -45,6 +48,7 @@ public class TracingConditionInterceptor implements IConditionInterceptor {
             traceContext.exitNestedScope();
         }
 
+        List<String> logs = traceContext.stopLogCapture();
         long finishedAt = System.currentTimeMillis();
 
         // Capture after snapshot
@@ -64,6 +68,7 @@ public class TracingConditionInterceptor implements IConditionInterceptor {
                 .after(afterSnapshot)
                 .satisfied(satisfied)
                 .children(hasAnyChildren(children) ? children : null)
+                .logs(logs)
                 .build();
 
         traceContext.addCondition(entry);

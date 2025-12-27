@@ -10,6 +10,8 @@ import com.davidrandoll.automation.engine.core.variables.interceptors.IVariableC
 import com.davidrandoll.automation.engine.core.variables.interceptors.IVariableInterceptor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.List;
+
 import static com.davidrandoll.automation.engine.tracing.utils.TraceUtils.filterTraceData;
 import static com.davidrandoll.automation.engine.tracing.utils.TraceUtils.hasAnyChildren;
 
@@ -36,6 +38,7 @@ public class TracingVariableInterceptor implements IVariableInterceptor {
 
         // Enter nested scope for child tracing
         TraceChildren children = traceContext.enterNestedScope();
+        traceContext.startLogCapture();
 
         try {
             // Execute the variable resolution
@@ -45,6 +48,7 @@ public class TracingVariableInterceptor implements IVariableInterceptor {
             traceContext.exitNestedScope();
         }
 
+        List<String> logs = traceContext.stopLogCapture();
         long finishedAt = System.currentTimeMillis();
 
         // Capture after snapshot
@@ -63,6 +67,7 @@ public class TracingVariableInterceptor implements IVariableInterceptor {
                 .before(beforeSnapshot)
                 .after(afterSnapshot)
                 .children(hasAnyChildren(children) ? children : null)
+                .logs(logs)
                 .build();
 
         traceContext.addVariable(entry);

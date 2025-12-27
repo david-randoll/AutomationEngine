@@ -10,6 +10,8 @@ import com.davidrandoll.automation.engine.tracing.TraceSnapshot;
 import com.davidrandoll.automation.engine.tracing.TriggerTraceEntry;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.List;
+
 import static com.davidrandoll.automation.engine.tracing.utils.TraceUtils.filterTraceData;
 import static com.davidrandoll.automation.engine.tracing.utils.TraceUtils.hasAnyChildren;
 
@@ -35,6 +37,7 @@ public class TracingTriggerInterceptor implements ITriggerInterceptor {
 
         // Enter nested scope for child tracing
         TraceChildren children = traceContext.enterNestedScope();
+        traceContext.startLogCapture();
 
         boolean activated;
         try {
@@ -45,6 +48,7 @@ public class TracingTriggerInterceptor implements ITriggerInterceptor {
             traceContext.exitNestedScope();
         }
 
+        List<String> logs = traceContext.stopLogCapture();
         long finishedAt = System.currentTimeMillis();
 
         // Capture after snapshot
@@ -64,6 +68,7 @@ public class TracingTriggerInterceptor implements ITriggerInterceptor {
                 .after(afterSnapshot)
                 .activated(activated)
                 .children(hasAnyChildren(children) ? children : null)
+                .logs(logs)
                 .build();
 
         traceContext.addTrigger(entry);

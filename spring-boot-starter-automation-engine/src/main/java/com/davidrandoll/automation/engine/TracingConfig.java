@@ -1,13 +1,17 @@
 package com.davidrandoll.automation.engine;
 
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.LoggerContext;
 import com.davidrandoll.automation.engine.core.actions.interceptors.IActionInterceptor;
 import com.davidrandoll.automation.engine.core.conditions.interceptors.IConditionInterceptor;
 import com.davidrandoll.automation.engine.core.result.interceptors.IResultInterceptor;
 import com.davidrandoll.automation.engine.core.triggers.interceptors.ITriggerInterceptor;
 import com.davidrandoll.automation.engine.core.variables.interceptors.IVariableInterceptor;
 import com.davidrandoll.automation.engine.orchestrator.interceptors.IAutomationExecutionInterceptor;
+import com.davidrandoll.automation.engine.tracing.TracingAppender;
 import com.davidrandoll.automation.engine.tracing.interceptors.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -70,5 +74,15 @@ public class TracingConfig {
     @ConditionalOnMissingBean(name = "tracingResultInterceptor", ignored = TracingResultInterceptor.class)
     public IResultInterceptor tracingResultInterceptor(ObjectMapper objectMapper) {
         return new TracingResultInterceptor(objectMapper);
+    }
+
+    @Bean
+    public TracingAppender tracingAppender() {
+        TracingAppender appender = new TracingAppender();
+        LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
+        appender.setContext(lc);
+        appender.start();
+        lc.getLogger(Logger.ROOT_LOGGER_NAME).addAppender(appender);
+        return appender;
     }
 }

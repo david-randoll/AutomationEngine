@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static com.davidrandoll.automation.engine.tracing.utils.TraceUtils.filterTraceData;
@@ -43,6 +44,7 @@ public class TracingResultInterceptor implements IResultInterceptor {
 
         // Enter nested scope for child tracing
         TraceChildren children = traceContext.enterNestedScope();
+        traceContext.startLogCapture();
 
         Object result;
         try {
@@ -53,6 +55,7 @@ public class TracingResultInterceptor implements IResultInterceptor {
             traceContext.exitNestedScope();
         }
 
+        List<String> logs = traceContext.stopLogCapture();
         long finishedAt = System.currentTimeMillis();
 
         // Capture after snapshot
@@ -68,6 +71,7 @@ public class TracingResultInterceptor implements IResultInterceptor {
                 .after(afterSnapshot)
                 .result(result)
                 .children(hasAnyChildren(children) ? children : null)
+                .logs(logs)
                 .build();
 
         traceContext.setResult(entry);

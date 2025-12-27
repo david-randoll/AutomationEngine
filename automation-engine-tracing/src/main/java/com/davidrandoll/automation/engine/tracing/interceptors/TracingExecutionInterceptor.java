@@ -41,26 +41,31 @@ public class TracingExecutionInterceptor implements IAutomationExecutionIntercep
 
         // Initialize trace context and store in event context metadata
         TraceContext traceContext = TraceContext.getOrCreate(context, automation.getAlias());
+        TraceContext.setThreadContext(traceContext);
 
-        // Proceed with execution (all component interceptors will add their traces)
-        AutomationResult result = chain.proceed(automation, context);
+        try {
+            // Proceed with execution (all component interceptors will add their traces)
+            AutomationResult result = chain.proceed(automation, context);
 
-        // Complete the trace and get the final execution trace
-        ExecutionTrace executionTrace = traceContext.complete();
+            // Complete the trace and get the final execution trace
+            ExecutionTrace executionTrace = traceContext.complete();
 
-        log.debug("Trace capture completed for automation: {}, executionId: {}",
-                automation.getAlias(), executionTrace.getExecutionId());
+            log.debug("Trace capture completed for automation: {}, executionId: {}",
+                    automation.getAlias(), executionTrace.getExecutionId());
 
-        // Create new result with trace attached in additional fields
-        Map<String, Object> additionalFields = new HashMap<>(result.getAdditionalFields());
-        additionalFields.put(ExecutionTrace.TRACE_KEY, executionTrace);
+            // Create new result with trace attached in additional fields
+            Map<String, Object> additionalFields = new HashMap<>(result.getAdditionalFields());
+            additionalFields.put(ExecutionTrace.TRACE_KEY, executionTrace);
 
-        return AutomationResult.executedWithAdditionalFields(
-                result.getAutomation(),
-                result.getContext(),
-                result.orElse(null),
-                result.isExecuted(),
-                additionalFields
-        );
+            return AutomationResult.executedWithAdditionalFields(
+                    result.getAutomation(),
+                    result.getContext(),
+                    result.orElse(null),
+                    result.isExecuted(),
+                    additionalFields
+            );
+        } finally {
+            TraceContext.clearThreadContext();
+        }
     }
 }

@@ -2,8 +2,11 @@ package com.davidrandoll.automation.engine.tracing;
 
 import com.davidrandoll.automation.engine.core.events.EventContext;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Context holder for trace data during automation execution.
@@ -14,6 +17,12 @@ import java.util.LinkedList;
  * </p>
  */
 public class TraceContext {
+    /**
+     * ThreadLocal to store the TraceContext for the current thread.
+     * Used by TracingAppender to record logs.
+     */
+    private static final ThreadLocal<TraceContext> CURRENT = new ThreadLocal<>();
+
     /**
      * Key used to store TraceContext in EventContext metadata.
      */
@@ -31,6 +40,11 @@ public class TraceContext {
      */
     private final Deque<TraceChildren> childrenStack = new LinkedList<>();
 
+    /**
+     * Stack of log buffers for handling nested operations.
+     */
+    private final Deque<List<String>> logBufferStack = new LinkedList<>();
+
     public TraceContext(String alias) {
         this.executionTrace = ExecutionTrace.builder()
                 .alias(alias)
@@ -38,6 +52,50 @@ public class TraceContext {
                 .build();
         // Initialize with root level (wrapped as TraceChildren for uniform handling)
         this.childrenStack.push(createRootTraceChildren());
+    }
+
+    /**
+     * Sets the TraceContext for the current thread.
+     */
+    public static void setThreadContext(TraceContext context) {
+        CURRENT.set(context);
+    }
+
+    /**
+     * Clears the TraceContext for the current thread.
+     */
+    public static void clearThreadContext() {
+        CURRENT.remove();
+    }
+
+    /**
+     * Records a log message in the current scope.
+     */
+    public static void recordLog(String message) {
+        TraceContext context = CURRENT.get();
+        if (context != null) {
+            context.addLogToCurrentScope(message);
+        }
+    }
+
+    private void addLogToCurrentScope(String message) {
+        if (!logBufferStack.isEmpty()) {
+            logBufferStack.peek().add(message);
+        }
+    }
+
+    /**
+     * Starts capturing logs for a new component.
+     */
+    public void startLogCapture() {
+        logBufferStack.push(new ArrayList<>());
+    }
+
+    /**
+     * Stops capturing logs and returns the captured messages.
+     */
+    public List<String> stopLogCapture() {
+        return logBufferStack.isEmpty() ? Collections.emptyList() : logBufferStack.pop();
     }
 
     /**
