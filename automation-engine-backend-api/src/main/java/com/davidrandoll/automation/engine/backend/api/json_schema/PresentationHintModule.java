@@ -1,6 +1,6 @@
 package com.davidrandoll.automation.engine.backend.api.json_schema;
 
-import com.davidrandoll.automation.spi.annotation.PresentationHint;
+import com.davidrandoll.automation.spi.annotation.ContextField;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -10,7 +10,7 @@ import com.github.victools.jsonschema.generator.SchemaGeneratorConfigBuilder;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Custom Victools module to process @PresentationHint annotations and add presentation
+ * Custom Victools module to process @ContextField annotations and add presentation
  * metadata to JSON Schema as custom properties (x-presentation-*).
  * <p>
  * This module extracts presentation hints from field annotations and makes them available
@@ -26,13 +26,13 @@ class PresentationHintModule implements Module {
     public void applyToConfigBuilder(SchemaGeneratorConfigBuilder builder) {
         builder.forFields()
                 .withInstanceAttributeOverride((attributes, field, context) -> {
-                    PresentationHint hint = field.getAnnotation(PresentationHint.class);
+                    ContextField hint = field.getAnnotation(ContextField.class);
                     if (hint == null) {
                         return;
                     }
 
-                    // Widget type
-                    if (hint.widget() != PresentationHint.Widget.AUTO) {
+                    // Add widget type if not AUTO
+                    if (hint.widget() != ContextField.Widget.AUTO) {
                         attributes.put("x-presentation-widget", hint.widget().name().toLowerCase());
                     }
 
@@ -87,36 +87,13 @@ class PresentationHintModule implements Module {
                         attributes.put("x-presentation-order", hint.order());
                     }
 
-                    // Validation hints (supplement Jakarta validation)
-                    ObjectNode validationNode = null;
-
+                    // Min/max hints
                     if (hint.min() != Double.NEGATIVE_INFINITY) {
-                        if (validationNode == null) validationNode = OBJECT_MAPPER.createObjectNode();
-                        validationNode.put("min", hint.min());
+                        attributes.put("x-presentation-min", hint.min());
                     }
 
                     if (hint.max() != Double.POSITIVE_INFINITY) {
-                        if (validationNode == null) validationNode = OBJECT_MAPPER.createObjectNode();
-                        validationNode.put("max", hint.max());
-                    }
-
-                    if (!hint.pattern().isEmpty()) {
-                        if (validationNode == null) validationNode = OBJECT_MAPPER.createObjectNode();
-                        validationNode.put("pattern", hint.pattern());
-                    }
-
-                    if (!hint.validationMessage().isEmpty()) {
-                        if (validationNode == null) validationNode = OBJECT_MAPPER.createObjectNode();
-                        validationNode.put("message", hint.validationMessage());
-                    }
-
-                    if (hint.required()) {
-                        if (validationNode == null) validationNode = OBJECT_MAPPER.createObjectNode();
-                        validationNode.put("required", true);
-                    }
-
-                    if (validationNode != null) {
-                        attributes.set("x-presentation-validation", validationNode);
+                        attributes.put("x-presentation-max", hint.max());
                     }
 
                     // Read-only

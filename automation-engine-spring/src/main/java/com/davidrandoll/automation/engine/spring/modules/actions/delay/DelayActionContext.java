@@ -1,7 +1,7 @@
 package com.davidrandoll.automation.engine.spring.modules.actions.delay;
 
 import com.davidrandoll.automation.engine.core.actions.IActionContext;
-import com.davidrandoll.automation.spi.annotation.PresentationHint;
+import com.davidrandoll.automation.spi.annotation.ContextField;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.AllArgsConstructor;
@@ -50,7 +50,7 @@ public class DelayActionContext implements IActionContext {
      * <p>
      * Note: The duration can combine time units (hours, minutes, seconds) and date units (years, months, days).
      */
-    @PresentationHint(
+    @ContextField(
         placeholder = "PT5S",
         helpText = "ISO-8601 duration format. Examples: PT5S (5 seconds), PT1M30S (1 minute 30 seconds), PT1H (1 hour)"
     )

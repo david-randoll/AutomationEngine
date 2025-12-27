@@ -6,24 +6,24 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Provides presentation hints for fields in context classes, enabling custom rendering
- * in user interfaces or other presentation layers. This annotation is generic and not
- * tied to any specific UI technology.
+ * Provides metadata for fields in context classes. This annotation is generic and not
+ * tied to any specific use case. It can be used to provide hints for rendering,
+ * documentation, or any other purpose.
  * <p>
- * Fields without this annotation will use default presentation logic based on their type.
+ * Fields without this annotation will use default logic based on their type.
  * This annotation should only be used when customization is needed.
  * </p>
  * <p>
  * Example usage:
  * <pre>
  * {@code
- * @PresentationHint(widget = Widget.TEXTAREA, placeholder = "Enter your message here")
+ * @ContextField(widget = Widget.TEXTAREA, placeholder = "Enter your message here")
  * private String message;
  * 
- * @PresentationHint(widget = Widget.DROPDOWN, dropdownOptions = {"option1", "option2", "option3"})
+ * @ContextField(widget = Widget.DROPDOWN, dropdownOptions = {"option1", "option2", "option3"})
  * private String choice;
  * 
- * @PresentationHint(widget = Widget.MONACO_EDITOR, monacoLanguage = "javascript")
+ * @ContextField(widget = Widget.MONACO_EDITOR, monacoLanguage = "javascript")
  * private String scriptCode;
  * }
  * </pre>
@@ -32,7 +32,7 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-public @interface PresentationHint {
+public @interface ContextField {
 
     /**
      * The widget type to use for rendering this field.
@@ -104,43 +104,21 @@ public @interface PresentationHint {
     int order() default 0;
 
     /**
-     * Minimum value for numeric fields (client-side validation hint).
+     * Minimum value for numeric fields.
      *
      * @return the minimum value
      */
     double min() default Double.NEGATIVE_INFINITY;
 
     /**
-     * Maximum value for numeric fields (client-side validation hint).
+     * Maximum value for numeric fields.
      *
      * @return the maximum value
      */
     double max() default Double.POSITIVE_INFINITY;
 
     /**
-     * Regex pattern for validation (client-side validation hint).
-     *
-     * @return the validation pattern
-     */
-    String pattern() default "";
-
-    /**
-     * Custom validation error message to display.
-     *
-     * @return the error message
-     */
-    String validationMessage() default "";
-
-    /**
-     * Whether the field is required (client-side validation hint).
-     * Note: Jakarta @NotNull/@NotBlank annotations take precedence.
-     *
-     * @return true if required
-     */
-    boolean required() default false;
-
-    /**
-     * Whether the field should be read-only in the presentation layer.
+     * Whether the field should be read-only.
      *
      * @return true if read-only
      */
