@@ -11,7 +11,9 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Comprehensive tests for log aggregation in TraceContext.
+ * Comprehensive tests for log capture at trace level.
+ * Trace-level logs capture automation execution logs independently,
+ * not aggregated from children components.
  */
 class TraceContextLogAggregationTest {
 
@@ -30,87 +32,68 @@ class TraceContextLogAggregationTest {
     }
 
     @Test
-    void testLogAggregation_fromVariables() {
-        // Arrange
-        List<LogEntry> logs1 = List.of(
-                createLog("Variable 1 log 1", "INFO"),
-                createLog("Variable 1 log 2", "DEBUG")
-        );
-        List<LogEntry> logs2 = List.of(
-                createLog("Variable 2 log", "TRACE")
-        );
+    void testTraceLevelLogCapture_independent() {
+        // Arrange - logs at trace level (outside of components)
+        LogEntry traceLog1 = createLog("Automation started", "INFO");
+        LogEntry traceLog2 = createLog("Processing automation", "DEBUG");
+        TraceContext.recordLog(traceLog1);
+        TraceContext.recordLog(traceLog2);
 
-        VariableTraceEntry var1 = createVariableEntry("var1", logs1);
-        VariableTraceEntry var2 = createVariableEntry("var2", logs2);
-
-        traceContext.addVariable(var1);
-        traceContext.addVariable(var2);
+        // Add a component with its own logs
+        List<LogEntry> actionLogs = List.of(createLog("Action log", "INFO"));
+        traceContext.addAction(createActionEntry(actionLogs));
 
         // Act
         ExecutionTrace result = traceContext.complete();
 
-        // Assert
-        assertThat(result.getLogs()).hasSize(3);
-        assertThat(result.getLogs()).containsAll(logs1);
-        assertThat(result.getLogs()).containsAll(logs2);
-    }
-
-    @Test
-    void testLogAggregation_fromTriggers() {
-        // Arrange
-        List<LogEntry> logs = List.of(
-                createLog("Trigger check", "DEBUG"),
-                createLog("Trigger activated", "INFO")
-        );
-
-        TriggerTraceEntry trigger = TriggerTraceEntry.builder()
-                .type("trigger")
-                .activated(true)
-                .startedAt(System.currentTimeMillis())
-                .finishedAt(System.currentTimeMillis())
-                .logs(logs)
-                .build();
-
-        traceContext.addTrigger(trigger);
-
-        // Act
-        ExecutionTrace result = traceContext.complete();
-
-        // Assert
+        // Assert - trace level should only have its own logs, not aggregate from children
         assertThat(result.getLogs()).hasSize(2);
-        assertThat(result.getLogs()).containsAll(logs);
+        assertThat(result.getLogs()).containsExactly(traceLog1, traceLog2);
+        
+        // Children should still have their logs
+        assertThat(result.getTrace().getActions()).hasSize(1);
+        assertThat(result.getTrace().getActions().get(0).getLogs()).containsExactly(actionLogs.get(0));
     }
 
     @Test
-    void testLogAggregation_fromConditions() {
-        // Arrange
-        List<LogEntry> logs = List.of(
-                createLog("Evaluating condition", "DEBUG"),
-                createLog("Condition satisfied", "INFO")
-        );
+    void testTraceLevelLogs_withComponentLogs() {
+        // Arrange - trace level logs
+        LogEntry traceLog = createLog("Trace level log", "DEBUG");
+        TraceContext.recordLog(traceLog);
 
-        ConditionTraceEntry condition = ConditionTraceEntry.builder()
-                .type("condition")
-                .satisfied(true)
-                .startedAt(System.currentTimeMillis())
-                .finishedAt(System.currentTimeMillis())
-                .logs(logs)
-                .build();
-
-        traceContext.addCondition(condition);
+        // Add component with its own logs
+        List<LogEntry> triggerLogs = List.of(createLog("Trigger log", "INFO"));
+        traceContext.addTrigger(createTriggerEntry(triggerLogs));
 
         // Act
         ExecutionTrace result = traceContext.complete();
 
-        // Assert
-        assertThat(result.getLogs()).hasSize(2);
-        assertThat(result.getLogs()).containsAll(logs);
+        // Assert - trace logs independent from component logs
+        assertThat(result.getLogs()).hasSize(1);
+        assertThat(result.getLogs()).containsExactly(traceLog);
+        assertThat(result.getTrace().getTriggers().get(0).getLogs()).containsExactly(triggerLogs.get(0));
     }
 
     @Test
-    void testLogAggregation_fromActions() {
-        // Arrange
-        List<LogEntry> logs = List.of(
+    void testTraceLevelLogs_empty() {
+        // Arrange - no trace-level logs recorded
+        // Add components with their logs
+        List<LogEntry> conditionLogs = List.of(createLog("Condition log", "INFO"));
+        traceContext.addCondition(createConditionEntry(conditionLogs));
+
+        // Act
+        ExecutionTrace result = traceContext.complete();
+
+        // Assert - trace level logs should be empty
+        assertThat(result.getLogs()).isEmpty();
+        // But component logs should still exist
+        assertThat(result.getTrace().getConditions().get(0).getLogs()).hasSize(1);
+    }
+
+    @Test
+    void testComponentLogs_remainInComponentEntries() {
+        // Arrange - Component logs should stay in their trace entries
+        List<LogEntry> actionLogs = List.of(
                 createLog("Action started", "INFO"),
                 createLog("Action processing", "DEBUG"),
                 createLog("Action completed", "INFO")
@@ -120,7 +103,7 @@ class TraceContextLogAggregationTest {
                 .type("action")
                 .startedAt(System.currentTimeMillis())
                 .finishedAt(System.currentTimeMillis())
-                .logs(logs)
+                .logs(actionLogs)
                 .build();
 
         traceContext.addAction(action);
@@ -128,39 +111,15 @@ class TraceContextLogAggregationTest {
         // Act
         ExecutionTrace result = traceContext.complete();
 
-        // Assert
-        assertThat(result.getLogs()).hasSize(3);
-        assertThat(result.getLogs()).containsAll(logs);
+        // Assert - Component logs remain in action entry, trace-level logs are empty
+        assertThat(result.getLogs()).isEmpty();
+        assertThat(result.getTrace().getActions().get(0).getLogs()).hasSize(3);
+        assertThat(result.getTrace().getActions().get(0).getLogs()).containsAll(actionLogs);
     }
 
     @Test
-    void testLogAggregation_fromResult() {
-        // Arrange
-        List<LogEntry> logs = List.of(
-                createLog("Processing result", "INFO"),
-                createLog("Result formatted", "DEBUG")
-        );
-
-        ResultTraceEntry resultEntry = ResultTraceEntry.builder()
-                .result("test result")
-                .startedAt(System.currentTimeMillis())
-                .finishedAt(System.currentTimeMillis())
-                .logs(logs)
-                .build();
-
-        traceContext.setResult(resultEntry);
-
-        // Act
-        ExecutionTrace result = traceContext.complete();
-
-        // Assert
-        assertThat(result.getLogs()).hasSize(2);
-        assertThat(result.getLogs()).containsAll(logs);
-    }
-
-    @Test
-    void testLogAggregation_fromAllComponentTypes() {
-        // Arrange
+    void testComponentLogs_allTypesRemainInEntries() {
+        // Arrange - Logs from all component types stay in their entries
         List<LogEntry> varLogs = List.of(createLog("Variable log", "DEBUG"));
         List<LogEntry> triggerLogs = List.of(createLog("Trigger log", "INFO"));
         List<LogEntry> conditionLogs = List.of(createLog("Condition log", "TRACE"));
@@ -176,18 +135,17 @@ class TraceContextLogAggregationTest {
         // Act
         ExecutionTrace result = traceContext.complete();
 
-        // Assert
-        assertThat(result.getLogs()).hasSize(5);
-        assertThat(result.getLogs()).containsAll(varLogs);
-        assertThat(result.getLogs()).containsAll(triggerLogs);
-        assertThat(result.getLogs()).containsAll(conditionLogs);
-        assertThat(result.getLogs()).containsAll(actionLogs);
-        assertThat(result.getLogs()).containsAll(resultLogs);
+        // Assert - Component logs stay in their entries
+        assertThat(result.getTrace().getVariables().get(0).getLogs()).containsAll(varLogs);
+        assertThat(result.getTrace().getTriggers().get(0).getLogs()).containsAll(triggerLogs);
+        assertThat(result.getTrace().getConditions().get(0).getLogs()).containsAll(conditionLogs);
+        assertThat(result.getTrace().getActions().get(0).getLogs()).containsAll(actionLogs);
+        assertThat(result.getTrace().getResult().getLogs()).containsAll(resultLogs);
     }
 
     @Test
-    void testLogAggregation_fromNestedChildren() {
-        // Arrange
+    void testNestedComponentLogs_remainInHierarchy() {
+        // Arrange - Nested component logs should stay in their structure
         List<LogEntry> parentLogs = List.of(createLog("Parent log", "INFO"));
         List<LogEntry> childLogs = List.of(createLog("Child log", "DEBUG"));
 
@@ -213,224 +171,39 @@ class TraceContextLogAggregationTest {
         // Act
         ExecutionTrace result = traceContext.complete();
 
-        // Assert
-        assertThat(result.getLogs()).hasSize(2);
-        assertThat(result.getLogs()).containsAll(parentLogs);
-        assertThat(result.getLogs()).containsAll(childLogs);
+        // Assert - Logs remain in their component hierarchy
+        ActionTraceEntry resultAction = result.getTrace().getActions().get(0);
+        assertThat(resultAction.getLogs()).containsAll(parentLogs);
+        assertThat(resultAction.getChildren().getActions().get(0).getLogs()).containsAll(childLogs);
+        // Trace-level logs should be empty
+        assertThat(result.getLogs()).isEmpty();
     }
 
     @Test
-    void testLogAggregation_deeplyNestedChildren() {
+    void testHandlesNull_andEmptyComponentLogs() {
         // Arrange
-        List<LogEntry> level1Logs = List.of(createLog("Level 1", "INFO"));
-        List<LogEntry> level2Logs = List.of(createLog("Level 2", "DEBUG"));
-        List<LogEntry> level3Logs = List.of(createLog("Level 3", "TRACE"));
-
-        // Level 3 (deepest)
-        ActionTraceEntry level3Action = ActionTraceEntry.builder()
-                .type("level3")
-                .startedAt(System.currentTimeMillis())
-                .finishedAt(System.currentTimeMillis())
-                .logs(level3Logs)
-                .build();
-
-        TraceChildren level3Children = new TraceChildren();
-        level3Children.getActions().add(level3Action);
-
-        // Level 2
-        ActionTraceEntry level2Action = ActionTraceEntry.builder()
-                .type("level2")
-                .startedAt(System.currentTimeMillis())
-                .finishedAt(System.currentTimeMillis())
-                .logs(level2Logs)
-                .children(level3Children)
-                .build();
-
-        TraceChildren level2Children = new TraceChildren();
-        level2Children.getActions().add(level2Action);
-
-        // Level 1 (root)
-        ActionTraceEntry level1Action = ActionTraceEntry.builder()
-                .type("level1")
-                .startedAt(System.currentTimeMillis())
-                .finishedAt(System.currentTimeMillis())
-                .logs(level1Logs)
-                .children(level2Children)
-                .build();
-
-        traceContext.addAction(level1Action);
-
-        // Act
-        ExecutionTrace result = traceContext.complete();
-
-        // Assert
-        assertThat(result.getLogs()).hasSize(3);
-        assertThat(result.getLogs()).containsAll(level1Logs);
-        assertThat(result.getLogs()).containsAll(level2Logs);
-        assertThat(result.getLogs()).containsAll(level3Logs);
-    }
-
-    @Test
-    void testLogAggregation_multipleNestedBranches() {
-        // Arrange
-        List<LogEntry> parentLogs = List.of(createLog("Parent", "INFO"));
-        List<LogEntry> branch1Logs = List.of(createLog("Branch 1", "DEBUG"));
-        List<LogEntry> branch2Logs = List.of(createLog("Branch 2", "DEBUG"));
-
-        // Branch 1
-        ActionTraceEntry branch1Action = ActionTraceEntry.builder()
-                .type("branch1")
-                .startedAt(System.currentTimeMillis())
-                .finishedAt(System.currentTimeMillis())
-                .logs(branch1Logs)
-                .build();
-
-        // Branch 2
-        ActionTraceEntry branch2Action = ActionTraceEntry.builder()
-                .type("branch2")
-                .startedAt(System.currentTimeMillis())
-                .finishedAt(System.currentTimeMillis())
-                .logs(branch2Logs)
-                .build();
-
-        TraceChildren children = new TraceChildren();
-        children.getActions().add(branch1Action);
-        children.getActions().add(branch2Action);
-
-        ActionTraceEntry parentAction = ActionTraceEntry.builder()
-                .type("parent")
-                .startedAt(System.currentTimeMillis())
-                .finishedAt(System.currentTimeMillis())
-                .logs(parentLogs)
-                .children(children)
-                .build();
-
-        traceContext.addAction(parentAction);
-
-        // Act
-        ExecutionTrace result = traceContext.complete();
-
-        // Assert
-        assertThat(result.getLogs()).hasSize(3);
-        assertThat(result.getLogs()).containsAll(parentLogs);
-        assertThat(result.getLogs()).containsAll(branch1Logs);
-        assertThat(result.getLogs()).containsAll(branch2Logs);
-    }
-
-    @Test
-    void testLogAggregation_handlesNullLogs() {
-        // Arrange
-        ActionTraceEntry action = ActionTraceEntry.builder()
-                .type("action")
+        ActionTraceEntry actionWithNull = ActionTraceEntry.builder()
+                .type("actionNull")
                 .startedAt(System.currentTimeMillis())
                 .finishedAt(System.currentTimeMillis())
                 .logs(null)
                 .build();
 
-        traceContext.addAction(action);
-
-        // Act
-        ExecutionTrace result = traceContext.complete();
-
-        // Assert - should not throw exception
-        assertThat(result.getLogs()).isEmpty();
-    }
-
-    @Test
-    void testLogAggregation_handlesEmptyLogs() {
-        // Arrange
-        ActionTraceEntry action = ActionTraceEntry.builder()
-                .type("action")
+        ActionTraceEntry actionWithEmpty = ActionTraceEntry.builder()
+                .type("actionEmpty")
                 .startedAt(System.currentTimeMillis())
                 .finishedAt(System.currentTimeMillis())
                 .logs(new ArrayList<>())
                 .build();
 
-        traceContext.addAction(action);
+        traceContext.addAction(actionWithNull);
+        traceContext.addAction(actionWithEmpty);
 
         // Act
         ExecutionTrace result = traceContext.complete();
 
-        // Assert
+        // Assert - Should not throw, trace-level logs empty
         assertThat(result.getLogs()).isEmpty();
-    }
-
-    @Test
-    void testLogAggregation_preservesOrder() {
-        // Arrange
-        List<LogEntry> logs1 = List.of(createLog("First", "INFO", 1000));
-        List<LogEntry> logs2 = List.of(createLog("Second", "INFO", 2000));
-        List<LogEntry> logs3 = List.of(createLog("Third", "INFO", 3000));
-
-        traceContext.addAction(createActionEntry(logs1));
-        traceContext.addAction(createActionEntry(logs2));
-        traceContext.addAction(createActionEntry(logs3));
-
-        // Act
-        ExecutionTrace result = traceContext.complete();
-
-        // Assert
-        assertThat(result.getLogs()).hasSize(3);
-        // Verify order is preserved (first action's logs, then second, then third)
-        assertThat(result.getLogs().get(0).getFormattedMessage()).isEqualTo("First");
-        assertThat(result.getLogs().get(1).getFormattedMessage()).isEqualTo("Second");
-        assertThat(result.getLogs().get(2).getFormattedMessage()).isEqualTo("Third");
-    }
-
-    @Test
-    void testLogAggregation_withAllLogLevels() {
-        // Arrange
-        List<LogEntry> logs = List.of(
-                createLog("Error message", "ERROR"),
-                createLog("Warning message", "WARN"),
-                createLog("Info message", "INFO"),
-                createLog("Debug message", "DEBUG"),
-                createLog("Trace message", "TRACE")
-        );
-
-        traceContext.addAction(createActionEntry(logs));
-
-        // Act
-        ExecutionTrace result = traceContext.complete();
-
-        // Assert
-        assertThat(result.getLogs()).hasSize(5);
-        assertThat(result.getLogs()).filteredOn(log -> "ERROR".equals(log.getLevel())).hasSize(1);
-        assertThat(result.getLogs()).filteredOn(log -> "WARN".equals(log.getLevel())).hasSize(1);
-        assertThat(result.getLogs()).filteredOn(log -> "INFO".equals(log.getLevel())).hasSize(1);
-        assertThat(result.getLogs()).filteredOn(log -> "DEBUG".equals(log.getLevel())).hasSize(1);
-        assertThat(result.getLogs()).filteredOn(log -> "TRACE".equals(log.getLevel())).hasSize(1);
-    }
-
-    @Test
-    void testLogAggregation_fromNestedVariables() {
-        // Arrange
-        List<LogEntry> nestedLogs = List.of(createLog("Nested variable", "DEBUG"));
-        
-        VariableTraceEntry nestedVar = createVariableEntry("nestedVar", nestedLogs);
-        
-        TraceChildren children = new TraceChildren();
-        children.getVariables().add(nestedVar);
-
-        List<LogEntry> parentLogs = List.of(createLog("Parent variable", "INFO"));
-        VariableTraceEntry parentVar = VariableTraceEntry.builder()
-                .type("parent")
-                .alias("parentVar")
-                .startedAt(System.currentTimeMillis())
-                .finishedAt(System.currentTimeMillis())
-                .logs(parentLogs)
-                .children(children)
-                .build();
-
-        traceContext.addVariable(parentVar);
-
-        // Act
-        ExecutionTrace result = traceContext.complete();
-
-        // Assert
-        assertThat(result.getLogs()).hasSize(2);
-        assertThat(result.getLogs()).containsAll(parentLogs);
-        assertThat(result.getLogs()).containsAll(nestedLogs);
     }
 
     private LogEntry createLog(String message, String level) {

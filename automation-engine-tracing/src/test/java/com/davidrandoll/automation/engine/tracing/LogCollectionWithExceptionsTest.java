@@ -59,13 +59,16 @@ class LogCollectionWithExceptionsTest {
         // Assert
         ExecutionTrace result = traceContext.complete();
         assertThat(result.getTrace().getActions()).hasSize(1);
-        assertThat(result.getTrace().getActions().get(0).getLogs()).hasSize(2);
         
-        // Verify logs are aggregated to trace level
-        assertThat(result.getLogs()).hasSize(2);
-        assertThat(result.getLogs()).anyMatch(log -> "ERROR".equals(log.getLevel()));
-        assertThat(result.getLogs()).anyMatch(log -> 
+        // Verify logs remain in component entry (not aggregated to trace level)
+        ActionTraceEntry actionEntry = result.getTrace().getActions().get(0);
+        assertThat(actionEntry.getLogs()).hasSize(2);
+        assertThat(actionEntry.getLogs()).anyMatch(log -> "ERROR".equals(log.getLevel()));
+        assertThat(actionEntry.getLogs()).anyMatch(log -> 
             log.getFormattedMessage().contains("RuntimeException"));
+        
+        // Trace-level logs should be empty (logs stay in component)
+        assertThat(result.getLogs()).isEmpty();
     }
 
     @Test
@@ -93,12 +96,15 @@ class LogCollectionWithExceptionsTest {
         // Act
         ExecutionTrace result = traceContext.complete();
 
-        // Assert
+        // Assert - Logs remain in condition entry
         assertThat(result.getTrace().getConditions()).hasSize(1);
-        assertThat(result.getTrace().getConditions().get(0).getLogs()).hasSize(2);
-        assertThat(result.getLogs()).hasSize(2);
-        assertThat(result.getLogs()).anyMatch(log -> 
+        ConditionTraceEntry conditionEntry = result.getTrace().getConditions().get(0);
+        assertThat(conditionEntry.getLogs()).hasSize(2);
+        assertThat(conditionEntry.getLogs()).anyMatch(log -> 
             log.getFormattedMessage().contains("IllegalStateException"));
+        
+        // Trace-level logs should be empty
+        assertThat(result.getLogs()).isEmpty();
     }
 
     @Test
@@ -126,12 +132,15 @@ class LogCollectionWithExceptionsTest {
         // Act
         ExecutionTrace result = traceContext.complete();
 
-        // Assert
+        // Assert - Logs remain in variable entry
         assertThat(result.getTrace().getVariables()).hasSize(1);
-        assertThat(result.getTrace().getVariables().get(0).getLogs()).hasSize(2);
-        assertThat(result.getLogs()).containsAll(logs);
-        assertThat(result.getLogs()).anyMatch(log -> 
+        VariableTraceEntry varEntry = result.getTrace().getVariables().get(0);
+        assertThat(varEntry.getLogs()).hasSize(2);
+        assertThat(varEntry.getLogs()).anyMatch(log -> 
             log.getFormattedMessage().contains("VariableNotFoundException"));
+        
+        // Trace-level logs should be empty
+        assertThat(result.getLogs()).isEmpty();
     }
 
     @Test
@@ -176,18 +185,20 @@ class LogCollectionWithExceptionsTest {
         // Act
         ExecutionTrace result = traceContext.complete();
 
-        // Assert
+        // Assert - Logs remain in their component hierarchy
         assertThat(result.getTrace().getActions()).hasSize(1);
         ActionTraceEntry parent = result.getTrace().getActions().get(0);
         assertThat(parent.getLogs()).hasSize(1);
         assertThat(parent.getChildren()).isNotNull();
         assertThat(parent.getChildren().getActions()).hasSize(1);
-        assertThat(parent.getChildren().getActions().get(0).getLogs()).hasSize(2);
         
-        // Verify all logs are aggregated
-        assertThat(result.getLogs()).hasSize(3); // parentLog + nestedLog1 + nestedLog2
-        assertThat(result.getLogs()).anyMatch(log -> 
+        ActionTraceEntry nestedActionEntry = parent.getChildren().getActions().get(0);
+        assertThat(nestedActionEntry.getLogs()).hasSize(2);
+        assertThat(nestedActionEntry.getLogs()).anyMatch(log -> 
             log.getFormattedMessage().contains("NullPointerException"));
+        
+        // Trace-level logs should be empty (logs stay in component hierarchy)
+        assertThat(result.getLogs()).isEmpty();
     }
 
     @Test
@@ -227,12 +238,20 @@ class LogCollectionWithExceptionsTest {
         // Act
         ExecutionTrace result = traceContext.complete();
 
-        // Assert
+        // Assert - Logs remain in their action entries despite exceptions
         assertThat(result.getTrace().getActions()).hasSize(2);
         
-        // Verify all logs collected despite exceptions
-        assertThat(result.getLogs()).hasSize(4);
-        assertThat(result.getLogs()).filteredOn(log -> "ERROR".equals(log.getLevel())).hasSize(2);
+        ActionTraceEntry action1Entry = result.getTrace().getActions().get(0);
+        ActionTraceEntry action2Entry = result.getTrace().getActions().get(1);
+        
+        assertThat(action1Entry.getLogs()).hasSize(2);
+        assertThat(action2Entry.getLogs()).hasSize(2);
+        
+        assertThat(action1Entry.getLogs()).filteredOn(log -> "ERROR".equals(log.getLevel())).hasSize(1);
+        assertThat(action2Entry.getLogs()).filteredOn(log -> "ERROR".equals(log.getLevel())).hasSize(1);
+        
+        // Trace-level logs should be empty
+        assertThat(result.getLogs()).isEmpty();
     }
 
     @Test
@@ -257,12 +276,15 @@ class LogCollectionWithExceptionsTest {
         // Act
         ExecutionTrace executionTrace = traceContext.complete();
 
-        // Assert
+        // Assert - Logs remain in result entry
         assertThat(executionTrace.getTrace().getResult()).isNotNull();
-        assertThat(executionTrace.getTrace().getResult().getLogs()).hasSize(2);
-        assertThat(executionTrace.getLogs()).containsAll(logs);
-        assertThat(executionTrace.getLogs()).anyMatch(log -> 
+        ResultTraceEntry resultEntry = executionTrace.getTrace().getResult();
+        assertThat(resultEntry.getLogs()).hasSize(2);
+        assertThat(resultEntry.getLogs()).anyMatch(log -> 
             log.getFormattedMessage().contains("ResultException"));
+        
+        // Trace-level logs should be empty
+        assertThat(executionTrace.getLogs()).isEmpty();
     }
 
     @Test
