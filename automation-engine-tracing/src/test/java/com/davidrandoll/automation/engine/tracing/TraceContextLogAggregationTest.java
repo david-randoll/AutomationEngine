@@ -39,20 +39,23 @@ class TraceContextLogAggregationTest {
         TraceContext.recordLog(traceLog1);
         TraceContext.recordLog(traceLog2);
 
-        // Add a component with its own logs
-        List<LogEntry> actionLogs = List.of(createLog("Action log", "INFO"));
+        // Simulate component logging: start capture, log, stop capture
+        traceContext.startLogCapture();  // Component buffer
+        LogEntry actionLog = createLog("Action log", "INFO");
+        TraceContext.recordLog(actionLog);  // Goes to BOTH component AND trace buffers
+        List<LogEntry> actionLogs = traceContext.stopLogCapture();
         traceContext.addAction(createActionEntry(actionLogs));
 
         // Act
         ExecutionTrace result = traceContext.complete();
 
-        // Assert - trace level has its own logs PLUS aggregated component logs
+        // Assert - trace level has ALL logs (trace + component via dual-write)
         assertThat(result.getLogs()).hasSize(3);
-        assertThat(result.getLogs()).contains(traceLog1, traceLog2, actionLogs.get(0));
+        assertThat(result.getLogs()).contains(traceLog1, traceLog2, actionLog);
 
         // Children should still have their logs
         assertThat(result.getTrace().getActions()).hasSize(1);
-        assertThat(result.getTrace().getActions().get(0).getLogs()).containsExactly(actionLogs.get(0));
+        assertThat(result.getTrace().getActions().get(0).getLogs()).containsExactly(actionLog);
     }
 
     @Test
@@ -61,45 +64,54 @@ class TraceContextLogAggregationTest {
         LogEntry traceLog = createLog("Trace level log", "DEBUG");
         TraceContext.recordLog(traceLog);
 
-        // Add component with its own logs
-        List<LogEntry> triggerLogs = List.of(createLog("Trigger log", "INFO"));
+        // Simulate component logging: start capture, log, stop capture
+        traceContext.startLogCapture();  // Trigger buffer
+        LogEntry triggerLog = createLog("Trigger log", "INFO");
+        TraceContext.recordLog(triggerLog);  // Goes to BOTH trigger AND trace buffers
+        List<LogEntry> triggerLogs = traceContext.stopLogCapture();
         traceContext.addTrigger(createTriggerEntry(triggerLogs));
 
         // Act
         ExecutionTrace result = traceContext.complete();
 
-        // Assert - trace logs AND component logs aggregated together
+        // Assert - trace logs AND component logs (via dual-write) are aggregated
         assertThat(result.getLogs()).hasSize(2);
-        assertThat(result.getLogs()).contains(traceLog);
-        assertThat(result.getLogs()).contains(triggerLogs.get(0));
+        assertThat(result.getLogs()).contains(traceLog, triggerLog);
         // Component logs also remain in their entries
-        assertThat(result.getTrace().getTriggers().get(0).getLogs()).containsExactly(triggerLogs.get(0));
+        assertThat(result.getTrace().getTriggers().get(0).getLogs()).containsExactly(triggerLog);
     }
 
     @Test
     void testTraceLevelLogs_empty() {
         // Arrange - no trace-level logs recorded
-        // Add components with their logs
-        List<LogEntry> conditionLogs = List.of(createLog("Condition log", "INFO"));
+        // Simulate component logging: start capture, log, stop capture
+        traceContext.startLogCapture();  // Condition buffer
+        LogEntry conditionLog = createLog("Condition log", "INFO");
+        TraceContext.recordLog(conditionLog);  // Goes to BOTH condition AND trace buffers
+        List<LogEntry> conditionLogs = traceContext.stopLogCapture();
         traceContext.addCondition(createConditionEntry(conditionLogs));
 
         // Act
         ExecutionTrace result = traceContext.complete();
 
-        // Assert - trace logs aggregated from components even if trace-level empty
+        // Assert - trace logs contain component logs (via dual-write) even if no direct trace logs
         assertThat(result.getLogs()).hasSize(1);
-        assertThat(result.getLogs()).contains(conditionLogs.get(0));
+        assertThat(result.getLogs()).contains(conditionLog);
         // Component logs also remain in their entries
         assertThat(result.getTrace().getConditions().get(0).getLogs()).hasSize(1);
     }
 
     @Test
     void testComponentLogs_remainInComponentEntries() {
-        // Arrange - Component logs should stay in their trace entries AND be aggregated
-        List<LogEntry> actionLogs = List.of(
-                createLog("Action started", "INFO"),
-                createLog("Action processing", "DEBUG"),
-                createLog("Action completed", "INFO"));
+        // Arrange - Simulate component logging using start/stop capture to trigger dual-write
+        traceContext.startLogCapture();
+        LogEntry log1 = createLog("Action started", "INFO");
+        LogEntry log2 = createLog("Action processing", "DEBUG");
+        LogEntry log3 = createLog("Action completed", "INFO");
+        TraceContext.recordLog(log1);
+        TraceContext.recordLog(log2);
+        TraceContext.recordLog(log3);
+        List<LogEntry> actionLogs = traceContext.stopLogCapture();
 
         ActionTraceEntry action = ActionTraceEntry.builder()
                 .type("action")
@@ -113,7 +125,7 @@ class TraceContextLogAggregationTest {
         // Act
         ExecutionTrace result = traceContext.complete();
 
-        // Assert - Component logs aggregated to trace level AND remain in component entry
+        // Assert - Component logs dual-written to trace level AND remain in component entry
         assertThat(result.getLogs()).hasSize(3);
         assertThat(result.getLogs()).containsAll(actionLogs);
         assertThat(result.getTrace().getActions().get(0).getLogs()).hasSize(3);
@@ -122,42 +134,68 @@ class TraceContextLogAggregationTest {
 
     @Test
     void testComponentLogs_allTypesRemainInEntries() {
-        // Arrange - Logs from all component types aggregated AND stay in their entries
-        List<LogEntry> varLogs = List.of(createLog("Variable log", "DEBUG"));
-        List<LogEntry> triggerLogs = List.of(createLog("Trigger log", "INFO"));
-        List<LogEntry> conditionLogs = List.of(createLog("Condition log", "TRACE"));
-        List<LogEntry> actionLogs = List.of(createLog("Action log", "INFO"));
-        List<LogEntry> resultLogs = List.of(createLog("Result log", "DEBUG"));
+        // Arrange - Logs from all component types using dual-write mechanism
+        // Variable
+        traceContext.startLogCapture();
+        LogEntry varLog = createLog("Variable log", "DEBUG");
+        TraceContext.recordLog(varLog);
+        traceContext.addVariable(createVariableEntry("var", traceContext.stopLogCapture()));
 
-        traceContext.addVariable(createVariableEntry("var", varLogs));
-        traceContext.addTrigger(createTriggerEntry(triggerLogs));
-        traceContext.addCondition(createConditionEntry(conditionLogs));
-        traceContext.addAction(createActionEntry(actionLogs));
-        traceContext.setResult(createResultEntry(resultLogs));
+        // Trigger
+        traceContext.startLogCapture();
+        LogEntry triggerLog = createLog("Trigger log", "INFO");
+        TraceContext.recordLog(triggerLog);
+        traceContext.addTrigger(createTriggerEntry(traceContext.stopLogCapture()));
+
+        // Condition
+        traceContext.startLogCapture();
+        LogEntry conditionLog = createLog("Condition log", "TRACE");
+        TraceContext.recordLog(conditionLog);
+        traceContext.addCondition(createConditionEntry(traceContext.stopLogCapture()));
+
+        // Action
+        traceContext.startLogCapture();
+        LogEntry actionLog = createLog("Action log", "INFO");
+        TraceContext.recordLog(actionLog);
+        traceContext.addAction(createActionEntry(traceContext.stopLogCapture()));
+
+        // Result
+        traceContext.startLogCapture();
+        LogEntry resultLog = createLog("Result log", "DEBUG");
+        TraceContext.recordLog(resultLog);
+        traceContext.setResult(createResultEntry(traceContext.stopLogCapture()));
 
         // Act
         ExecutionTrace result = traceContext.complete();
 
-        // Assert - All component logs aggregated to trace level
+        // Assert - All component logs dual-written to trace level AND remain in their entries
         assertThat(result.getLogs()).hasSize(5);
-        assertThat(result.getLogs()).containsAll(varLogs);
-        assertThat(result.getLogs()).containsAll(triggerLogs);
-        assertThat(result.getLogs()).containsAll(conditionLogs);
-        assertThat(result.getLogs()).containsAll(actionLogs);
-        assertThat(result.getLogs()).containsAll(resultLogs);
-        // Component logs also remain in their entries
-        assertThat(result.getTrace().getVariables().get(0).getLogs()).containsAll(varLogs);
-        assertThat(result.getTrace().getTriggers().get(0).getLogs()).containsAll(triggerLogs);
-        assertThat(result.getTrace().getConditions().get(0).getLogs()).containsAll(conditionLogs);
-        assertThat(result.getTrace().getActions().get(0).getLogs()).containsAll(actionLogs);
-        assertThat(result.getTrace().getResult().getLogs()).containsAll(resultLogs);
+        assertThat(result.getLogs()).contains(varLog, triggerLog, conditionLog, actionLog, resultLog);
+
+        // Each component still has its logs
+        assertThat(result.getTrace().getVariables().get(0).getLogs()).containsExactly(varLog);
+        assertThat(result.getTrace().getTriggers().get(0).getLogs()).containsExactly(triggerLog);
+        assertThat(result.getTrace().getConditions().get(0).getLogs()).containsExactly(conditionLog);
+        assertThat(result.getTrace().getActions().get(0).getLogs()).containsExactly(actionLog);
+        assertThat(result.getTrace().getResult().getLogs()).containsExactly(resultLog);
     }
 
     @Test
     void testNestedComponentLogs_remainInHierarchy() {
-        // Arrange - Nested component logs aggregated recursively AND stay in their structure
-        List<LogEntry> parentLogs = List.of(createLog("Parent log", "INFO"));
-        List<LogEntry> childLogs = List.of(createLog("Child log", "DEBUG"));
+        // Arrange - Nested component logs using dual-write mechanism
+        
+        // Parent action
+        traceContext.startLogCapture();
+        LogEntry parentLog = createLog("Parent log", "INFO");
+        TraceContext.recordLog(parentLog);
+        List<LogEntry> parentLogs = traceContext.stopLogCapture();
+
+        // Child action (nested scope)
+        traceContext.enterNestedScope();
+        traceContext.startLogCapture();
+        LogEntry childLog = createLog("Child log", "DEBUG");
+        TraceContext.recordLog(childLog);
+        List<LogEntry> childLogs = traceContext.stopLogCapture();
 
         TraceChildren children = new TraceChildren();
         ActionTraceEntry childAction = ActionTraceEntry.builder()
@@ -167,6 +205,7 @@ class TraceContextLogAggregationTest {
                 .logs(childLogs)
                 .build();
         children.getActions().add(childAction);
+        traceContext.exitNestedScope();
 
         ActionTraceEntry parentAction = ActionTraceEntry.builder()
                 .type("parentAction")
@@ -181,14 +220,13 @@ class TraceContextLogAggregationTest {
         // Act
         ExecutionTrace result = traceContext.complete();
 
-        // Assert - All logs aggregated to trace level (parent + child)
+        // Assert - All logs dual-written to trace level (parent + child)
         assertThat(result.getLogs()).hasSize(2);
-        assertThat(result.getLogs()).containsAll(parentLogs);
-        assertThat(result.getLogs()).containsAll(childLogs);
+        assertThat(result.getLogs()).contains(parentLog, childLog);
         // Logs also remain in their component hierarchy
         ActionTraceEntry resultAction = result.getTrace().getActions().get(0);
-        assertThat(resultAction.getLogs()).containsAll(parentLogs);
-        assertThat(resultAction.getChildren().getActions().get(0).getLogs()).containsAll(childLogs);
+        assertThat(resultAction.getLogs()).containsExactly(parentLog);
+        assertThat(resultAction.getChildren().getActions().get(0).getLogs()).containsExactly(childLog);
     }
 
     @Test
