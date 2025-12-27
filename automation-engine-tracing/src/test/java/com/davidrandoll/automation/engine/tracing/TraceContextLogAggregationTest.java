@@ -46,10 +46,10 @@ class TraceContextLogAggregationTest {
         // Act
         ExecutionTrace result = traceContext.complete();
 
-        // Assert - trace level should only have its own logs, not aggregate from children
-        assertThat(result.getLogs()).hasSize(2);
-        assertThat(result.getLogs()).containsExactly(traceLog1, traceLog2);
-        
+        // Assert - trace level has its own logs PLUS aggregated component logs
+        assertThat(result.getLogs()).hasSize(3);
+        assertThat(result.getLogs()).contains(traceLog1, traceLog2, actionLogs.get(0));
+
         // Children should still have their logs
         assertThat(result.getTrace().getActions()).hasSize(1);
         assertThat(result.getTrace().getActions().get(0).getLogs()).containsExactly(actionLogs.get(0));
@@ -68,9 +68,11 @@ class TraceContextLogAggregationTest {
         // Act
         ExecutionTrace result = traceContext.complete();
 
-        // Assert - trace logs independent from component logs
-        assertThat(result.getLogs()).hasSize(1);
-        assertThat(result.getLogs()).containsExactly(traceLog);
+        // Assert - trace logs AND component logs aggregated together
+        assertThat(result.getLogs()).hasSize(2);
+        assertThat(result.getLogs()).contains(traceLog);
+        assertThat(result.getLogs()).contains(triggerLogs.get(0));
+        // Component logs also remain in their entries
         assertThat(result.getTrace().getTriggers().get(0).getLogs()).containsExactly(triggerLogs.get(0));
     }
 
@@ -84,20 +86,20 @@ class TraceContextLogAggregationTest {
         // Act
         ExecutionTrace result = traceContext.complete();
 
-        // Assert - trace level logs should be empty
-        assertThat(result.getLogs()).isEmpty();
-        // But component logs should still exist
+        // Assert - trace logs aggregated from components even if trace-level empty
+        assertThat(result.getLogs()).hasSize(1);
+        assertThat(result.getLogs()).contains(conditionLogs.get(0));
+        // Component logs also remain in their entries
         assertThat(result.getTrace().getConditions().get(0).getLogs()).hasSize(1);
     }
 
     @Test
     void testComponentLogs_remainInComponentEntries() {
-        // Arrange - Component logs should stay in their trace entries
+        // Arrange - Component logs should stay in their trace entries AND be aggregated
         List<LogEntry> actionLogs = List.of(
                 createLog("Action started", "INFO"),
                 createLog("Action processing", "DEBUG"),
-                createLog("Action completed", "INFO")
-        );
+                createLog("Action completed", "INFO"));
 
         ActionTraceEntry action = ActionTraceEntry.builder()
                 .type("action")
@@ -111,15 +113,16 @@ class TraceContextLogAggregationTest {
         // Act
         ExecutionTrace result = traceContext.complete();
 
-        // Assert - Component logs remain in action entry, trace-level logs are empty
-        assertThat(result.getLogs()).isEmpty();
+        // Assert - Component logs aggregated to trace level AND remain in component entry
+        assertThat(result.getLogs()).hasSize(3);
+        assertThat(result.getLogs()).containsAll(actionLogs);
         assertThat(result.getTrace().getActions().get(0).getLogs()).hasSize(3);
         assertThat(result.getTrace().getActions().get(0).getLogs()).containsAll(actionLogs);
     }
 
     @Test
     void testComponentLogs_allTypesRemainInEntries() {
-        // Arrange - Logs from all component types stay in their entries
+        // Arrange - Logs from all component types aggregated AND stay in their entries
         List<LogEntry> varLogs = List.of(createLog("Variable log", "DEBUG"));
         List<LogEntry> triggerLogs = List.of(createLog("Trigger log", "INFO"));
         List<LogEntry> conditionLogs = List.of(createLog("Condition log", "TRACE"));
@@ -135,7 +138,14 @@ class TraceContextLogAggregationTest {
         // Act
         ExecutionTrace result = traceContext.complete();
 
-        // Assert - Component logs stay in their entries
+        // Assert - All component logs aggregated to trace level
+        assertThat(result.getLogs()).hasSize(5);
+        assertThat(result.getLogs()).containsAll(varLogs);
+        assertThat(result.getLogs()).containsAll(triggerLogs);
+        assertThat(result.getLogs()).containsAll(conditionLogs);
+        assertThat(result.getLogs()).containsAll(actionLogs);
+        assertThat(result.getLogs()).containsAll(resultLogs);
+        // Component logs also remain in their entries
         assertThat(result.getTrace().getVariables().get(0).getLogs()).containsAll(varLogs);
         assertThat(result.getTrace().getTriggers().get(0).getLogs()).containsAll(triggerLogs);
         assertThat(result.getTrace().getConditions().get(0).getLogs()).containsAll(conditionLogs);
@@ -145,7 +155,7 @@ class TraceContextLogAggregationTest {
 
     @Test
     void testNestedComponentLogs_remainInHierarchy() {
-        // Arrange - Nested component logs should stay in their structure
+        // Arrange - Nested component logs aggregated recursively AND stay in their structure
         List<LogEntry> parentLogs = List.of(createLog("Parent log", "INFO"));
         List<LogEntry> childLogs = List.of(createLog("Child log", "DEBUG"));
 
@@ -171,12 +181,14 @@ class TraceContextLogAggregationTest {
         // Act
         ExecutionTrace result = traceContext.complete();
 
-        // Assert - Logs remain in their component hierarchy
+        // Assert - All logs aggregated to trace level (parent + child)
+        assertThat(result.getLogs()).hasSize(2);
+        assertThat(result.getLogs()).containsAll(parentLogs);
+        assertThat(result.getLogs()).containsAll(childLogs);
+        // Logs also remain in their component hierarchy
         ActionTraceEntry resultAction = result.getTrace().getActions().get(0);
         assertThat(resultAction.getLogs()).containsAll(parentLogs);
         assertThat(resultAction.getChildren().getActions().get(0).getLogs()).containsAll(childLogs);
-        // Trace-level logs should be empty
-        assertThat(result.getLogs()).isEmpty();
     }
 
     @Test
@@ -202,7 +214,7 @@ class TraceContextLogAggregationTest {
         // Act
         ExecutionTrace result = traceContext.complete();
 
-        // Assert - Should not throw, trace-level logs empty
+        // Assert - Should not throw, aggregation handles null/empty gracefully
         assertThat(result.getLogs()).isEmpty();
     }
 

@@ -12,7 +12,8 @@ import java.util.List;
  * Context holder for trace data during automation execution.
  * Stored in EventContext metadata to track trace entries hierarchically.
  * <p>
- * Uses a stack-based approach to handle nested children (e.g., ifThenElse actions
+ * Uses a stack-based approach to handle nested children (e.g., ifThenElse
+ * actions
  * that contain nested conditions and actions).
  * </p>
  */
@@ -36,7 +37,8 @@ public class TraceContext {
     /**
      * Stack of TraceChildren for handling nested operations.
      * The bottom of the stack is the root trace data (converted to TraceChildren).
-     * When entering a nested scope (e.g., inside ifThenElse), a new TraceChildren is pushed.
+     * When entering a nested scope (e.g., inside ifThenElse), a new TraceChildren
+     * is pushed.
      */
     private final Deque<TraceChildren> childrenStack = new LinkedList<>();
 
@@ -125,7 +127,8 @@ public class TraceContext {
      */
     public static TraceContext get(EventContext eventContext) {
         Object existing = eventContext.getMetadata().get(TRACE_CONTEXT_KEY);
-        if (existing instanceof TraceContext traceContext) return traceContext;
+        if (existing instanceof TraceContext traceContext)
+            return traceContext;
         return null;
     }
 
@@ -205,21 +208,122 @@ public class TraceContext {
      */
     public ExecutionTrace complete() {
         executionTrace.setFinishedAt(System.currentTimeMillis());
-        
-        // Stop trace-level log capture (logs at automation execution level)
+
+        // Collect logs from two sources:
+        // 1. Trace-level logs (captured during automation execution)
         List<LogEntry> traceLevelLogs = this.stopLogCapture();
-        executionTrace.setLogs(traceLevelLogs);
+        
+        // 2. Component logs (from all child blocks - variables, triggers, conditions, actions, results)
+        List<LogEntry> allLogs = new ArrayList<>(traceLevelLogs);
         
         // Transfer from root TraceChildren to ExecutionTrace.TraceData
         TraceChildren root = childrenStack.peekLast();
         if (root != null) {
+            // Aggregate logs from all components
+            collectLogsFromVariables(root.getVariables(), allLogs);
+            collectLogsFromTriggers(root.getTriggers(), allLogs);
+            collectLogsFromConditions(root.getConditions(), allLogs);
+            collectLogsFromActions(root.getActions(), allLogs);
+            if (root.getResult() != null) {
+                collectLogsFromResult(root.getResult(), allLogs);
+            }
+            
             executionTrace.getTrace().setVariables(root.getVariables());
             executionTrace.getTrace().setTriggers(root.getTriggers());
             executionTrace.getTrace().setConditions(root.getConditions());
             executionTrace.getTrace().setActions(root.getActions());
             executionTrace.getTrace().setResult(root.getResult());
         }
+        
+        executionTrace.setLogs(allLogs);
         return executionTrace;
+    }
+
+    /**
+     * Collects logs from variable entries, including nested children.
+     */
+    private void collectLogsFromVariables(List<VariableTraceEntry> variables, List<LogEntry> allLogs) {
+        if (variables == null) return;
+        for (VariableTraceEntry var : variables) {
+            if (var.getLogs() != null) {
+                allLogs.addAll(var.getLogs());
+            }
+            if (var.getChildren() != null) {
+                collectLogsFromChildren(var.getChildren(), allLogs);
+            }
+        }
+    }
+
+    /**
+     * Collects logs from trigger entries, including nested children.
+     */
+    private void collectLogsFromTriggers(List<TriggerTraceEntry> triggers, List<LogEntry> allLogs) {
+        if (triggers == null) return;
+        for (TriggerTraceEntry trigger : triggers) {
+            if (trigger.getLogs() != null) {
+                allLogs.addAll(trigger.getLogs());
+            }
+            if (trigger.getChildren() != null) {
+                collectLogsFromChildren(trigger.getChildren(), allLogs);
+            }
+        }
+    }
+
+    /**
+     * Collects logs from condition entries, including nested children.
+     */
+    private void collectLogsFromConditions(List<ConditionTraceEntry> conditions, List<LogEntry> allLogs) {
+        if (conditions == null) return;
+        for (ConditionTraceEntry condition : conditions) {
+            if (condition.getLogs() != null) {
+                allLogs.addAll(condition.getLogs());
+            }
+            if (condition.getChildren() != null) {
+                collectLogsFromChildren(condition.getChildren(), allLogs);
+            }
+        }
+    }
+
+    /**
+     * Collects logs from action entries, including nested children.
+     */
+    private void collectLogsFromActions(List<ActionTraceEntry> actions, List<LogEntry> allLogs) {
+        if (actions == null) return;
+        for (ActionTraceEntry action : actions) {
+            if (action.getLogs() != null) {
+                allLogs.addAll(action.getLogs());
+            }
+            if (action.getChildren() != null) {
+                collectLogsFromChildren(action.getChildren(), allLogs);
+            }
+        }
+    }
+
+    /**
+     * Collects logs from result entry, including nested children.
+     */
+    private void collectLogsFromResult(ResultTraceEntry result, List<LogEntry> allLogs) {
+        if (result == null) return;
+        if (result.getLogs() != null) {
+            allLogs.addAll(result.getLogs());
+        }
+        if (result.getChildren() != null) {
+            collectLogsFromChildren(result.getChildren(), allLogs);
+        }
+    }
+
+    /**
+     * Recursively collects logs from nested children.
+     */
+    private void collectLogsFromChildren(TraceChildren children, List<LogEntry> allLogs) {
+        if (children == null) return;
+        collectLogsFromVariables(children.getVariables(), allLogs);
+        collectLogsFromTriggers(children.getTriggers(), allLogs);
+        collectLogsFromConditions(children.getConditions(), allLogs);
+        collectLogsFromActions(children.getActions(), allLogs);
+        if (children.getResult() != null) {
+            collectLogsFromResult(children.getResult(), allLogs);
+        }
     }
 
     /**
@@ -235,6 +339,5 @@ public class TraceContext {
     public ExecutionTrace getExecutionTrace() {
         return executionTrace;
     }
-
 
 }

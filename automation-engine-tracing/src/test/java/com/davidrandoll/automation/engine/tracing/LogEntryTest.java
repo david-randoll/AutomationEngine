@@ -12,7 +12,7 @@ class LogEntryTest {
     void testBuilder_createsLogEntry() {
         // Arrange
         Instant now = Instant.now();
-        Object[] args = new Object[]{"arg1", "arg2"};
+        Object[] args = new Object[] { "arg1", "arg2" };
 
         // Act
         LogEntry logEntry = LogEntry.builder()
@@ -49,7 +49,7 @@ class LogEntryTest {
     void testAllArgsConstructor() {
         // Arrange
         Instant now = Instant.now();
-        Object[] args = new Object[]{"test"};
+        Object[] args = new Object[] { "test" };
 
         // Act
         LogEntry logEntry = new LogEntry(
@@ -57,8 +57,7 @@ class LogEntryTest {
                 args,
                 "formatted message",
                 now,
-                "DEBUG"
-        );
+                "DEBUG");
 
         // Assert
         assertThat(logEntry.getMessage()).isEqualTo("message");
@@ -73,7 +72,7 @@ class LogEntryTest {
         // Arrange
         LogEntry logEntry = new LogEntry();
         Instant now = Instant.now();
-        Object[] args = new Object[]{"value"};
+        Object[] args = new Object[] { "value" };
 
         // Act
         logEntry.setMessage("new message");
@@ -94,8 +93,8 @@ class LogEntryTest {
     void testEquals_sameValues() {
         // Arrange
         Instant now = Instant.now();
-        Object[] args = new Object[]{"test"};
-        
+        Object[] args = new Object[] { "test" };
+
         LogEntry entry1 = LogEntry.builder()
                 .message("msg")
                 .arguments(args)

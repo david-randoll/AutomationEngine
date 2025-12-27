@@ -34,7 +34,7 @@ class TracingAppenderTest {
     void testAppend_capturesLogEntry() {
         // Arrange
         when(loggingEvent.getMessage()).thenReturn("Test message with {}");
-        when(loggingEvent.getArgumentArray()).thenReturn(new Object[]{"arg1"});
+        when(loggingEvent.getArgumentArray()).thenReturn(new Object[] { "arg1" });
         when(loggingEvent.getFormattedMessage()).thenReturn("Test message with arg1");
         when(loggingEvent.getTimeStamp()).thenReturn(System.currentTimeMillis());
         when(loggingEvent.getLevel()).thenReturn(Level.INFO);
@@ -58,7 +58,7 @@ class TracingAppenderTest {
     void testAppend_capturesErrorLevel() {
         // Arrange
         when(loggingEvent.getMessage()).thenReturn("Error occurred");
-        when(loggingEvent.getArgumentArray()).thenReturn(new Object[]{});
+        when(loggingEvent.getArgumentArray()).thenReturn(new Object[] {});
         when(loggingEvent.getFormattedMessage()).thenReturn("Error occurred");
         when(loggingEvent.getTimeStamp()).thenReturn(System.currentTimeMillis());
         when(loggingEvent.getLevel()).thenReturn(Level.ERROR);
@@ -78,7 +78,7 @@ class TracingAppenderTest {
     void testAppend_capturesWarnLevel() {
         // Arrange
         when(loggingEvent.getMessage()).thenReturn("Warning message");
-        when(loggingEvent.getArgumentArray()).thenReturn(new Object[]{});
+        when(loggingEvent.getArgumentArray()).thenReturn(new Object[] {});
         when(loggingEvent.getFormattedMessage()).thenReturn("Warning message");
         when(loggingEvent.getTimeStamp()).thenReturn(System.currentTimeMillis());
         when(loggingEvent.getLevel()).thenReturn(Level.WARN);
@@ -98,7 +98,7 @@ class TracingAppenderTest {
     void testAppend_capturesDebugLevel() {
         // Arrange
         when(loggingEvent.getMessage()).thenReturn("Debug info");
-        when(loggingEvent.getArgumentArray()).thenReturn(new Object[]{});
+        when(loggingEvent.getArgumentArray()).thenReturn(new Object[] {});
         when(loggingEvent.getFormattedMessage()).thenReturn("Debug info");
         when(loggingEvent.getTimeStamp()).thenReturn(System.currentTimeMillis());
         when(loggingEvent.getLevel()).thenReturn(Level.DEBUG);
@@ -118,7 +118,7 @@ class TracingAppenderTest {
     void testAppend_capturesTraceLevel() {
         // Arrange
         when(loggingEvent.getMessage()).thenReturn("Trace details");
-        when(loggingEvent.getArgumentArray()).thenReturn(new Object[]{});
+        when(loggingEvent.getArgumentArray()).thenReturn(new Object[] {});
         when(loggingEvent.getFormattedMessage()).thenReturn("Trace details");
         when(loggingEvent.getTimeStamp()).thenReturn(System.currentTimeMillis());
         when(loggingEvent.getLevel()).thenReturn(Level.TRACE);
@@ -158,7 +158,7 @@ class TracingAppenderTest {
     void testAppend_capturesMultipleLogs() {
         // Arrange
         when(loggingEvent.getMessage()).thenReturn("Message 1", "Message 2", "Message 3");
-        when(loggingEvent.getArgumentArray()).thenReturn(new Object[]{});
+        when(loggingEvent.getArgumentArray()).thenReturn(new Object[] {});
         when(loggingEvent.getFormattedMessage()).thenReturn("Message 1", "Message 2", "Message 3");
         when(loggingEvent.getTimeStamp()).thenReturn(System.currentTimeMillis());
         when(loggingEvent.getLevel()).thenReturn(Level.INFO);
@@ -180,7 +180,7 @@ class TracingAppenderTest {
         // Arrange
         TraceContext.clearThreadContext();
         when(loggingEvent.getMessage()).thenReturn("Message");
-        when(loggingEvent.getArgumentArray()).thenReturn(new Object[]{});
+        when(loggingEvent.getArgumentArray()).thenReturn(new Object[] {});
         when(loggingEvent.getFormattedMessage()).thenReturn("Message");
         when(loggingEvent.getTimeStamp()).thenReturn(System.currentTimeMillis());
         when(loggingEvent.getLevel()).thenReturn(Level.INFO);
