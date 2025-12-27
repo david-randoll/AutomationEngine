@@ -85,20 +85,20 @@ export default function LogsViewer({ logs, title = "Logs", className = "", maxHe
     if (!logs || logs.length === 0) {
         return (
             <div className={`${className} border rounded-lg p-4 bg-gray-50`}>
-                <h3 className="text-sm font-medium text-gray-700 mb-2">{title}</h3>
+                {title && <h3 className="text-sm font-medium text-gray-700 mb-2">{title}</h3>}
                 <p className="text-xs text-gray-400 italic">No logs captured</p>
             </div>
         );
     }
 
     return (
-        <div className={`${className} border rounded-lg overflow-hidden`}>
-            <div className="bg-gray-50 px-3 py-2 border-b">
-                <h3 className="text-sm font-medium text-gray-700">
-                    {title} <span className="text-gray-400 font-normal">({logs.length})</span>
-                </h3>
-            </div>
-            <div className="overflow-y-auto font-mono text-xs" style={{ maxHeight }}>
+        <div className={`${className} border rounded-lg overflow-hidden flex flex-col`}>
+            {title && (
+                <div className="bg-gray-50 px-3 py-2 border-b shrink-0">
+                    <h3 className="text-sm font-medium text-gray-700">{title}</h3>
+                </div>
+            )}
+            <div className="overflow-y-auto font-mono text-xs flex-1" style={{ maxHeight }}>
                 {processedLogs.map((log) => (
                     <div
                         key={log.id}

@@ -2,7 +2,7 @@
 
 ## Overview
 
-The React playground now displays structured logs with color-coded logging levels for both individual components and the entire trace execution.
+The React playground displays structured logs with color-coded logging levels through convenient modal dialogs, keeping the interface clean while providing easy access to detailed logging information.
 
 ## Features Implemented
 
@@ -26,7 +26,7 @@ export interface LogEntry {
 
 ### 3. LogsViewer Component
 
-Created a new component (`LogsViewer.tsx`) that displays logs with:
+Created a reusable component (`LogsViewer.tsx`) that displays logs with:
 
 #### Color-Coded Log Levels
 
@@ -44,113 +44,128 @@ The component automatically detects log levels from the formatted message and ap
 - **Log Levels**: Bold level indicator with colored dot icon
 - **Message Display**: Full formatted message with word wrapping
 - **Arguments**: Expandable details section showing arguments array in JSON format
-- **Scrollable**: Max height with scroll for many logs
+- **Scrollable**: Adaptive height with scroll for many logs
 - **Count Display**: Shows total number of logs in header
 
-### 4. Component-Level Logs
+### 4. Trace-Level Logs Modal
 
-Each trace entry now displays its own logs in the `TraceDetailPanel`:
+Access all logs from the entire execution via a modal:
+- **Button**: "View Logs (N)" button in the header next to "Copy Trace"
+- **Location**: Top header bar of the playground
+- **Icon**: List icon (FaListAlt)
+- **Shows**: Count of total logs
+- **Modal**: Full-screen modal (90vw × 90vh) with all execution logs
+- **Only visible when**: Trace has logs
 
-- Appears above the diff viewer
-- Shows logs captured during that specific component's execution
-- Title: "Component Logs"
-- Max height: 200px with scrolling
+### 5. Component-Level Logs Modal
 
-### 5. Trace-Level Logs
-
-The entire execution's logs are displayed at the top of `TraceCanvas`:
-
-- Shows all aggregated logs from all components
-- Appears above the React Flow graph
-- Title: "All Execution Logs"
-- Max height: 150px with scrolling
-- Only visible if logs are present
+View logs from individual components via a modal:
+- **Button**: "Logs (N)" button in the detail panel
+- **Location**: In the diff controls section, left side
+- **Icon**: List icon (FaListAlt)
+- **Shows**: Count of component logs
+- **Modal**: Full-screen modal (90vw × 90vh) with component-specific logs
+- **Only visible when**: Selected component has logs
 
 ## Visual Layout
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│ Playground Header (Execute / View Trace tabs)          │
-├─────────────────────────────────────────────────────────┤
-│ Left Panel          │ Center/Right Panel                │
-│ (Automation/Input)  │                                   │
-│                     │ ┌───────────────────────────────┐ │
-│                     │ │ All Execution Logs (150px)    │ │
-│                     │ │ - Color coded by level        │ │
-│                     │ │ - Timestamps & messages       │ │
-│                     │ └───────────────────────────────┘ │
-│                     │ ┌───────────────────────────────┐ │
-│                     │ │                               │ │
-│                     │ │ React Flow Trace Graph        │ │
-│                     │ │                               │ │
-│                     │ └───────────────────────────────┘ │
-└─────────────────────┴───────────────────────────────────┘
-│ Detail Panel                                            │
-│ ┌─────────────────────────────────────────────────────┐ │
-│ │ Component Logs (200px)                              │ │
-│ │ - Logs from selected node                           │ │
-│ │ - Color coded by level                              │ │
-│ └─────────────────────────────────────────────────────┘ │
-│ ┌─────────────────────────────────────────────────────┐ │
-│ │ Diff Viewer (Event/Context/Result)                  │ │
-│ └─────────────────────────────────────────────────────┘ │
-└─────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────┐
+│ Playground Header                                           │
+│ [Execute/View Trace tabs]  [View Logs (42)] [Copy Trace]   │
+├─────────────────────────────────────────────────────────────┤
+│ Left Panel          │ React Flow Trace Graph                │
+│ (Automation/Input)  │                                       │
+│                     │                                       │
+│                     │  [Interactive node graph]            │
+│                     │                                       │
+└─────────────────────┴───────────────────────────────────────┘
+                      │ Detail Panel                          │
+                      │ [Logs (8)]                            │
+                      │ [Result/Event/Context] [Fullscreen]  │
+                      │ Diff Viewer                          │
+                      └───────────────────────────────────────┘
+
+When "View Logs" clicked:
+┌─────────────────────────────────────────────────────────────┐
+│ All Execution Logs                                      [X] │
+├─────────────────────────────────────────────────────────────┤
+│  ● INFO    14:23:45.123  Starting automation execution     │
+│  ● DEBUG   14:23:45.156  Resolving variables               │
+│  ● ERROR   14:23:45.234  Database connection failed        │
+│  ● WARN    14:23:45.267  Retrying connection...            │
+│  ● INFO    14:23:45.523  Automation completed              │
+│                                                             │
+│  [Scrollable, color-coded, expandable arguments]           │
+└─────────────────────────────────────────────────────────────┘
 ```
 
 ## Usage Example
 
 When an automation executes with logging:
 
-1. **Trace-Level View**: The top section shows ALL logs from the entire execution in chronological order
-2. **Component-Level View**: Click any node in the graph to see only logs from that specific component
+1. **View All Logs**: Click "View Logs (N)" button in the header to see all logs from the entire execution
+2. **View Component Logs**: Click any node in the graph, then click "Logs (N)" in the detail panel to see only that component's logs
 3. **Color Coding**: Instantly identify ERROR (red), WARN (yellow), INFO (blue), DEBUG (purple), TRACE (gray)
-4. **Details**: Click "Arguments" to expand and see the raw arguments passed to the logger
+4. **Details**: Expand "Arguments" sections to see the raw arguments passed to the logger
+5. **Close**: Click outside the modal or the X button to close
 
 ## Technical Details
 
-### Log Level Detection
+### Button Visibility Logic
 
+**Trace-Level Button** (PlaygroundPage.tsx):
 ```typescript
-function detectLogLevel(message: string): "ERROR" | "WARN" | "INFO" | "DEBUG" | "TRACE" {
-    const upperMsg = message.toUpperCase();
-    if (upperMsg.includes("ERROR") || upperMsg.includes("SEVERE")) return "ERROR";
-    if (upperMsg.includes("WARN") || upperMsg.includes("WARNING")) return "WARN";
-    if (upperMsg.includes("DEBUG")) return "DEBUG";
-    if (upperMsg.includes("TRACE")) return "TRACE";
-    return "INFO";
-}
+{trace.logs && trace.logs.length > 0 && (
+    <Button onClick={() => setLogsModalOpen(true)}>
+        View Logs ({trace.logs.length})
+    </Button>
+)}
 ```
 
-### Timestamp Formatting
-
+**Component-Level Button** (TraceDetailPanel.tsx):
 ```typescript
-function formatTimestamp(timestamp?: string): string {
-    const date = new Date(timestamp);
-    return date.toLocaleTimeString("en-US", { 
-        hour12: false, 
-        hour: "2-digit", 
-        minute: "2-digit", 
-        second: "2-digit",
-        fractionalSecondDigits: 3
-    });
-}
+{entry.logs && entry.logs.length > 0 && (
+    <Button onClick={() => setLogsModalOpen(true)}>
+        Logs ({entry.logs.length})
+    </Button>
+)}
+```
+
+### Modal Configuration
+
+Both modals use the same configuration for consistency:
+```typescript
+<Dialog open={logsModalOpen} onOpenChange={setLogsModalOpen}>
+    <DialogContent className="max-w-[90vw] w-[90vw] max-h-[90vh] h-[90vh]">
+        <LogsViewer 
+            logs={logs} 
+            title=""
+            maxHeight="100%"
+            className="h-full"
+        />
+    </DialogContent>
+</Dialog>
 ```
 
 ## Files Modified
 
 1. **types/trace.ts**: Added `LogEntry` interface and `logs` fields
-2. **playground/LogsViewer.tsx**: NEW - Log display component with color coding
-3. **playground/TraceDetailPanel.tsx**: Added component-level logs section
-4. **playground/TraceCanvas.tsx**: Added trace-level logs section
-5. **playground/index.ts**: Exported LogsViewer component
+2. **playground/LogsViewer.tsx**: Log display component with color coding
+3. **playground/PlaygroundPage.tsx**: Added trace-level logs button and modal
+4. **playground/TraceDetailPanel.tsx**: Added component-level logs button and modal
+5. **playground/TraceCanvas.tsx**: Removed inline logs display
+6. **playground/index.ts**: Exported LogsViewer component
 
 ## Benefits
 
-- **Quick Debugging**: Color-coded levels help identify errors/warnings at a glance
-- **Hierarchical View**: See logs at both trace and component levels
+- **Clean Interface**: Logs don't clutter the main interface
+- **On-Demand Access**: View logs only when needed
+- **Hierarchical Access**: Separate buttons for trace-level and component-level logs
+- **Quick Identification**: Color-coded levels help spot errors/warnings instantly
 - **Full Context**: Access both formatted message and original arguments
 - **Temporal Analysis**: Timestamps enable tracking execution order
-- **Clean UI**: Scrollable sections prevent overwhelming the interface
+- **Large Display**: Full-screen modals provide ample space for log analysis
 
 ## Future Enhancements
 
@@ -158,5 +173,5 @@ Potential improvements:
 - Filter logs by level (show only ERROR/WARN)
 - Search/filter logs by content
 - Export logs to file
-- Real-time log streaming during execution
-- Log level statistics/counts
+- Copy individual log entries
+- Log level statistics/counts in modal header

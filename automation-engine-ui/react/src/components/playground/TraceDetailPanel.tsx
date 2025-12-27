@@ -9,7 +9,7 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog";
 import type { TraceEntry, TraceSnapshot } from "@/types/trace";
-import { FaCheck, FaTimes, FaClock, FaExpand, FaExchangeAlt } from "react-icons/fa";
+import { FaCheck, FaTimes, FaClock, FaExpand, FaExchangeAlt, FaListAlt } from "react-icons/fa";
 import LogsViewer from "./LogsViewer";
 
 interface TraceDetailPanelProps {
@@ -36,6 +36,7 @@ function getSnapshotJson(snapshot: TraceSnapshot | undefined, key: "eventSnapsho
 export default function TraceDetailPanel({ entry, className }: TraceDetailPanelProps) {
     const [diffType, setDiffType] = useState<DiffType>("event");
     const [fullscreenOpen, setFullscreenOpen] = useState(false);
+    const [logsModalOpen, setLogsModalOpen] = useState(false);
 
     // Set default tab based on entry type
     useEffect(() => {
@@ -148,22 +149,11 @@ export default function TraceDetailPanel({ entry, className }: TraceDetailPanelP
                         )}
                     </div>
                 </CardHeader>
-                <CardContent className="pt-0 flex-1 flex flex-col min-h-0 gap-3">
-                    {/* Logs Section */}
-                    {entry.logs && entry.logs.length > 0 && (
-                        <div className="shrink-0">
-                            <LogsViewer 
-                                logs={entry.logs} 
-                                title="Component Logs"
-                                maxHeight="200px"
-                            />
-                        </div>
-                    )}
-                    
-                    <div className="flex-1 flex flex-col min-h-0">{/* Diff controls */}
+                <CardContent className="pt-0 flex-1 flex flex-col min-h-0">
+                    <div className="flex-1 flex flex-col min-h-0">
+                        {/* Diff controls */}
                         <div className="flex items-center justify-between mb-2 shrink-0">
-                            <div className="flex bg-gray-200 rounded p-0.5">
-                                {hasResultData && (
+                            <div className="flex bg-gray-200 rounded p-0.5">{hasResultData && (
                                     <button
                                         onClick={() => setDiffType("result")}
                                         className={`px-2 py-0.5 text-xs font-medium rounded transition-colors ${diffType === "result"
@@ -195,6 +185,18 @@ export default function TraceDetailPanel({ entry, className }: TraceDetailPanelP
                                     Context
                                 </button>
                             </div>
+                            <div className="flex items-center gap-2">
+                                {entry.logs && entry.logs.length > 0 && (
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => setLogsModalOpen(true)}
+                                        className="h-7 gap-1"
+                                    >
+                                        <FaListAlt className="w-3 h-3" />
+                                        <span className="text-xs">Logs</span>
+                                    </Button>
+                                )}
                             <Button
                                 variant="ghost"
                                 size="sm"
@@ -204,6 +206,7 @@ export default function TraceDetailPanel({ entry, className }: TraceDetailPanelP
                                 <FaExpand className="w-3 h-3" />
                                 <span className="text-xs">Fullscreen</span>
                             </Button>
+                            </div>
                         </div>
 
                         {/* Labels for Before/After */}
@@ -302,6 +305,25 @@ export default function TraceDetailPanel({ entry, className }: TraceDetailPanelP
                                 }}
                             />
                         </div>
+                    </div>
+                </DialogContent>
+            </Dialog>
+
+            {/* Component Logs Modal */}
+            <Dialog open={logsModalOpen} onOpenChange={setLogsModalOpen}>
+                <DialogContent className="max-w-[90vw] w-[90vw] sm:max-w-none max-h-[90vh] h-[90vh] flex flex-col p-0 gap-0">
+                    <DialogHeader className="shrink-0 px-6 pt-6 pb-4 border-b">
+                        <DialogTitle className="text-lg">
+                            {entry?.alias || entry?.type || "Component"} Logs
+                        </DialogTitle>
+                    </DialogHeader>
+                    <div className="flex-1 min-h-0 px-6 pb-6 pt-4">
+                        <LogsViewer 
+                            logs={entry?.logs} 
+                            title=""
+                            maxHeight="100%"
+                            className="h-full"
+                        />
                     </div>
                 </DialogContent>
             </Dialog>
