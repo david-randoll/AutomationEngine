@@ -306,7 +306,7 @@ const FieldRenderer = ({ fieldKey, schema, rootSchema, pathInData, onAddBlock }:
     if (presentationWidget === "slider") {
         const min = minValue ?? 0;
         const max = maxValue ?? 100;
-        
+
         return (
             <div key={name} className="space-y-2">
                 <Controller
@@ -339,7 +339,7 @@ const FieldRenderer = ({ fieldKey, schema, rootSchema, pathInData, onAddBlock }:
     if (presentationWidget === "dropdown" || (type === "string" && resolvedSch.enum)) {
         const options = dropdownOptions || (resolvedSch.enum as string[]) || [];
         const labels = dropdownLabels || options;
-        
+
         return (
             <div key={name} className="space-y-1">
                 <LabelWithHelp title={title} helpText={helpText} />
@@ -347,8 +347,8 @@ const FieldRenderer = ({ fieldKey, schema, rootSchema, pathInData, onAddBlock }:
                     control={control}
                     name={name}
                     render={({ field }) => (
-                        <Select 
-                            value={field.value || ""} 
+                        <Select
+                            value={field.value || ""}
                             onValueChange={(value) => field.onChange(value)}
                             disabled={readOnly}
                         >
@@ -373,7 +373,7 @@ const FieldRenderer = ({ fieldKey, schema, rootSchema, pathInData, onAddBlock }:
     if (presentationWidget === "radio") {
         const options = dropdownOptions || (resolvedSch.enum as string[]) || [];
         const labels = dropdownLabels || options;
-        
+
         return (
             <div key={name} className="space-y-2">
                 <LabelWithHelp title={title} helpText={helpText} />
@@ -426,15 +426,6 @@ const FieldRenderer = ({ fieldKey, schema, rootSchema, pathInData, onAddBlock }:
 
     // MONACO_EDITOR widget - code editor with syntax highlighting
     if (presentationWidget === "monaco_editor" && monacoLanguage) {
-        const defaultMonacoOptions = {
-            minimap: { enabled: false },
-            scrollBeyondLastLine: false,
-            fontSize: 13,
-            lineNumbers: "on" as const,
-            readOnly: readOnly || false,
-            ...monacoOptions
-        };
-
         return (
             <div key={name} className="space-y-1">
                 <LabelWithHelp title={title} helpText={helpText} />
@@ -448,7 +439,14 @@ const FieldRenderer = ({ fieldKey, schema, rootSchema, pathInData, onAddBlock }:
                                 language={monacoLanguage}
                                 value={field.value || ""}
                                 onChange={(value) => field.onChange(value || "")}
-                                options={defaultMonacoOptions}
+                                options={{
+                                    minimap: { enabled: false },
+                                    scrollBeyondLastLine: false,
+                                    fontSize: 13,
+                                    lineNumbers: "on" as const,
+                                    readOnly: readOnly || false,
+                                    ...monacoOptions
+                                }}
                             />
                         </div>
                     )}
@@ -581,7 +579,7 @@ const FieldRenderer = ({ fieldKey, schema, rootSchema, pathInData, onAddBlock }:
     // CUSTOM widget - user-registered custom component
     if (presentationWidget === "custom" && customComponent) {
         const CustomWidget = customWidgetRegistry.get(customComponent);
-        
+
         if (CustomWidget) {
             return (
                 <div key={name} className="space-y-1">
