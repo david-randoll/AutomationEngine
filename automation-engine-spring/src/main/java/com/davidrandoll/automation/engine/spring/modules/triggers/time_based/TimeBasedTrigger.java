@@ -3,11 +3,23 @@ package com.davidrandoll.automation.engine.spring.modules.triggers.time_based;
 
 import com.davidrandoll.automation.engine.core.events.EventContext;
 import com.davidrandoll.automation.engine.spring.modules.events.time_based.TimeBasedEvent;
+import com.davidrandoll.automation.engine.spring.modules.events.time_based.TimeBasedEventPublisher;
 import com.davidrandoll.automation.engine.spring.spi.PluggableTrigger;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalTime;
 
+/**
+ * Trigger that activates at a specific time of day.
+ *
+ * <p>When this trigger is evaluated with a matching time, it automatically
+ * schedules the next occurrence with the TimeBasedEventPublisher.
+ */
+@Slf4j
+@RequiredArgsConstructor
 public class TimeBasedTrigger extends PluggableTrigger<TimeBasedTriggerContext> {
+    private final TimeBasedEventPublisher publisher;
 
     @Override
     public boolean isTriggered(EventContext ec, TimeBasedTriggerContext tc) {
@@ -18,7 +30,29 @@ public class TimeBasedTrigger extends PluggableTrigger<TimeBasedTriggerContext> 
 
         if (atTime == null) return false;
 
-        return getNormalizedTime(eventTime).equals(getNormalizedTime(atTime));
+        boolean matches = getNormalizedTime(eventTime).equals(getNormalizedTime(atTime));
+
+        // If this trigger matches, schedule the next occurrence
+        if (matches && publisher != null) {
+            String scheduleKey = getScheduleKey(tc);
+            log.debug("Time-based trigger matched at {}. Scheduling next occurrence for '{}'.",
+                    atTime, scheduleKey);
+            publisher.scheduleAt(scheduleKey, atTime);
+        }
+
+        return matches;
+    }
+
+    /**
+     * Creates a unique schedule key from the trigger context.
+     * Uses the trigger alias if available, otherwise generates from time.
+     */
+    private String getScheduleKey(TimeBasedTriggerContext tc) {
+        if (tc.getAlias() != null && !tc.getAlias().isEmpty()) {
+            return tc.getAlias();
+        }
+        // Fallback to time-based key
+        return "time-trigger-" + tc.getAt();
     }
 
     private LocalTime getNormalizedTime(LocalTime time) {

@@ -238,8 +238,8 @@ public class ModulesConfig {
 
     @Bean(name = "timeTrigger")
     @ConditionalOnMissingBean(name = "timeTrigger", ignored = TimeBasedTrigger.class)
-    public TimeBasedTrigger timeTrigger() {
-        return new TimeBasedTrigger();
+    public TimeBasedTrigger timeTrigger(TimeBasedEventPublisher publisher) {
+        return new TimeBasedTrigger(publisher);
     }
 
     @Bean
