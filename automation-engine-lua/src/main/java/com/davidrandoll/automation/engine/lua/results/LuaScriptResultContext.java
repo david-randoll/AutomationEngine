@@ -1,6 +1,7 @@
 package com.davidrandoll.automation.engine.lua.results;
 
 import com.davidrandoll.automation.engine.core.result.IResultContext;
+import com.davidrandoll.automation.engine.spring.spi.ContextField;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Data;
@@ -36,6 +37,11 @@ public class LuaScriptResultContext implements IResultContext {
      * The script should return a value (table, string, number, etc.) that will be
      * the result of the automation execution.
      */
+    @ContextField(
+        widget = ContextField.Widget.MONACO_EDITOR,
+        monacoLanguage = "lua",
+        helpText = "Lua script that returns the automation result. Has access to: event, metadata, log, json objects."
+    )
     @JsonAlias({"script", "lua", "code"})
     private String script;
 }

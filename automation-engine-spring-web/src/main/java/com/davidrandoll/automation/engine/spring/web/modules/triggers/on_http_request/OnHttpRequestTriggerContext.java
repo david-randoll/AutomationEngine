@@ -1,6 +1,7 @@
 package com.davidrandoll.automation.engine.spring.web.modules.triggers.on_http_request;
 
 import com.davidrandoll.automation.engine.core.triggers.ITriggerContext;
+import com.davidrandoll.automation.engine.spring.spi.ContextField;
 import com.davidrandoll.spring_web_captor.event.HttpMethodEnum;
 import com.davidrandoll.automation.engine.spring.web.jackson.flexible_method.FlexibleHttpMethodList;
 import com.davidrandoll.automation.engine.spring.web.jackson.flexible_multi_value_map.FlexibleMultiValueMap;
@@ -38,36 +39,60 @@ public class OnHttpRequestTriggerContext implements ITriggerContext {
     private String description;
 
     /** HTTP methods to match (e.g., GET, POST, PUT, DELETE). If not specified, all methods will match */
+    @ContextField(
+        helpText = "HTTP methods to match. Leave empty to match all methods"
+    )
     @JsonAlias({"method", "methods"})
     @FlexibleHttpMethodList
     private List<HttpMethodEnum> methods;
 
     /** Full URL paths to match including context path (e.g., "/api/v1/users"). Supports wildcards */
+    @ContextField(
+        placeholder = "/api/v1/users/**",
+        helpText = "Full paths including context. Supports wildcards: * (single segment), ** (multiple segments)"
+    )
     @JsonAlias({"fullPath", "fullPaths", "fullUrl", "fullUrls"})
     @FlexibleStringList
     private List<String> fullPaths;
 
     /** Request paths to match excluding context path (e.g., "/users"). Supports wildcards */
+    @ContextField(
+        placeholder = "/users/{id}",
+        helpText = "Paths without context. Supports path variables {name} and wildcards"
+    )
     @JsonAlias({"path", "paths"})
     @FlexibleStringList
     private List<String> paths;
 
     /** HTTP headers that must be present in the request for this trigger to activate */
+    @ContextField(
+        helpText = "Required headers as key-value pairs (header name: expected value)"
+    )
     @JsonAlias({"headers", "header"})
     @FlexibleMultiValueMap
     private HttpHeaders headers;
 
     /** Query parameters that must be present in the request URL for this trigger to activate */
+    @ContextField(
+        helpText = "Required query parameters as key-value pairs (param name: expected value)"
+    )
     @JsonAlias({"query", "queryString", "queryParam", "queryParams"})
     @FlexibleMultiValueMap
     private MultiValueMap<String, String> queryParams;
 
     /** Path parameters extracted from the URL pattern that must match for this trigger to activate */
+    @ContextField(
+        helpText = "Expected path parameter values (param name: expected value)"
+    )
     @JsonAlias({"pathParams", "pathParam"})
     @FlexibleMultiValueMap
     private MultiValueMap<String, String> pathParams;
 
     /** Request body content that must match for this trigger to activate. Can be a JSON object or any value */
+    @ContextField(
+        widget = ContextField.Widget.TEXTAREA,
+        helpText = "JSON body content that must be present in the request"
+    )
     @JsonAlias({"body", "requestBody"})
     private JsonNode requestBody;
 

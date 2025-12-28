@@ -1,6 +1,7 @@
 package com.davidrandoll.automation.engine.spring.jdbc.triggers.on_query;
 
 import com.davidrandoll.automation.engine.core.triggers.ITriggerContext;
+import com.davidrandoll.automation.engine.spring.spi.ContextField;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Data;
@@ -28,13 +29,26 @@ public class OnJdbcQueryTriggerContext implements ITriggerContext {
     private String description;
 
     /** SQL query to execute for evaluation. Can contain placeholders for parameters */
+    @ContextField(
+        widget = ContextField.Widget.MONACO_EDITOR,
+        monacoLanguage = "sql",
+        helpText = "SQL query whose result will be evaluated by the expression"
+    )
     @JsonAlias({"query", "sql", "statement"})
     private String query;
 
     /** Parameters to bind to the query. Map keys correspond to named parameters in the SQL query */
+    @ContextField(
+        helpText = "Key-value pairs for query parameters. Keys must match :paramName placeholders"
+    )
     @JsonAlias({"params", "parameters", "queryParams", "args", "arguments"})
     private Map<String, Object> params = new HashMap<>();
 
     /** Template expression to evaluate against the query result. Trigger activates if expression evaluates to true */
+    @ContextField(
+        widget = ContextField.Widget.TEXTAREA,
+        placeholder = "{{ result | length > 0 }}",
+        helpText = "Pebble expression evaluated against query result. Use {{ result }} to access rows"
+    )
     private String expression;
 }

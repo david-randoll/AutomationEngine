@@ -1,6 +1,7 @@
 package com.davidrandoll.automation.engine.spring.web.modules.conditions.http_query_param;
 
 import com.davidrandoll.automation.engine.core.conditions.IConditionContext;
+import com.davidrandoll.automation.engine.spring.spi.ContextField;
 import com.davidrandoll.automation.engine.spring.web.modules.conditions.MatchContext;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
@@ -27,6 +28,9 @@ public class HttpQueryParamConditionContext implements IConditionContext {
     private String description;
 
     /** Map of query parameter names to match conditions. Each parameter can have match operations (equals, in, regex, etc.) */
+    @ContextField(
+        helpText = "Map query parameter names to match conditions (equals, in, regex, like, exists, etc.)"
+    )
     @JsonAnySetter
     @JsonAnyGetter
     private Map<String, MatchContext> queryParams;

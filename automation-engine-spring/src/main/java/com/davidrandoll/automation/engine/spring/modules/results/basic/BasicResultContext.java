@@ -1,6 +1,7 @@
 package com.davidrandoll.automation.engine.spring.modules.results.basic;
 
 import com.davidrandoll.automation.engine.core.result.IResultContext;
+import com.davidrandoll.automation.engine.spring.spi.ContextField;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -31,6 +32,9 @@ public class BasicResultContext implements IResultContext {
     private String description;
 
     /** JSON object containing the result data. Any additional properties will be included in the result */
+    @ContextField(
+        helpText = "Define result properties as key-value pairs. Values can use {{ }} templates"
+    )
     @JsonIgnore
     @JsonAnySetter
     private JsonNode results;

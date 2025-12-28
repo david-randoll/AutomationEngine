@@ -1,6 +1,7 @@
 package com.davidrandoll.automation.engine.lua.triggers;
 
 import com.davidrandoll.automation.engine.core.triggers.ITriggerContext;
+import com.davidrandoll.automation.engine.spring.spi.ContextField;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Data;
@@ -35,6 +36,11 @@ public class LuaScriptTriggerContext implements ITriggerContext {
      * The script has access to 'event', 'metadata', 'log', and 'json' objects.
      * The script should return true to trigger the automation, false otherwise.
      */
+    @ContextField(
+        widget = ContextField.Widget.MONACO_EDITOR,
+        monacoLanguage = "lua",
+        helpText = "Lua script that returns true to trigger automation. Has access to: event, metadata, log, json objects."
+    )
     @JsonAlias({"script", "lua", "code"})
     private String script;
 }

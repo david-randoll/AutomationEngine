@@ -1,6 +1,7 @@
 package com.davidrandoll.automation.engine.spring.web.modules.triggers.on_slow_http_request;
 
 import com.davidrandoll.automation.engine.core.triggers.ITriggerContext;
+import com.davidrandoll.automation.engine.spring.spi.ContextField;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Data;
@@ -20,6 +21,11 @@ import java.time.Duration;
 public class OnSlowHttpRequestContext implements ITriggerContext {
     private String alias;
     private String description;
+
+    @ContextField(
+        placeholder = "PT5S",
+        helpText = "Threshold for slow request detection (ISO-8601: PT5S = 5 sec, PT500MS = 500ms)"
+    )
     @JsonAlias({"timeout", "duration"})
     private Duration duration;
 

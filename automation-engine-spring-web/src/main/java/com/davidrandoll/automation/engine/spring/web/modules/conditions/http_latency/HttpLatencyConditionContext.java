@@ -1,6 +1,7 @@
 package com.davidrandoll.automation.engine.spring.web.modules.conditions.http_latency;
 
 import com.davidrandoll.automation.engine.core.conditions.IConditionContext;
+import com.davidrandoll.automation.engine.spring.spi.ContextField;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Data;
@@ -21,6 +22,10 @@ public class HttpLatencyConditionContext implements IConditionContext {
     private String alias;
     private String description;
 
+    @ContextField(
+        placeholder = "PT5S",
+        helpText = "Minimum response time threshold (ISO-8601: PT5S = 5 sec, PT100MS = 100ms)"
+    )
     @JsonAlias({"timeout", "duration"})
     private Duration duration;
 

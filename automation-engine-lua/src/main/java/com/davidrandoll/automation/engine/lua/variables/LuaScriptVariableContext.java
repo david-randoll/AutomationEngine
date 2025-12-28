@@ -1,6 +1,7 @@
 package com.davidrandoll.automation.engine.lua.variables;
 
 import com.davidrandoll.automation.engine.core.variables.IVariableContext;
+import com.davidrandoll.automation.engine.spring.spi.ContextField;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Data;
@@ -30,6 +31,10 @@ public class LuaScriptVariableContext implements IVariableContext {
      */
     private String description;
 
+    @ContextField(
+        placeholder = "myVariable",
+        helpText = "Name of the variable to store the computed value"
+    )
     @JsonAlias({"name", "variableName"})
     private String name;
 
@@ -39,6 +44,11 @@ public class LuaScriptVariableContext implements IVariableContext {
      * The script should return a table with variable names and values that will be
      * added to the event context metadata.
      */
+    @ContextField(
+        widget = ContextField.Widget.MONACO_EDITOR,
+        monacoLanguage = "lua",
+        helpText = "Lua script that returns a table of variable names/values. Has access to: event, metadata, log, json objects."
+    )
     @JsonAlias({"script", "lua", "code"})
     private String script;
 }

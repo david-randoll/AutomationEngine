@@ -1,6 +1,7 @@
 package com.davidrandoll.automation.engine.spring.web.modules.conditions.http_header;
 
 import com.davidrandoll.automation.engine.core.conditions.IConditionContext;
+import com.davidrandoll.automation.engine.spring.spi.ContextField;
 import com.davidrandoll.automation.engine.spring.web.modules.conditions.MatchContext;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
@@ -26,6 +27,9 @@ public class HttpHeaderConditionContext implements IConditionContext {
     private String description;
 
     /** Map of HTTP header names to match conditions. Each header can have match operations (equals, in, regex, etc.) */
+    @ContextField(
+        helpText = "Map header names to match conditions (equals, in, regex, like, exists, etc.)"
+    )
     @JsonAnySetter
     @JsonAnyGetter
     private Map<String, MatchContext> headers;
