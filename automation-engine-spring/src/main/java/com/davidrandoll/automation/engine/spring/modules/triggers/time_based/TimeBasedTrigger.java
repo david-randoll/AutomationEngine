@@ -33,7 +33,7 @@ public class TimeBasedTrigger extends PluggableTrigger<TimeBasedTriggerContext> 
         boolean matches = getNormalizedTime(eventTime).equals(getNormalizedTime(atTime));
 
         // If this trigger matches, schedule the next occurrence
-        if (matches && publisher != null) {
+        if (publisher != null) {
             String scheduleKey = getScheduleKey(tc);
             log.debug("Time-based trigger matched at {}. Scheduling next occurrence for '{}'.",
                     atTime, scheduleKey);
@@ -48,14 +48,10 @@ public class TimeBasedTrigger extends PluggableTrigger<TimeBasedTriggerContext> 
      * Uses the trigger alias if available, otherwise generates from time.
      */
     private String getScheduleKey(TimeBasedTriggerContext tc) {
-        if (tc.getAlias() != null && !tc.getAlias().isEmpty()) {
-            return tc.getAlias();
-        }
-        // Fallback to time-based key
         return "time-trigger-" + tc.getAt();
     }
 
     private LocalTime getNormalizedTime(LocalTime time) {
-        return time.withNano(0).withSecond(0);
+        return time.withNano(0);
     }
 }

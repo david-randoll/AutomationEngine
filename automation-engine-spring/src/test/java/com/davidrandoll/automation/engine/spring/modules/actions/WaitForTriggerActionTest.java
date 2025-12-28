@@ -1,7 +1,7 @@
 package com.davidrandoll.automation.engine.spring.modules.actions;
 
-import com.davidrandoll.automation.engine.spring.TestConfig;
 import com.davidrandoll.automation.engine.core.Automation;
+import com.davidrandoll.automation.engine.spring.TestConfig;
 import com.davidrandoll.automation.engine.spring.modules.events.time_based.TimeBasedEvent;
 import com.davidrandoll.automation.engine.test.AutomationEngineTest;
 import org.junit.jupiter.api.Test;
@@ -152,18 +152,7 @@ class WaitForTriggerActionTest extends AutomationEngineTest {
     void testWaitForTriggerActionWithLongTimeoutButEarlyTrigger() {
         LocalTime time = LocalTime.now().withNano(0);
         // add x amount of seconds to the current time so that the next minute is always more than 30 seconds away
-        LocalTime waitForTriggerTime = null;
-        if (time.getSecond() > 30) {
-            // this means that time is greater than 30 seconds
-            // so for example if time is 14:00:45, we want the next minute away to be more than 30 seconds away
-            // so we need to add 90 seconds to the current time to guarantee that is more than 30 seconds away
-            waitForTriggerTime = time.plusSeconds(90);
-        } else {
-            // this means that time is less than 30 seconds
-            // so for example if time is 14:00:15, we want the next minute away to be more than 30 seconds away
-            // so we need to add 60 seconds to the current time to guarantee that is more than 30 seconds away
-            waitForTriggerTime = time.plusSeconds(60);
-        }
+        LocalTime waitForTriggerTime = time.plusSeconds(10);
         var yaml = """
                 alias: Wait for Trigger with Long Timeout But Early Trigger
                 triggers:
@@ -173,7 +162,7 @@ class WaitForTriggerActionTest extends AutomationEngineTest {
                   - action: logger
                     message: "Waiting for trigger..."
                   - action: waitForTrigger
-                    timeout: PT2M
+                    timeout: PT1M
                     triggers:
                       - trigger: time
                         at: %s
@@ -197,7 +186,7 @@ class WaitForTriggerActionTest extends AutomationEngineTest {
                 .anyMatch(msg -> msg.contains("Waiting for trigger..."))
                 .anyMatch(msg -> msg.contains("Trigger met, proceeding early!"));
 
-        assertThat(elapsedTime).isGreaterThan(20_000).isLessThan(90_000);
+        assertThat(elapsedTime).isGreaterThan(5_000).isLessThan(20_000);
     }
 
     @Test

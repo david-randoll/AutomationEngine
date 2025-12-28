@@ -31,18 +31,6 @@ public class WaitForTriggerAction extends PluggableAction<WaitForTriggerActionCo
         CompletableFuture<Boolean> future = new CompletableFuture<>();
         waitingActions.add(new WaitingAction(ac.getTriggers(), future));
 
-        ScheduledFuture<?> pollingTask = null;
-        ScheduledExecutorService scheduler = provider != null ? provider.getScheduledExecutorService() : null;
-        if (scheduler != null) {
-            pollingTask = scheduler.scheduleAtFixedRate(() -> {
-                log.debug("Polling for trigger...");
-                if (!future.isDone() && processor.anyTriggersTriggered(ec, ac.getTriggers())) {
-                    future.complete(true);
-                    log.debug("Trigger met, completing future!");
-                }
-            }, 0, 1, TimeUnit.SECONDS);
-        }
-
         try {
             boolean triggerMet = future.get(timeout, TimeUnit.MILLISECONDS);
             if (triggerMet) {
@@ -54,8 +42,6 @@ public class WaitForTriggerAction extends PluggableAction<WaitForTriggerActionCo
             log.info("Timeout or error occurred, proceeding...");
             Thread.currentThread().interrupt();
         } finally {
-            if (pollingTask != null)
-                pollingTask.cancel(true);
             waitingActions.removeIf(action -> action.future == future);
         }
     }
