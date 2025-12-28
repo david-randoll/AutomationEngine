@@ -34,14 +34,14 @@ class SchemaDescriptionTest {
         // Check that the 'alias' field has a description
         JsonNode aliasProperty = properties.get("alias");
         assertThat(aliasProperty).isNotNull();
-        JsonNode aliasDescription = aliasProperty.get("description");
+        JsonNode aliasDescription = aliasProperty.get("x-presentation-help");
         assertThat(aliasDescription).isNotNull();
         assertThat(aliasDescription.asText()).isEqualTo("Unique identifier for this action");
 
         // Check that the 'testField' field has a description
         JsonNode testFieldProperty = properties.get("testField");
         assertThat(testFieldProperty).isNotNull();
-        JsonNode testFieldDescription = testFieldProperty.get("description");
+        JsonNode testFieldDescription = testFieldProperty.get("x-presentation-help");
         assertThat(testFieldDescription).isNotNull();
         assertThat(testFieldDescription.asText()).contains("Test field");
     }

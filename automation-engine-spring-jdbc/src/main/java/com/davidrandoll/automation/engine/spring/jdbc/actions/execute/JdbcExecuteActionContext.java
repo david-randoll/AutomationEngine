@@ -1,6 +1,7 @@
 package com.davidrandoll.automation.engine.spring.jdbc.actions.execute;
 
 import com.davidrandoll.automation.engine.core.actions.IActionContext;
+import com.davidrandoll.automation.engine.spring.spi.ContextField;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Data;
@@ -27,10 +28,18 @@ public class JdbcExecuteActionContext implements IActionContext {
     private String description;
 
     /** SQL statement to execute (typically INSERT, UPDATE, DELETE, or DDL statements) */
+    @ContextField(
+        widget = ContextField.Widget.MONACO_EDITOR,
+        monacoLanguage = "sql",
+        helpText = "SQL statement (INSERT, UPDATE, DELETE, DDL). Use :paramName for named parameters"
+    )
     @JsonAlias({"query", "sql", "statement"})
     private String query;
 
     /** Parameters to bind to the statement. Map keys correspond to named parameters in the SQL */
+    @ContextField(
+        helpText = "Key-value pairs for statement parameters. Keys must match :paramName placeholders in SQL"
+    )
     @JsonAlias({"params", "parameters", "queryParams", "args", "arguments"})
     private Map<String, Object> params = new HashMap<>();
 }

@@ -2,6 +2,7 @@ package com.davidrandoll.automation.engine.spring.modules.actions.parallel;
 
 import com.davidrandoll.automation.engine.core.actions.IActionContext;
 import com.davidrandoll.automation.engine.creator.actions.ActionDefinition;
+import com.davidrandoll.automation.engine.spring.spi.ContextField;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.AllArgsConstructor;
@@ -29,5 +30,8 @@ public class ParallelActionContext implements IActionContext {
     private String description;
 
     /** List of actions to execute in parallel (concurrently) */
+    @ContextField(
+        helpText = "Actions execute concurrently. All start at the same time. Use for independent operations"
+    )
     private List<ActionDefinition> actions;
 }

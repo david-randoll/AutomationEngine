@@ -1,6 +1,7 @@
 package com.davidrandoll.automation.engine.spring.modules.actions.logger;
 
 import com.davidrandoll.automation.engine.core.actions.IActionContext;
+import com.davidrandoll.automation.engine.spring.spi.ContextField;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -28,8 +29,16 @@ public class LoggerActionContext implements IActionContext {
     /**
      * Log level for the message (TRACE, DEBUG, INFO, WARN, ERROR). Defaults to INFO
      */
+    @ContextField(
+        helpText = "Select log level: TRACE (most verbose), DEBUG, INFO, WARN, or ERROR (least verbose)"
+    )
     private Level level = Level.INFO;
 
     /** Message to log. Supports template expressions for dynamic content */
+    @ContextField(
+        widget = ContextField.Widget.TEXTAREA,
+        placeholder = "Enter log message (supports template expressions like {{ event.data }})",
+        helpText = "Message to log. Supports Pebble template expressions for dynamic content."
+    )
     private Object message = "No message";
 }

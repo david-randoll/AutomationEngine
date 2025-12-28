@@ -1,6 +1,7 @@
 package com.davidrandoll.automation.engine.spring.modules.actions.variable;
 
 import com.davidrandoll.automation.engine.core.actions.IActionContext;
+import com.davidrandoll.automation.engine.spring.spi.ContextField;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -29,6 +30,9 @@ public class VariableActionContext implements IActionContext {
     private String description;
 
     /** Map of variable names to values. Any additional properties will be stored as variables in the automation context */
+    @ContextField(
+        helpText = "Define variables as key-value pairs. Values support {{ }} templates. Access via {{ variableName }}"
+    )
     @JsonIgnore
     @JsonAnySetter
     @JsonAnyGetter

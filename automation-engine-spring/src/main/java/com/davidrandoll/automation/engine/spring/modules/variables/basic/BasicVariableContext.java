@@ -1,6 +1,7 @@
 package com.davidrandoll.automation.engine.spring.modules.variables.basic;
 
 import com.davidrandoll.automation.engine.core.variables.IVariableContext;
+import com.davidrandoll.automation.engine.spring.spi.ContextField;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -29,6 +30,9 @@ public class BasicVariableContext implements IVariableContext {
     private String description;
 
     /** Map of variable names to values. Any additional properties will be stored as variables */
+    @ContextField(
+        helpText = "Define variables as key-value pairs. Values can use {{ }} templates. Access via {{ variableName }}"
+    )
     @JsonIgnore
     @JsonAnySetter
     @JsonAnyGetter

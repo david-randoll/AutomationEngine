@@ -2,6 +2,7 @@ package com.davidrandoll.automation.engine.spring.modules.actions.sequence;
 
 import com.davidrandoll.automation.engine.core.actions.IActionContext;
 import com.davidrandoll.automation.engine.creator.actions.ActionDefinition;
+import com.davidrandoll.automation.engine.spring.spi.ContextField;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.AllArgsConstructor;
@@ -29,5 +30,8 @@ public class SequenceActionContext implements IActionContext {
     private String description;
 
     /** List of actions to execute in sequence, one after another */
+    @ContextField(
+        helpText = "Actions execute in order. Each waits for the previous to complete before starting"
+    )
     private List<ActionDefinition> actions;
 }
