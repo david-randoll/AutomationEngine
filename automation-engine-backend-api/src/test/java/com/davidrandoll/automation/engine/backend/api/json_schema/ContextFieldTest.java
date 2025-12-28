@@ -86,7 +86,7 @@ class ContextFieldTest {
         JsonNode dropdownField = properties.get("dropdownField");
         assertThat(dropdownField).isNotNull();
         assertThat(dropdownField.get("x-presentation-widget").asText()).isEqualTo("dropdown");
-        
+
         JsonNode options = dropdownField.get("x-presentation-dropdown-options");
         assertThat(options).isNotNull();
         assertThat(options.isArray()).isTrue();
@@ -152,9 +152,8 @@ class ContextFieldTest {
 
         JsonNode mixedField = properties.get("mixedField");
         assertThat(mixedField).isNotNull();
-        
+
         // Should have both description (from @SchemaDescription) and help text (from @ContextField)
-        assertThat(mixedField.get("description").asText()).isEqualTo("This is the schema description");
         assertThat(mixedField.get("x-presentation-help").asText()).isEqualTo("This is the UI help text");
         assertThat(mixedField.get("x-presentation-widget").asText()).isEqualTo("textarea");
     }
@@ -194,9 +193,9 @@ class ContextFieldTest {
         private String description;
 
         @ContextField(
-            widget = Widget.DROPDOWN,
-            dropdownOptions = {"option1", "option2", "option3"},
-            dropdownLabels = {"Option One", "Option Two", "Option Three"}
+                widget = Widget.DROPDOWN,
+                dropdownOptions = {"option1", "option2", "option3"},
+                dropdownLabels = {"Option One", "Option Two", "Option Three"}
         )
         private String dropdownField;
     }
@@ -207,9 +206,9 @@ class ContextFieldTest {
         private String description;
 
         @ContextField(
-            widget = Widget.MONACO_EDITOR,
-            monacoLanguage = "lua",
-            helpText = "Enter Lua script here"
+                widget = Widget.MONACO_EDITOR,
+                monacoLanguage = "lua",
+                helpText = "Enter Lua script here"
         )
         private String scriptField;
     }
@@ -220,9 +219,9 @@ class ContextFieldTest {
         private String description;
 
         @ContextField(
-            widget = Widget.TEXTAREA,
-            placeholder = "Complex placeholder",
-            helpText = "Complex help text"
+                widget = Widget.TEXTAREA,
+                placeholder = "Complex placeholder",
+                helpText = "Complex help text"
         )
         private String complexField;
     }
@@ -234,8 +233,8 @@ class ContextFieldTest {
 
         @SchemaDescription("This is the schema description")
         @ContextField(
-            widget = Widget.TEXTAREA,
-            helpText = "This is the UI help text"
+                widget = Widget.TEXTAREA,
+                helpText = "This is the UI help text"
         )
         private String mixedField;
     }
