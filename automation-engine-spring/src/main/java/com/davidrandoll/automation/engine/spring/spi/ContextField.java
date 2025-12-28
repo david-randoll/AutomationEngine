@@ -6,7 +6,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Provides metadata for fields in context classes. This annotation is generic and not
+ * Provides metadata for fields in context classes. This annotation is generic
+ * and not
  * tied to any specific use case. It can be used to provide hints for rendering,
  * documentation, or any other purpose.
  * <p>
@@ -15,16 +16,18 @@ import java.lang.annotation.Target;
  * </p>
  * <p>
  * Example usage:
+ * 
  * <pre>
- * {@code
- * @ContextField(widget = Widget.TEXTAREA, placeholder = "Enter your message here")
- * private String message;
+ * {
+ *     &#64;code
+ *     &#64;ContextField(widget = Widget.TEXTAREA, placeholder = "Enter your message here")
+ *     private String message;
  * 
- * @ContextField(widget = Widget.DROPDOWN, dropdownOptions = {"option1", "option2", "option3"})
- * private String choice;
+ *     &#64;ContextField(widget = Widget.DROPDOWN, dropdownOptions = { "option1", "option2", "option3" })
+ *     private String choice;
  * 
- * @ContextField(widget = Widget.MONACO_EDITOR, monacoLanguage = "javascript")
- * private String scriptCode;
+ *     @ContextField(widget = Widget.MONACO_EDITOR, monacoLanguage = "javascript")
+ *     private String scriptCode;
  * }
  * </pre>
  *
@@ -36,7 +39,8 @@ public @interface ContextField {
 
     /**
      * The widget type to use for rendering this field.
-     * If not specified, the presentation layer will determine the widget based on field type.
+     * If not specified, the presentation layer will determine the widget based on
+     * field type.
      *
      * @return the widget type
      */
@@ -58,7 +62,8 @@ public @interface ContextField {
 
     /**
      * Options to display in a dropdown widget.
-     * If the field is an enum and this is empty, enum values will be used automatically.
+     * If the field is an enum and this is empty, enum values will be used
+     * automatically.
      *
      * @return array of dropdown options
      */
@@ -73,7 +78,8 @@ public @interface ContextField {
     String[] dropdownLabels() default {};
 
     /**
-     * Language identifier for Monaco Editor (e.g., "java", "javascript", "yaml", "json").
+     * Language identifier for Monaco Editor (e.g., "java", "javascript", "yaml",
+     * "json").
      *
      * @return the language identifier
      */
@@ -89,7 +95,8 @@ public @interface ContextField {
 
     /**
      * Name of the custom component to use for rendering.
-     * The component must be registered in the presentation layer's component registry.
+     * The component must be registered in the presentation layer's component
+     * registry.
      *
      * @return the custom component name
      */
