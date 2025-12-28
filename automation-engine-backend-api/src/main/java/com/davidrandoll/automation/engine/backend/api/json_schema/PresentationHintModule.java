@@ -1,10 +1,9 @@
 package com.davidrandoll.automation.engine.backend.api.json_schema;
 
-import com.davidrandoll.automation.spi.annotation.ContextField;
+import com.davidrandoll.automation.engine.spring.spi.ContextField;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.victools.jsonschema.generator.Module;
 import com.github.victools.jsonschema.generator.SchemaGeneratorConfigBuilder;
 import lombok.extern.slf4j.Slf4j;

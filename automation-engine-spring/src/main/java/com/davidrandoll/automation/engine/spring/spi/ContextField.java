@@ -1,4 +1,4 @@
-package com.davidrandoll.automation.spi.annotation;
+package com.davidrandoll.automation.engine.spring.spi;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
