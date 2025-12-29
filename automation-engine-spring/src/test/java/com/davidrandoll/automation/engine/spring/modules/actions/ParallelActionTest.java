@@ -1,11 +1,10 @@
 package com.davidrandoll.automation.engine.spring.modules.actions;
 
-import com.davidrandoll.automation.engine.spring.AEConfigProvider;
-import com.davidrandoll.automation.engine.test.AutomationEngineTest;
 import com.davidrandoll.automation.engine.core.Automation;
+import com.davidrandoll.automation.engine.spring.AEConfigProvider;
 import com.davidrandoll.automation.engine.spring.modules.actions.parallel.ParallelAction;
-import com.davidrandoll.automation.engine.spring.modules.actions.wait_for_trigger.WaitForTriggerAction;
 import com.davidrandoll.automation.engine.spring.modules.events.time_based.TimeBasedEvent;
+import com.davidrandoll.automation.engine.test.AutomationEngineTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -63,7 +62,7 @@ class ParallelActionTest extends AutomationEngineTest {
         when(mockAutomationEngineConfigurationProvider.getExecutor()).thenReturn(Executors.newFixedThreadPool(2));
 
         // Inject mock provider
-        ReflectionTestUtils.setField(parallelAction, WaitForTriggerAction.Fields.provider, mockAutomationEngineConfigurationProvider);
+        ReflectionTestUtils.setField(parallelAction, ParallelAction.Fields.provider, mockAutomationEngineConfigurationProvider);
 
         var yaml = """
                 alias: Parallel Execution With ExecutorProvider
