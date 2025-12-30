@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+import org.springframework.scheduling.support.CronExpression;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -24,10 +25,11 @@ import java.util.concurrent.ScheduledFuture;
  * Event-driven time-based event publisher that schedules automations
  * only when they are registered, rather than polling on a fixed schedule.
  *
- * <p>When an automation with a time-based trigger is registered, this publisher:
+ * <p>
+ * When an automation with a time-based trigger is registered, this publisher:
  * <ol>
- *   <li>Publishes an immediate TimeBasedEvent to trigger initial evaluation</li>
- *   <li>Allows the trigger to schedule future events by calling scheduleAt()</li>
+ * <li>Publishes an immediate TimeBasedEvent to trigger initial evaluation</li>
+ * <li>Allows the trigger to schedule future events by calling scheduleAt()</li>
  * </ol>
  */
 @Slf4j
@@ -36,7 +38,8 @@ public class TimeBasedEventPublisher implements DisposableBean {
     private final AutomationEngine engine;
     private final AEConfigProvider configProvider;
 
-    // Map to track scheduled futures by schedule key (combination of automation alias and time)
+    // Map to track scheduled futures by schedule key (combination of automation
+    // alias and time)
     private final Map<String, ScheduledFuture<?>> scheduledTasks = new ConcurrentHashMap<>();
 
     /**
@@ -49,12 +52,14 @@ public class TimeBasedEventPublisher implements DisposableBean {
         log.debug("Automation registered: '{}'. Publishing immediate TimeBasedEvent for trigger evaluation.",
                 automation.getAlias());
 
-        // Publish an immediate event so time-based triggers can evaluate and schedule themselves
-        publishEvent(LocalTime.now());
+        // Publish an immediate event so time-based triggers can evaluate and schedule
+        // themselves
+        publishEvent(LocalDateTime.now());
     }
 
     /**
-     * Listens for automation removal events and cancels any scheduled tasks for that automation.
+     * Listens for automation removal events and cancels any scheduled tasks for
+     * that automation.
      */
     @EventListener
     public void onAutomationRemoved(AutomationEngineRemoveEvent event) {
@@ -79,7 +84,8 @@ public class TimeBasedEventPublisher implements DisposableBean {
 
     /**
      * Schedules a time-based event to be published at the specified time.
-     * This method is called by TimeBasedTrigger when it determines it needs to be scheduled.
+     * This method is called by TimeBasedTrigger when it determines it needs to be
+     * scheduled.
      *
      * @param automationAlias The alias of the automation to schedule
      * @param targetTime      The time at which to publish the event
@@ -108,9 +114,10 @@ public class TimeBasedEventPublisher implements DisposableBean {
 
         Date scheduledDate = java.sql.Timestamp.valueOf(targetDateTime);
 
+        LocalDateTime finalTargetDateTime = targetDateTime;
         ScheduledFuture<?> future = taskScheduler.schedule(() -> {
             log.debug("Scheduled time reached for automation '{}' at {}", automationAlias, targetTime);
-            publishEvent(targetTime);
+            publishEvent(finalTargetDateTime);
         }, scheduledDate);
 
         scheduledTasks.put(scheduleKey, future);
@@ -118,6 +125,45 @@ public class TimeBasedEventPublisher implements DisposableBean {
         Duration timeUntil = Duration.between(now, targetDateTime);
         log.debug("Scheduled automation '{}' to trigger at {} (in {})",
                 automationAlias, targetTime, formatDuration(timeUntil));
+    }
+
+    /**
+     * Schedules a time-based event to be published based on a cron expression.
+     *
+     * @param automationAlias The alias of the automation to schedule
+     * @param cronExpression  The cron expression to use
+     */
+    public void scheduleCron(String automationAlias, String cronExpression) {
+        String scheduleKey = automationAlias + ":cron:" + cronExpression;
+
+        // if existing schedule is already set for this cron, skip scheduling
+        ScheduledFuture<?> existingFuture = scheduledTasks.get(scheduleKey);
+        if (existingFuture != null && !existingFuture.isDone()) {
+            return;
+        }
+
+        ThreadPoolTaskScheduler taskScheduler = configProvider.getTaskScheduler();
+
+        CronExpression cron = CronExpression.parse(cronExpression);
+        LocalDateTime next = cron.next(LocalDateTime.now());
+
+        if (next == null) {
+            log.warn("Cron expression '{}' will never fire again.", cronExpression);
+            return;
+        }
+
+        Date scheduledDate = java.sql.Timestamp.valueOf(next);
+
+        ScheduledFuture<?> future = taskScheduler.schedule(() -> {
+            log.debug("Cron trigger reached for automation '{}' with expression '{}'", automationAlias, cronExpression);
+            publishEvent(next);
+        }, scheduledDate);
+
+        scheduledTasks.put(scheduleKey, future);
+
+        Duration timeUntil = Duration.between(LocalDateTime.now(), next);
+        log.debug("Scheduled automation '{}' with cron '{}' to trigger at {} (in {})",
+                automationAlias, cronExpression, next, formatDuration(timeUntil));
     }
 
     /**
@@ -134,11 +180,11 @@ public class TimeBasedEventPublisher implements DisposableBean {
     /**
      * Publishes a TimeBasedEvent with the specified time.
      */
-    private void publishEvent(LocalTime time) {
+    private void publishEvent(LocalDateTime dateTime) {
         try {
-            var timeBasedEvent = new TimeBasedEvent(time);
+            var timeBasedEvent = new TimeBasedEvent(dateTime.toLocalTime(), dateTime);
             engine.publishEvent(timeBasedEvent);
-            log.trace("Published TimeBasedEvent at {}", time);
+            log.trace("Published TimeBasedEvent at {}", dateTime);
         } catch (Exception e) {
             log.error("Failed to publish time-based event", e);
         }
