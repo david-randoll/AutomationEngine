@@ -59,7 +59,7 @@ class TimeBasedTriggerTest {
         boolean result = trigger.isTriggered(eventContext, context);
 
         assertThat(result).isTrue();
-        verify(publisher).scheduleAt("test-trigger", time);
+        verify(publisher).scheduleAt("time-trigger-10:00", time);
     }
 
     @Test
@@ -109,7 +109,7 @@ class TimeBasedTriggerTest {
         boolean result = trigger.isTriggered(eventContext, context);
 
         assertThat(result).isTrue();
-        verify(publisher).scheduleCron("cron-trigger", cron);
+        verify(publisher).scheduleCron("cron-trigger-" + cron, cron);
     }
 
     @Test
