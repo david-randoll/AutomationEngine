@@ -52,8 +52,7 @@ public class TimeBasedEventPublisher implements DisposableBean {
         log.debug("Automation registered: '{}'. Publishing immediate TimeBasedEvent for trigger evaluation.",
                 automation.getAlias());
 
-        // Publish an immediate event so time-based triggers can evaluate and schedule
-        // themselves.
+        // Publish an immediate event so time-based triggers can evaluate and schedule themselves.
         publishEvent(LocalDateTime.now());
     }
 
@@ -181,13 +180,9 @@ public class TimeBasedEventPublisher implements DisposableBean {
      * Publishes a TimeBasedEvent with the specified time.
      */
     private void publishEvent(LocalDateTime dateTime) {
-        try {
-            var timeBasedEvent = new TimeBasedEvent(dateTime.toLocalTime(), dateTime);
-            engine.publishEvent(timeBasedEvent);
-            log.trace("Published TimeBasedEvent at {}", dateTime);
-        } catch (Exception e) {
-            log.error("Failed to publish time-based event", e);
-        }
+        var timeBasedEvent = new TimeBasedEvent(dateTime.toLocalTime(), dateTime);
+        engine.publishEvent(timeBasedEvent);
+        log.trace("Published TimeBasedEvent at {}", dateTime);
     }
 
     /**
