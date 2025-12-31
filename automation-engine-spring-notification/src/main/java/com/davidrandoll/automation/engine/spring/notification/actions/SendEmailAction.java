@@ -2,16 +2,14 @@ package com.davidrandoll.automation.engine.spring.notification.actions;
 
 import com.davidrandoll.automation.engine.core.events.EventContext;
 import com.davidrandoll.automation.engine.spring.spi.PluggableAction;
-import org.springframework.boot.autoconfigure.mail.MailProperties;
-import jakarta.activation.DataHandler;
 import jakarta.activation.DataSource;
 import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeBodyPart;
 import jakarta.mail.internet.MimeMessage;
-import jakarta.mail.internet.MimeMultipart;
 import jakarta.mail.util.ByteArrayDataSource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.mail.MailProperties;
+import org.springframework.lang.Nullable;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -51,37 +49,21 @@ public class SendEmailAction extends PluggableAction<SendEmailActionContext> {
     private final MailProperties properties;
 
     @Override
-    public boolean canExecute(EventContext ec, SendEmailActionContext ac) {
-        if (ObjectUtils.isEmpty(ac.getTo())) {
-            log.warn("SendEmailAction requires at least one 'to' recipient: {}", ac.getAlias());
-            return false;
-        }
-
-        if (ObjectUtils.isEmpty(ac.getSubject())) {
-            log.warn("SendEmailAction requires a 'subject': {}", ac.getAlias());
-            return false;
-        }
-
-        if (ObjectUtils.isEmpty(ac.getBody())) {
-            log.warn("SendEmailAction requires a 'body': {}", ac.getAlias());
-            return false;
-        }
-
-        // Check that 'from' is available either in context or properties
-        if (ObjectUtils.isEmpty(ac.getFrom()) && ObjectUtils.isEmpty(properties.getUsername())) {
-            log.warn("SendEmailAction requires a 'from' address either in action or spring.mail.username configuration: {}", ac.getAlias());
-            return false;
-        }
-
-        return true;
-    }
-
-    @Override
     public void doExecute(EventContext ec, SendEmailActionContext ac) {
         log.debug("Executing SendEmailAction: {}", ac.getAlias());
 
+        if (ObjectUtils.isEmpty(ac.getTo())) {
+            throw new IllegalArgumentException("'to' email address is required for sendEmailSmtp action");
+        }
+        if (ObjectUtils.isEmpty(ac.getSubject())) {
+            throw new IllegalArgumentException("'subject' is required for sendEmailSmtp action");
+        }
+        if (ObjectUtils.isEmpty(ac.getBody())) {
+            throw new IllegalArgumentException("'body' is required for sendEmailSmtp action");
+        }
+
         try {
-            JavaMailSender mailSender = resolveMailSender(ac);
+            JavaMailSender mailSender = createMailSender(ac.getMailProperties());
             MimeMessage message = mailSender.createMimeMessage();
 
             boolean hasAttachments = !ObjectUtils.isEmpty(ac.getAttachments());
@@ -129,38 +111,24 @@ public class SendEmailAction extends PluggableAction<SendEmailActionContext> {
      * If custom SMTP configuration is provided in the action context, creates a new sender.
      * Otherwise, uses the default sender configured via Spring Mail properties.
      */
-    private JavaMailSender resolveMailSender(SendEmailActionContext ac) {
-        if (ac.getMailProperties() == null) {
-            return defaultMailSender;
+    private JavaMailSender createMailSender(@Nullable MailProperties ctxCred) {
+        if (ctxCred == null || ObjectUtils.isEmpty(ctxCred.getHost())) return defaultMailSender;
+
+        JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
+
+        if (ObjectUtils.isEmpty(ctxCred.getHost())) {
+            throw new IllegalArgumentException("SMTP host is required (either in context.credentials or configuration properties)");
         }
 
-        org.springframework.boot.autoconfigure.mail.MailProperties config = ac.getMailProperties();
-        JavaMailSenderImpl customSender = new JavaMailSenderImpl();
+        mailSender.setHost(ctxCred.getHost());
+        mailSender.setPort(ctxCred.getPort());
+        mailSender.setUsername(ctxCred.getUsername());
+        mailSender.setPassword(ctxCred.getPassword());
 
-        if (!ObjectUtils.isEmpty(config.getHost())) {
-            customSender.setHost(config.getHost());
-        }
+        Properties props = mailSender.getJavaMailProperties();
+        props.putAll(ctxCred.getProperties());
 
-        if (config.getPort() != null && config.getPort() > 0) {
-            customSender.setPort(config.getPort());
-        }
-
-        if (!ObjectUtils.isEmpty(config.getUsername())) {
-            customSender.setUsername(config.getUsername());
-        }
-
-        if (!ObjectUtils.isEmpty(config.getPassword())) {
-            customSender.setPassword(config.getPassword());
-        }
-
-        // Set Java Mail properties if provided
-        if (config.getProperties() != null && !config.getProperties().isEmpty()) {
-            Properties props = new Properties();
-            props.putAll(config.getProperties());
-            customSender.setJavaMailProperties(props);
-        }
-
-        return customSender;
+        return mailSender;
     }
 
     /**
