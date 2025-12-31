@@ -146,35 +146,35 @@ actions:
 
 ## Action Context Properties
 
-| Property | Type | Required | Description |
-|----------|------|----------|-------------|
-| `alias` | String | No | Unique identifier for this action |
-| `description` | String | No | Human-readable description |
-| `from` | String | No* | Sender email address (*required if `automation-engine.notification.default-from` not set) |
-| `to` | List<String> | Yes | List of primary recipient email addresses |
-| `cc` | List<String> | No | List of CC recipient email addresses |
-| `bcc` | List<String> | No | List of BCC recipient email addresses |
-| `replyTo` | String | No | Reply-to email address |
-| `subject` | String | Yes | Email subject line |
-| `body` | String | Yes | Email body content |
-| `html` | boolean | No | Whether body is HTML (default: false) |
-| `attachments` | List<Attachment> | No | List of file attachments |
-| `smtpConfig` | SmtpConfig | No | Custom SMTP configuration |
+| Property      | Type             | Required | Description                                                                                |
+| ------------- | ---------------- | -------- | ------------------------------------------------------------------------------------------ |
+| `alias`       | String           | No       | Unique identifier for this action                                                          |
+| `description` | String           | No       | Human-readable description                                                                 |
+| `from`        | String           | No\*     | Sender email address (\*required if `automation-engine.notification.default-from` not set) |
+| `to`          | List<String>     | Yes      | List of primary recipient email addresses                                                  |
+| `cc`          | List<String>     | No       | List of CC recipient email addresses                                                       |
+| `bcc`         | List<String>     | No       | List of BCC recipient email addresses                                                      |
+| `replyTo`     | String           | No       | Reply-to email address                                                                     |
+| `subject`     | String           | Yes      | Email subject line                                                                         |
+| `body`        | String           | Yes      | Email body content                                                                         |
+| `html`        | boolean          | No       | Whether body is HTML (default: false)                                                      |
+| `attachments` | List<Attachment> | No       | List of file attachments                                                                   |
+| `smtpConfig`  | SmtpConfig       | No       | Custom SMTP configuration                                                                  |
 
 ### Attachment Properties
 
-| Property | Type | Required | Description |
-|----------|------|----------|-------------|
-| `filename` | String | Yes | Filename as it appears in email |
-| `contentType` | String | No | MIME type (default: application/octet-stream) |
-| `base64Content` | String | Yes | Base64 encoded file content |
+| Property        | Type   | Required | Description                                   |
+| --------------- | ------ | -------- | --------------------------------------------- |
+| `filename`      | String | Yes      | Filename as it appears in email               |
+| `contentType`   | String | No       | MIME type (default: application/octet-stream) |
+| `base64Content` | String | Yes      | Base64 encoded file content                   |
 
 ### SmtpConfig Properties
 
-| Property | Type | Required | Description |
-|----------|------|----------|-------------|
-| `host` | String | No | SMTP server hostname |
-| `port` | Integer | No | SMTP server port |
-| `username` | String | No | Authentication username |
-| `password` | String | No | Authentication password |
-| `properties` | Map<String, String> | No | Additional Java Mail properties |
+| Property     | Type                | Required | Description                     |
+| ------------ | ------------------- | -------- | ------------------------------- |
+| `host`       | String              | No       | SMTP server hostname            |
+| `port`       | Integer             | No       | SMTP server port                |
+| `username`   | String              | No       | Authentication username         |
+| `password`   | String              | No       | Authentication password         |
+| `properties` | Map<String, String> | No       | Additional Java Mail properties |
