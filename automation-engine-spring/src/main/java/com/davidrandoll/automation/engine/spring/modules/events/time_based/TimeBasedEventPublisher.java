@@ -1,10 +1,14 @@
 package com.davidrandoll.automation.engine.spring.modules.events.time_based;
 
 import com.davidrandoll.automation.engine.AutomationEngine;
+import com.davidrandoll.automation.engine.core.Automation;
+import com.davidrandoll.automation.engine.core.events.EventContext;
+import com.davidrandoll.automation.engine.core.events.publisher.AutomationEngineRegisterEvent;
 import com.davidrandoll.automation.engine.spring.AEConfigProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.DisposableBean;
+import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.scheduling.support.CronExpression;
 
@@ -37,11 +41,22 @@ public class TimeBasedEventPublisher implements DisposableBean {
     private final Map<String, ScheduledFuture<?>> scheduledTasks = new ConcurrentHashMap<>();
 
     /**
+     * Listens for automation registration events and publishes an immediate event
+     * to allow time-based triggers to schedule themselves.
+     */
+    @EventListener
+    public void onAutomationRegistered(AutomationEngineRegisterEvent event) {
+        Automation automation = event.getAutomation();
+        // Calling the is triggered method to allow any triggers to schedule themselves
+        automation.anyTriggerActivated(EventContext.of(new TimeBasedEvent(LocalTime.now())));
+    }
+
+    /**
      * Schedules a time-based event to be published at the specified time.
      * This method is called by TimeBasedTrigger when it determines it needs to be scheduled.
      *
      * @param schedulerKey The alias of the automation to schedule
-     * @param targetTime      The time at which to publish the event
+     * @param targetTime   The time at which to publish the event
      */
     public void scheduleAt(String schedulerKey, LocalTime targetTime) {
         String scheduleKey = schedulerKey + ":" + targetTime;
@@ -83,8 +98,8 @@ public class TimeBasedEventPublisher implements DisposableBean {
     /**
      * Schedules a time-based event to be published based on a cron expression.
      *
-     * @param schedulerKey The alias of the automation to schedule
-     * @param cronExpression  The cron expression to use
+     * @param schedulerKey   The alias of the automation to schedule
+     * @param cronExpression The cron expression to use
      */
     public void scheduleCron(String schedulerKey, String cronExpression) {
         String scheduleKey = schedulerKey + ":cron:" + cronExpression;
