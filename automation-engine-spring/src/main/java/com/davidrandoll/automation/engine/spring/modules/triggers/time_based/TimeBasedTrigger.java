@@ -77,12 +77,10 @@ public class TimeBasedTrigger extends PluggableTrigger<TimeBasedTriggerContext> 
      * Uses the trigger alias if available, otherwise generates from time or cron.
      */
     private String getScheduleKey(TimeBasedTriggerContext tc) {
-        if (tc.getAlias() != null) {
-            return tc.getAlias();
-        }
         if (tc.getCron() != null) {
             return "cron-trigger-" + tc.getCron();
         }
+
         return "time-trigger-" + tc.getAt();
     }
 

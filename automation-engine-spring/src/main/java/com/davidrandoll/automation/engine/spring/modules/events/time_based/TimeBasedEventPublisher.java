@@ -1,15 +1,10 @@
 package com.davidrandoll.automation.engine.spring.modules.events.time_based;
 
 import com.davidrandoll.automation.engine.AutomationEngine;
-import com.davidrandoll.automation.engine.core.Automation;
-import com.davidrandoll.automation.engine.core.events.publisher.AutomationEngineRegisterEvent;
-import com.davidrandoll.automation.engine.core.events.publisher.AutomationEngineRemoveAllEvent;
-import com.davidrandoll.automation.engine.core.events.publisher.AutomationEngineRemoveEvent;
 import com.davidrandoll.automation.engine.spring.AEConfigProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.DisposableBean;
-import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.scheduling.support.CronExpression;
 
@@ -38,65 +33,24 @@ public class TimeBasedEventPublisher implements DisposableBean {
     private final AutomationEngine engine;
     private final AEConfigProvider configProvider;
 
-    // Map to track scheduled futures by schedule key (combination of automation
-    // alias and time)
+    // Map to track scheduled futures by schedule key (combination of automation alias and time)
     private final Map<String, ScheduledFuture<?>> scheduledTasks = new ConcurrentHashMap<>();
 
     /**
-     * Listens for automation registration events and publishes an immediate event
-     * to allow time-based triggers to schedule themselves.
-     */
-    @EventListener
-    public void onAutomationRegistered(AutomationEngineRegisterEvent event) {
-        Automation automation = event.getAutomation();
-        log.debug("Automation registered: '{}'. Publishing immediate TimeBasedEvent for trigger evaluation.",
-                automation.getAlias());
-
-        // Publish an immediate event so time-based triggers can evaluate and schedule themselves.
-        //publishEvent(LocalDateTime.now());
-    }
-
-    /**
-     * Listens for automation removal events and cancels any scheduled tasks for
-     * that automation.
-     */
-    @EventListener
-    public void onAutomationRemoved(AutomationEngineRemoveEvent event) {
-        Automation automation = event.getAutomation();
-        String automationAlias = automation.getAlias();
-
-        // Cancel all scheduled tasks for this automation
-        scheduledTasks.keySet().stream()
-                .filter(key -> key.startsWith(automationAlias + ":"))
-                .forEach(this::cancelScheduledTask);
-    }
-
-    /**
-     * Listens for remove all automations event and cancels all scheduled tasks.
-     */
-    @EventListener
-    public void onAllAutomationsRemoved(AutomationEngineRemoveAllEvent event) {
-        log.debug("Cancelling all {} scheduled tasks", scheduledTasks.size());
-        scheduledTasks.values().forEach(future -> future.cancel(false));
-        scheduledTasks.clear();
-    }
-
-    /**
      * Schedules a time-based event to be published at the specified time.
-     * This method is called by TimeBasedTrigger when it determines it needs to be
-     * scheduled.
+     * This method is called by TimeBasedTrigger when it determines it needs to be scheduled.
      *
-     * @param automationAlias The alias of the automation to schedule
+     * @param schedulerKey The alias of the automation to schedule
      * @param targetTime      The time at which to publish the event
      */
-    public void scheduleAt(String automationAlias, LocalTime targetTime) {
-        String scheduleKey = automationAlias + ":" + targetTime;
+    public void scheduleAt(String schedulerKey, LocalTime targetTime) {
+        String scheduleKey = schedulerKey + ":" + targetTime;
 
         // if existing schedule is already set for this time, skip scheduling
         ScheduledFuture<?> existingFuture = scheduledTasks.get(scheduleKey);
         if (existingFuture != null && !existingFuture.isDone()) {
             log.debug("Schedule already exists for automation '{}' at {}, skipping scheduling",
-                    automationAlias, targetTime);
+                    schedulerKey, targetTime);
             return;
         }
 
@@ -115,7 +69,7 @@ public class TimeBasedEventPublisher implements DisposableBean {
 
         LocalDateTime finalTargetDateTime = targetDateTime;
         ScheduledFuture<?> future = taskScheduler.schedule(() -> {
-            log.debug("Scheduled time reached for automation '{}' at {}", automationAlias, targetTime);
+            log.debug("Scheduled time reached for automation '{}' at {}", schedulerKey, targetTime);
             publishEvent(finalTargetDateTime);
         }, scheduledDate);
 
@@ -123,17 +77,17 @@ public class TimeBasedEventPublisher implements DisposableBean {
 
         Duration timeUntil = Duration.between(now, targetDateTime);
         log.debug("Scheduled automation '{}' to trigger at {} (in {})",
-                automationAlias, targetTime, formatDuration(timeUntil));
+                schedulerKey, targetTime, formatDuration(timeUntil));
     }
 
     /**
      * Schedules a time-based event to be published based on a cron expression.
      *
-     * @param automationAlias The alias of the automation to schedule
+     * @param schedulerKey The alias of the automation to schedule
      * @param cronExpression  The cron expression to use
      */
-    public void scheduleCron(String automationAlias, String cronExpression) {
-        String scheduleKey = automationAlias + ":cron:" + cronExpression;
+    public void scheduleCron(String schedulerKey, String cronExpression) {
+        String scheduleKey = schedulerKey + ":cron:" + cronExpression;
 
         // if existing schedule is already set for this cron, skip scheduling
         ScheduledFuture<?> existingFuture = scheduledTasks.get(scheduleKey);
@@ -154,7 +108,7 @@ public class TimeBasedEventPublisher implements DisposableBean {
         Date scheduledDate = java.sql.Timestamp.valueOf(next);
 
         ScheduledFuture<?> future = taskScheduler.schedule(() -> {
-            log.debug("Cron trigger reached for automation '{}' with expression '{}'", automationAlias, cronExpression);
+            log.debug("Cron trigger reached for automation '{}' with expression '{}'", schedulerKey, cronExpression);
             publishEvent(next);
         }, scheduledDate);
 
@@ -162,18 +116,7 @@ public class TimeBasedEventPublisher implements DisposableBean {
 
         Duration timeUntil = Duration.between(LocalDateTime.now(), next);
         log.debug("Scheduled automation '{}' with cron '{}' to trigger at {} (in {})",
-                automationAlias, cronExpression, next, formatDuration(timeUntil));
-    }
-
-    /**
-     * Cancels a scheduled task by key.
-     */
-    private void cancelScheduledTask(String scheduleKey) {
-        ScheduledFuture<?> future = scheduledTasks.remove(scheduleKey);
-        if (future != null) {
-            future.cancel(false);
-            log.debug("Cancelled scheduled task: {}", scheduleKey);
-        }
+                schedulerKey, cronExpression, next, formatDuration(timeUntil));
     }
 
     /**
