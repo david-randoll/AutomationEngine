@@ -3,7 +3,7 @@ package com.davidrandoll.automation.engine.spring.notification.actions;
 import com.davidrandoll.automation.engine.core.Automation;
 import com.davidrandoll.automation.engine.core.events.EventContext;
 import com.davidrandoll.automation.engine.spring.modules.events.time_based.TimeBasedEvent;
-import com.davidrandoll.automation.engine.spring.notification.AENotificationProperties;
+import org.springframework.boot.autoconfigure.mail.MailProperties;
 import com.davidrandoll.automation.engine.test.AutomationEngineTest;
 import jakarta.mail.internet.MimeMessage;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,7 +24,7 @@ class SendEmailActionTest extends AutomationEngineTest {
     private JavaMailSender javaMailSender;
 
     @MockBean
-    private AENotificationProperties notificationProperties;
+    private MailProperties mailProperties;
 
     private MimeMessage mimeMessage;
 
@@ -33,7 +33,7 @@ class SendEmailActionTest extends AutomationEngineTest {
         reset(javaMailSender);
         mimeMessage = mock(MimeMessage.class);
         when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
-        when(notificationProperties.getDefaultFrom()).thenReturn("default@test.com");
+        when(mailProperties.getUsername()).thenReturn("default@test.com");
     }
 
     @Test

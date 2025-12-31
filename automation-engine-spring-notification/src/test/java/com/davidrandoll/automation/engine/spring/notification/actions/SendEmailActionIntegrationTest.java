@@ -5,7 +5,7 @@ import com.davidrandoll.automation.engine.core.Automation;
 import com.davidrandoll.automation.engine.core.events.EventContext;
 import com.davidrandoll.automation.engine.creator.AutomationFactory;
 import com.davidrandoll.automation.engine.spring.modules.events.time_based.TimeBasedEvent;
-import com.davidrandoll.automation.engine.spring.notification.AENotificationProperties;
+import org.springframework.boot.autoconfigure.mail.MailProperties;
 import com.icegreen.greenmail.configuration.GreenMailConfiguration;
 import com.icegreen.greenmail.junit5.GreenMailExtension;
 import com.icegreen.greenmail.util.GreenMailUtil;
@@ -49,7 +49,7 @@ class SendEmailActionIntegrationTest {
     static void mailProperties(DynamicPropertyRegistry registry) {
         registry.add("spring.mail.host", () -> "localhost");
         registry.add("spring.mail.port", () -> ServerSetupTest.SMTP.getPort());
-        registry.add("automation-engine.notification.default-from", () -> "default@test.com");
+        registry.add("spring.mail.username", () -> "default@test.com");
     }
 
     @BeforeEach
@@ -276,9 +276,11 @@ class SendEmailActionIntegrationTest {
 
         @Bean
         @Primary
-        public AENotificationProperties greenMailNotificationProperties() {
-            AENotificationProperties props = new AENotificationProperties();
-            props.setDefaultFrom("default@test.com");
+        public MailProperties greenMailProperties() {
+            MailProperties props = new MailProperties();
+            props.setHost("localhost");
+            props.setPort(ServerSetupTest.SMTP.getPort());
+            props.setUsername("default@test.com");
             return props;
         }
     }

@@ -1,8 +1,8 @@
 package com.davidrandoll.automation.engine.spring.notification.actions;
 
 import com.davidrandoll.automation.engine.core.events.EventContext;
-import com.davidrandoll.automation.engine.spring.notification.AENotificationProperties;
 import com.davidrandoll.automation.engine.spring.spi.PluggableAction;
+import org.springframework.boot.autoconfigure.mail.MailProperties;
 import jakarta.activation.DataHandler;
 import jakarta.activation.DataSource;
 import jakarta.mail.MessagingException;
@@ -48,7 +48,7 @@ import java.util.Properties;
 public class SendEmailAction extends PluggableAction<SendEmailActionContext> {
 
     private final JavaMailSender defaultMailSender;
-    private final AENotificationProperties properties;
+    private final MailProperties properties;
 
     @Override
     public boolean canExecute(EventContext ec, SendEmailActionContext ac) {
@@ -68,8 +68,8 @@ public class SendEmailAction extends PluggableAction<SendEmailActionContext> {
         }
 
         // Check that 'from' is available either in context or properties
-        if (ObjectUtils.isEmpty(ac.getFrom()) && ObjectUtils.isEmpty(properties.getDefaultFrom())) {
-            log.warn("SendEmailAction requires a 'from' address either in action or default configuration: {}", ac.getAlias());
+        if (ObjectUtils.isEmpty(ac.getFrom()) && ObjectUtils.isEmpty(properties.getUsername())) {
+            log.warn("SendEmailAction requires a 'from' address either in action or spring.mail.username configuration: {}", ac.getAlias());
             return false;
         }
 
@@ -88,7 +88,7 @@ public class SendEmailAction extends PluggableAction<SendEmailActionContext> {
             MimeMessageHelper helper = new MimeMessageHelper(message, hasAttachments, "UTF-8");
 
             // Set from address
-            String fromAddress = !ObjectUtils.isEmpty(ac.getFrom()) ? ac.getFrom() : properties.getDefaultFrom();
+            String fromAddress = !ObjectUtils.isEmpty(ac.getFrom()) ? ac.getFrom() : properties.getUsername();
             helper.setFrom(fromAddress);
 
             // Set recipients

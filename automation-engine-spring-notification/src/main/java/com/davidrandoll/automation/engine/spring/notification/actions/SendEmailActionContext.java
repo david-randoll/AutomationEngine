@@ -1,8 +1,10 @@
 package com.davidrandoll.automation.engine.spring.notification.actions;
 
 import com.davidrandoll.automation.engine.core.actions.IActionContext;
+import com.davidrandoll.automation.engine.spring.notification.jackson.EmailListDeserializer;
 import com.davidrandoll.automation.engine.spring.spi.ContextField;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -63,6 +65,7 @@ public class SendEmailActionContext implements IActionContext {
     @ContextField(
             helpText = "List of primary recipient email addresses"
     )
+    @JsonDeserialize(using = EmailListDeserializer.class)
     private List<String> to;
 
     /**
@@ -71,6 +74,7 @@ public class SendEmailActionContext implements IActionContext {
     @ContextField(
             helpText = "List of CC (carbon copy) recipient email addresses"
     )
+    @JsonDeserialize(using = EmailListDeserializer.class)
     private List<String> cc;
 
     /**
@@ -79,6 +83,7 @@ public class SendEmailActionContext implements IActionContext {
     @ContextField(
             helpText = "List of BCC (blind carbon copy) recipient email addresses"
     )
+    @JsonDeserialize(using = EmailListDeserializer.class)
     private List<String> bcc;
 
     /**
