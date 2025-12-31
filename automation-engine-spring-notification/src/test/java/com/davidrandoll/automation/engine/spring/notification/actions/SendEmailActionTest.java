@@ -3,6 +3,7 @@ package com.davidrandoll.automation.engine.spring.notification.actions;
 import com.davidrandoll.automation.engine.core.Automation;
 import com.davidrandoll.automation.engine.core.events.EventContext;
 import com.davidrandoll.automation.engine.spring.modules.events.time_based.TimeBasedEvent;
+import com.davidrandoll.automation.engine.spring.notification.exceptions.SendEmailValidationException;
 import org.springframework.boot.autoconfigure.mail.MailProperties;
 import com.davidrandoll.automation.engine.test.AutomationEngineTest;
 import jakarta.mail.internet.MimeMessage;
@@ -246,11 +247,10 @@ class SendEmailActionTest extends AutomationEngineTest {
         engine.register(automation);
 
         var context = EventContext.of(new TimeBasedEvent(LocalTime.of(10, 0)));
-        engine.publishEvent(context);
-
-        // Should not send because 'to' is missing
-        verify(javaMailSender, never()).createMimeMessage();
-        verify(javaMailSender, never()).send(any(MimeMessage.class));
+        
+        assertThatThrownBy(() -> engine.publishEvent(context))
+                .isInstanceOf(SendEmailValidationException.class)
+                .hasMessageContaining("'to' email address is required");
     }
 
     @Test
@@ -271,11 +271,10 @@ class SendEmailActionTest extends AutomationEngineTest {
         engine.register(automation);
 
         var context = EventContext.of(new TimeBasedEvent(LocalTime.of(10, 0)));
-        engine.publishEvent(context);
-
-        // Should not send because 'subject' is missing
-        verify(javaMailSender, never()).createMimeMessage();
-        verify(javaMailSender, never()).send(any(MimeMessage.class));
+        
+        assertThatThrownBy(() -> engine.publishEvent(context))
+                .isInstanceOf(SendEmailValidationException.class)
+                .hasMessageContaining("'subject' is required");
     }
 
     @Test
@@ -296,11 +295,10 @@ class SendEmailActionTest extends AutomationEngineTest {
         engine.register(automation);
 
         var context = EventContext.of(new TimeBasedEvent(LocalTime.of(10, 0)));
-        engine.publishEvent(context);
-
-        // Should not send because 'body' is missing
-        verify(javaMailSender, never()).createMimeMessage();
-        verify(javaMailSender, never()).send(any(MimeMessage.class));
+        
+        assertThatThrownBy(() -> engine.publishEvent(context))
+                .isInstanceOf(SendEmailValidationException.class)
+                .hasMessageContaining("'body' is required");
     }
 
     @Test

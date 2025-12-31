@@ -1,6 +1,7 @@
 package com.davidrandoll.automation.engine.spring.notification.actions;
 
 import com.davidrandoll.automation.engine.core.events.EventContext;
+import com.davidrandoll.automation.engine.spring.notification.exceptions.SendEmailValidationException;
 import com.davidrandoll.automation.engine.spring.spi.PluggableAction;
 import jakarta.activation.DataSource;
 import jakarta.mail.MessagingException;
@@ -53,13 +54,13 @@ public class SendEmailAction extends PluggableAction<SendEmailActionContext> {
         log.debug("Executing SendEmailAction: {}", ac.getAlias());
 
         if (ObjectUtils.isEmpty(ac.getTo())) {
-            throw new IllegalArgumentException("'to' email address is required for sendEmailSmtp action");
+            throw new SendEmailValidationException("'to' email address is required");
         }
         if (ObjectUtils.isEmpty(ac.getSubject())) {
-            throw new IllegalArgumentException("'subject' is required for sendEmailSmtp action");
+            throw new SendEmailValidationException("'subject' is required");
         }
         if (ObjectUtils.isEmpty(ac.getBody())) {
-            throw new IllegalArgumentException("'body' is required for sendEmailSmtp action");
+            throw new SendEmailValidationException("'body' is required");
         }
 
         try {
