@@ -78,6 +78,12 @@
         </dependency>
         <dependency>
             <groupId>com.davidrandoll</groupId>
+            <artifactId>automation-engine-spring-notification</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.davidrandoll</groupId>
             <artifactId>automation-engine-ui</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
