@@ -24,15 +24,4 @@ public class AEConfigProvider {
     private ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
 
     private Duration defaultTimeout = Duration.ofSeconds(60);
-
-    @NestedConfigurationProperty
-    private TimeBasedProperties timeBased = new TimeBasedProperties();
-
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class TimeBasedProperties {
-        private boolean enabled = false;
-        private String cron = "0 * * * * *"; // every minute
-    }
 }
