@@ -14,6 +14,7 @@ import com.davidrandoll.automation.engine.spring.modules.actions.uda.DefaultUser
 import com.davidrandoll.automation.engine.spring.modules.actions.uda.IUserDefinedActionRegistry;
 import com.davidrandoll.automation.engine.spring.modules.actions.uda.UserDefinedAction;
 import com.davidrandoll.automation.engine.spring.modules.actions.variable.VariableAction;
+import com.davidrandoll.automation.engine.spring.modules.actions.wait_for_trigger.WaitForTriggerAction;
 import com.davidrandoll.automation.engine.spring.modules.conditions.always_false.AlwaysFalseCondition;
 import com.davidrandoll.automation.engine.spring.modules.conditions.always_true.AlwaysTrueCondition;
 import com.davidrandoll.automation.engine.spring.modules.conditions.and.AndCondition;
@@ -47,6 +48,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.event.ApplicationEventMulticaster;
 
 @Configuration
 public class ModulesConfig {
@@ -100,6 +102,12 @@ public class ModulesConfig {
     @ConditionalOnMissingBean(name = "variableAction", ignored = VariableAction.class)
     public VariableAction variableAction() {
         return new VariableAction();
+    }
+
+    @Bean(name = "waitForTriggerAction")
+    @ConditionalOnMissingBean(name = "waitForTriggerAction", ignored = WaitForTriggerAction.class)
+    public WaitForTriggerAction waitForTriggerAction(ApplicationEventMulticaster multicaster, @Autowired(required = false) AEConfigProvider provider) {
+        return new WaitForTriggerAction(multicaster, provider);
     }
 
     @Bean

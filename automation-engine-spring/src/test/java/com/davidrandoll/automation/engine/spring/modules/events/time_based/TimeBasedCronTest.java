@@ -28,11 +28,9 @@ class TimeBasedCronTest extends AutomationEngineTest {
 
         // 9:00 AM matches "0 0 9 * * *"
         LocalDateTime matchDateTime = LocalDateTime.of(2025, 12, 29, 9, 0, 0);
-        var matchingEvent = EventContext.of(new TimeBasedEvent(matchDateTime.toLocalTime(), matchDateTime));
+        var matchingEvent = new TimeBasedEvent(matchDateTime.toLocalTime(), matchDateTime);
         
-        assertThat(automation.anyTriggerActivated(matchingEvent))
-                .as("Automation should trigger when the cron matches")
-                .isTrue();
+        engine.publishEvent(matchingEvent);
 
         assertThat(logAppender.getLoggedMessages())
                 .anyMatch(msg -> msg.contains("Automation triggered by cron at 09:00"));
@@ -55,10 +53,11 @@ class TimeBasedCronTest extends AutomationEngineTest {
 
         // 10:00 AM does not match "0 0 9 * * *"
         LocalDateTime nonMatchDateTime = LocalDateTime.of(2025, 12, 29, 10, 0, 0);
-        var nonMatchingEvent = EventContext.of(new TimeBasedEvent(nonMatchDateTime.toLocalTime(), nonMatchDateTime));
+        var nonMatchingEvent = new TimeBasedEvent(nonMatchDateTime.toLocalTime(), nonMatchDateTime);
 
-        assertThat(automation.anyTriggerActivated(nonMatchingEvent))
-                .as("Automation should not trigger when the cron does not match")
-                .isFalse();
+        engine.publishEvent(nonMatchingEvent);
+
+        assertThat(logAppender.getLoggedMessages())
+                .noneMatch(msg -> msg.contains("Automation triggered by cron at 10:00"));
     }
 }
