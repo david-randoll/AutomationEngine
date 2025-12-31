@@ -33,10 +33,9 @@ public class TimeBasedTrigger extends PluggableTrigger<TimeBasedTriggerContext> 
         if (tc.getCron() != null) {
             matches = evaluateCron(timeBasedEvent, tc.getCron());
 
-            // If this trigger matches, schedule the next occurrence
+            // Schedule the next occurrence
             if (publisher != null) {
                 String scheduleKey = getScheduleKey(tc);
-                log.debug("Cron trigger matched. Scheduling next occurrence for '{}'.", scheduleKey);
                 publisher.scheduleCron(scheduleKey, tc.getCron());
             }
         } else if (tc.getAt() != null) {
@@ -45,11 +44,9 @@ public class TimeBasedTrigger extends PluggableTrigger<TimeBasedTriggerContext> 
 
             matches = getNormalizedTime(eventTime).equals(getNormalizedTime(atTime));
 
-            // If this trigger matches, schedule the next occurrence
+            // Schedule the next occurrence
             if (publisher != null) {
                 String scheduleKey = getScheduleKey(tc);
-                log.debug("Time-based trigger matched at {}. Scheduling next occurrence for '{}'.",
-                        atTime, scheduleKey);
                 publisher.scheduleAt(scheduleKey, atTime);
             }
         }

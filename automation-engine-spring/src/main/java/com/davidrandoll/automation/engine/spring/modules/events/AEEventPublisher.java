@@ -6,6 +6,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.util.Assert;
 
+import java.util.concurrent.CompletableFuture;
+
 @RequiredArgsConstructor
 @ConditionalOnMissingBean(value = IEventPublisher.class, ignored = AEEventPublisher.class)
 public class AEEventPublisher implements IEventPublisher {
@@ -14,6 +16,8 @@ public class AEEventPublisher implements IEventPublisher {
     @Override
     public void publishEvent(Object event) {
         Assert.notNull(event, "Event cannot be null");
-        publisher.publishEvent(event);
+        // We publish events asynchronously to avoid deadlocks when an action blocks the execution thread
+        // (e.g. waitForTrigger) and the same thread is used to publish the unblocking event.
+        CompletableFuture.runAsync(() -> publisher.publishEvent(event));
     }
 }

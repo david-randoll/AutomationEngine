@@ -37,6 +37,12 @@ public class WaitForTriggerAction extends PluggableAction<WaitForTriggerActionCo
 
         log.debug("Waiting for triggers: {} with timeout {}", ac.getTriggers(), timeout);
 
+        // Check if any trigger matches immediately (also allows triggers to schedule themselves)
+        if (processor.anyTriggersTriggered(ec, ac.getTriggers())) {
+            log.debug("Trigger matched immediately in waitForTrigger action.");
+            return;
+        }
+
         CountDownLatch latch = new CountDownLatch(1);
 
         ApplicationListener<ApplicationEvent> listener = event -> {

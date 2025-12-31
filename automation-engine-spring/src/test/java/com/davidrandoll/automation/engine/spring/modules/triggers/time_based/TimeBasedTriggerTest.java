@@ -91,7 +91,7 @@ class TimeBasedTriggerTest {
         boolean result = trigger.isTriggered(eventContext, context);
 
         assertThat(result).isFalse();
-        verifyNoInteractions(publisher);
+        verify(publisher).scheduleAt(anyString(), eq(time));
     }
 
     @Test
@@ -141,7 +141,7 @@ class TimeBasedTriggerTest {
         boolean result = trigger.isTriggered(eventContext, context);
 
         assertThat(result).isFalse();
-        verifyNoInteractions(publisher);
+        verify(publisher).scheduleCron(anyString(), eq(cron));
     }
 
     @Test
@@ -157,7 +157,7 @@ class TimeBasedTriggerTest {
         boolean result = trigger.isTriggered(eventContext, context);
 
         assertThat(result).isFalse();
-        verifyNoInteractions(publisher);
+        verify(publisher).scheduleCron(anyString(), eq(cron));
     }
 
     @Test
@@ -172,7 +172,7 @@ class TimeBasedTriggerTest {
         boolean result = trigger.isTriggered(eventContext, context);
 
         assertThat(result).isFalse();
-        verifyNoInteractions(publisher);
+        verify(publisher).scheduleCron(anyString(), eq(cron));
     }
 
     @Test
