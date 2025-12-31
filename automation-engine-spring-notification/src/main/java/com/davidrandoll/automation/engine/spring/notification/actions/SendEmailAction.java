@@ -130,11 +130,11 @@ public class SendEmailAction extends PluggableAction<SendEmailActionContext> {
      * Otherwise, uses the default sender configured via Spring Mail properties.
      */
     private JavaMailSender resolveMailSender(SendEmailActionContext ac) {
-        if (ac.getSmtpConfig() == null) {
+        if (ac.getMailProperties() == null) {
             return defaultMailSender;
         }
 
-        SendEmailActionContext.SmtpConfig config = ac.getSmtpConfig();
+        org.springframework.boot.autoconfigure.mail.MailProperties config = ac.getMailProperties();
         JavaMailSenderImpl customSender = new JavaMailSenderImpl();
 
         if (!ObjectUtils.isEmpty(config.getHost())) {

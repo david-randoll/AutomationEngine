@@ -1,17 +1,16 @@
 package com.davidrandoll.automation.engine.spring.notification.actions;
 
 import com.davidrandoll.automation.engine.core.actions.IActionContext;
-import com.davidrandoll.automation.engine.spring.notification.jackson.EmailListDeserializer;
+import com.davidrandoll.automation.engine.spring.notification.jackson.EmailList;
 import com.davidrandoll.automation.engine.spring.spi.ContextField;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldNameConstants;
+import org.springframework.boot.autoconfigure.mail.MailProperties;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * Context class for the SendEmail action.
@@ -36,7 +35,7 @@ import java.util.Map;
         SendEmailActionContext.Fields.body,
         SendEmailActionContext.Fields.html,
         SendEmailActionContext.Fields.attachments,
-        SendEmailActionContext.Fields.smtpConfig
+        SendEmailActionContext.Fields.mailProperties
 })
 public class SendEmailActionContext implements IActionContext {
 
@@ -65,7 +64,7 @@ public class SendEmailActionContext implements IActionContext {
     @ContextField(
             helpText = "List of primary recipient email addresses"
     )
-    @JsonDeserialize(using = EmailListDeserializer.class)
+    @EmailList
     private List<String> to;
 
     /**
@@ -74,7 +73,7 @@ public class SendEmailActionContext implements IActionContext {
     @ContextField(
             helpText = "List of CC (carbon copy) recipient email addresses"
     )
-    @JsonDeserialize(using = EmailListDeserializer.class)
+    @EmailList
     private List<String> cc;
 
     /**
@@ -83,7 +82,7 @@ public class SendEmailActionContext implements IActionContext {
     @ContextField(
             helpText = "List of BCC (blind carbon copy) recipient email addresses"
     )
-    @JsonDeserialize(using = EmailListDeserializer.class)
+    @EmailList
     private List<String> bcc;
 
     /**
@@ -136,7 +135,7 @@ public class SendEmailActionContext implements IActionContext {
     @ContextField(
             helpText = "Custom SMTP server configuration. Uses Spring Mail defaults if not specified"
     )
-    private SmtpConfig smtpConfig;
+    private MailProperties mailProperties;
 
     /**
      * Email attachment configuration
@@ -180,74 +179,4 @@ public class SendEmailActionContext implements IActionContext {
         private String base64Content;
     }
 
-    /**
-     * Custom SMTP configuration for sending emails.
-     * Uses Spring's mail properties format for the properties map.
-     */
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @FieldNameConstants
-    @JsonPropertyOrder({
-            SmtpConfig.Fields.host,
-            SmtpConfig.Fields.port,
-            SmtpConfig.Fields.username,
-            SmtpConfig.Fields.password,
-            SmtpConfig.Fields.properties
-    })
-    public static class SmtpConfig {
-
-        /**
-         * SMTP server hostname
-         */
-        @ContextField(
-                placeholder = "smtp.gmail.com",
-                helpText = "SMTP server hostname"
-        )
-        private String host;
-
-        /**
-         * SMTP server port
-         */
-        @ContextField(
-                placeholder = "587",
-                helpText = "SMTP server port (common: 25, 465, 587)"
-        )
-        private Integer port;
-
-        /**
-         * SMTP authentication username
-         */
-        @ContextField(
-                placeholder = "username@gmail.com",
-                helpText = "Username for SMTP authentication"
-        )
-        private String username;
-
-        /**
-         * SMTP authentication password
-         */
-        @ContextField(
-                helpText = "Password for SMTP authentication. Consider using secrets management"
-        )
-        private String password;
-
-        /**
-         * Additional Java Mail properties.
-         * <p>
-         * Common properties include:
-         * <ul>
-         *     <li>mail.smtp.auth - Enable authentication (true/false)</li>
-         *     <li>mail.smtp.starttls.enable - Enable STARTTLS (true/false)</li>
-         *     <li>mail.smtp.ssl.enable - Enable SSL (true/false)</li>
-         *     <li>mail.smtp.connectiontimeout - Connection timeout in ms</li>
-         *     <li>mail.smtp.timeout - I/O timeout in ms</li>
-         * </ul>
-         * </p>
-         */
-        @ContextField(
-                helpText = "Additional Java Mail properties (e.g., mail.smtp.starttls.enable: true)"
-        )
-        private Map<String, String> properties;
-    }
 }

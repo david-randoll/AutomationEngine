@@ -316,7 +316,7 @@ class SendEmailActionTest extends AutomationEngineTest {
                       - recipient@test.com
                     subject: Custom SMTP Test
                     body: Test with custom SMTP
-                    smtpConfig:
+                    mailProperties:
                       host: custom.smtp.com
                       port: 587
                       username: customuser
