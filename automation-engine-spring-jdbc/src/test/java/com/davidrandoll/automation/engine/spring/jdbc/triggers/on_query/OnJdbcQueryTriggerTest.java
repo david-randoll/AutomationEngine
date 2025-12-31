@@ -55,12 +55,10 @@ class OnJdbcQueryTriggerTest extends AutomationEngineTest {
 
         // Create and register automation
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.register(automation);
-
         TimeBasedEvent event = new TimeBasedEvent(LocalTime.of(22, 37));
         var context = EventContext.of(event);
 
-        engine.publishEvent(context);
+        engine.executeAutomation(automation, context);
 
         assertThat(automation.anyTriggerActivated(context))
                 .as("Should trigger when count > 0")
@@ -92,11 +90,9 @@ class OnJdbcQueryTriggerTest extends AutomationEngineTest {
 
         // Create and register automation
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.register(automation);
-
         TimeBasedEvent event = new TimeBasedEvent(LocalTime.of(22, 0));
         var context = EventContext.of(event);
-        engine.publishEvent(context);
+        engine.executeAutomation(automation, context);
 
         assertThat(automation.anyTriggerActivated(context))
                 .as("Should not trigger when count == 0")
@@ -119,11 +115,9 @@ class OnJdbcQueryTriggerTest extends AutomationEngineTest {
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.register(automation);
-
         TimeBasedEvent event = new TimeBasedEvent(LocalTime.of(22, 37));
         var context = EventContext.of(event);
-        engine.publishEvent(context);
+        engine.executeAutomation(automation, context);
 
         assertThat(automation.anyTriggerActivated(context))
                 .as("Should not trigger with missing query")
@@ -150,11 +144,9 @@ class OnJdbcQueryTriggerTest extends AutomationEngineTest {
                 .thenReturn(List.of(row));
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.register(automation);
-
         TimeBasedEvent event = new TimeBasedEvent(LocalTime.of(22, 37));
         var context = EventContext.of(event);
-        engine.publishEvent(context);
+        engine.executeAutomation(automation, context);
 
         assertThat(automation.anyTriggerActivated(context)).isFalse();
         assertThat(logAppender.getLoggedMessages()).noneMatch(msg -> msg.contains("Should not log"));
@@ -177,12 +169,10 @@ class OnJdbcQueryTriggerTest extends AutomationEngineTest {
                 .thenReturn(List.of());
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.register(automation);
-
         TimeBasedEvent event = new TimeBasedEvent(LocalTime.of(22, 37));
         var context = EventContext.of(event);
 
-        engine.publishEvent(context);
+        engine.executeAutomation(automation, context);
 
         assertThat(automation.anyTriggerActivated(context)).isFalse();
         assertThat(logAppender.getLoggedMessages()).noneMatch(msg -> msg.contains("Should not trigger"));
@@ -207,10 +197,9 @@ class OnJdbcQueryTriggerTest extends AutomationEngineTest {
         )).thenReturn(List.of(Map.of("count", 2)));
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.register(automation);
 
         EventContext context = EventContext.of(new TimeBasedEvent(LocalTime.of(12, 0)));
-        engine.publishEvent(context);
+        engine.executeAutomation(automation, context);
 
         assertThat(automation.anyTriggerActivated(context)).isTrue();
         assertThat(logAppender.getLoggedMessages())
@@ -236,10 +225,9 @@ class OnJdbcQueryTriggerTest extends AutomationEngineTest {
         )).thenReturn(List.of(Map.of("count", 0)));
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.register(automation);
 
         EventContext context = EventContext.of(new TimeBasedEvent(LocalTime.of(9, 30)));
-        engine.publishEvent(context);
+        engine.executeAutomation(automation, context);
 
         assertThat(automation.anyTriggerActivated(context)).isFalse();
         assertThat(logAppender.getLoggedMessages())
@@ -259,10 +247,9 @@ class OnJdbcQueryTriggerTest extends AutomationEngineTest {
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.register(automation);
 
         EventContext context = EventContext.of(new TimeBasedEvent(LocalTime.of(10, 45)));
-        engine.publishEvent(context);
+        engine.executeAutomation(automation, context);
 
         assertThat(automation.anyTriggerActivated(context)).isFalse();
         assertThat(logAppender.getLoggedMessages())
@@ -285,10 +272,9 @@ class OnJdbcQueryTriggerTest extends AutomationEngineTest {
                 .thenReturn(List.of(Map.of("someKey", "someValue")));
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.register(automation);
 
         EventContext context = EventContext.of(new TimeBasedEvent(LocalTime.of(14, 15)));
-        engine.publishEvent(context);
+        engine.executeAutomation(automation, context);
 
         assertThat(automation.anyTriggerActivated(context)).isFalse();
         assertThat(logAppender.getLoggedMessages())
@@ -312,10 +298,9 @@ class OnJdbcQueryTriggerTest extends AutomationEngineTest {
                 .thenReturn(List.of());
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.register(automation);
 
         EventContext context = EventContext.of(new TimeBasedEvent(LocalTime.of(15, 30)));
-        engine.publishEvent(context);
+        engine.executeAutomation(automation, context);
 
         assertThat(automation.anyTriggerActivated(context)).isFalse();
         assertThat(logAppender.getLoggedMessages())
@@ -339,11 +324,10 @@ class OnJdbcQueryTriggerTest extends AutomationEngineTest {
                 .thenReturn(List.of(Map.of("count", 2)));
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.register(automation);
 
         EventContext context = EventContext.of(new TimeBasedEvent(LocalTime.of(18, 0)));
 
-        assertThatThrownBy(() -> engine.publishEvent(context))
+        assertThatThrownBy(() -> engine.executeAutomation(automation, context))
                 .isInstanceOf(RuntimeException.class)
                 .hasMessageContaining("Error processing expression");
     }
@@ -365,11 +349,10 @@ class OnJdbcQueryTriggerTest extends AutomationEngineTest {
                 .thenThrow(new RuntimeException("Database unreachable"));
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.register(automation);
 
         EventContext context = EventContext.of(new TimeBasedEvent(LocalTime.of(19, 0)));
 
-        assertThatThrownBy(() -> engine.publishEvent(context))
+        assertThatThrownBy(() -> engine.executeAutomation(automation, context))
                 .isInstanceOf(RuntimeException.class)
                 .hasMessageContaining("Database unreachable");
     }

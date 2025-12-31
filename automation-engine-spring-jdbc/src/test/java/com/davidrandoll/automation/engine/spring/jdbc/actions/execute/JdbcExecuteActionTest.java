@@ -48,10 +48,8 @@ class JdbcExecuteActionTest extends AutomationEngineTest {
         when(jdbcTemplate.update(any(String.class), any(Map.class))).thenReturn(1);
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.register(automation);
-
         var context = EventContext.of(new TimeBasedEvent(LocalTime.of(10, 0)));
-        engine.publishEvent(context);
+        engine.executeAutomation(automation, context);
 
         verify(jdbcTemplate).update(eq("UPDATE tasks SET completed = true WHERE id = :id"), eq(Map.of("id", 5)));
 
@@ -70,10 +68,8 @@ class JdbcExecuteActionTest extends AutomationEngineTest {
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.register(automation);
-
         var context = EventContext.of(new TimeBasedEvent(LocalTime.of(10, 30)));
-        engine.publishEvent(context);
+        engine.executeAutomation(automation, context);
 
         verify(jdbcTemplate, never()).update(any(), anyMap());
 
@@ -97,11 +93,9 @@ class JdbcExecuteActionTest extends AutomationEngineTest {
         when(jdbcTemplate.update(any(), anyMap())).thenThrow(new RuntimeException("SQL error"));
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.register(automation);
-
         var context = EventContext.of(new TimeBasedEvent(LocalTime.of(11, 0)));
 
-        assertThatThrownBy(() -> engine.publishEvent(context))
+        assertThatThrownBy(() -> engine.executeAutomation(automation, context))
                 .isInstanceOf(RuntimeException.class)
                 .hasMessageContaining("Failed to execute JDBC query");
 

@@ -51,10 +51,8 @@ class JdbcQueryActionTest extends AutomationEngineTest {
         when(jdbcTemplate.queryForList(anyString(), anyMap())).thenReturn(mockResult);
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.register(automation);
-
         EventContext ctx = EventContext.of(new TimeBasedEvent(LocalTime.of(10, 0)));
-        engine.publishEvent(ctx);
+        engine.executeAutomation(automation, ctx);
 
         // Assert variable set correctly
         assertThat(ctx.getMetadata()).containsKey("usersList");
@@ -84,10 +82,8 @@ class JdbcQueryActionTest extends AutomationEngineTest {
         when(jdbcTemplate.queryForList(anyString(), anyMap())).thenReturn(mockResult);
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.register(automation);
-
         EventContext ctx = EventContext.of(new TimeBasedEvent(LocalTime.of(10, 5)));
-        engine.publishEvent(ctx);
+        engine.executeAutomation(automation, ctx);
 
         assertThat(ctx.getMetadata()).containsKey("pendingTasksCount");
         assertThat(ctx.getMetadata("pendingTasksCount")).isEqualTo(mockResult.get(0));
@@ -112,10 +108,8 @@ class JdbcQueryActionTest extends AutomationEngineTest {
         when(jdbcTemplate.queryForList(anyString(), anyMap())).thenReturn(List.of());
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.register(automation);
-
         EventContext ctx = EventContext.of(new TimeBasedEvent(LocalTime.of(10, 10)));
-        engine.publishEvent(ctx);
+        engine.executeAutomation(automation, ctx);
 
         assertThat(ctx.getMetadata()).containsKey("task");
         assertThat(ctx.getMetadata("task")).isNull();
@@ -139,10 +133,8 @@ class JdbcQueryActionTest extends AutomationEngineTest {
         when(jdbcTemplate.queryForList(anyString(), anyMap())).thenReturn(mockResult);
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.register(automation);
-
         EventContext ctx = EventContext.of(new TimeBasedEvent(LocalTime.of(10, 15)));
-        engine.publishEvent(ctx);
+        engine.executeAutomation(automation, ctx);
 
         assertThat(ctx.getMetadata()).containsKey("queryResult");
         assertThat(ctx.getMetadata("queryResult")).isEqualTo(mockResult);
@@ -160,10 +152,8 @@ class JdbcQueryActionTest extends AutomationEngineTest {
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.register(automation);
-
         EventContext ctx = EventContext.of(new TimeBasedEvent(LocalTime.of(10, 20)));
-        engine.publishEvent(ctx);
+        engine.executeAutomation(automation, ctx);
 
         verify(jdbcTemplate, never()).queryForList(anyString(), anyMap());
 
@@ -184,11 +174,9 @@ class JdbcQueryActionTest extends AutomationEngineTest {
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.register(automation);
-
         EventContext ctx = EventContext.of(new TimeBasedEvent(LocalTime.of(10, 25)));
 
-        assertThatThrownBy(() -> engine.publishEvent(ctx))
+        assertThatThrownBy(() -> engine.executeAutomation(automation, ctx))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("Variable name must be provided");
 
@@ -218,10 +206,8 @@ class JdbcQueryActionTest extends AutomationEngineTest {
         when(jdbcTemplate.queryForList(anyString(), anyMap())).thenReturn(mockResult);
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.register(automation);
-
         EventContext ctx = EventContext.of(new TimeBasedEvent(LocalTime.of(10, 35)));
-        engine.publishEvent(ctx);
+        engine.executeAutomation(automation, ctx);
 
         assertThat(ctx.getMetadata()).containsKey("usersList");
         assertThat(ctx.getMetadata("usersList")).isEqualTo(mockResult);
@@ -250,10 +236,8 @@ class JdbcQueryActionTest extends AutomationEngineTest {
         when(jdbcTemplate.queryForList(anyString(), anyMap())).thenReturn(List.of(mockRow));
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.register(automation);
-
         EventContext ctx = EventContext.of(new TimeBasedEvent(LocalTime.of(10, 40)));
-        engine.publishEvent(ctx);
+        engine.executeAutomation(automation, ctx);
 
         assertThat(ctx.getMetadata()).containsKey("user");
         assertThat(ctx.getMetadata("user")).isEqualTo(mockRow);
