@@ -1,45 +1,163 @@
 package com.davidrandoll.automation.engine.spring.modules.events.time_based;
 
 import com.davidrandoll.automation.engine.AutomationEngine;
+import com.davidrandoll.automation.engine.core.Automation;
+import com.davidrandoll.automation.engine.core.events.EventContext;
+import com.davidrandoll.automation.engine.core.events.publisher.AutomationEngineRegisterEvent;
 import com.davidrandoll.automation.engine.spring.AEConfigProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.scheduling.support.CronTrigger;
+import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+import org.springframework.scheduling.support.CronExpression;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Date;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 
+/**
+ * Event-driven time-based event publisher that schedules automations
+ * only when they are registered, rather than polling on a fixed schedule.
+ *
+ * <p>
+ * When an automation with a time-based trigger is registered, this publisher:
+ * <ol>
+ * <li>Publishes an immediate TimeBasedEvent to trigger initial evaluation</li>
+ * <li>Allows the trigger to schedule future events by calling scheduleAt()</li>
+ * </ol>
+ */
 @Slf4j
 @RequiredArgsConstructor
-public class TimeBasedEventPublisher implements InitializingBean, DisposableBean {
+public class TimeBasedEventPublisher implements DisposableBean {
     private final AutomationEngine engine;
     private final AEConfigProvider configProvider;
 
-    private ScheduledFuture<?> scheduledTask;
+    // Map to track scheduled futures by schedule key (combination of automation alias and time)
+    private final Map<String, ScheduledFuture<?>> scheduledTasks = new ConcurrentHashMap<>();
 
-    @Override
-    public void afterPropertiesSet() {
-        var cronExpression = configProvider.getTimeBased().getCron();
-        var taskScheduler = configProvider.getTaskScheduler();
-
-        scheduledTask = taskScheduler.schedule(this::publishEvent, new CronTrigger(cronExpression));
+    /**
+     * Listens for automation registration events and publishes an immediate event
+     * to allow time-based triggers to schedule themselves.
+     */
+    @EventListener
+    public void onAutomationRegistered(AutomationEngineRegisterEvent event) {
+        Automation automation = event.getAutomation();
+        // Calling the is triggered method to allow any triggers to schedule themselves
+        automation.anyTriggerActivated(EventContext.of(new TimeBasedEvent(LocalTime.now())));
     }
 
-    private void publishEvent() {
-        try {
-            var timeBasedEvent = new TimeBasedEvent(LocalTime.now());
-            engine.publishEvent(timeBasedEvent);
-        } catch (Exception e) {
-            log.error("Failed to publish time-based event", e);
+    /**
+     * Schedules a time-based event to be published at the specified time.
+     * This method is called by TimeBasedTrigger when it determines it needs to be scheduled.
+     *
+     * @param schedulerKey The alias of the automation to schedule
+     * @param targetTime   The time at which to publish the event
+     */
+    public void scheduleAt(String schedulerKey, LocalTime targetTime) {
+        String scheduleKey = schedulerKey + ":" + targetTime;
+
+        // if existing schedule is already set for this time, skip scheduling
+        ScheduledFuture<?> existingFuture = scheduledTasks.get(scheduleKey);
+        if (existingFuture != null && !existingFuture.isDone()) {
+            log.debug("Schedule already exists for automation '{}' at {}, skipping scheduling",
+                    schedulerKey, targetTime);
+            return;
         }
+
+        ThreadPoolTaskScheduler taskScheduler = configProvider.getTaskScheduler();
+
+        // Calculate the next occurrence of the target time
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime targetDateTime = now.toLocalDate().atTime(targetTime);
+
+        // If the time has already passed today, schedule for tomorrow
+        if (targetDateTime.isBefore(now) || targetDateTime.isEqual(now)) {
+            targetDateTime = targetDateTime.plusDays(1);
+        }
+
+        Date scheduledDate = java.sql.Timestamp.valueOf(targetDateTime);
+
+        LocalDateTime finalTargetDateTime = targetDateTime;
+        ScheduledFuture<?> future = taskScheduler.schedule(() -> {
+            log.debug("Scheduled time reached for automation '{}' at {}", schedulerKey, targetTime);
+            publishEvent(finalTargetDateTime);
+        }, scheduledDate);
+
+        scheduledTasks.put(scheduleKey, future);
+
+        Duration timeUntil = Duration.between(now, targetDateTime);
+        log.debug("Scheduled automation '{}' to trigger at {} (in {})",
+                schedulerKey, targetTime, formatDuration(timeUntil));
+    }
+
+    /**
+     * Schedules a time-based event to be published based on a cron expression.
+     *
+     * @param schedulerKey   The alias of the automation to schedule
+     * @param cronExpression The cron expression to use
+     */
+    public void scheduleCron(String schedulerKey, String cronExpression) {
+        String scheduleKey = schedulerKey + ":cron:" + cronExpression;
+
+        // if existing schedule is already set for this cron, skip scheduling
+        ScheduledFuture<?> existingFuture = scheduledTasks.get(scheduleKey);
+        if (existingFuture != null && !existingFuture.isDone()) {
+            return;
+        }
+
+        ThreadPoolTaskScheduler taskScheduler = configProvider.getTaskScheduler();
+
+        CronExpression cron = CronExpression.parse(cronExpression);
+        LocalDateTime next = cron.next(LocalDateTime.now());
+
+        if (next == null) {
+            log.warn("Cron expression '{}' will never fire again.", cronExpression);
+            return;
+        }
+
+        Date scheduledDate = java.sql.Timestamp.valueOf(next);
+
+        ScheduledFuture<?> future = taskScheduler.schedule(() -> {
+            log.debug("Cron trigger reached for automation '{}' with expression '{}'", schedulerKey, cronExpression);
+            publishEvent(next);
+        }, scheduledDate);
+
+        scheduledTasks.put(scheduleKey, future);
+
+        Duration timeUntil = Duration.between(LocalDateTime.now(), next);
+        log.debug("Scheduled automation '{}' with cron '{}' to trigger at {} (in {})",
+                schedulerKey, cronExpression, next, formatDuration(timeUntil));
+    }
+
+    /**
+     * Publishes a TimeBasedEvent with the specified time.
+     */
+    private void publishEvent(LocalDateTime dateTime) {
+        var timeBasedEvent = new TimeBasedEvent(dateTime.toLocalTime(), dateTime);
+        engine.publishEvent(timeBasedEvent);
+        log.trace("Published TimeBasedEvent at {}", dateTime);
+    }
+
+    /**
+     * Formats a duration for logging.
+     */
+    private String formatDuration(Duration duration) {
+        long hours = duration.toHours();
+        long minutes = duration.toMinutesPart();
+        long seconds = duration.toSecondsPart();
+        return String.format("%dh %dm %ds", hours, minutes, seconds);
     }
 
     @Override
     public void destroy() {
-        if (scheduledTask != null) {
-            scheduledTask.cancel(true);
-        }
+        log.debug("Shutting down TimeBasedEventPublisher, cancelling {} scheduled tasks",
+                scheduledTasks.size());
+        scheduledTasks.values().forEach(future -> future.cancel(true));
+        scheduledTasks.clear();
     }
 }

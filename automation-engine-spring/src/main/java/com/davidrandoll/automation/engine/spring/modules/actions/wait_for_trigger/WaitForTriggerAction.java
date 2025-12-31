@@ -1,76 +1,83 @@
 package com.davidrandoll.automation.engine.spring.modules.actions.wait_for_trigger;
 
 import com.davidrandoll.automation.engine.core.events.EventContext;
-import com.davidrandoll.automation.engine.creator.triggers.TriggerDefinition;
+import com.davidrandoll.automation.engine.core.events.IEvent;
 import com.davidrandoll.automation.engine.spring.AEConfigProvider;
 import com.davidrandoll.automation.engine.spring.spi.PluggableAction;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldNameConstants;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.event.EventListener;
-import org.springframework.util.ObjectUtils;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.PayloadApplicationEvent;
+import org.springframework.context.event.ApplicationEventMulticaster;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @RequiredArgsConstructor
-@FieldNameConstants
 public class WaitForTriggerAction extends PluggableAction<WaitForTriggerActionContext> {
-    private final List<WaitingAction> waitingActions = new CopyOnWriteArrayList<>();
-    private final AEConfigProvider provider;
+    private final ApplicationEventMulticaster multicaster;
+    private final AEConfigProvider configProvider;
 
     @Override
     public void doExecute(EventContext ec, WaitForTriggerActionContext ac) {
-        if (ObjectUtils.isEmpty(ac.getTriggers())) return;
-
-        long timeout = Optional.ofNullable(ac.getTimeout())
-                .orElse(provider.getDefaultTimeout()).toMillis();
-
-        CompletableFuture<Boolean> future = new CompletableFuture<>();
-        waitingActions.add(new WaitingAction(ac.getTriggers(), future));
-
-        ScheduledFuture<?> pollingTask = null;
-        ScheduledExecutorService scheduler = provider != null ? provider.getScheduledExecutorService() : null;
-        if (scheduler != null) {
-            pollingTask = scheduler.scheduleAtFixedRate(() -> {
-                log.debug("Polling for trigger...");
-                if (!future.isDone() && processor.anyTriggersTriggered(ec, ac.getTriggers())) {
-                    future.complete(true);
-                    log.debug("Trigger met, completing future!");
-                }
-            }, 0, 1, TimeUnit.SECONDS);
+        if (ac.getTriggers() == null || ac.getTriggers().isEmpty()) {
+            log.debug("No triggers specified for waitForTrigger action. Continuing immediately.");
+            return;
         }
 
-        try {
-            boolean triggerMet = future.get(timeout, TimeUnit.MILLISECONDS);
-            if (triggerMet) {
-                log.info("Trigger met, proceeding early!");
-            } else {
-                log.info("Timeout reached, proceeding...");
+        java.time.Duration timeout = ac.getTimeout();
+        if (timeout == null && configProvider != null) {
+            timeout = configProvider.getDefaultTimeout();
+        }
+        if (timeout == null) {
+            timeout = java.time.Duration.ofSeconds(30);
+        }
+
+        log.debug("Waiting for triggers: {} with timeout {}", ac.getTriggers(), timeout);
+
+        // Check if any trigger matches immediately (also allows triggers to schedule themselves)
+        if (processor.anyTriggersTriggered(ec, ac.getTriggers())) {
+            log.debug("Trigger matched immediately in waitForTrigger action.");
+            return;
+        }
+
+        CountDownLatch latch = new CountDownLatch(1);
+
+        ApplicationListener<ApplicationEvent> listener = event -> {
+            Object payload = event;
+            if (event instanceof PayloadApplicationEvent<?> pae) {
+                payload = pae.getPayload();
             }
-        } catch (TimeoutException | InterruptedException | ExecutionException e) {
-            log.info("Timeout or error occurred, proceeding...");
+
+            EventContext newEc = switch (payload) {
+                case EventContext ec1 -> ec1;
+                case IEvent e1 -> EventContext.of(e1);
+                default -> null;
+            };
+
+            if (newEc == null) return;
+
+            if (processor.anyTriggersTriggered(newEc, ac.getTriggers())) {
+                log.debug("Trigger matched in waitForTrigger action: {}", newEc.getEvent());
+                latch.countDown();
+            }
+        };
+
+        multicaster.addApplicationListener(listener);
+        try {
+            boolean triggered = latch.await(timeout.toMillis(), TimeUnit.MILLISECONDS);
+            if (triggered) {
+                log.debug("WaitForTriggerAction: Trigger received before timeout.");
+            } else {
+                log.debug("WaitForTriggerAction: Timeout reached.");
+            }
+        } catch (InterruptedException e) {
+            log.error("WaitForTriggerAction interrupted", e);
             Thread.currentThread().interrupt();
         } finally {
-            if (pollingTask != null)
-                pollingTask.cancel(true);
-            waitingActions.removeIf(action -> action.future == future);
+            multicaster.removeApplicationListener(listener);
         }
-    }
-
-    @EventListener
-    public void handleEvent(EventContext eventContext) {
-        if (ObjectUtils.isEmpty(waitingActions)) return;
-        log.debug("WaitForTriggerAction received event: {}", eventContext.getEvent());
-        for (WaitingAction action : waitingActions) {
-            if (!action.future.isDone() && processor.anyTriggersTriggered(eventContext, action.triggers)) {
-                action.future.complete(true);
-            }
-        }
-    }
-
-    private record WaitingAction(List<TriggerDefinition> triggers, CompletableFuture<Boolean> future) {
     }
 }

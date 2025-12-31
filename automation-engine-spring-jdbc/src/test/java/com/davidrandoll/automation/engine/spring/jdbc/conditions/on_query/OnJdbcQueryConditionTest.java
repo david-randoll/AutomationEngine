@@ -54,10 +54,8 @@ class OnJdbcQueryConditionTest extends AutomationEngineTest {
         )).thenReturn(List.of(Map.of("count", 3)));
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.register(automation);
-
         var context = EventContext.of(new TimeBasedEvent(LocalTime.of(11, 30)));
-        engine.publishEvent(context);
+        engine.executeAutomation(automation, context);
 
         assertThat(automation.anyTriggerActivated(context)).isTrue();
         assertThat(logAppender.getLoggedMessages()).anyMatch(msg -> msg.contains("Tasks pending"));
@@ -82,10 +80,8 @@ class OnJdbcQueryConditionTest extends AutomationEngineTest {
                 .thenReturn(List.of(Map.of("count", 0)));
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.register(automation);
-
         var context = EventContext.of(new TimeBasedEvent(LocalTime.of(11, 30)));
-        engine.publishEvent(context);
+        engine.executeAutomation(automation, context);
 
         assertThat(automation.anyTriggerActivated(context)).isTrue(); // trigger still fires
         assertThat(logAppender.getLoggedMessages()).noneMatch(msg -> msg.contains("Should not log this"));
@@ -106,10 +102,8 @@ class OnJdbcQueryConditionTest extends AutomationEngineTest {
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.register(automation);
-
         var context = EventContext.of(new TimeBasedEvent(LocalTime.of(11, 30)));
-        engine.publishEvent(context);
+        engine.executeAutomation(automation, context);
 
         assertThat(logAppender.getLoggedMessages())
                 .noneMatch(msg -> msg.contains("Should never log"));
@@ -133,10 +127,8 @@ class OnJdbcQueryConditionTest extends AutomationEngineTest {
                 .thenReturn(List.of(Map.of("id", 123)));
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.register(automation);
-
         var context = EventContext.of(new TimeBasedEvent(LocalTime.of(11, 30)));
-        engine.publishEvent(context);
+        engine.executeAutomation(automation, context);
 
         assertThat(logAppender.getLoggedMessages())
                 .noneMatch(msg -> msg.contains("Should never log"));
@@ -161,11 +153,9 @@ class OnJdbcQueryConditionTest extends AutomationEngineTest {
                 .thenReturn(List.of(Map.of("count", 1)));
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.register(automation);
-
         var context = EventContext.of(new TimeBasedEvent(LocalTime.of(11, 30)));
 
-        assertThatThrownBy(() -> engine.publishEvent(context))
+        assertThatThrownBy(() -> engine.executeAutomation(automation, context))
                 .isInstanceOf(RuntimeException.class)
                 .hasMessageContaining("Error processing expression");
 
@@ -192,11 +182,9 @@ class OnJdbcQueryConditionTest extends AutomationEngineTest {
                 .thenThrow(new RuntimeException("SQL error"));
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.register(automation);
-
         var context = EventContext.of(new TimeBasedEvent(LocalTime.of(11, 30)));
 
-        assertThatThrownBy(() -> engine.publishEvent(context))
+        assertThatThrownBy(() -> engine.executeAutomation(automation, context))
                 .isInstanceOf(RuntimeException.class)
                 .hasMessageContaining("SQL error");
     }
@@ -220,10 +208,8 @@ class OnJdbcQueryConditionTest extends AutomationEngineTest {
                 .thenReturn(List.of());
 
         Automation automation = factory.createAutomation("yaml", yaml);
-        engine.register(automation);
-
         var context = EventContext.of(new TimeBasedEvent(LocalTime.of(11, 30)));
-        engine.publishEvent(context);
+        engine.executeAutomation(automation, context);
 
         assertThat(logAppender.getLoggedMessages())
                 .noneMatch(msg -> msg.contains("Should not log"));

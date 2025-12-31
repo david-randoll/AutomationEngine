@@ -4,11 +4,13 @@ import com.davidrandoll.automation.engine.core.events.EventContext;
 import com.davidrandoll.automation.engine.spring.AEConfigProvider;
 import com.davidrandoll.automation.engine.spring.spi.PluggableAction;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldNameConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.ObjectUtils;
 
 @Slf4j
 @RequiredArgsConstructor
+@FieldNameConstants
 public class ParallelAction extends PluggableAction<ParallelActionContext> {
     private final AEConfigProvider provider;
 

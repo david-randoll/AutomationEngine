@@ -127,7 +127,20 @@ public class JsonNodeVariableProcessor {
 
         // Try to parse as JSON value to preserve type
         try {
-            return mapper.readTree(value);
+            JsonNode node = mapper.readTree(value);
+            // Check if the parsed node actually represents the whole string
+            // For numbers, Jackson might just parse the first part if not configured otherwise.
+            if (node.isNumber() || node.isBoolean() || node.isNull()) {
+                String nodeText = node.asText();
+                String trimmedValue = value.trim();
+                log.debug("parseStringToJsonNode: value='{}', nodeText='{}', trimmedValue='{}'", value, nodeText, trimmedValue);
+                // If it's a simple type, ensure the string matches exactly (ignoring whitespace)
+                if (!trimmedValue.equalsIgnoreCase(nodeText)) {
+                    log.debug("parseStringToJsonNode: Mismatch detected, returning TextNode");
+                    return new TextNode(value);
+                }
+            }
+            return node;
         } catch (Exception e) {
             // If it's not valid JSON, treat it as a text node
             return new TextNode(value);

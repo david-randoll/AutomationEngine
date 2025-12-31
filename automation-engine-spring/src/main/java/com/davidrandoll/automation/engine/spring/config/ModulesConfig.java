@@ -48,6 +48,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.event.ApplicationEventMulticaster;
 
 @Configuration
 public class ModulesConfig {
@@ -105,8 +106,8 @@ public class ModulesConfig {
 
     @Bean(name = "waitForTriggerAction")
     @ConditionalOnMissingBean(name = "waitForTriggerAction", ignored = WaitForTriggerAction.class)
-    public WaitForTriggerAction waitForTriggerAction(@Autowired(required = false) AEConfigProvider provider) {
-        return new WaitForTriggerAction(provider);
+    public WaitForTriggerAction waitForTriggerAction(ApplicationEventMulticaster multicaster, @Autowired(required = false) AEConfigProvider provider) {
+        return new WaitForTriggerAction(multicaster, provider);
     }
 
     @Bean
@@ -238,8 +239,8 @@ public class ModulesConfig {
 
     @Bean(name = "timeTrigger")
     @ConditionalOnMissingBean(name = "timeTrigger", ignored = TimeBasedTrigger.class)
-    public TimeBasedTrigger timeTrigger() {
-        return new TimeBasedTrigger();
+    public TimeBasedTrigger timeTrigger(TimeBasedEventPublisher publisher) {
+        return new TimeBasedTrigger(publisher);
     }
 
     @Bean

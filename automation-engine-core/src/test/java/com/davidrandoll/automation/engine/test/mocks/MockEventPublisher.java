@@ -5,6 +5,7 @@ import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Mock implementation of IEventPublisher for testing.
@@ -12,7 +13,7 @@ import java.util.List;
  */
 @Getter
 public class MockEventPublisher implements IEventPublisher {
-    private final List<Object> publishedEvents = new ArrayList<>();
+    private final List<Object> publishedEvents = new CopyOnWriteArrayList<>();
 
     public void clear() {
         publishedEvents.clear();
