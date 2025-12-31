@@ -53,7 +53,7 @@ public class TimeBasedEventPublisher implements DisposableBean {
                 automation.getAlias());
 
         // Publish an immediate event so time-based triggers can evaluate and schedule themselves.
-        publishEvent(LocalDateTime.now());
+        //publishEvent(LocalDateTime.now());
     }
 
     /**
