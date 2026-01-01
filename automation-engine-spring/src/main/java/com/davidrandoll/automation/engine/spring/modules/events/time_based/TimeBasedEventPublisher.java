@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Date;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 
@@ -48,7 +49,7 @@ public class TimeBasedEventPublisher implements DisposableBean {
     public void onAutomationRegistered(AutomationEngineRegisterEvent event) {
         Automation automation = event.getAutomation();
         // Calling the is triggered method to allow any triggers to schedule themselves
-        automation.anyTriggerActivated(EventContext.of(new TimeBasedEvent(LocalTime.now())));
+        CompletableFuture.runAsync(() -> automation.anyTriggerActivated(EventContext.of(new TimeBasedEvent(LocalTime.now()))));
     }
 
     /**
