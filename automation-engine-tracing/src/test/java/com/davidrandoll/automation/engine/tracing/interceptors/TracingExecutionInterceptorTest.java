@@ -88,7 +88,7 @@ class TracingExecutionInterceptorTest {
     void testIntercept_preservesExistingAdditionalFields() {
         Map<String, Object> existingFields = Map.of("customField", "customValue");
         AutomationResult originalResult = AutomationResult.executedWithAdditionalFields(
-                automation, eventContext, "result", true, existingFields);
+                automation, eventContext, "result", true, false, existingFields);
         when(chain.proceed(any(), any())).thenReturn(originalResult);
 
         AutomationResult result = interceptor.intercept(automation, eventContext, chain);

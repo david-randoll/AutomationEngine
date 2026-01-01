@@ -66,6 +66,7 @@ public class TracingExecutionInterceptor implements IAutomationExecutionIntercep
                     result.getContext(),
                     result.orElse(null),
                     result.isExecuted(),
+                    result.isPaused(),
                     additionalFields
             );
         } finally {

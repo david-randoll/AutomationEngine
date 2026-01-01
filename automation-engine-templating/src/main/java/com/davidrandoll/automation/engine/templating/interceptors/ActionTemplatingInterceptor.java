@@ -1,6 +1,7 @@
 package com.davidrandoll.automation.engine.templating.interceptors;
 
 import com.davidrandoll.automation.engine.core.actions.ActionContext;
+import com.davidrandoll.automation.engine.core.actions.ActionResult;
 import com.davidrandoll.automation.engine.core.actions.interceptors.IActionChain;
 import com.davidrandoll.automation.engine.core.actions.interceptors.IActionInterceptor;
 import com.davidrandoll.automation.engine.core.events.EventContext;
@@ -43,22 +44,21 @@ public class ActionTemplatingInterceptor implements IActionInterceptor {
      * @param chain         the action to be executed after processing
      */
     @Override
-    public void intercept(EventContext eventContext, ActionContext actionContext, IActionChain chain) {
+    public ActionResult intercept(EventContext eventContext, ActionContext actionContext, IActionChain chain) {
         log.debug("ActionTemplatingInterceptor: Processing action data...");
         if (isFalse(chain.autoEvaluateExpression())) {
-            chain.execute(eventContext, actionContext);
-            return;
+            return chain.execute(eventContext, actionContext);
         }
 
         var eventData = eventContext.getEventData(objectMapper);
         if (ObjectUtils.isEmpty(actionContext.getData()) || ObjectUtils.isEmpty(eventData)) {
-            chain.execute(eventContext, actionContext);
-            return;
+            return chain.execute(eventContext, actionContext);
         }
 
         String templatingType = processor.getTemplatingType(eventContext, actionContext.getOptions());
         var mapCopy = processor.processIfNotAutomation(eventData, actionContext.getData(), templatingType);
-        chain.execute(eventContext, actionContext.changeData(mapCopy));
+        ActionResult result = chain.execute(eventContext, actionContext.changeData(mapCopy));
         log.debug("ActionTemplatingInterceptor done.");
+        return result;
     }
 }

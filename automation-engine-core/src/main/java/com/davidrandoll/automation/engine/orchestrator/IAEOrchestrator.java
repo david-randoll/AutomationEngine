@@ -6,6 +6,7 @@ import com.davidrandoll.automation.engine.core.events.IEvent;
 import com.davidrandoll.automation.engine.core.result.AutomationResult;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.function.BiConsumer;
 
 public interface IAEOrchestrator {
@@ -17,4 +18,6 @@ public interface IAEOrchestrator {
     void handleEvent(IEvent event);
     void handleEvent(EventContext eventContext, BiConsumer<Automation, EventContext> executionFunction);
     AutomationResult executeAutomation(Automation automation, EventContext eventContext);
+
+    AutomationResult resumeAutomation(UUID executionId);
 }

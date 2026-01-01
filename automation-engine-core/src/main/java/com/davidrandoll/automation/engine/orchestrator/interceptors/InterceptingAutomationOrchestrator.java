@@ -8,6 +8,7 @@ import com.davidrandoll.automation.engine.orchestrator.IAEOrchestrator;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.function.BiConsumer;
 
 @RequiredArgsConstructor
@@ -56,6 +57,11 @@ public class InterceptingAutomationOrchestrator implements IAEOrchestrator {
     public AutomationResult executeAutomation(Automation automation, EventContext context) {
         IAutomationExecutionChain chain = buildExecutionChain(0);
         return chain.proceed(automation, context);
+    }
+
+    @Override
+    public AutomationResult resumeAutomation(UUID executionId) {
+        return delegate.resumeAutomation(executionId);
     }
 
     private IAutomationExecutionChain buildExecutionChain(int index) {

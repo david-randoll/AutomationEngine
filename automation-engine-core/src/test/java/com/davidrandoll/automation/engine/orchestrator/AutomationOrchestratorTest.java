@@ -10,6 +10,8 @@ import com.davidrandoll.automation.engine.core.events.publisher.AutomationEngine
 import com.davidrandoll.automation.engine.core.events.publisher.AutomationEngineRemoveEvent;
 import com.davidrandoll.automation.engine.core.result.AutomationResult;
 import com.davidrandoll.automation.engine.core.triggers.BaseTriggerList;
+import com.davidrandoll.automation.engine.core.state.IStateStore;
+import com.davidrandoll.automation.engine.core.state.InMemoryStateStore;
 import com.davidrandoll.automation.engine.test.TestEvent;
 import com.davidrandoll.automation.engine.test.mocks.MockEventPublisher;
 import com.davidrandoll.automation.engine.test.mocks.SimpleAction;
@@ -30,12 +32,14 @@ import static org.assertj.core.api.Assertions.*;
 class AutomationOrchestratorTest {
 
     private MockEventPublisher eventPublisher;
+    private IStateStore stateStore;
     private AutomationOrchestrator orchestrator;
 
     @BeforeEach
     void setUp() {
         eventPublisher = new MockEventPublisher();
-        orchestrator = new AutomationOrchestrator(eventPublisher);
+        stateStore = new InMemoryStateStore();
+        orchestrator = new AutomationOrchestrator(eventPublisher, stateStore);
     }
 
     @Test

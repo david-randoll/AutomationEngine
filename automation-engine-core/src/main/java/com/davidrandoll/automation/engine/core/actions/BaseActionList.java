@@ -10,20 +10,45 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
 public class BaseActionList extends ArrayList<IBaseAction> {
-    public void executeAll(EventContext eventContext) {
+    public ActionResult executeAll(EventContext eventContext) {
+        int startIndex = 0;
+        if (!eventContext.getExecutionStack().isEmpty()) {
+            startIndex = eventContext.getExecutionStack().pop();
+        }
+
         try {
-            for (IBaseAction action : this) {
-                action.execute(eventContext);
+            for (int i = startIndex; i < this.size(); i++) {
+                IBaseAction action = this.get(i);
+                int stackSizeBefore = eventContext.getExecutionStack().size();
+                ActionResult result = action.execute(eventContext);
+
+                if (result == ActionResult.PAUSE) {
+                    int stackSizeAfter = eventContext.getExecutionStack().size();
+                    if (stackSizeAfter == stackSizeBefore) {
+                        // Leaf action returned PAUSE, resume from next
+                        eventContext.getExecutionStack().push(i + 1);
+                    } else {
+                        // Block action returned PAUSE, it already pushed its state, so we push our current index
+                        eventContext.getExecutionStack().push(i);
+                    }
+                    return ActionResult.PAUSE;
+                }
+
+                if (result == ActionResult.STOP) {
+                    return ActionResult.STOP;
+                }
             }
         } catch (StopActionSequenceException e) {
             // This exception is thrown when the action sequence should be stopped
+            return ActionResult.STOP;
         }
+        return ActionResult.CONTINUE;
     }
 
     public void executeAllAsync(EventContext eventContext) {
         try {
-            List<CompletableFuture<Void>> futures = this.stream()
-                    .map(action -> CompletableFuture.runAsync(() -> action.execute(eventContext)))
+            List<CompletableFuture<ActionResult>> futures = this.stream()
+                    .map(action -> CompletableFuture.supplyAsync(() -> action.execute(eventContext)))
                     .toList();
 
             CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
@@ -37,8 +62,8 @@ public class BaseActionList extends ArrayList<IBaseAction> {
 
     public void executeAllAsync(EventContext eventContext, Executor executor) {
         try {
-            List<CompletableFuture<Void>> futures = this.stream()
-                    .map(action -> CompletableFuture.runAsync(() -> action.execute(eventContext), executor))
+            List<CompletableFuture<ActionResult>> futures = this.stream()
+                    .map(action -> CompletableFuture.supplyAsync(() -> action.execute(eventContext), executor))
                     .toList();
 
             CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();

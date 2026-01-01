@@ -1,5 +1,6 @@
 package com.davidrandoll.automation.engine.core;
 
+import com.davidrandoll.automation.engine.core.actions.ActionResult;
 import com.davidrandoll.automation.engine.core.actions.BaseActionList;
 import com.davidrandoll.automation.engine.core.actions.exceptions.StopAutomationException;
 import com.davidrandoll.automation.engine.core.conditions.BaseConditionList;
@@ -75,13 +76,14 @@ public final class Automation {
     /**
      * Perform all actions
      */
-    public void performActions(EventContext context) {
+    public ActionResult performActions(EventContext context) {
         if (isNull(actions))
-            return;
+            return ActionResult.CONTINUE;
         try {
-            actions.executeAll(context);
+            return actions.executeAll(context);
         } catch (StopAutomationException e) {
             // This exception is thrown when the automation should be stopped
+            return ActionResult.STOP;
         }
     }
 

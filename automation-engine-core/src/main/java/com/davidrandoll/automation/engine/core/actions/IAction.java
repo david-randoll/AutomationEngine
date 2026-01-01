@@ -7,5 +7,5 @@ import com.davidrandoll.automation.engine.core.events.EventContext;
 
 @FunctionalInterface
 public interface IAction extends IBlock {
-    void execute(EventContext context, ActionContext actionContext) throws StopActionSequenceException, StopAutomationException;
+    ActionResult execute(EventContext context, ActionContext actionContext) throws StopActionSequenceException, StopAutomationException;
 }

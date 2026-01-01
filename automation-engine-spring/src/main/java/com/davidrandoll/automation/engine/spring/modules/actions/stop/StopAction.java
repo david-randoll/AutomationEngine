@@ -1,6 +1,7 @@
 package com.davidrandoll.automation.engine.spring.modules.actions.stop;
 
 
+import com.davidrandoll.automation.engine.core.actions.ActionResult;
 import com.davidrandoll.automation.engine.core.actions.exceptions.StopActionSequenceException;
 import com.davidrandoll.automation.engine.core.actions.exceptions.StopAutomationException;
 import com.davidrandoll.automation.engine.core.events.EventContext;
@@ -14,10 +15,11 @@ import java.util.List;
 public class StopAction extends PluggableAction<StopActionContext> {
 
     @Override
-    public void doExecute(EventContext ec, StopActionContext ac) {
-        if (ObjectUtils.isEmpty(ac.getCondition())) return;
+    public ActionResult executeWithResult(EventContext ec, StopActionContext ac) {
+        if (ObjectUtils.isEmpty(ac.getCondition())) return ActionResult.CONTINUE;
         var isSatisfied = processor.allConditionsSatisfied(ec, List.of(ac.getCondition()));
-        if (!isSatisfied) return;
+        if (!isSatisfied) return ActionResult.CONTINUE;
+
         if (ac.hasStopMessage()) {
             if (ac.isStopAutomation()) throw new StopAutomationException(ac.getStopMessage());
             if (ac.isStopActionSequence())
@@ -26,5 +28,11 @@ public class StopAction extends PluggableAction<StopActionContext> {
             if (ac.isStopAutomation()) throw new StopAutomationException();
             if (ac.isStopActionSequence()) throw new StopActionSequenceException();
         }
+        return ActionResult.STOP;
+    }
+
+    @Override
+    public void doExecute(EventContext ec, StopActionContext ac) {
+        // No-op, using executeWithResult instead
     }
 }

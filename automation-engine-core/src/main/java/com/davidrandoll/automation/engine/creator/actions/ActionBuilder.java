@@ -1,6 +1,7 @@
 package com.davidrandoll.automation.engine.creator.actions;
 
 import com.davidrandoll.automation.engine.core.actions.ActionContext;
+import com.davidrandoll.automation.engine.core.actions.ActionResult;
 import com.davidrandoll.automation.engine.core.actions.BaseActionList;
 import com.davidrandoll.automation.engine.core.actions.IAction;
 import com.davidrandoll.automation.engine.core.actions.IBaseAction;
@@ -45,9 +46,9 @@ public class ActionBuilder {
         return eventContext -> interceptingAction.execute(eventContext, actionContext);
     }
 
-    public void executeActions(EventContext eventContext, List<ActionDefinition> actions) {
+    public ActionResult executeActions(EventContext eventContext, List<ActionDefinition> actions) {
         BaseActionList resolvedActions = resolve(actions);
-        resolvedActions.executeAll(eventContext);
+        return resolvedActions.executeAll(eventContext);
     }
 
     public void executeActionsAsync(EventContext eventContext, List<ActionDefinition> actions) {

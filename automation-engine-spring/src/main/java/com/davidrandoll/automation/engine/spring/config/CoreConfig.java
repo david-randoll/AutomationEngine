@@ -13,6 +13,8 @@ import com.davidrandoll.automation.engine.creator.result.ResultBuilder;
 import com.davidrandoll.automation.engine.creator.triggers.TriggerBuilder;
 import com.davidrandoll.automation.engine.creator.variables.VariableBuilder;
 import com.davidrandoll.automation.engine.orchestrator.AutomationOrchestrator;
+import com.davidrandoll.automation.engine.core.state.IStateStore;
+import com.davidrandoll.automation.engine.core.state.InMemoryStateStore;
 import com.davidrandoll.automation.engine.orchestrator.IAEOrchestrator;
 import com.davidrandoll.automation.engine.orchestrator.interceptors.*;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -38,10 +40,17 @@ public class CoreConfig {
 
     @Bean
     @ConditionalOnMissingBean
+    public IStateStore stateStore() {
+        return new InMemoryStateStore();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
     public IAEOrchestrator automationOrchestrator(IEventPublisher publisher,
+                                                  IStateStore stateStore,
                                                   List<IAutomationExecutionInterceptor> executionInterceptors,
                                                   List<IAutomationHandleEventInterceptor> handleEventInterceptors) {
-        var orchestrator = new AutomationOrchestrator(publisher);
+        var orchestrator = new AutomationOrchestrator(publisher, stateStore);
         return new InterceptingAutomationOrchestrator(orchestrator, executionInterceptors, handleEventInterceptors);
     }
 

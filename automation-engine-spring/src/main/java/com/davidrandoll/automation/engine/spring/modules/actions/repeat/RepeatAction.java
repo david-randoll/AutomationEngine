@@ -1,6 +1,7 @@
 package com.davidrandoll.automation.engine.spring.modules.actions.repeat;
 
 
+import com.davidrandoll.automation.engine.core.actions.ActionResult;
 import com.davidrandoll.automation.engine.core.events.EventContext;
 import com.davidrandoll.automation.engine.spring.spi.PluggableAction;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -19,21 +20,24 @@ public class RepeatAction extends PluggableAction<RepeatActionContext> {
     private final ObjectMapper objectMapper;
 
     @Override
-    public void doExecute(EventContext ec, RepeatActionContext ac) {
-        if (ObjectUtils.isEmpty(ac.getActions())) return;
+    public ActionResult executeWithResult(EventContext ec, RepeatActionContext ac) {
+        if (ObjectUtils.isEmpty(ac.getActions())) return ActionResult.CONTINUE;
         for (int i = 0; i < ac.getCount(); i++) {
-            processor.executeActions(ec, ac.getActions());
+            ActionResult result = processor.executeActions(ec, ac.getActions());
+            if (result == ActionResult.PAUSE) return ActionResult.PAUSE;
         }
 
         if (ac.hasWhileConditions()) {
             while (processor.allConditionsSatisfied(ec, ac.getWhileConditions())) {
-                processor.executeActions(ec, ac.getActions());
+                ActionResult result = processor.executeActions(ec, ac.getActions());
+                if (result == ActionResult.PAUSE) return ActionResult.PAUSE;
             }
         }
 
         if (ac.hasUntilConditions()) {
             while (!processor.allConditionsSatisfied(ec, ac.getUntilConditions())) {
-                processor.executeActions(ec, ac.getActions());
+                ActionResult result = processor.executeActions(ec, ac.getActions());
+                if (result == ActionResult.PAUSE) return ActionResult.PAUSE;
             }
         }
 
@@ -43,10 +47,17 @@ public class RepeatAction extends PluggableAction<RepeatActionContext> {
 
             for (Object item : items) {
                 ec.addMetadata(variableName, item);
-                processor.executeActions(ec, ac.getActions());
+                ActionResult result = processor.executeActions(ec, ac.getActions());
                 ec.removeMetadata(variableName);
+                if (result == ActionResult.PAUSE) return ActionResult.PAUSE;
             }
         }
+        return ActionResult.CONTINUE;
+    }
+
+    @Override
+    public void doExecute(EventContext ec, RepeatActionContext ac) {
+        // No-op, using executeWithResult instead
     }
 
     private Iterable<?> convertToIterable(JsonNode node) {

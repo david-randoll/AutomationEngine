@@ -1,15 +1,18 @@
 package com.davidrandoll.automation.engine.orchestrator;
 
 import com.davidrandoll.automation.engine.core.Automation;
+import com.davidrandoll.automation.engine.core.actions.ActionResult;
 import com.davidrandoll.automation.engine.core.events.EventContext;
 import com.davidrandoll.automation.engine.core.events.IEvent;
 import com.davidrandoll.automation.engine.core.events.publisher.*;
 import com.davidrandoll.automation.engine.core.result.AutomationResult;
+import com.davidrandoll.automation.engine.core.state.IStateStore;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.BiConsumer;
 
@@ -17,6 +20,7 @@ import java.util.function.BiConsumer;
 @RequiredArgsConstructor
 public class AutomationOrchestrator implements IAEOrchestrator {
     private final IEventPublisher publisher;
+    private final IStateStore stateStore;
     private final List<Automation> automations = new CopyOnWriteArrayList<>();
 
     @Override
@@ -68,16 +72,71 @@ public class AutomationOrchestrator implements IAEOrchestrator {
     public AutomationResult executeAutomation(Automation automation, EventContext eventContext) {
         AutomationResult result;
 
+        // Store automation alias in metadata for resumption
+        eventContext.getMetadata().put("_automationAlias", automation.getAlias());
+
         automation.resolveVariables(eventContext);
         if (automation.anyTriggerActivated(eventContext) && automation.allConditionsMet(eventContext)) {
             log.debug("Automation triggered and conditions met. Executing actions.");
-            automation.performActions(eventContext);
+            ActionResult actionResult = automation.performActions(eventContext);
+
             var executionSummary = automation.getExecutionSummary(eventContext);
-            result = AutomationResult.executed(automation, eventContext, executionSummary);
+            if (actionResult == ActionResult.PAUSE) {
+                log.debug("Automation paused. Saving state.");
+                stateStore.save(eventContext);
+                result = AutomationResult.paused(automation, eventContext, executionSummary);
+            } else {
+                result = AutomationResult.executed(automation, eventContext, executionSummary);
+            }
         } else {
             log.debug("Automation not triggered or conditions not met. Skipping actions.");
             result = AutomationResult.skipped(automation, eventContext);
         }
+        publisher.publishEvent(new AutomationEngineProcessedEvent(automation, eventContext, result));
+        return result;
+    }
+
+    @Override
+    public AutomationResult resumeAutomation(UUID executionId) {
+        var contextOptional = stateStore.findById(executionId);
+        if (contextOptional.isEmpty()) {
+            log.warn("Could not find state for execution ID: {}", executionId);
+            return null;
+        }
+
+        EventContext eventContext = contextOptional.get();
+        // Find the automation by alias (assuming alias is stored in metadata or we need to add it to EventContext)
+        // For now, let's assume we can find it.
+        // Actually, we should probably store the automation alias in the EventContext.
+        String automationAlias = (String) eventContext.getMetadata().get("_automationAlias");
+        if (automationAlias == null) {
+            log.error("Automation alias not found in EventContext metadata for execution ID: {}", executionId);
+            return null;
+        }
+
+        Automation automation = automations.stream()
+                .filter(a -> a.getAlias().equals(automationAlias))
+                .findFirst()
+                .orElse(null);
+
+        if (automation == null) {
+            log.error("Automation with alias '{}' not found for execution ID: {}", automationAlias, executionId);
+            return null;
+        }
+
+        log.debug("Resuming automation '{}' for execution ID: {}", automationAlias, executionId);
+        ActionResult actionResult = automation.performActions(eventContext);
+
+        if (actionResult == ActionResult.PAUSE) {
+            log.debug("Automation paused again. Updating state.");
+            stateStore.save(eventContext);
+        } else {
+            log.debug("Automation completed. Removing state.");
+            stateStore.remove(executionId);
+        }
+
+        var executionSummary = automation.getExecutionSummary(eventContext);
+        AutomationResult result = AutomationResult.executed(automation, eventContext, executionSummary);
         publisher.publishEvent(new AutomationEngineProcessedEvent(automation, eventContext, result));
         return result;
     }

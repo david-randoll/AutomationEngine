@@ -1,5 +1,6 @@
 package com.davidrandoll.automation.engine.creator;
 
+import com.davidrandoll.automation.engine.core.actions.ActionResult;
 import com.davidrandoll.automation.engine.core.actions.BaseActionList;
 import com.davidrandoll.automation.engine.core.conditions.BaseConditionList;
 import com.davidrandoll.automation.engine.core.events.EventContext;
@@ -36,8 +37,8 @@ public class AutomationProcessor {
         return actionBuilder.resolve(actions);
     }
 
-    public void executeActions(EventContext eventContext, List<ActionDefinition> actions) {
-        actionBuilder.executeActions(eventContext, actions);
+    public ActionResult executeActions(EventContext eventContext, List<ActionDefinition> actions) {
+        return actionBuilder.executeActions(eventContext, actions);
     }
 
     public void executeActionsAsync(EventContext eventContext, List<ActionDefinition> actions) {

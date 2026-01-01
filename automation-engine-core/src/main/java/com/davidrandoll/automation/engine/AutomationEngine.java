@@ -10,6 +10,8 @@ import com.davidrandoll.automation.engine.orchestrator.IAEOrchestrator;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.UUID;
+
 @RequiredArgsConstructor
 public class AutomationEngine {
     private final IAEOrchestrator orchestrator;
@@ -46,6 +48,10 @@ public class AutomationEngine {
 
     public void publishEvent(IEvent event) {
         orchestrator.handleEvent(event);
+    }
+
+    public AutomationResult resumeAutomation(UUID executionId) {
+        return orchestrator.resumeAutomation(executionId);
     }
 
     public AutomationResult executeAutomation(Automation automation, EventContext eventContext) {

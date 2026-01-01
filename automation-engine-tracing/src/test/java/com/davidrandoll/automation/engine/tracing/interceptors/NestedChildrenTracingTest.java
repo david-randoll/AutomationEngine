@@ -1,6 +1,7 @@
 package com.davidrandoll.automation.engine.tracing.interceptors;
 
 import com.davidrandoll.automation.engine.core.actions.ActionContext;
+import com.davidrandoll.automation.engine.core.actions.ActionResult;
 import com.davidrandoll.automation.engine.core.actions.interceptors.IActionChain;
 import com.davidrandoll.automation.engine.core.conditions.ConditionContext;
 import com.davidrandoll.automation.engine.core.conditions.interceptors.IConditionChain;
@@ -61,8 +62,9 @@ class NestedChildrenTracingTest {
 
         doAnswer(invocation -> {
             childInterceptor.intercept(eventContext, childContext, (ec, ac) -> {
+                return ActionResult.CONTINUE;
             });
-            return null;
+            return ActionResult.CONTINUE;
         }).when(actionChain).execute(any(), any());
 
         parentInterceptor.intercept(eventContext, parentContext, actionChain);

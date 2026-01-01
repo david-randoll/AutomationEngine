@@ -1,5 +1,6 @@
 package com.davidrandoll.automation.engine.spring.modules.actions.uda;
 
+import com.davidrandoll.automation.engine.core.actions.ActionResult;
 import com.davidrandoll.automation.engine.core.events.EventContext;
 import com.davidrandoll.automation.engine.spring.spi.PluggableAction;
 import lombok.RequiredArgsConstructor;
@@ -17,10 +18,10 @@ public class UserDefinedAction extends PluggableAction<UserDefinedActionContext>
     private final IUserDefinedActionRegistry registry;
 
     @Override
-    public void doExecute(EventContext ec, UserDefinedActionContext ac) {
+    public ActionResult executeWithResult(EventContext ec, UserDefinedActionContext ac) {
         if (ObjectUtils.isEmpty(ac.getName())) {
             log.warn("User-defined action name is not specified");
-            return;
+            return ActionResult.CONTINUE;
         }
 
         Optional<UserDefinedActionDefinition> actionDefinition = registry.findAction(ac.getName());
@@ -29,7 +30,7 @@ public class UserDefinedAction extends PluggableAction<UserDefinedActionContext>
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User-defined action '" + ac.getName() + "' not found in registry");
             }
             log.warn("User-defined action '{}' not found in registry", ac.getName());
-            return;
+            return ActionResult.CONTINUE;
         }
 
         UserDefinedActionDefinition definition = actionDefinition.get();
@@ -56,13 +57,14 @@ public class UserDefinedAction extends PluggableAction<UserDefinedActionContext>
             boolean conditionsSatisfied = processor.allConditionsSatisfied(eventContext, definition.getConditions());
             if (!conditionsSatisfied) {
                 log.debug("Conditions not satisfied for user-defined action: {}", ac.getName());
-                return;
+                return ActionResult.CONTINUE;
             }
         }
 
         // Execute actions
+        ActionResult actionResult = ActionResult.CONTINUE;
         if (!ObjectUtils.isEmpty(definition.getActions())) {
-            processor.executeActions(eventContext, definition.getActions());
+            actionResult = processor.executeActions(eventContext, definition.getActions());
         }
 
         if (!ObjectUtils.isEmpty(ac.getStoreToVariable())) {
@@ -71,5 +73,11 @@ public class UserDefinedAction extends PluggableAction<UserDefinedActionContext>
         }
 
         log.debug("Completed user-defined action: {}", ac.getName());
+        return actionResult;
+    }
+
+    @Override
+    public void doExecute(EventContext ec, UserDefinedActionContext ac) {
+        // No-op, using executeWithResult instead
     }
 }

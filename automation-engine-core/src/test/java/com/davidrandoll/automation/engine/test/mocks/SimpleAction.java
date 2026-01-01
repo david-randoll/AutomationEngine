@@ -1,6 +1,7 @@
 package com.davidrandoll.automation.engine.test.mocks;
 
 import com.davidrandoll.automation.engine.core.actions.ActionContext;
+import com.davidrandoll.automation.engine.core.actions.ActionResult;
 import com.davidrandoll.automation.engine.core.actions.IAction;
 import com.davidrandoll.automation.engine.core.actions.IBaseAction;
 import com.davidrandoll.automation.engine.core.events.EventContext;
@@ -27,18 +28,19 @@ public class SimpleAction implements IBaseAction, IAction {
     }
 
     @Override
-    public void execute(EventContext eventContext) {
+    public ActionResult execute(EventContext eventContext) {
         executionCount++;
         executedContexts.add(eventContext);
 
         if (exceptionToThrow != null) {
             throw exceptionToThrow;
         }
+        return ActionResult.CONTINUE;
     }
 
     @Override
-    public void execute(EventContext context, ActionContext actionContext) {
-        execute(context);
+    public ActionResult execute(EventContext context, ActionContext actionContext) {
+        return execute(context);
     }
 
     @Override

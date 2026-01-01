@@ -1,6 +1,7 @@
 package com.davidrandoll.automation.engine.core.actions.interceptors;
 
 import com.davidrandoll.automation.engine.core.actions.ActionContext;
+import com.davidrandoll.automation.engine.core.actions.ActionResult;
 import com.davidrandoll.automation.engine.core.actions.IAction;
 import com.davidrandoll.automation.engine.core.actions.exceptions.StopActionSequenceException;
 import com.davidrandoll.automation.engine.core.actions.exceptions.StopAutomationException;
@@ -18,8 +19,8 @@ class ActionChain implements IActionChain {
     }
 
     @Override
-    public void execute(EventContext context, ActionContext actionContext) throws StopActionSequenceException, StopAutomationException {
-        delegate.execute(context, actionContext);
+    public ActionResult execute(EventContext context, ActionContext actionContext) throws StopActionSequenceException, StopAutomationException {
+        return delegate.execute(context, actionContext);
     }
 
     @Override

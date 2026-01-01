@@ -1,6 +1,7 @@
 package com.davidrandoll.automation.engine.core.actions.interceptors;
 
 import com.davidrandoll.automation.engine.core.actions.ActionContext;
+import com.davidrandoll.automation.engine.core.actions.ActionResult;
 import com.davidrandoll.automation.engine.core.actions.IAction;
 import com.davidrandoll.automation.engine.core.events.EventContext;
 
@@ -17,9 +18,9 @@ public class InterceptingAction implements IAction {
     }
 
     @Override
-    public void execute(EventContext eventContext, ActionContext actionContext) {
+    public ActionResult execute(EventContext eventContext, ActionContext actionContext) {
         IActionChain chain = buildChain(0);
-        chain.execute(eventContext, new ActionContext(actionContext));
+        return chain.execute(eventContext, new ActionContext(actionContext));
     }
 
     private IActionChain buildChain(int index) {

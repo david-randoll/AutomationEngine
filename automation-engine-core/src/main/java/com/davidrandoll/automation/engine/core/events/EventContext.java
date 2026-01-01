@@ -8,8 +8,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.Instant;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static java.util.Objects.isNull;
 
@@ -30,6 +29,16 @@ public class EventContext {
     private final Instant timestamp;
     private final String source;
 
+    /**
+     * Unique identifier for this execution instance.
+     */
+    private final UUID executionId;
+
+    /**
+     * Stack of indices representing the current execution path in the action hierarchy.
+     */
+    private final Deque<Integer> executionStack = new ArrayDeque<>();
+
     public EventContext(IEvent event) {
         if (event == null) throw new IllegalArgumentException("Event cannot be null");
 
@@ -38,6 +47,7 @@ public class EventContext {
         this.type = event.getClass();
         this.timestamp = Instant.now();
         this.source = determineSourceFromStackTrace(this.getClass());
+        this.executionId = UUID.randomUUID();
     }
 
     public static EventContext of(IEvent event) {

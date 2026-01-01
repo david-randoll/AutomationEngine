@@ -56,7 +56,7 @@ class PlaygroundControllerTest {
 
         EventContext context = new EventContext(PlaygroundEvent.from(Map.of("key", "value")));
         AutomationResult result = AutomationResult.executedWithAdditionalFields(
-                automation, context, "success", true, Map.of(ExecutionTrace.TRACE_KEY, new ExecutionTrace()));
+                automation, context, "success", true, false, Map.of(ExecutionTrace.TRACE_KEY, new ExecutionTrace()));
 
         when(automationEngine.executeAutomationWithYaml(anyString(), any(EventContext.class)))
                 .thenReturn(result);

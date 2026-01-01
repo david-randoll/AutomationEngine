@@ -6,5 +6,5 @@ import com.davidrandoll.automation.engine.core.events.EventContext;
 
 @FunctionalInterface
 public interface IBaseAction {
-    void execute(EventContext context) throws StopActionSequenceException, StopAutomationException;
+    ActionResult execute(EventContext context) throws StopActionSequenceException, StopAutomationException;
 }
