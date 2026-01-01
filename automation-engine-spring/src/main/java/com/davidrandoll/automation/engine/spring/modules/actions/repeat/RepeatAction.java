@@ -25,12 +25,14 @@ public class RepeatAction extends PluggableAction<RepeatActionContext> {
         for (int i = 0; i < ac.getCount(); i++) {
             ActionResult result = processor.executeActions(ec, ac.getActions());
             if (result == ActionResult.PAUSE) return ActionResult.PAUSE;
+            if (result == ActionResult.STOP) return ActionResult.CONTINUE;
         }
 
         if (ac.hasWhileConditions()) {
             while (processor.allConditionsSatisfied(ec, ac.getWhileConditions())) {
                 ActionResult result = processor.executeActions(ec, ac.getActions());
                 if (result == ActionResult.PAUSE) return ActionResult.PAUSE;
+                if (result == ActionResult.STOP) return ActionResult.CONTINUE;
             }
         }
 
@@ -38,6 +40,7 @@ public class RepeatAction extends PluggableAction<RepeatActionContext> {
             while (!processor.allConditionsSatisfied(ec, ac.getUntilConditions())) {
                 ActionResult result = processor.executeActions(ec, ac.getActions());
                 if (result == ActionResult.PAUSE) return ActionResult.PAUSE;
+                if (result == ActionResult.STOP) return ActionResult.CONTINUE;
             }
         }
 
@@ -50,6 +53,7 @@ public class RepeatAction extends PluggableAction<RepeatActionContext> {
                 ActionResult result = processor.executeActions(ec, ac.getActions());
                 ec.removeMetadata(variableName);
                 if (result == ActionResult.PAUSE) return ActionResult.PAUSE;
+                if (result == ActionResult.STOP) return ActionResult.CONTINUE;
             }
         }
         return ActionResult.CONTINUE;

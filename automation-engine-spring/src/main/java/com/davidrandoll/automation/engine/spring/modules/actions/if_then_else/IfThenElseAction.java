@@ -61,6 +61,11 @@ public class IfThenElseAction extends PluggableAction<IfThenElseActionContext> {
         ActionResult result = executeActions(ec, actions);
         if (result == ActionResult.PAUSE) {
             ec.getExecutionStack().push(branchIndex);
+            return ActionResult.PAUSE;
+        }
+        // If a branch is stopped, we continue with the next action after the if-then-else
+        if (result == ActionResult.STOP) {
+            return ActionResult.CONTINUE;
         }
         return result;
     }

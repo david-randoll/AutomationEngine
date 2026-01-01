@@ -24,6 +24,16 @@ public class TimeFormatFilter implements Filter {
         } else if (input instanceof String string) {
             var localTime = LocalTime.parse(string);
             return formatLocalTimeToUserFriendlyName(args, localTime);
+        } else if (input instanceof List<?> list && !list.isEmpty() && list.get(0) instanceof Number) {
+            try {
+                int hour = ((Number) list.get(0)).intValue();
+                int minute = list.size() >= 2 ? ((Number) list.get(1)).intValue() : 0;
+                int second = list.size() >= 3 ? ((Number) list.get(2)).intValue() : 0;
+                LocalTime localTime = LocalTime.of(hour, minute, second);
+                return formatLocalTimeToUserFriendlyName(args, localTime);
+            } catch (Exception e) {
+                return input;
+            }
         }
         return input;
     }

@@ -15,7 +15,11 @@ public class SequenceAction extends PluggableAction<SequenceActionContext> {
     @Override
     public ActionResult executeWithResult(EventContext ec, SequenceActionContext ac) {
         if (ObjectUtils.isEmpty(ac.getActions())) return ActionResult.CONTINUE;
-        return processor.executeActions(ec, ac.getActions());
+        ActionResult result = processor.executeActions(ec, ac.getActions());
+        if (result == ActionResult.STOP) {
+            return ActionResult.CONTINUE;
+        }
+        return result;
     }
 
     @Override
