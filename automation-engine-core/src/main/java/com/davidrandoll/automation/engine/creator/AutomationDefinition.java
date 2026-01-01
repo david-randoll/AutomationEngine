@@ -24,6 +24,7 @@ import java.util.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @FieldNameConstants
 @JsonPropertyOrder({
+        AutomationDefinition.Fields.id,
         AutomationDefinition.Fields.alias,
         AutomationDefinition.Fields.description,
         AutomationDefinition.Fields.options,
@@ -34,6 +35,8 @@ import java.util.*;
         AutomationDefinition.Fields.result
 })
 public class AutomationDefinition {
+    @Getter
+    private UUID id;
     @Getter
     private String alias;
     @Getter

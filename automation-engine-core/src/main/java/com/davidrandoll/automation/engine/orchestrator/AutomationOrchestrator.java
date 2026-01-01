@@ -72,8 +72,8 @@ public class AutomationOrchestrator implements IAEOrchestrator {
     public AutomationResult executeAutomation(Automation automation, EventContext eventContext) {
         AutomationResult result;
 
-        // Store automation alias in metadata for resumption
-        eventContext.getMetadata().put("_automationAlias", automation.getAlias());
+        // Store automation ID in metadata for resumption
+        eventContext.getMetadata().put("_automationId", automation.getId());
 
         automation.resolveVariables(eventContext);
         if (automation.anyTriggerActivated(eventContext) && automation.allConditionsMet(eventContext)) {
@@ -105,26 +105,24 @@ public class AutomationOrchestrator implements IAEOrchestrator {
         }
 
         EventContext eventContext = contextOptional.get();
-        // Find the automation by alias (assuming alias is stored in metadata or we need to add it to EventContext)
-        // For now, let's assume we can find it.
-        // Actually, we should probably store the automation alias in the EventContext.
-        String automationAlias = (String) eventContext.getMetadata().get("_automationAlias");
-        if (automationAlias == null) {
-            log.error("Automation alias not found in EventContext metadata for execution ID: {}", executionId);
+        // Find the automation by ID
+        UUID automationId = (UUID) eventContext.getMetadata().get("_automationId");
+        if (automationId == null) {
+            log.error("Automation ID not found in EventContext metadata for execution ID: {}", executionId);
             return null;
         }
 
         Automation automation = automations.stream()
-                .filter(a -> a.getAlias().equals(automationAlias))
+                .filter(a -> a.getId().equals(automationId))
                 .findFirst()
                 .orElse(null);
 
         if (automation == null) {
-            log.error("Automation with alias '{}' not found for execution ID: {}", automationAlias, executionId);
+            log.error("Automation with ID '{}' not found for execution ID: {}", automationId, executionId);
             return null;
         }
 
-        log.debug("Resuming automation '{}' for execution ID: {}", automationAlias, executionId);
+        log.debug("Resuming automation '{}' for execution ID: {}", automation.getAlias(), executionId);
         ActionResult actionResult = automation.performActions(eventContext);
 
         if (actionResult == ActionResult.PAUSE) {

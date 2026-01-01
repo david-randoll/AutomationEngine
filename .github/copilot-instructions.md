@@ -244,6 +244,10 @@ mvn flatten:flatten
    - Test module separately first: `mvn test -pl <module>`
    - Exclude generated code with JaCoCo config if needed
 
+5. **Using alias as an identifier**
+   - **NEVER** use the automation `alias` as a unique identifier. It is not guaranteed to be unique.
+   - Always use the automation `id` (UUID) for tracking, state management, or identification.
+
 ## Additional Resources
 
 - **AI_PROMPT.md**: Comprehensive YAML/JSON automation syntax guide

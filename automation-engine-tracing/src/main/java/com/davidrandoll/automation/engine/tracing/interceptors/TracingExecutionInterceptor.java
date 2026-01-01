@@ -39,10 +39,10 @@ public class TracingExecutionInterceptor implements IAutomationExecutionIntercep
             return chain.proceed(automation, context);
         }
 
-        log.debug("Starting trace capture for automation: {}", automation.getAlias());
+        log.debug("Starting trace capture for automation: {} (id: {})", automation.getAlias(), automation.getId());
 
         // Initialize trace context and store in event context metadata
-        TraceContext traceContext = TraceContext.getOrCreate(context, automation.getAlias());
+        TraceContext traceContext = TraceContext.getOrCreate(context, automation.getId(), automation.getAlias());
         TraceContext.setThreadContext(traceContext);
 
         try {

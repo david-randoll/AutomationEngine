@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Context holder for trace data during automation execution.
@@ -47,8 +48,9 @@ public class TraceContext {
      */
     private final Deque<List<LogEntry>> logBufferStack = new LinkedList<>();
 
-    public TraceContext(String alias) {
+    public TraceContext(UUID automationId, String alias) {
         this.executionTrace = ExecutionTrace.builder()
+                .automationId(automationId)
                 .alias(alias)
                 .startedAt(System.currentTimeMillis())
                 .build();
@@ -56,6 +58,14 @@ public class TraceContext {
         this.childrenStack.push(createRootTraceChildren());
         // Start capturing logs at the trace level (for automation-level logs)
         this.startLogCapture();
+    }
+
+    /**
+     * @deprecated Use {@link #TraceContext(UUID, String)} instead.
+     */
+    @Deprecated
+    public TraceContext(String alias) {
+        this(null, alias);
     }
 
     /**
@@ -116,14 +126,23 @@ public class TraceContext {
      * @param alias        the automation alias (used if creating new context)
      * @return the TraceContext
      */
-    public static TraceContext getOrCreate(EventContext eventContext, String alias) {
+    public static TraceContext getOrCreate(EventContext eventContext, UUID automationId, String alias) {
         Object existing = eventContext.getMetadata(TRACE_CONTEXT_KEY);
         if (existing instanceof TraceContext traceContext) {
             return traceContext;
         }
-        TraceContext traceContext = new TraceContext(alias);
+        TraceContext traceContext = new TraceContext(automationId, alias);
         eventContext.addMetadata(TRACE_CONTEXT_KEY, traceContext);
         return traceContext;
+    }
+
+    /**
+     * @deprecated Use {@link #getOrCreate(EventContext, UUID, String)} instead.
+     */
+    @Deprecated
+    public static TraceContext getOrCreate(EventContext eventContext, String alias) {
+        UUID automationId = (UUID) eventContext.getMetadata("_automationId");
+        return getOrCreate(eventContext, automationId, alias);
     }
 
     /**

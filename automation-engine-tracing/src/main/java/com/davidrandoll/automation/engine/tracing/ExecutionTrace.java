@@ -25,6 +25,11 @@ public class ExecutionTrace {
     private String executionId = UUID.randomUUID().toString();
 
     /**
+     * The ID of the automation that was executed.
+     */
+    private UUID automationId;
+
+    /**
      * The alias of the automation that was executed.
      */
     private String alias;

@@ -16,6 +16,7 @@ public class ManualAutomationBuilder implements IAutomationFormatParser<Automati
         log.info("Start creating automation: {}", request.getAlias());
 
         var automation = new Automation(
+                request.getId(),
                 request.getAlias(),
                 request.getOptions(),
                 processor.resolveVariables(request.getVariables()),
