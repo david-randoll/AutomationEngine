@@ -14,6 +14,7 @@
     <runConfiguration name="All in automation-engine-tracing" type="JUnit" />
     <runConfiguration name="All in automation-engine-ui" type="JUnit" />
     <runConfiguration name="All in automation-engine-lua" type="JUnit" />
+    <runConfiguration name="All in automation-engine-spring-notification" type="JUnit" />
     <method v="2" />
   </configuration>
 </component>
