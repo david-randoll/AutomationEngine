@@ -19,7 +19,7 @@ import static java.util.Objects.isNull;
 
 @Getter
 public final class Automation {
-    private final UUID id;
+    private final String id;
     private final String alias;
     private final Map<String, Object> options;
     private final BaseVariableList variables;
@@ -28,9 +28,9 @@ public final class Automation {
     private final BaseActionList actions;
     private final IBaseResult result;
 
-    public Automation(UUID id, String alias, Map<String, Object> options, BaseVariableList variables, BaseTriggerList triggers,
-            BaseConditionList conditions, BaseActionList actions, IBaseResult result) {
-        this.id = Optional.ofNullable(id).orElse(UUID.randomUUID());
+    public Automation(String id, String alias, Map<String, Object> options, BaseVariableList variables, BaseTriggerList triggers,
+                      BaseConditionList conditions, BaseActionList actions, IBaseResult result) {
+        this.id = Optional.ofNullable(id).orElse(String.valueOf(UUID.randomUUID()));
         this.alias = alias;
         this.options = Collections.unmodifiableMap(Optional.ofNullable(options).orElse(Collections.emptyMap()));
         this.variables = Optional.ofNullable(variables).orElse(BaseVariableList.of());
@@ -41,12 +41,12 @@ public final class Automation {
     }
 
     public Automation(String alias, Map<String, Object> options, BaseVariableList variables, BaseTriggerList triggers,
-            BaseConditionList conditions, BaseActionList actions, IBaseResult result) {
+                      BaseConditionList conditions, BaseActionList actions, IBaseResult result) {
         this(null, alias, options, variables, triggers, conditions, actions, result);
     }
 
     public Automation(String alias, BaseVariableList variables, BaseTriggerList triggers, BaseConditionList conditions,
-            BaseActionList actions, IBaseResult result) {
+                      BaseActionList actions, IBaseResult result) {
         this(null, alias, Collections.emptyMap(), variables, triggers, conditions, actions, result);
     }
 

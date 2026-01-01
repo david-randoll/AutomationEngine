@@ -27,7 +27,7 @@ public class ExecutionTrace {
     /**
      * The ID of the automation that was executed.
      */
-    private UUID automationId;
+    private String automationId;
 
     /**
      * The alias of the automation that was executed.

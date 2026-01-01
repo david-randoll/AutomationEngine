@@ -48,7 +48,7 @@ public class TraceContext {
      */
     private final Deque<List<LogEntry>> logBufferStack = new LinkedList<>();
 
-    public TraceContext(UUID automationId, String alias) {
+    public TraceContext(String automationId, String alias) {
         this.executionTrace = ExecutionTrace.builder()
                 .automationId(automationId)
                 .alias(alias)
@@ -61,7 +61,7 @@ public class TraceContext {
     }
 
     /**
-     * @deprecated Use {@link #TraceContext(UUID, String)} instead.
+     * @deprecated Use {@link #TraceContext(String, String)} instead.
      */
     @Deprecated
     public TraceContext(String alias) {
@@ -126,7 +126,7 @@ public class TraceContext {
      * @param alias        the automation alias (used if creating new context)
      * @return the TraceContext
      */
-    public static TraceContext getOrCreate(EventContext eventContext, UUID automationId, String alias) {
+    public static TraceContext getOrCreate(EventContext eventContext, String automationId, String alias) {
         Object existing = eventContext.getMetadata(TRACE_CONTEXT_KEY);
         if (existing instanceof TraceContext traceContext) {
             return traceContext;
@@ -137,11 +137,11 @@ public class TraceContext {
     }
 
     /**
-     * @deprecated Use {@link #getOrCreate(EventContext, UUID, String)} instead.
+     * @deprecated Use {@link #getOrCreate(EventContext, String, String)} instead.
      */
     @Deprecated
     public static TraceContext getOrCreate(EventContext eventContext, String alias) {
-        UUID automationId = (UUID) eventContext.getMetadata("_automationId");
+        String automationId = (String) eventContext.getMetadata("_automationId");
         return getOrCreate(eventContext, automationId, alias);
     }
 

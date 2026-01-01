@@ -106,7 +106,7 @@ public class AutomationOrchestrator implements IAEOrchestrator {
 
         EventContext eventContext = contextOptional.get();
         // Find the automation by ID
-        UUID automationId = (UUID) eventContext.getMetadata().get("_automationId");
+        String automationId = (String) eventContext.getMetadata().get("_automationId");
         if (automationId == null) {
             log.error("Automation ID not found in EventContext metadata for execution ID: {}", executionId);
             return null;
