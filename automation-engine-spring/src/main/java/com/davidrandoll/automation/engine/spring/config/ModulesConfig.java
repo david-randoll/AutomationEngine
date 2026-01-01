@@ -2,6 +2,7 @@ package com.davidrandoll.automation.engine.spring.config;
 
 import com.davidrandoll.automation.engine.AutomationEngine;
 import com.davidrandoll.automation.engine.core.events.publisher.IEventPublisher;
+import com.davidrandoll.automation.engine.orchestrator.IAEOrchestrator;
 import com.davidrandoll.automation.engine.spring.AEConfigProvider;
 import com.davidrandoll.automation.engine.spring.modules.actions.delay.DelayAction;
 import com.davidrandoll.automation.engine.spring.modules.actions.if_then_else.IfThenElseAction;
@@ -49,6 +50,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.ApplicationEventMulticaster;
+import org.springframework.scheduling.TaskScheduler;
 
 @Configuration
 public class ModulesConfig {
@@ -58,8 +60,8 @@ public class ModulesConfig {
 
     @Bean(name = "delayAction")
     @ConditionalOnMissingBean(name = "delayAction", ignored = DelayAction.class)
-    public DelayAction delayAction() {
-        return new DelayAction();
+    public DelayAction delayAction(TaskScheduler taskScheduler, IAEOrchestrator orchestrator) {
+        return new DelayAction(taskScheduler, orchestrator);
     }
 
     @Bean(name = "ifThenElseAction")

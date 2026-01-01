@@ -11,7 +11,6 @@ import java.util.List;
 
 @RequiredArgsConstructor
 public class IfThenElseAction extends PluggableAction<IfThenElseActionContext> {
-
     @Override
     public ActionResult executeWithResult(EventContext ec, IfThenElseActionContext ac) {
         Integer branchIndex = null;
@@ -42,14 +41,14 @@ public class IfThenElseAction extends PluggableAction<IfThenElseActionContext> {
             return executeBranch(ec, -1, ac.getElseActions());
         } else {
             // Resuming
-            if (branchIndex == 0) {
-                return executeBranch(ec, 0, ac.getThenActions());
-            } else if (branchIndex == -1) {
-                return executeBranch(ec, -1, ac.getElseActions());
-            } else {
-                var ifBlock = ac.getIfThenBlocks().get(branchIndex - 1);
-                return executeBranch(ec, branchIndex, ifBlock.getThenActions());
-            }
+            return switch (branchIndex) {
+                case 0 -> executeBranch(ec, 0, ac.getThenActions());
+                case -1 -> executeBranch(ec, -1, ac.getElseActions());
+                default -> {
+                    var ifBlock = ac.getIfThenBlocks().get(branchIndex - 1);
+                    yield executeBranch(ec, branchIndex, ifBlock.getThenActions());
+                }
+            };
         }
     }
 

@@ -4,24 +4,19 @@ import com.davidrandoll.automation.engine.core.actions.ActionResult;
 import com.davidrandoll.automation.engine.core.events.EventContext;
 import com.davidrandoll.automation.engine.orchestrator.IAEOrchestrator;
 import com.davidrandoll.automation.engine.spring.spi.PluggableAction;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
-import org.springframework.stereotype.Component;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.util.UUID;
 
 @Slf4j
-@Component("delay")
+@RequiredArgsConstructor
 public class DelayAction extends PluggableAction<DelayActionContext> {
-
-    @Autowired
-    private TaskScheduler taskScheduler;
-
-    @Autowired
-    private IAEOrchestrator orchestrator;
+    private final TaskScheduler taskScheduler;
+    private final IAEOrchestrator orchestrator;
 
     @Override
     public ActionResult executeWithResult(EventContext ec, DelayActionContext ac) {
