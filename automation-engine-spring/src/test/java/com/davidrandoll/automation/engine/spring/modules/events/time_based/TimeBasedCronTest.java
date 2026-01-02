@@ -22,7 +22,7 @@ class TimeBasedCronTest extends AutomationEngineTest {
                     cron: "0 0 9 * * *"
                 actions:
                   - action: logger
-                    message: Automation triggered by cron at {{ time }}
+                    message: Automation triggered by cron at {{ time | time_format(pattern='HH:mm') }}
                 """;
 
         Automation automation = factory.createAutomation("yaml", yaml);
@@ -112,7 +112,7 @@ class TimeBasedCronTest extends AutomationEngineTest {
                     cron: "*/30 * * * * *"
                 actions:
                   - action: logger
-                    message: Tick at {{ time }}
+                    message: Tick at {{ time | time_format(pattern='HH:mm:ss') }}
                 """;
 
         engine.register(factory.createAutomation("yaml", yaml));
