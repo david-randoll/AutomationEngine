@@ -2,6 +2,7 @@ package com.davidrandoll.automation.engine.spring.modules.actions.logger;
 
 import com.davidrandoll.automation.engine.core.actions.IActionContext;
 import com.davidrandoll.automation.engine.spring.spi.ContextField;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,6 +14,7 @@ import org.slf4j.event.Level;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldNameConstants
+@JsonIgnoreProperties(ignoreUnknown = true)
 @JsonPropertyOrder({
         LoggerActionContext.Fields.alias,
         LoggerActionContext.Fields.description,

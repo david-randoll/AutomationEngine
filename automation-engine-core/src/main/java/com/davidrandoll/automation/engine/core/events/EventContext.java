@@ -1,6 +1,7 @@
 package com.davidrandoll.automation.engine.core.events;
 
 import com.davidrandoll.automation.engine.AutomationEngine;
+import com.davidrandoll.automation.engine.core.actions.ExecutionFrame;
 import com.davidrandoll.automation.engine.core.utils.ReflectionUtils;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -35,9 +36,10 @@ public class EventContext {
     private final UUID executionId;
 
     /**
-     * Stack of indices representing the current execution path in the action hierarchy.
+     * Stack of execution frames representing the current execution path in the action hierarchy.
+     * Each frame tracks a list of actions and the current index within that list.
      */
-    private final Deque<Integer> executionStack = new ArrayDeque<>();
+    private final Deque<ExecutionFrame> executionStack = new ArrayDeque<>();
 
     public EventContext(IEvent event) {
         if (event == null) throw new IllegalArgumentException("Event cannot be null");

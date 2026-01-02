@@ -8,18 +8,22 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.ObjectUtils;
 
+/**
+ * A block action that executes a sequence of child actions.
+ * <p>
+ * With the virtual stack machine architecture, this action simply invokes
+ * its child actions and lets the engine handle all state management.
+ */
 @Slf4j
 @RequiredArgsConstructor
 public class SequenceAction extends PluggableAction<SequenceActionContext> {
 
     @Override
     public ActionResult executeWithResult(EventContext ec, SequenceActionContext ac) {
-        if (ObjectUtils.isEmpty(ac.getActions())) return ActionResult.CONTINUE;
-        ActionResult result = processor.executeActions(ec, ac.getActions());
-        if (result == ActionResult.STOP) {
-            return ActionResult.CONTINUE;
+        if (ObjectUtils.isEmpty(ac.getActions())) {
+            return ActionResult.continueExecution();
         }
-        return result;
+        return ActionResult.invoke(createActions(ec, ac.getActions()));
     }
 
     @Override

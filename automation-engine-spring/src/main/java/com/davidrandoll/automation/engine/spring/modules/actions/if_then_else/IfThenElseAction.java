@@ -9,47 +9,37 @@ import org.springframework.util.ObjectUtils;
 
 import java.util.List;
 
+/**
+ * A block action that evaluates conditions and invokes the appropriate branch.
+ * <p>
+ * With the virtual stack machine architecture, this action simply decides which
+ * branch to take and returns {@link ActionResult#invoke(List)} with the chosen
+ * actions. The execution engine handles all state management for pause/resume.
+ */
 @RequiredArgsConstructor
 public class IfThenElseAction extends PluggableAction<IfThenElseActionContext> {
     @Override
     public ActionResult executeWithResult(EventContext ec, IfThenElseActionContext ac) {
-        Integer branchIndex = null;
-        if (!ec.getExecutionStack().isEmpty()) {
-            branchIndex = ec.getExecutionStack().pop();
+        // Check main if conditions first
+        if (!ObjectUtils.isEmpty(ac.getIfConditions())) {
+            boolean isSatisfied = allConditionsSatisfied(ec, ac.getIfConditions());
+            if (isSatisfied) {
+                return invokeBranch(ec, ac.getThenActions());
+            }
         }
 
-        if (branchIndex == null) {
-            if (!ObjectUtils.isEmpty(ac.getIfConditions())) {
-                boolean isSatisfied = allConditionsSatisfied(ec, ac.getIfConditions());
-                if (isSatisfied) {
-                    return executeBranch(ec, 0, ac.getThenActions());
+        // Check the else-if blocks
+        if (!ObjectUtils.isEmpty(ac.getIfThenBlocks())) {
+            for (var ifBlock : ac.getIfThenBlocks()) {
+                var isIfsSatisfied = allConditionsSatisfied(ec, ifBlock.getIfConditions());
+                if (isIfsSatisfied) {
+                    return invokeBranch(ec, ifBlock.getThenActions());
                 }
             }
-
-            // check the ifs conditions
-            if (!ObjectUtils.isEmpty(ac.getIfThenBlocks())) {
-                for (int i = 0; i < ac.getIfThenBlocks().size(); i++) {
-                    var ifBlock = ac.getIfThenBlocks().get(i);
-                    var isIfsSatisfied = allConditionsSatisfied(ec, ifBlock.getIfConditions());
-                    if (isIfsSatisfied) {
-                        return executeBranch(ec, i + 1, ifBlock.getThenActions());
-                    }
-                }
-            }
-
-            // execute else actions
-            return executeBranch(ec, -1, ac.getElseActions());
-        } else {
-            // Resuming
-            return switch (branchIndex) {
-                case 0 -> executeBranch(ec, 0, ac.getThenActions());
-                case -1 -> executeBranch(ec, -1, ac.getElseActions());
-                default -> {
-                    var ifBlock = ac.getIfThenBlocks().get(branchIndex - 1);
-                    yield executeBranch(ec, branchIndex, ifBlock.getThenActions());
-                }
-            };
         }
+
+        // Execute else actions (may be empty/null)
+        return invokeBranch(ec, ac.getElseActions());
     }
 
     @Override
@@ -57,16 +47,14 @@ public class IfThenElseAction extends PluggableAction<IfThenElseActionContext> {
         // No-op, using executeWithResult instead
     }
 
-    private ActionResult executeBranch(EventContext ec, int branchIndex, List<ActionDefinition> actions) {
-        ActionResult result = executeActions(ec, actions);
-        if (result == ActionResult.PAUSE) {
-            ec.getExecutionStack().push(branchIndex);
-            return ActionResult.PAUSE;
+    /**
+     * Invokes a branch by creating actions and returning INVOKE result.
+     * The engine will push these onto the execution stack.
+     */
+    private ActionResult invokeBranch(EventContext ec, List<ActionDefinition> actions) {
+        if (ObjectUtils.isEmpty(actions)) {
+            return ActionResult.continueExecution();
         }
-        // If a branch is stopped, we continue with the next action after the if-then-else
-        if (result == ActionResult.STOP) {
-            return ActionResult.CONTINUE;
-        }
-        return result;
+        return ActionResult.invoke(createActions(ec, actions));
     }
 }
