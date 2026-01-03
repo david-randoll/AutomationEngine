@@ -33,7 +33,7 @@ public class ExecutionStackStressTest extends AutomationEngineTest {
         await().atMost(15, TimeUnit.SECONDS).untilAsserted(() -> {
             for (String msg : expectedMessages) {
                 assertThat(logAppender.getLoggedMessages())
-                        .anyMatch(m -> m.contains(msg));
+                        .anyMatch(m -> m.equals(msg));
             }
         });
     }
@@ -79,18 +79,18 @@ public class ExecutionStackStressTest extends AutomationEngineTest {
             waitForLogMessages("before-if", "in-if-before-delay", "in-if-after-delay", "after-if");
 
             assertThat(logAppender.getLoggedMessages())
-                    .noneMatch(m -> m.contains("should-not-run"));
+                    .noneMatch(m -> m.equals("should-not-run"));
 
             // Verify each message appears exactly once
             await().atMost(15, TimeUnit.SECONDS).untilAsserted(() -> {
                 long beforeCount = logAppender.getLoggedMessages().stream()
-                        .filter(m -> m.contains("before-if")).count();
+                        .filter(m -> m.equals("before-if")).count();
                 long inIfBeforeCount = logAppender.getLoggedMessages().stream()
-                        .filter(m -> m.contains("in-if-before-delay")).count();
+                        .filter(m -> m.equals("in-if-before-delay")).count();
                 long inIfAfterCount = logAppender.getLoggedMessages().stream()
-                        .filter(m -> m.contains("in-if-after-delay")).count();
+                        .filter(m -> m.equals("in-if-after-delay")).count();
                 long afterCount = logAppender.getLoggedMessages().stream()
-                        .filter(m -> m.contains("after-if")).count();
+                        .filter(m -> m.equals("after-if")).count();
                 assertThat(beforeCount).isEqualTo(1);
                 assertThat(inIfBeforeCount).isEqualTo(1);
                 assertThat(inIfAfterCount).isEqualTo(1);
@@ -133,18 +133,18 @@ public class ExecutionStackStressTest extends AutomationEngineTest {
             waitForLogMessages("before-if", "in-else-before-delay", "in-else-after-delay", "after-if");
 
             assertThat(logAppender.getLoggedMessages())
-                    .noneMatch(m -> m.contains("should-not-run"));
+                    .noneMatch(m -> m.equals("should-not-run"));
 
             // Verify each message appears exactly once
             await().atMost(15, TimeUnit.SECONDS).untilAsserted(() -> {
                 long beforeCount = logAppender.getLoggedMessages().stream()
-                        .filter(m -> m.contains("before-if")).count();
+                        .filter(m -> m.equals("before-if")).count();
                 long inElseBeforeCount = logAppender.getLoggedMessages().stream()
-                        .filter(m -> m.contains("in-else-before-delay")).count();
+                        .filter(m -> m.equals("in-else-before-delay")).count();
                 long inElseAfterCount = logAppender.getLoggedMessages().stream()
-                        .filter(m -> m.contains("in-else-after-delay")).count();
+                        .filter(m -> m.equals("in-else-after-delay")).count();
                 long afterCount = logAppender.getLoggedMessages().stream()
-                        .filter(m -> m.contains("after-if")).count();
+                        .filter(m -> m.equals("after-if")).count();
                 assertThat(beforeCount).isEqualTo(1);
                 assertThat(inElseBeforeCount).isEqualTo(1);
                 assertThat(inElseAfterCount).isEqualTo(1);
@@ -194,18 +194,18 @@ public class ExecutionStackStressTest extends AutomationEngineTest {
             waitForLogMessages("before-if", "in-elseif-before-delay", "in-elseif-after-delay", "after-if");
 
             assertThat(logAppender.getLoggedMessages())
-                    .noneMatch(m -> m.contains("should-not-run"));
+                    .noneMatch(m -> m.equals("should-not-run"));
 
             // Verify each message appears exactly once
             await().atMost(15, TimeUnit.SECONDS).untilAsserted(() -> {
                 long beforeCount = logAppender.getLoggedMessages().stream()
-                        .filter(m -> m.contains("before-if")).count();
+                        .filter(m -> m.equals("before-if")).count();
                 long inElseIfBeforeCount = logAppender.getLoggedMessages().stream()
-                        .filter(m -> m.contains("in-elseif-before-delay")).count();
+                        .filter(m -> m.equals("in-elseif-before-delay")).count();
                 long inElseIfAfterCount = logAppender.getLoggedMessages().stream()
-                        .filter(m -> m.contains("in-elseif-after-delay")).count();
+                        .filter(m -> m.equals("in-elseif-after-delay")).count();
                 long afterCount = logAppender.getLoggedMessages().stream()
-                        .filter(m -> m.contains("after-if")).count();
+                        .filter(m -> m.equals("after-if")).count();
                 assertThat(beforeCount).isEqualTo(1);
                 assertThat(inElseIfBeforeCount).isEqualTo(1);
                 assertThat(inElseIfAfterCount).isEqualTo(1);
@@ -261,19 +261,19 @@ public class ExecutionStackStressTest extends AutomationEngineTest {
             // Verify each message appears exactly once
             await().atMost(15, TimeUnit.SECONDS).untilAsserted(() -> {
                 assertThat(logAppender.getLoggedMessages().stream()
-                        .filter(m -> m.contains("L0-start")).count()).isEqualTo(1);
+                        .filter(m -> m.equals("L0-start")).count()).isEqualTo(1);
                 assertThat(logAppender.getLoggedMessages().stream()
-                        .filter(m -> m.contains("L1-before-delay")).count()).isEqualTo(1);
+                        .filter(m -> m.equals("L1-before-delay")).count()).isEqualTo(1);
                 assertThat(logAppender.getLoggedMessages().stream()
-                        .filter(m -> m.contains("L1-after-delay")).count()).isEqualTo(1);
+                        .filter(m -> m.equals("L1-after-delay")).count()).isEqualTo(1);
                 assertThat(logAppender.getLoggedMessages().stream()
-                        .filter(m -> m.contains("L2-before-delay")).count()).isEqualTo(1);
+                        .filter(m -> m.equals("L2-before-delay")).count()).isEqualTo(1);
                 assertThat(logAppender.getLoggedMessages().stream()
-                        .filter(m -> m.contains("L2-after-delay")).count()).isEqualTo(1);
+                        .filter(m -> m.equals("L2-after-delay")).count()).isEqualTo(1);
                 assertThat(logAppender.getLoggedMessages().stream()
-                        .filter(m -> m.contains("L1-end")).count()).isEqualTo(1);
+                        .filter(m -> m.equals("L1-end")).count()).isEqualTo(1);
                 assertThat(logAppender.getLoggedMessages().stream()
-                        .filter(m -> m.contains("L0-end")).count()).isEqualTo(1);
+                        .filter(m -> m.equals("L0-end")).count()).isEqualTo(1);
             });
         }
     }
@@ -317,9 +317,9 @@ public class ExecutionStackStressTest extends AutomationEngineTest {
             // Count the iteration messages
             await().atMost(15, TimeUnit.SECONDS).untilAsserted(() -> {
                 long startCount = logAppender.getLoggedMessages().stream()
-                        .filter(m -> m.contains("iteration-start")).count();
+                        .filter(m -> m.equals("iteration-start")).count();
                 long endCount = logAppender.getLoggedMessages().stream()
-                        .filter(m -> m.contains("iteration-end")).count();
+                        .filter(m -> m.equals("iteration-end")).count();
                 assertThat(startCount).isEqualTo(3);
                 assertThat(endCount).isEqualTo(3);
             });
@@ -356,15 +356,15 @@ public class ExecutionStackStressTest extends AutomationEngineTest {
             // Verify each item appears exactly once
             await().atMost(15, TimeUnit.SECONDS).untilAsserted(() -> {
                 assertThat(logAppender.getLoggedMessages().stream()
-                        .filter(m -> m.contains("before-repeat")).count()).isEqualTo(1);
+                        .filter(m -> m.equals("before-repeat")).count()).isEqualTo(1);
                 assertThat(logAppender.getLoggedMessages().stream()
-                        .filter(m -> m.contains("item=a")).count()).isEqualTo(1);
+                        .filter(m -> m.equals("item=a")).count()).isEqualTo(1);
                 assertThat(logAppender.getLoggedMessages().stream()
-                        .filter(m -> m.contains("item=b")).count()).isEqualTo(1);
+                        .filter(m -> m.equals("item=b")).count()).isEqualTo(1);
                 assertThat(logAppender.getLoggedMessages().stream()
-                        .filter(m -> m.contains("item=c")).count()).isEqualTo(1);
+                        .filter(m -> m.equals("item=c")).count()).isEqualTo(1);
                 assertThat(logAppender.getLoggedMessages().stream()
-                        .filter(m -> m.contains("after-repeat")).count()).isEqualTo(1);
+                        .filter(m -> m.equals("after-repeat")).count()).isEqualTo(1);
             });
         }
 
@@ -409,13 +409,13 @@ public class ExecutionStackStressTest extends AutomationEngineTest {
 
             await().atMost(15, TimeUnit.SECONDS).untilAsserted(() -> {
                 long repeatStartCount = logAppender.getLoggedMessages().stream()
-                        .filter(m -> m.contains("repeat-start")).count();
+                        .filter(m -> m.equals("repeat-start")).count();
                 long ifBeforeCount = logAppender.getLoggedMessages().stream()
-                        .filter(m -> m.contains("if-before-delay")).count();
+                        .filter(m -> m.equals("if-before-delay")).count();
                 long ifAfterCount = logAppender.getLoggedMessages().stream()
-                        .filter(m -> m.contains("if-after-delay")).count();
+                        .filter(m -> m.equals("if-after-delay")).count();
                 long repeatEndCount = logAppender.getLoggedMessages().stream()
-                        .filter(m -> m.contains("repeat-end")).count();
+                        .filter(m -> m.equals("repeat-end")).count();
                 assertThat(repeatStartCount).isEqualTo(2);
                 assertThat(ifBeforeCount).isEqualTo(2);
                 assertThat(ifAfterCount).isEqualTo(2);
@@ -466,13 +466,13 @@ public class ExecutionStackStressTest extends AutomationEngineTest {
             // Verify each message appears exactly once
             await().atMost(15, TimeUnit.SECONDS).untilAsserted(() -> {
                 assertThat(logAppender.getLoggedMessages().stream()
-                        .filter(m -> m.contains("before-sequence")).count()).isEqualTo(1);
+                        .filter(m -> m.equals("before-sequence")).count()).isEqualTo(1);
                 assertThat(logAppender.getLoggedMessages().stream()
-                        .filter(m -> m.contains("in-sequence-1")).count()).isEqualTo(1);
+                        .filter(m -> m.equals("in-sequence-1")).count()).isEqualTo(1);
                 assertThat(logAppender.getLoggedMessages().stream()
-                        .filter(m -> m.contains("in-sequence-2")).count()).isEqualTo(1);
+                        .filter(m -> m.equals("in-sequence-2")).count()).isEqualTo(1);
                 assertThat(logAppender.getLoggedMessages().stream()
-                        .filter(m -> m.contains("after-sequence")).count()).isEqualTo(1);
+                        .filter(m -> m.equals("after-sequence")).count()).isEqualTo(1);
             });
         }
 
@@ -521,15 +521,15 @@ public class ExecutionStackStressTest extends AutomationEngineTest {
                 assertThat(logAppender.getLoggedMessages().stream()
                         .filter(m -> m.equals("start")).count()).isEqualTo(1);
                 assertThat(logAppender.getLoggedMessages().stream()
-                        .filter(m -> m.contains("outer-1")).count()).isEqualTo(1);
+                        .filter(m -> m.equals("outer-1")).count()).isEqualTo(1);
                 assertThat(logAppender.getLoggedMessages().stream()
-                        .filter(m -> m.contains("inner-1")).count()).isEqualTo(1);
+                        .filter(m -> m.equals("inner-1")).count()).isEqualTo(1);
                 assertThat(logAppender.getLoggedMessages().stream()
-                        .filter(m -> m.contains("inner-2")).count()).isEqualTo(1);
+                        .filter(m -> m.equals("inner-2")).count()).isEqualTo(1);
                 assertThat(logAppender.getLoggedMessages().stream()
-                        .filter(m -> m.contains("outer-2")).count()).isEqualTo(1);
+                        .filter(m -> m.equals("outer-2")).count()).isEqualTo(1);
                 assertThat(logAppender.getLoggedMessages().stream()
-                        .filter(m -> m.contains("outer-3")).count()).isEqualTo(1);
+                        .filter(m -> m.equals("outer-3")).count()).isEqualTo(1);
                 assertThat(logAppender.getLoggedMessages().stream()
                         .filter(m -> m.equals("end")).count()).isEqualTo(1);
             });
@@ -592,17 +592,17 @@ public class ExecutionStackStressTest extends AutomationEngineTest {
                 assertThat(logAppender.getLoggedMessages().stream()
                         .filter(m -> m.equals("start")).count()).isEqualTo(1);
                 assertThat(logAppender.getLoggedMessages().stream()
-                        .filter(m -> m.contains("seq-1")).count()).isEqualTo(1);
+                        .filter(m -> m.equals("seq-1")).count()).isEqualTo(1);
                 assertThat(logAppender.getLoggedMessages().stream()
-                        .filter(m -> m.contains("repeat-start")).count()).isEqualTo(2);
+                        .filter(m -> m.equals("repeat-start")).count()).isEqualTo(2);
                 assertThat(logAppender.getLoggedMessages().stream()
-                        .filter(m -> m.contains("if-before")).count()).isEqualTo(2);
+                        .filter(m -> m.equals("if-before")).count()).isEqualTo(2);
                 assertThat(logAppender.getLoggedMessages().stream()
-                        .filter(m -> m.contains("if-after")).count()).isEqualTo(2);
+                        .filter(m -> m.equals("if-after")).count()).isEqualTo(2);
                 assertThat(logAppender.getLoggedMessages().stream()
-                        .filter(m -> m.contains("repeat-end")).count()).isEqualTo(2);
+                        .filter(m -> m.equals("repeat-end")).count()).isEqualTo(2);
                 assertThat(logAppender.getLoggedMessages().stream()
-                        .filter(m -> m.contains("seq-2")).count()).isEqualTo(1);
+                        .filter(m -> m.equals("seq-2")).count()).isEqualTo(1);
                 assertThat(logAppender.getLoggedMessages().stream()
                         .filter(m -> m.equals("end")).count()).isEqualTo(1);
             });
@@ -672,29 +672,29 @@ public class ExecutionStackStressTest extends AutomationEngineTest {
             // Verify counts (repeat count=2 means L3-L5 appear twice, others once)
             await().atMost(15, TimeUnit.SECONDS).untilAsserted(() -> {
                 assertThat(logAppender.getLoggedMessages().stream()
-                        .filter(m -> m.contains("L0-start")).count()).isEqualTo(1);
+                        .filter(m -> m.equals("L0-start")).count()).isEqualTo(1);
                 assertThat(logAppender.getLoggedMessages().stream()
-                        .filter(m -> m.contains("L1-start")).count()).isEqualTo(1);
+                        .filter(m -> m.equals("L1-start")).count()).isEqualTo(1);
                 assertThat(logAppender.getLoggedMessages().stream()
-                        .filter(m -> m.contains("L2-start")).count()).isEqualTo(1);
+                        .filter(m -> m.equals("L2-start")).count()).isEqualTo(1);
                 assertThat(logAppender.getLoggedMessages().stream()
-                        .filter(m -> m.contains("L3-start")).count()).isEqualTo(2);
+                        .filter(m -> m.equals("L3-start")).count()).isEqualTo(2);
                 assertThat(logAppender.getLoggedMessages().stream()
-                        .filter(m -> m.contains("L4-start")).count()).isEqualTo(2);
+                        .filter(m -> m.equals("L4-start")).count()).isEqualTo(2);
                 assertThat(logAppender.getLoggedMessages().stream()
-                        .filter(m -> m.contains("L5-before-delay")).count()).isEqualTo(2);
+                        .filter(m -> m.equals("L5-before-delay")).count()).isEqualTo(2);
                 assertThat(logAppender.getLoggedMessages().stream()
-                        .filter(m -> m.contains("L5-after-delay")).count()).isEqualTo(2);
+                        .filter(m -> m.equals("L5-after-delay")).count()).isEqualTo(2);
                 assertThat(logAppender.getLoggedMessages().stream()
-                        .filter(m -> m.contains("L4-end")).count()).isEqualTo(2);
+                        .filter(m -> m.equals("L4-end")).count()).isEqualTo(2);
                 assertThat(logAppender.getLoggedMessages().stream()
-                        .filter(m -> m.contains("L3-end")).count()).isEqualTo(2);
+                        .filter(m -> m.equals("L3-end")).count()).isEqualTo(2);
                 assertThat(logAppender.getLoggedMessages().stream()
-                        .filter(m -> m.contains("L2-end")).count()).isEqualTo(1);
+                        .filter(m -> m.equals("L2-end")).count()).isEqualTo(1);
                 assertThat(logAppender.getLoggedMessages().stream()
-                        .filter(m -> m.contains("L1-end")).count()).isEqualTo(1);
+                        .filter(m -> m.equals("L1-end")).count()).isEqualTo(1);
                 assertThat(logAppender.getLoggedMessages().stream()
-                        .filter(m -> m.contains("L0-end")).count()).isEqualTo(1);
+                        .filter(m -> m.equals("L0-end")).count()).isEqualTo(1);
             });
         }
     }
@@ -740,9 +740,9 @@ public class ExecutionStackStressTest extends AutomationEngineTest {
                 assertThat(logAppender.getLoggedMessages().stream()
                         .filter(m -> m.equals("before")).count()).isEqualTo(1);
                 assertThat(logAppender.getLoggedMessages().stream()
-                        .filter(m -> m.contains("between-1")).count()).isEqualTo(1);
+                        .filter(m -> m.equals("between-1")).count()).isEqualTo(1);
                 assertThat(logAppender.getLoggedMessages().stream()
-                        .filter(m -> m.contains("between-2")).count()).isEqualTo(1);
+                        .filter(m -> m.equals("between-2")).count()).isEqualTo(1);
                 assertThat(logAppender.getLoggedMessages().stream()
                         .filter(m -> m.equals("after")).count()).isEqualTo(1);
             });
@@ -818,9 +818,9 @@ public class ExecutionStackStressTest extends AutomationEngineTest {
                 assertThat(logAppender.getLoggedMessages().stream()
                         .filter(m -> m.equals("in-else")).count()).isEqualTo(1);
                 assertThat(logAppender.getLoggedMessages().stream()
-                        .filter(m -> m.contains("after-delay-in-else")).count()).isEqualTo(1);
+                        .filter(m -> m.equals("after-delay-in-else")).count()).isEqualTo(1);
                 assertThat(logAppender.getLoggedMessages().stream()
-                        .filter(m -> m.contains("empty-if-after")).count()).isEqualTo(1);
+                        .filter(m -> m.equals("empty-if-after")).count()).isEqualTo(1);
             });
         }
 
@@ -852,9 +852,9 @@ public class ExecutionStackStressTest extends AutomationEngineTest {
             // Should complete immediately without any pause
             await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
                 assertThat(logAppender.getLoggedMessages())
-                        .anyMatch(m -> m.contains("before"))
-                        .anyMatch(m -> m.contains("after"))
-                        .noneMatch(m -> m.contains("should-not-run"));
+                        .anyMatch(m -> m.equals("before"))
+                        .anyMatch(m -> m.equals("after"))
+                        .noneMatch(m -> m.equals("should-not-run"));
             });
         }
     }
@@ -896,7 +896,7 @@ public class ExecutionStackStressTest extends AutomationEngineTest {
             // Give it a moment and then verify the last action didn't run
             await().during(1, TimeUnit.SECONDS).untilAsserted(() -> {
                 assertThat(logAppender.getLoggedMessages())
-                        .noneMatch(m -> m.contains("should-not-run"));
+                        .noneMatch(m -> m.equals("should-not-run"));
                 // Verify each message appears exactly once
                 assertThat(logAppender.getLoggedMessages().stream()
                         .filter(m -> m.equals("stop-test-before")).count()).isEqualTo(1);
@@ -941,12 +941,12 @@ public class ExecutionStackStressTest extends AutomationEngineTest {
             // The stop should exit the repeat, so only one "LOOP-ITERATION" message
             await().atMost(5, TimeUnit.SECONDS).untilAsserted(() -> {
                 long loopCount = logAppender.getLoggedMessages().stream()
-                        .filter(m -> m.contains("LOOP-ITERATION")).count();
+                        .filter(m -> m.equals("LOOP-ITERATION")).count();
                 // Stop should prevent remaining iterations
                 assertThat(loopCount).isEqualTo(1);
                 // "after-stop-in-loop" should not appear
                 assertThat(logAppender.getLoggedMessages())
-                        .noneMatch(m -> m.contains("after-stop-in-loop"));
+                        .noneMatch(m -> m.equals("after-stop-in-loop"));
             });
         }
     }
@@ -1134,18 +1134,21 @@ public class ExecutionStackStressTest extends AutomationEngineTest {
             // Verify none of the "SHOULD-NOT-RUN" messages appear
             await().during(500, TimeUnit.MILLISECONDS).untilAsserted(() -> {
                 assertThat(logAppender.getLoggedMessages())
-                        .noneMatch(m -> m.contains("SHOULD-NOT-RUN"));
+                        .noneMatch(m -> m.equals("SHOULD-NOT-RUN-1"))
+                        .noneMatch(m -> m.equals("SHOULD-NOT-RUN-2"))
+                        .noneMatch(m -> m.equals("SHOULD-NOT-RUN-3"))
+                        .noneMatch(m -> m.equals("SHOULD-NOT-RUN-4"));
                 // Verify each level message appears exactly once
                 assertThat(logAppender.getLoggedMessages().stream()
-                        .filter(m -> m.contains("LEVEL-0")).count()).isEqualTo(1);
+                        .filter(m -> m.equals("LEVEL-0")).count()).isEqualTo(1);
                 assertThat(logAppender.getLoggedMessages().stream()
-                        .filter(m -> m.contains("LEVEL-1")).count()).isEqualTo(1);
+                        .filter(m -> m.equals("LEVEL-1")).count()).isEqualTo(1);
                 assertThat(logAppender.getLoggedMessages().stream()
-                        .filter(m -> m.contains("LEVEL-2")).count()).isEqualTo(1);
+                        .filter(m -> m.equals("LEVEL-2")).count()).isEqualTo(1);
                 assertThat(logAppender.getLoggedMessages().stream()
-                        .filter(m -> m.contains("LEVEL-3-BEFORE-DELAY")).count()).isEqualTo(1);
+                        .filter(m -> m.equals("LEVEL-3-BEFORE-DELAY")).count()).isEqualTo(1);
                 assertThat(logAppender.getLoggedMessages().stream()
-                        .filter(m -> m.contains("LEVEL-3-AFTER-DELAY")).count()).isEqualTo(1);
+                        .filter(m -> m.equals("LEVEL-3-AFTER-DELAY")).count()).isEqualTo(1);
             });
         }
 
@@ -1194,19 +1197,19 @@ public class ExecutionStackStressTest extends AutomationEngineTest {
             // Verify each message appears exactly once
             await().atMost(15, TimeUnit.SECONDS).untilAsserted(() -> {
                 assertThat(logAppender.getLoggedMessages().stream()
-                        .filter(m -> m.contains("ROOT-1")).count()).isEqualTo(1);
+                        .filter(m -> m.equals("ROOT-1")).count()).isEqualTo(1);
                 assertThat(logAppender.getLoggedMessages().stream()
-                        .filter(m -> m.contains("ROOT-2")).count()).isEqualTo(1);
+                        .filter(m -> m.equals("ROOT-2")).count()).isEqualTo(1);
                 assertThat(logAppender.getLoggedMessages().stream()
-                        .filter(m -> m.contains("SEQ-1")).count()).isEqualTo(1);
+                        .filter(m -> m.equals("SEQ-1")).count()).isEqualTo(1);
                 assertThat(logAppender.getLoggedMessages().stream()
-                        .filter(m -> m.contains("SEQ-2")).count()).isEqualTo(1);
+                        .filter(m -> m.equals("SEQ-2")).count()).isEqualTo(1);
                 assertThat(logAppender.getLoggedMessages().stream()
-                        .filter(m -> m.contains("IF-1")).count()).isEqualTo(1);
+                        .filter(m -> m.equals("IF-1")).count()).isEqualTo(1);
                 assertThat(logAppender.getLoggedMessages().stream()
-                        .filter(m -> m.contains("IF-2")).count()).isEqualTo(1);
+                        .filter(m -> m.equals("IF-2")).count()).isEqualTo(1);
                 assertThat(logAppender.getLoggedMessages().stream()
-                        .filter(m -> m.contains("ROOT-3")).count()).isEqualTo(1);
+                        .filter(m -> m.equals("ROOT-3")).count()).isEqualTo(1);
             });
         }
 
@@ -1244,14 +1247,14 @@ public class ExecutionStackStressTest extends AutomationEngineTest {
 
             await().during(500, TimeUnit.MILLISECONDS).untilAsserted(() -> {
                 assertThat(logAppender.getLoggedMessages())
-                        .noneMatch(m -> m.contains("SEQ-SHOULD-NOT-RUN"));
+                        .noneMatch(m -> m.equals("SEQ-SHOULD-NOT-RUN"));
                 // Verify each message appears exactly once
                 assertThat(logAppender.getLoggedMessages().stream()
-                        .filter(m -> m.contains("ROOT-START")).count()).isEqualTo(1);
+                        .filter(m -> m.equals("ROOT-START")).count()).isEqualTo(1);
                 assertThat(logAppender.getLoggedMessages().stream()
-                        .filter(m -> m.contains("SEQ-START")).count()).isEqualTo(1);
+                        .filter(m -> m.equals("SEQ-START")).count()).isEqualTo(1);
                 assertThat(logAppender.getLoggedMessages().stream()
-                        .filter(m -> m.contains("ROOT-AFTER-SEQUENCE")).count()).isEqualTo(1);
+                        .filter(m -> m.equals("ROOT-AFTER-SEQUENCE")).count()).isEqualTo(1);
             });
         }
     }
