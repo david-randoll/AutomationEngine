@@ -39,9 +39,17 @@ public class AutomationEngineTest {
     @BeforeEach
     void setUp() {
         Logger logger = (Logger) LoggerFactory.getLogger("com.davidrandoll.automation.engine");
+        
+        // Remove any existing appenders to avoid duplicate logging
+        logger.detachAndStopAllAppenders();
+        
+        // Create new appender for this test
         logAppender = new TestLogAppender();
+        logAppender.setContext(logger.getLoggerContext());
+        logAppender.start();  // Start before adding to logger
         logger.addAppender(logAppender);
-        logAppender.start();
+        logger.setAdditive(false);  // Don't propagate to parent loggers
+        logger.setLevel(ch.qos.logback.classic.Level.DEBUG);
 
         engine.removeAll();
     }
