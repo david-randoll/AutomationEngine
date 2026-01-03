@@ -68,7 +68,7 @@ public class RepeatAction extends PluggableAction<RepeatActionContext> {
         if (ac.hasWhileConditions()) {
             while (processor.allConditionsSatisfied(ec, ac.getWhileConditions())) {
                 ActionResult result = executeActionsDirectly(ec, ac);
-                if (result.isPause()) return ActionResult.pause();
+                if (result.isPause()) return ActionResult.pauseExecution();
                 if (result.isStop()) return ActionResult.continueExecution();
             }
         }
@@ -76,7 +76,7 @@ public class RepeatAction extends PluggableAction<RepeatActionContext> {
         if (ac.hasUntilConditions()) {
             while (!processor.allConditionsSatisfied(ec, ac.getUntilConditions())) {
                 ActionResult result = executeActionsDirectly(ec, ac);
-                if (result.isPause()) return ActionResult.pause();
+                if (result.isPause()) return ActionResult.pauseExecution();
                 if (result.isStop()) return ActionResult.continueExecution();
             }
         }
@@ -93,14 +93,14 @@ public class RepeatAction extends PluggableAction<RepeatActionContext> {
         List<IBaseAction> actions = createActions(ec, ac.getActions());
         for (IBaseAction action : actions) {
             ActionResult result = action.execute(ec);
-            if (result.isPause()) return ActionResult.pause();
-            if (result.isStop()) return ActionResult.stop();
+            if (result.isPause()) return ActionResult.pauseExecution();
+            if (result.isStop()) return ActionResult.stopExecution();
             // Handle INVOKE for nested blocks - execute them immediately
             if (result.isInvoke() && result.children() != null) {
                 for (IBaseAction child : result.children()) {
                     ActionResult childResult = child.execute(ec);
-                    if (childResult.isPause()) return ActionResult.pause();
-                    if (childResult.isStop()) return ActionResult.stop();
+                    if (childResult.isPause()) return ActionResult.pauseExecution();
+                    if (childResult.isStop()) return ActionResult.stopExecution();
                 }
             }
         }

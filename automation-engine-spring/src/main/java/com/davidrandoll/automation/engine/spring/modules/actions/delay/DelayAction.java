@@ -24,7 +24,7 @@ public class DelayAction extends PluggableAction<DelayActionContext> {
         UUID executionId = ec.getExecutionId();
 
         if (duration == null || duration.isZero() || duration.isNegative()) {
-            return ActionResult.CONTINUE;
+            return ActionResult.continueExecution();
         }
 
         log.info("Pausing execution {} for {}", executionId, duration);
@@ -34,7 +34,7 @@ public class DelayAction extends PluggableAction<DelayActionContext> {
             orchestrator.resumeAutomation(executionId);
         }, Instant.now().plus(duration));
 
-        return ActionResult.PAUSE;
+        return ActionResult.pauseExecution();
     }
 
     @Override

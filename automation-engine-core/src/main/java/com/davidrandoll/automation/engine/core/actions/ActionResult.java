@@ -51,13 +51,13 @@ public record ActionResult(Status status, List<IBaseAction> children) {
     public static final ActionResult CONTINUE = CONTINUE_RESULT;
 
     /**
-     * @deprecated Use {@link #pause()} instead
+     * @deprecated Use {@link #pauseExecution()} instead
      */
     @Deprecated
     public static final ActionResult PAUSE = PAUSE_RESULT;
 
     /**
-     * @deprecated Use {@link #stop()} instead
+     * @deprecated Use {@link #stopExecution()} instead
      */
     @Deprecated
     public static final ActionResult STOP = STOP_RESULT;
@@ -72,14 +72,14 @@ public record ActionResult(Status status, List<IBaseAction> children) {
     /**
      * Pause execution and save state for later resumption.
      */
-    public static ActionResult pause() {
+    public static ActionResult pauseExecution() {
         return PAUSE_RESULT;
     }
 
     /**
      * Stop execution of the current action sequence.
      */
-    public static ActionResult stop() {
+    public static ActionResult stopExecution() {
         return STOP_RESULT;
     }
 

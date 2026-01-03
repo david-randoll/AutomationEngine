@@ -16,9 +16,10 @@ public class StopAction extends PluggableAction<StopActionContext> {
 
     @Override
     public ActionResult executeWithResult(EventContext ec, StopActionContext ac) {
-        if (ObjectUtils.isEmpty(ac.getCondition())) return ActionResult.CONTINUE;
+        if (ObjectUtils.isEmpty(ac.getCondition()))
+            return ActionResult.continueExecution();
         var isSatisfied = processor.allConditionsSatisfied(ec, List.of(ac.getCondition()));
-        if (!isSatisfied) return ActionResult.CONTINUE;
+        if (!isSatisfied) return ActionResult.continueExecution();
 
         if (ac.hasStopMessage()) {
             if (ac.isStopAutomation()) throw new StopAutomationException(ac.getStopMessage());
@@ -28,7 +29,7 @@ public class StopAction extends PluggableAction<StopActionContext> {
             if (ac.isStopAutomation()) throw new StopAutomationException();
             if (ac.isStopActionSequence()) throw new StopActionSequenceException();
         }
-        return ActionResult.STOP;
+        return ActionResult.stopExecution();
     }
 
     @Override

@@ -85,12 +85,12 @@ public class BaseActionList extends ArrayList<IBaseAction> {
                     // Advance frame so resume continues from next action
                     stack.pop();
                     stack.push(frame.next());
-                    return ActionResult.pause();
+                    return ActionResult.pauseExecution();
                 }
                 case STOP -> {
                     // Clear the stack and stop execution
                     stack.clear();
-                    return ActionResult.stop();
+                    return ActionResult.stopExecution();
                 }
             }
         }
