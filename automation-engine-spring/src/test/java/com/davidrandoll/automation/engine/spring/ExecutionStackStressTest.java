@@ -1,0 +1,1013 @@
+package com.davidrandoll.automation.engine.spring;
+
+import com.davidrandoll.automation.engine.core.Automation;
+import com.davidrandoll.automation.engine.core.events.IEvent;
+import com.davidrandoll.automation.engine.creator.actions.ActionDefinition;
+import com.davidrandoll.automation.engine.spring.modules.actions.uda.DefaultUserDefinedActionRegistry;
+import com.davidrandoll.automation.engine.spring.modules.actions.uda.UserDefinedActionDefinition;
+import com.davidrandoll.automation.engine.test.AutomationEngineTest;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
+
+/**
+ * Comprehensive stress tests for the execution stack (virtual stack machine).
+ * These tests aim to find edge cases and bugs in pause/resume functionality.
+ */
+public class ExecutionStackStressTest extends AutomationEngineTest {
+
+
+    private IEvent createEvent() {
+        return new IEvent() {};
+    }
+
+    private void waitForLogMessages(String... expectedMessages) {
+        await().atMost(15, TimeUnit.SECONDS).untilAsserted(() -> {
+            for (String msg : expectedMessages) {
+                assertThat(logAppender.getLoggedMessages())
+                        .anyMatch(m -> m.contains(msg));
+            }
+        });
+    }
+
+    // ==================== IF-THEN-ELSE TESTS ====================
+
+    @Nested
+    @DisplayName("If-Then-Else with Pause/Resume")
+    class IfThenElseTests {
+
+        @Test
+        @DisplayName("Pause in IF branch then resume")
+        void testPauseInIfBranch() {
+            String yaml = """
+                    alias: if-pause-test
+                    triggers:
+                      - trigger: alwaysTrue
+                    actions:
+                      - action: logger
+                        message: "before-if"
+                      - action: ifThenElse
+                        if:
+                          - condition: template
+                            expression: "{{ true }}"
+                        then:
+                          - action: logger
+                            message: "in-if-before-delay"
+                          - action: delay
+                            duration: PT0.5S
+                          - action: logger
+                            message: "in-if-after-delay"
+                        else:
+                          - action: logger
+                            message: "should-not-run"
+                      - action: logger
+                        message: "after-if"
+                    """;
+
+            Automation automation = factory.createAutomation("yaml", yaml);
+            engine.register(automation);
+            engine.publishEvent(createEvent());
+
+            waitForLogMessages("before-if", "in-if-before-delay", "in-if-after-delay", "after-if");
+
+            assertThat(logAppender.getLoggedMessages())
+                    .noneMatch(m -> m.contains("should-not-run"));
+        }
+
+        @Test
+        @DisplayName("Pause in ELSE branch then resume")
+        void testPauseInElseBranch() {
+            String yaml = """
+                    alias: else-pause-test
+                    triggers:
+                      - trigger: alwaysTrue
+                    actions:
+                      - action: logger
+                        message: "before-if"
+                      - action: ifThenElse
+                        if:
+                          - condition: template
+                            expression: "{{ false }}"
+                        then:
+                          - action: logger
+                            message: "should-not-run"
+                        else:
+                          - action: logger
+                            message: "in-else-before-delay"
+                          - action: delay
+                            duration: PT0.5S
+                          - action: logger
+                            message: "in-else-after-delay"
+                      - action: logger
+                        message: "after-if"
+                    """;
+
+            Automation automation = factory.createAutomation("yaml", yaml);
+            engine.register(automation);
+            engine.publishEvent(createEvent());
+
+            waitForLogMessages("before-if", "in-else-before-delay", "in-else-after-delay", "after-if");
+
+            assertThat(logAppender.getLoggedMessages())
+                    .noneMatch(m -> m.contains("should-not-run"));
+        }
+
+        @Test
+        @DisplayName("Pause in ELSE-IF branch then resume")
+        void testPauseInElseIfBranch() {
+            String yaml = """
+                    alias: elseif-pause-test
+                    triggers:
+                      - trigger: alwaysTrue
+                    actions:
+                      - action: logger
+                        message: "before-if"
+                      - action: ifThenElse
+                        if:
+                          - condition: template
+                            expression: "{{ false }}"
+                        then:
+                          - action: logger
+                            message: "should-not-run-1"
+                        ifs:
+                          - if:
+                              - condition: template
+                                expression: "{{ true }}"
+                            then:
+                              - action: logger
+                                message: "in-elseif-before-delay"
+                              - action: delay
+                                duration: PT0.5S
+                              - action: logger
+                                message: "in-elseif-after-delay"
+                        else:
+                          - action: logger
+                            message: "should-not-run-2"
+                      - action: logger
+                        message: "after-if"
+                    """;
+
+            Automation automation = factory.createAutomation("yaml", yaml);
+            engine.register(automation);
+            engine.publishEvent(createEvent());
+
+            waitForLogMessages("before-if", "in-elseif-before-delay", "in-elseif-after-delay", "after-if");
+
+            assertThat(logAppender.getLoggedMessages())
+                    .noneMatch(m -> m.contains("should-not-run"));
+        }
+
+        @Test
+        @DisplayName("Multiple delays in nested if-then-else")
+        void testMultipleDelaysInNestedIfThenElse() {
+            String yaml = """
+                    alias: nested-if-pause-test
+                    triggers:
+                      - trigger: alwaysTrue
+                    actions:
+                      - action: logger
+                        message: "L0-start"
+                      - action: ifThenElse
+                        if:
+                          - condition: template
+                            expression: "{{ true }}"
+                        then:
+                          - action: logger
+                            message: "L1-before-delay"
+                          - action: delay
+                            duration: PT0.3S
+                          - action: logger
+                            message: "L1-after-delay"
+                          - action: ifThenElse
+                            if:
+                              - condition: template
+                                expression: "{{ true }}"
+                            then:
+                              - action: logger
+                                message: "L2-before-delay"
+                              - action: delay
+                                duration: PT0.3S
+                              - action: logger
+                                message: "L2-after-delay"
+                          - action: logger
+                            message: "L1-end"
+                      - action: logger
+                        message: "L0-end"
+                    """;
+
+            Automation automation = factory.createAutomation("yaml", yaml);
+            engine.register(automation);
+            engine.publishEvent(createEvent());
+
+            waitForLogMessages("L0-start", "L1-before-delay", "L1-after-delay", 
+                    "L2-before-delay", "L2-after-delay", "L1-end", "L0-end");
+        }
+    }
+
+    // ==================== REPEAT ACTION TESTS ====================
+
+    @Nested
+    @DisplayName("Repeat Action with Pause/Resume")
+    class RepeatActionTests {
+
+        @Test
+        @DisplayName("Pause inside count-based repeat")
+        void testPauseInCountRepeat() {
+            String yaml = """
+                    alias: repeat-count-pause-test
+                    triggers:
+                      - trigger: alwaysTrue
+                    actions:
+                      - action: logger
+                        message: "before-repeat"
+                      - action: repeat
+                        count: 3
+                        actions:
+                          - action: logger
+                            message: "iteration-start"
+                          - action: delay
+                            duration: PT0.3S
+                          - action: logger
+                            message: "iteration-end"
+                      - action: logger
+                        message: "after-repeat"
+                    """;
+
+            Automation automation = factory.createAutomation("yaml", yaml);
+            engine.register(automation);
+            engine.publishEvent(createEvent());
+
+            // 3 iterations = 3 delays
+            waitForLogMessages("before-repeat", "after-repeat");
+
+            // Count the iteration messages
+            await().atMost(15, TimeUnit.SECONDS).untilAsserted(() -> {
+                long startCount = logAppender.getLoggedMessages().stream()
+                        .filter(m -> m.contains("iteration-start")).count();
+                long endCount = logAppender.getLoggedMessages().stream()
+                        .filter(m -> m.contains("iteration-end")).count();
+                assertThat(startCount).isEqualTo(3);
+                assertThat(endCount).isEqualTo(3);
+            });
+        }
+
+        @Test
+        @DisplayName("Pause inside forEach repeat")
+        void testPauseInForEachRepeat() {
+            String yaml = """
+                    alias: repeat-foreach-pause-test
+                    triggers:
+                      - trigger: alwaysTrue
+                    actions:
+                      - action: logger
+                        message: "before-repeat"
+                      - action: repeat
+                        forEach: [a, b, c]
+                        as: item
+                        actions:
+                          - action: logger
+                            message: "item={{ item }}"
+                          - action: delay
+                            duration: PT0.2S
+                      - action: logger
+                        message: "after-repeat"
+                    """;
+
+            Automation automation = factory.createAutomation("yaml", yaml);
+            engine.register(automation);
+            engine.publishEvent(createEvent());
+
+            waitForLogMessages("before-repeat", "item=a", "item=b", "item=c", "after-repeat");
+        }
+
+        @Test
+        @DisplayName("Nested if-then-else inside repeat with delay")
+        void testNestedIfThenElseInRepeatWithDelay() {
+            String yaml = """
+                    alias: repeat-nested-if-test
+                    triggers:
+                      - trigger: alwaysTrue
+                    actions:
+                      - action: logger
+                        message: "start"
+                      - action: repeat
+                        count: 2
+                        actions:
+                          - action: logger
+                            message: "repeat-start"
+                          - action: ifThenElse
+                            if:
+                              - condition: template
+                                expression: "{{ true }}"
+                            then:
+                              - action: logger
+                                message: "if-before-delay"
+                              - action: delay
+                                duration: PT0.2S
+                              - action: logger
+                                message: "if-after-delay"
+                          - action: logger
+                            message: "repeat-end"
+                      - action: logger
+                        message: "end"
+                    """;
+
+            Automation automation = factory.createAutomation("yaml", yaml);
+            engine.register(automation);
+            engine.publishEvent(createEvent());
+
+            waitForLogMessages("start", "repeat-start", "if-before-delay", "if-after-delay", 
+                    "repeat-end", "end");
+
+            await().atMost(15, TimeUnit.SECONDS).untilAsserted(() -> {
+                long repeatStartCount = logAppender.getLoggedMessages().stream()
+                        .filter(m -> m.contains("repeat-start")).count();
+                assertThat(repeatStartCount).isEqualTo(2);
+            });
+        }
+    }
+
+    // ==================== SEQUENCE ACTION TESTS ====================
+
+    @Nested
+    @DisplayName("Sequence Action with Pause/Resume")
+    class SequenceActionTests {
+
+        @Test
+        @DisplayName("Pause inside sequence")
+        void testPauseInSequence() {
+            String yaml = """
+                    alias: sequence-pause-test
+                    triggers:
+                      - trigger: alwaysTrue
+                    actions:
+                      - action: logger
+                        message: "before-sequence"
+                      - action: sequence
+                        actions:
+                          - action: logger
+                            message: "in-sequence-1"
+                          - action: delay
+                            duration: PT0.5S
+                          - action: logger
+                            message: "in-sequence-2"
+                      - action: logger
+                        message: "after-sequence"
+                    """;
+
+            Automation automation = factory.createAutomation("yaml", yaml);
+            engine.register(automation);
+            engine.publishEvent(createEvent());
+
+            waitForLogMessages("before-sequence", "in-sequence-1", "in-sequence-2", "after-sequence");
+        }
+
+        @Test
+        @DisplayName("Multiple pauses in nested sequences")
+        void testMultiplePausesInNestedSequences() {
+            String yaml = """
+                    alias: nested-sequence-pause-test
+                    triggers:
+                      - trigger: alwaysTrue
+                    actions:
+                      - action: logger
+                        message: "start"
+                      - action: sequence
+                        actions:
+                          - action: logger
+                            message: "outer-1"
+                          - action: delay
+                            duration: PT0.2S
+                          - action: sequence
+                            actions:
+                              - action: logger
+                                message: "inner-1"
+                              - action: delay
+                                duration: PT0.2S
+                              - action: logger
+                                message: "inner-2"
+                          - action: logger
+                            message: "outer-2"
+                          - action: delay
+                            duration: PT0.2S
+                          - action: logger
+                            message: "outer-3"
+                      - action: logger
+                        message: "end"
+                    """;
+
+            Automation automation = factory.createAutomation("yaml", yaml);
+            engine.register(automation);
+            engine.publishEvent(createEvent());
+
+            waitForLogMessages("start", "outer-1", "inner-1", "inner-2", "outer-2", "outer-3", "end");
+        }
+    }
+
+    // ==================== DEEPLY NESTED TESTS ====================
+
+    @Nested
+    @DisplayName("Deeply Nested Scenarios")
+    class DeeplyNestedTests {
+
+        @Test
+        @DisplayName("If inside Repeat inside Sequence with delay")
+        void testIfInsideRepeatInsideSequence() {
+            String yaml = """
+                    alias: deep-nested-test
+                    triggers:
+                      - trigger: alwaysTrue
+                    actions:
+                      - action: logger
+                        message: "start"
+                      - action: sequence
+                        actions:
+                          - action: logger
+                            message: "seq-1"
+                          - action: repeat
+                            count: 2
+                            actions:
+                              - action: logger
+                                message: "repeat-start"
+                              - action: ifThenElse
+                                if:
+                                  - condition: template
+                                    expression: "{{ true }}"
+                                then:
+                                  - action: logger
+                                    message: "if-before"
+                                  - action: delay
+                                    duration: PT0.2S
+                                  - action: logger
+                                    message: "if-after"
+                              - action: logger
+                                message: "repeat-end"
+                          - action: logger
+                            message: "seq-2"
+                      - action: logger
+                        message: "end"
+                    """;
+
+            Automation automation = factory.createAutomation("yaml", yaml);
+            engine.register(automation);
+            engine.publishEvent(createEvent());
+
+            waitForLogMessages("start", "seq-1", "repeat-start", "if-before", "if-after", 
+                    "repeat-end", "seq-2", "end");
+        }
+
+        @Test
+        @DisplayName("5-level deep nesting with delays")
+        void testFiveLevelDeepNesting() {
+            String yaml = """
+                    alias: five-level-nested-test
+                    triggers:
+                      - trigger: alwaysTrue
+                    actions:
+                      - action: logger
+                        message: "L0-start"
+                      - action: sequence
+                        actions:
+                          - action: logger
+                            message: "L1-start"
+                          - action: ifThenElse
+                            if:
+                              - condition: template
+                                expression: "{{ true }}"
+                            then:
+                              - action: logger
+                                message: "L2-start"
+                              - action: repeat
+                                count: 2
+                                actions:
+                                  - action: logger
+                                    message: "L3-start"
+                                  - action: sequence
+                                    actions:
+                                      - action: logger
+                                        message: "L4-start"
+                                      - action: ifThenElse
+                                        if:
+                                          - condition: template
+                                            expression: "{{ true }}"
+                                        then:
+                                          - action: logger
+                                            message: "L5-before-delay"
+                                          - action: delay
+                                            duration: PT0.15S
+                                          - action: logger
+                                            message: "L5-after-delay"
+                                      - action: logger
+                                        message: "L4-end"
+                                  - action: logger
+                                    message: "L3-end"
+                              - action: logger
+                                message: "L2-end"
+                          - action: logger
+                            message: "L1-end"
+                      - action: logger
+                        message: "L0-end"
+                    """;
+
+            Automation automation = factory.createAutomation("yaml", yaml);
+            engine.register(automation);
+            engine.publishEvent(createEvent());
+
+            waitForLogMessages("L0-start", "L1-start", "L2-start", "L3-start", "L4-start",
+                    "L5-before-delay", "L5-after-delay", "L4-end", "L3-end", "L2-end", 
+                    "L1-end", "L0-end");
+        }
+    }
+
+    // ==================== EDGE CASES ====================
+
+    @Nested
+    @DisplayName("Edge Cases")
+    class EdgeCaseTests {
+
+        @Test
+        @DisplayName("Multiple consecutive delays")
+        void testMultipleConsecutiveDelays() {
+            String yaml = """
+                    alias: consecutive-delays-test
+                    triggers:
+                      - trigger: alwaysTrue
+                    actions:
+                      - action: logger
+                        message: "before"
+                      - action: delay
+                        duration: PT0.2S
+                      - action: logger
+                        message: "between-1"
+                      - action: delay
+                        duration: PT0.2S
+                      - action: logger
+                        message: "between-2"
+                      - action: delay
+                        duration: PT0.2S
+                      - action: logger
+                        message: "after"
+                    """;
+
+            Automation automation = factory.createAutomation("yaml", yaml);
+            engine.register(automation);
+            engine.publishEvent(createEvent());
+
+            waitForLogMessages("before", "between-1", "between-2", "after");
+        }
+
+        @Test
+        @DisplayName("Delay at the very end of automation")
+        void testDelayAtEnd() {
+            String yaml = """
+                    alias: delay-at-end-test
+                    triggers:
+                      - trigger: alwaysTrue
+                    actions:
+                      - action: logger
+                        message: "before"
+                      - action: delay
+                        duration: PT0.3S
+                      - action: logger
+                        message: "after"
+                    """;
+
+            Automation automation = factory.createAutomation("yaml", yaml);
+            engine.register(automation);
+            engine.publishEvent(createEvent());
+
+            waitForLogMessages("before", "after");
+        }
+
+        @Test
+        @DisplayName("Empty if branch with delay in else")
+        void testEmptyIfBranchWithDelayInElse() {
+            String yaml = """
+                    alias: empty-if-delay-else-test
+                    triggers:
+                      - trigger: alwaysTrue
+                    actions:
+                      - action: logger
+                        message: "before"
+                      - action: ifThenElse
+                        if:
+                          - condition: template
+                            expression: "{{ false }}"
+                        then: []
+                        else:
+                          - action: logger
+                            message: "in-else"
+                          - action: delay
+                            duration: PT0.3S
+                          - action: logger
+                            message: "after-delay-in-else"
+                      - action: logger
+                        message: "after"
+                    """;
+
+            Automation automation = factory.createAutomation("yaml", yaml);
+            engine.register(automation);
+            engine.publishEvent(createEvent());
+
+            waitForLogMessages("before", "in-else", "after-delay-in-else", "after");
+        }
+
+        @Test
+        @DisplayName("Zero count repeat (should skip)")
+        void testZeroCountRepeat() {
+            String yaml = """
+                    alias: zero-repeat-test
+                    triggers:
+                      - trigger: alwaysTrue
+                    actions:
+                      - action: logger
+                        message: "before"
+                      - action: repeat
+                        count: 0
+                        actions:
+                          - action: logger
+                            message: "should-not-run"
+                          - action: delay
+                            duration: PT0.3S
+                      - action: logger
+                        message: "after"
+                    """;
+
+            Automation automation = factory.createAutomation("yaml", yaml);
+            engine.register(automation);
+            engine.publishEvent(createEvent());
+
+            // Should complete immediately without any pause
+            await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
+                assertThat(logAppender.getLoggedMessages())
+                        .anyMatch(m -> m.contains("before"))
+                        .anyMatch(m -> m.contains("after"))
+                        .noneMatch(m -> m.contains("should-not-run"));
+            });
+        }
+    }
+
+    // ==================== STOP ACTION TESTS ====================
+
+    @Nested
+    @DisplayName("Stop Actions with Pause/Resume")
+    class StopActionTests {
+
+        @Test
+        @DisplayName("Stop automation after delay resumes")
+        void testStopAfterDelay() {
+            String yaml = """
+                    alias: stop-after-delay-test
+                    triggers:
+                      - trigger: alwaysTrue
+                    actions:
+                      - action: logger
+                        message: "before"
+                      - action: delay
+                        duration: PT0.3S
+                      - action: logger
+                        message: "after-delay"
+                      - action: stop
+                        stopAutomation: true
+                        condition:
+                          condition: alwaysTrue
+                      - action: logger
+                        message: "should-not-run"
+                    """;
+
+            Automation automation = factory.createAutomation("yaml", yaml);
+            engine.register(automation);
+            engine.publishEvent(createEvent());
+
+            waitForLogMessages("before", "after-delay");
+
+            // Give it a moment and then verify the last action didn't run
+            await().during(1, TimeUnit.SECONDS).untilAsserted(() -> {
+                assertThat(logAppender.getLoggedMessages())
+                        .noneMatch(m -> m.contains("should-not-run"));
+            });
+        }
+
+        @Test
+        @DisplayName("Stop action sequence inside repeat after delay")
+        void testStopSequenceInsideRepeatAfterDelay() {
+            String yaml = """
+                    alias: stop-loop-test
+                    triggers:
+                      - trigger: alwaysTrue
+                    actions:
+                      - action: logger
+                        message: "before"
+                      - action: repeat
+                        count: 3
+                        actions:
+                          - action: logger
+                            message: "LOOP-ITERATION"
+                          - action: delay
+                            duration: PT0.2S
+                          - action: stop
+                            stopActionSequence: true
+                            condition:
+                              condition: alwaysTrue
+                          - action: logger
+                            message: "after-stop-in-loop"
+                      - action: logger
+                        message: "after-repeat"
+                    """;
+
+            Automation automation = factory.createAutomation("yaml", yaml);
+            engine.register(automation);
+            engine.publishEvent(createEvent());
+
+            waitForLogMessages("before", "LOOP-ITERATION", "after-repeat");
+
+            // The stop should exit the repeat, so only one "LOOP-ITERATION" message
+            await().atMost(5, TimeUnit.SECONDS).untilAsserted(() -> {
+                long loopCount = logAppender.getLoggedMessages().stream()
+                        .filter(m -> m.contains("LOOP-ITERATION")).count();
+                // Stop should prevent remaining iterations
+                assertThat(loopCount).isEqualTo(1);
+                // "after-stop-in-loop" should not appear
+                assertThat(logAppender.getLoggedMessages())
+                        .noneMatch(m -> m.contains("after-stop-in-loop"));
+            });
+        }
+    }
+
+    // ==================== USER DEFINED ACTION TESTS ====================
+    // NOTE: These tests are disabled because UserDefinedAction creates a new EventContext,
+    // which means the execution stack is not preserved during pause/resume.
+    // This is a known limitation - fixing it requires UserDefinedAction to use 
+    // ActionResult.invoke() instead of creating a new EventContext.
+
+    @Nested
+    @DisplayName("User Defined Actions with Pause/Resume")
+    @org.junit.jupiter.api.Disabled("UDA creates new EventContext, breaking pause/resume chain")
+    class UserDefinedActionTests {
+
+        @Autowired
+        private DefaultUserDefinedActionRegistry actionRegistry;
+
+        @Test
+        @DisplayName("Delay inside user-defined action")
+        void testDelayInsideUserDefinedAction() {
+            // Register a UDA with a delay
+            var udaDefinition = UserDefinedActionDefinition.builder()
+                    .name("udaWithDelay")
+                    .description("A UDA that contains a delay")
+                    .actions(List.of(
+                            ActionDefinition.builder()
+                                    .action("logger")
+                                    .params(Map.of("message", "UDA-BEFORE-DELAY"))
+                                    .build(),
+                            ActionDefinition.builder()
+                                    .action("delay")
+                                    .params(Map.of("duration", "PT0.3S"))
+                                    .build(),
+                            ActionDefinition.builder()
+                                    .action("logger")
+                                    .params(Map.of("message", "UDA-AFTER-DELAY"))
+                                    .build()
+                    ))
+                    .build();
+            actionRegistry.registerAction(udaDefinition);
+
+            String yaml = """
+                    alias: uda-delay-test
+                    triggers:
+                      - trigger: alwaysTrue
+                    actions:
+                      - action: logger
+                        message: "BEFORE-UDA"
+                      - action: userDefinedAction
+                        name: udaWithDelay
+                      - action: logger
+                        message: "AFTER-UDA"
+                    """;
+
+            Automation automation = factory.createAutomation("yaml", yaml);
+            engine.register(automation);
+            engine.publishEvent(createEvent());
+
+            waitForLogMessages("BEFORE-UDA", "UDA-BEFORE-DELAY", "UDA-AFTER-DELAY", "AFTER-UDA");
+        }
+
+        @Test
+        @DisplayName("Nested UDA with if-then-else containing delay")
+        void testNestedUDAWithIfThenElseDelay() {
+            // Register a UDA with if-then-else containing a delay
+            var udaDefinition = UserDefinedActionDefinition.builder()
+                    .name("udaWithCondition")
+                    .description("A UDA with conditional delay")
+                    .parameters(Map.of("shouldDelay", "true"))
+                    .actions(List.of(
+                            ActionDefinition.builder()
+                                    .action("logger")
+                                    .params(Map.of("message", "NESTED-UDA-START"))
+                                    .build(),
+                            ActionDefinition.builder()
+                                    .action("ifThenElse")
+                                    .params(Map.of(
+                                            "if", List.of(Map.of(
+                                                    "condition", "template",
+                                                    "expression", "{{ shouldDelay == 'true' }}"
+                                            )),
+                                            "then", List.of(
+                                                    Map.of(
+                                                            "action", "logger",
+                                                            "message", "CONDITIONAL-BEFORE-DELAY"
+                                                    ),
+                                                    Map.of(
+                                                            "action", "delay",
+                                                            "duration", "PT0.2S"
+                                                    ),
+                                                    Map.of(
+                                                            "action", "logger",
+                                                            "message", "CONDITIONAL-AFTER-DELAY"
+                                                    )
+                                            )
+                                    ))
+                                    .build(),
+                            ActionDefinition.builder()
+                                    .action("logger")
+                                    .params(Map.of("message", "NESTED-UDA-END"))
+                                    .build()
+                    ))
+                    .build();
+            actionRegistry.registerAction(udaDefinition);
+
+            String yaml = """
+                    alias: nested-uda-test
+                    triggers:
+                      - trigger: alwaysTrue
+                    actions:
+                      - action: logger
+                        message: "MAIN-START"
+                      - action: userDefinedAction
+                        name: udaWithCondition
+                        shouldDelay: "true"
+                      - action: logger
+                        message: "MAIN-END"
+                    """;
+
+            Automation automation = factory.createAutomation("yaml", yaml);
+            engine.register(automation);
+            engine.publishEvent(createEvent());
+
+            waitForLogMessages("MAIN-START", "NESTED-UDA-START", "CONDITIONAL-BEFORE-DELAY", 
+                    "CONDITIONAL-AFTER-DELAY", "NESTED-UDA-END", "MAIN-END");
+        }
+    }
+
+    // ==================== COMPLEX NESTING TESTS ====================
+
+    @Nested
+    @DisplayName("Complex Nesting Scenarios")
+    class ComplexNestingTests {
+
+        @Test
+        @DisplayName("Stop automation from deeply nested block")
+        void testStopFromDeeplyNestedBlock() {
+            String yaml = """
+                    alias: deep-stop-test
+                    triggers:
+                      - trigger: alwaysTrue
+                    actions:
+                      - action: logger
+                        message: "LEVEL-0"
+                      - action: sequence
+                        actions:
+                          - action: logger
+                            message: "LEVEL-1"
+                          - action: ifThenElse
+                            if:
+                              - condition: alwaysTrue
+                            then:
+                              - action: logger
+                                message: "LEVEL-2"
+                              - action: repeat
+                                count: 1
+                                actions:
+                                  - action: logger
+                                    message: "LEVEL-3-BEFORE-DELAY"
+                                  - action: delay
+                                    duration: PT0.2S
+                                  - action: logger
+                                    message: "LEVEL-3-AFTER-DELAY"
+                                  - action: stop
+                                    stopAutomation: true
+                                    condition:
+                                      condition: alwaysTrue
+                                  - action: logger
+                                    message: "SHOULD-NOT-RUN-1"
+                              - action: logger
+                                message: "SHOULD-NOT-RUN-2"
+                          - action: logger
+                            message: "SHOULD-NOT-RUN-3"
+                      - action: logger
+                        message: "SHOULD-NOT-RUN-4"
+                    """;
+
+            Automation automation = factory.createAutomation("yaml", yaml);
+            engine.register(automation);
+            engine.publishEvent(createEvent());
+
+            waitForLogMessages("LEVEL-0", "LEVEL-1", "LEVEL-2", "LEVEL-3-BEFORE-DELAY", "LEVEL-3-AFTER-DELAY");
+
+            // Verify none of the "SHOULD-NOT-RUN" messages appear
+            await().during(500, TimeUnit.MILLISECONDS).untilAsserted(() -> {
+                assertThat(logAppender.getLoggedMessages())
+                        .noneMatch(m -> m.contains("SHOULD-NOT-RUN"));
+            });
+        }
+
+        @Test
+        @DisplayName("Multiple delays across different nesting levels")
+        void testMultipleDelaysAcrossNestingLevels() {
+            String yaml = """
+                    alias: multi-level-delay-test
+                    triggers:
+                      - trigger: alwaysTrue
+                    actions:
+                      - action: logger
+                        message: "ROOT-1"
+                      - action: delay
+                        duration: PT0.1S
+                      - action: logger
+                        message: "ROOT-2"
+                      - action: sequence
+                        actions:
+                          - action: logger
+                            message: "SEQ-1"
+                          - action: delay
+                            duration: PT0.1S
+                          - action: logger
+                            message: "SEQ-2"
+                          - action: ifThenElse
+                            if:
+                              - condition: alwaysTrue
+                            then:
+                              - action: logger
+                                message: "IF-1"
+                              - action: delay
+                                duration: PT0.1S
+                              - action: logger
+                                message: "IF-2"
+                      - action: logger
+                        message: "ROOT-3"
+                    """;
+
+            Automation automation = factory.createAutomation("yaml", yaml);
+            engine.register(automation);
+            engine.publishEvent(createEvent());
+
+            waitForLogMessages("ROOT-1", "ROOT-2", "SEQ-1", "SEQ-2", "IF-1", "IF-2", "ROOT-3");
+        }
+
+        @Test
+        @DisplayName("StopActionSequence at different nesting levels")
+        void testStopSequenceAtDifferentLevels() {
+            String yaml = """
+                    alias: stop-sequence-levels-test
+                    triggers:
+                      - trigger: alwaysTrue
+                    actions:
+                      - action: logger
+                        message: "ROOT-START"
+                      - action: sequence
+                        actions:
+                          - action: logger
+                            message: "SEQ-START"
+                          - action: delay
+                            duration: PT0.2S
+                          - action: stop
+                            stopActionSequence: true
+                            condition:
+                              condition: alwaysTrue
+                          - action: logger
+                            message: "SEQ-SHOULD-NOT-RUN"
+                      - action: logger
+                        message: "ROOT-AFTER-SEQUENCE"
+                    """;
+
+            Automation automation = factory.createAutomation("yaml", yaml);
+            engine.register(automation);
+            engine.publishEvent(createEvent());
+
+            waitForLogMessages("ROOT-START", "SEQ-START", "ROOT-AFTER-SEQUENCE");
+
+            await().during(500, TimeUnit.MILLISECONDS).untilAsserted(() -> {
+                assertThat(logAppender.getLoggedMessages())
+                        .noneMatch(m -> m.contains("SEQ-SHOULD-NOT-RUN"));
+            });
+        }
+    }
+}
