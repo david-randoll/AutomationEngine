@@ -8,6 +8,7 @@ import com.davidrandoll.automation.engine.spring.modules.actions.delay.DelayActi
 import com.davidrandoll.automation.engine.spring.modules.actions.if_then_else.IfThenElseAction;
 import com.davidrandoll.automation.engine.spring.modules.actions.logger.LoggerAction;
 import com.davidrandoll.automation.engine.spring.modules.actions.parallel.ParallelAction;
+import com.davidrandoll.automation.engine.spring.modules.actions.pause_until.PauseUntilAction;
 import com.davidrandoll.automation.engine.spring.modules.actions.repeat.RepeatAction;
 import com.davidrandoll.automation.engine.spring.modules.actions.sequence.SequenceAction;
 import com.davidrandoll.automation.engine.spring.modules.actions.stop.StopAction;
@@ -80,6 +81,12 @@ public class ModulesConfig {
     @ConditionalOnMissingBean(name = "parallelAction", ignored = ParallelAction.class)
     public ParallelAction parallelAction(@Autowired(required = false) AEConfigProvider provider) {
         return new ParallelAction(provider);
+    }
+
+    @Bean(name = "pauseUntilAction")
+    @ConditionalOnMissingBean(name = "pauseUntilAction", ignored = PauseUntilAction.class)
+    public PauseUntilAction pauseUntilAction() {
+        return new PauseUntilAction();
     }
 
     @Bean(name = "repeatAction")

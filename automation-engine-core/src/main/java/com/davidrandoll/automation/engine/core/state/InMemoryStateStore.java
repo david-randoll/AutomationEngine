@@ -2,6 +2,8 @@ package com.davidrandoll.automation.engine.core.state;
 
 import com.davidrandoll.automation.engine.core.events.EventContext;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -21,6 +23,11 @@ public class InMemoryStateStore implements IStateStore {
     @Override
     public Optional<EventContext> findById(UUID executionId) {
         return Optional.ofNullable(store.get(executionId));
+    }
+
+    @Override
+    public List<EventContext> findAll() {
+        return new ArrayList<>(store.values());
     }
 
     @Override

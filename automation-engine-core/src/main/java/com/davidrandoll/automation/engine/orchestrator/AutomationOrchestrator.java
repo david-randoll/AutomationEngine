@@ -7,6 +7,8 @@ import com.davidrandoll.automation.engine.core.events.IEvent;
 import com.davidrandoll.automation.engine.core.events.publisher.*;
 import com.davidrandoll.automation.engine.core.result.AutomationResult;
 import com.davidrandoll.automation.engine.core.state.IStateStore;
+import com.davidrandoll.automation.engine.core.triggers.ITrigger;
+import com.davidrandoll.automation.engine.core.triggers.TriggerContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -61,6 +63,11 @@ public class AutomationOrchestrator implements IAEOrchestrator {
     public void handleEvent(EventContext eventContext, BiConsumer<Automation, EventContext> executionFunction) {
         if (eventContext == null) throw new IllegalArgumentException("EventContext cannot be null");
         if (eventContext.getEvent() == null) throw new IllegalArgumentException("Event cannot be null");
+        
+        // FIRST: Check if this event should resume any paused executions
+        resumePausedExecutionsIfTriggered(eventContext);
+        
+        // THEN: Process normal automation triggers
         for (Automation automation : automations) {
             executionFunction.accept(automation, eventContext);
         }
@@ -85,6 +92,15 @@ public class AutomationOrchestrator implements IAEOrchestrator {
                 log.debug("Automation paused. Saving state.");
                 stateStore.save(eventContext);
                 result = AutomationResult.paused(automation, eventContext, executionSummary);
+            } else if (actionResult.isPause() && actionResult.resumeTrigger() != null) {
+                log.debug("Automation paused with resume trigger. Saving state.");
+                // Store trigger and timeout in metadata
+                eventContext.getMetadata().put("_resumeTrigger", actionResult.resumeTrigger());
+                if (actionResult.timeoutMillis() != null) {
+                    eventContext.getMetadata().put("_timeoutMillis", actionResult.timeoutMillis());
+                }
+                stateStore.save(eventContext);
+                result = AutomationResult.paused(automation, eventContext, executionSummary);
             } else {
                 result = AutomationResult.executed(automation, eventContext, executionSummary);
             }
@@ -94,6 +110,77 @@ public class AutomationOrchestrator implements IAEOrchestrator {
         }
         publisher.publishEvent(new AutomationEngineProcessedEvent(automation, eventContext, result));
         return result;
+    }
+
+    /**
+     * Checks all paused executions to see if any should be resumed by the incoming event.
+     * This method is called before normal trigger processing to allow paused automations
+     * to be woken up by matching events.
+     */
+    private void resumePausedExecutionsIfTriggered(EventContext incomingEventContext) {
+        List<UUID> executionsToResume = new ArrayList<>();
+        List<UUID> timedOutExecutions = new ArrayList<>();
+        
+        long currentTimeMillis = System.currentTimeMillis();
+        
+        // Check all paused executions
+        for (EventContext pausedContext : stateStore.findAll()) {
+            UUID executionId = pausedContext.getExecutionId();
+            ITrigger resumeTrigger = (ITrigger) pausedContext.getMetadata().get("_resumeTrigger");
+            
+            // Check for timeout
+            Long pausedAtMillis = (Long) pausedContext.getMetadata().get("_pausedAtMillis");
+            Long timeoutMillis = (Long) pausedContext.getMetadata().get("_timeoutMillis");
+            
+            if (timeoutMillis != null && pausedAtMillis != null) {
+                long elapsed = currentTimeMillis - pausedAtMillis;
+                if (elapsed > timeoutMillis) {
+                    String pauseId = (String) pausedContext.getMetadata().get("_pauseId");
+                    if (pauseId != null) {
+                        log.warn("Execution {} (pauseId: {}) timed out after {} ms waiting for trigger", 
+                                 executionId, pauseId, elapsed);
+                    } else {
+                        log.warn("Execution {} timed out after {} ms waiting for trigger", executionId, elapsed);
+                    }
+                    timedOutExecutions.add(executionId);
+                    continue;
+                }
+            }
+            
+            // Check if resume trigger is activated by incoming event
+            if (resumeTrigger != null) {
+                try {
+                    // Create an empty trigger context for evaluation
+                    TriggerContext triggerContext = new TriggerContext();
+                    triggerContext.setTrigger("resume");
+                    
+                    if (resumeTrigger.isTriggered(incomingEventContext, triggerContext)) {
+                        String pauseId = (String) pausedContext.getMetadata().get("_pauseId");
+                        if (pauseId != null) {
+                            log.info("Resume trigger activated for execution {} (pauseId: {})", 
+                                     executionId, pauseId);
+                        } else {
+                            log.info("Resume trigger activated for execution {}", executionId);
+                        }
+                        
+                        // Merge incoming event data into paused context for resumption
+                        pausedContext.getMetadata().putAll(incomingEventContext.getMetadata());
+                        pausedContext.getMetadata().put("_resumeEvent", incomingEventContext.getEvent());
+                        
+                        executionsToResume.add(executionId);
+                    }
+                } catch (Exception e) {
+                    log.error("Error evaluating resume trigger for execution {}: {}", 
+                              executionId, e.getMessage(), e);
+                }
+            }
+        }
+        
+        // Remove timed out executions
+        timedOutExecutions.forEach(stateStore::remove);
+        
+        // Resume matching executions
+        executionsToResume.forEach(this::resumeAutomation);
     }
 
     @Override

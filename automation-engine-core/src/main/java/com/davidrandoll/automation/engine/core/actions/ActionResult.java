@@ -1,12 +1,14 @@
 package com.davidrandoll.automation.engine.core.actions;
 
+import com.davidrandoll.automation.engine.core.triggers.ITrigger;
+
 import java.util.List;
 
 /**
  * Represents the result of an action execution.
  * Contains a status and optionally a list of child actions to invoke.
  */
-public record ActionResult(Status status, List<IBaseAction> children) {
+public record ActionResult(Status status, List<IBaseAction> children, ITrigger resumeTrigger, Long timeoutMillis) {
 
     /**
      * The status of an action execution.
@@ -38,9 +40,9 @@ public record ActionResult(Status status, List<IBaseAction> children) {
 
     // ---- Static factory methods for common results ----
 
-    private static final ActionResult CONTINUE_RESULT = new ActionResult(Status.CONTINUE, null);
-    private static final ActionResult PAUSE_RESULT = new ActionResult(Status.PAUSE, null);
-    private static final ActionResult STOP_RESULT = new ActionResult(Status.STOP, null);
+    private static final ActionResult CONTINUE_RESULT = new ActionResult(Status.CONTINUE, null, null, null);
+    private static final ActionResult PAUSE_RESULT = new ActionResult(Status.PAUSE, null, null, null);
+    private static final ActionResult STOP_RESULT = new ActionResult(Status.STOP, null, null, null);
 
     // ---- Backward compatibility constants (deprecated, prefer factory methods) ----
 
@@ -94,7 +96,33 @@ public record ActionResult(Status status, List<IBaseAction> children) {
         if (actions == null || actions.isEmpty()) {
             return CONTINUE_RESULT;
         }
-        return new ActionResult(Status.INVOKE, actions);
+        return new ActionResult(Status.INVOKE, actions, null, null);
+    }
+
+    /**
+     * Pause execution until a specific trigger condition is met.
+     * The engine will save state and wait for an event matching the trigger.
+     *
+     * @param trigger The trigger to wait for before resuming
+     * @return An ActionResult with PAUSE status and resume trigger
+     */
+    public static ActionResult pauseUntil(ITrigger trigger) {
+        return pauseUntil(trigger, null);
+    }
+
+    /**
+     * Pause execution until a specific trigger condition is met, with a timeout.
+     * The engine will save state and wait for an event matching the trigger.
+     *
+     * @param trigger The trigger to wait for before resuming
+     * @param timeoutMillis Optional timeout in milliseconds (null = no timeout)
+     * @return An ActionResult with PAUSE status, resume trigger, and timeout
+     */
+    public static ActionResult pauseUntil(ITrigger trigger, Long timeoutMillis) {
+        if (trigger == null) {
+            throw new IllegalArgumentException("Resume trigger cannot be null");
+        }
+        return new ActionResult(Status.PAUSE, null, trigger, timeoutMillis);
     }
 
     // ---- Convenience methods for status checking ----

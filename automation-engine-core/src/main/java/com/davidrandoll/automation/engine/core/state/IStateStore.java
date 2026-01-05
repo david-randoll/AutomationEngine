@@ -2,6 +2,7 @@ package com.davidrandoll.automation.engine.core.state;
 
 import com.davidrandoll.automation.engine.core.events.EventContext;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -23,6 +24,13 @@ public interface IStateStore {
      * @return An Optional containing the event context if found, or empty otherwise.
      */
     Optional<EventContext> findById(UUID executionId);
+
+    /**
+     * Retrieves all paused automation states.
+     *
+     * @return A list of all paused event contexts.
+     */
+    List<EventContext> findAll();
 
     /**
      * Removes the state of a paused automation.
